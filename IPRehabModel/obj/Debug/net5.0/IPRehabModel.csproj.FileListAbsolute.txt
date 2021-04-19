@@ -1,0 +1,14 @@
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\IPRehabModel.deps.json
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\ref\IPRehabModel.dll
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\IPRehabModel.pdb
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.AssemblyInfoInputs.cache
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.AssemblyInfo.cs
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.csproj.CoreCompileInputs.cache
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.dll
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\ref\IPRehabModel.dll
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.pdb
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\IPRehabModel.runtimeconfig.json
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\bin\Debug\net5.0\IPRehabModel.runtimeconfig.dev.json
+C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabModel\obj\Debug\net5.0\IPRehabModel.genruntimeconfig.cache
