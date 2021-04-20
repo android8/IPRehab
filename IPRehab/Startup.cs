@@ -28,18 +28,13 @@ namespace IPRehab
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
-         string thisConnectionString = Configuration.GetConnectionString("IPRehab");
-
-         //enable lazy loading option with Microsoft.EntityFrameworkCore.Proxies
-         services.AddDbContext<IPRehabContext>(
-           options => options.UseLazyLoadingProxies().UseSqlServer(thisConnectionString,
-           /* add migration in the MODEL project */
-           options => options.MigrationsAssembly("IPRehabMoel")));
-
+         services.AddDbContext<IPRehabContext>(options =>
+             options.UseSqlServer(
+                 Configuration.GetConnectionString("IPRehab")));
          services.AddDatabaseDeveloperPageExceptionFilter();
 
          services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-             .AddEntityFrameworkStores<ApplicationDbContext>();
+             .AddEntityFrameworkStores<IPRehabContext>();
          services.AddControllersWithViews();
       }
 

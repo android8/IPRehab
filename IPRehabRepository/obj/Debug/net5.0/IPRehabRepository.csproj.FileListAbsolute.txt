@@ -12,4 +12,3 @@ C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabReposit
 C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabRepository\obj\Debug\net5.0\IPRehabRepository.dll
 C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabRepository\obj\Debug\net5.0\ref\IPRehabRepository.dll
 C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabRepository\obj\Debug\net5.0\IPRehabRepository.pdb
-C:\Users\VHAPORSUNC\source\repos\VSSC\IP Rehab Assessment\IPRehab\IPRehabRepository\obj\Debug\net5.0\IPRehabRepository.csprojAssemblyReference.cache
