@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace IPRehabModel
 {
-    public partial class IPRehabContext : IdentityDbContext
+    public partial class IPRehabContext : IdentityDbContext<ApplicationUser>
     {
         public IPRehabContext()
         {
@@ -33,7 +33,7 @@ namespace IPRehabModel
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("VHA20\\VHAPORSUNC")
+            modelBuilder.HasDefaultSchema("app")
                 .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<TblAnswer>(entity =>
