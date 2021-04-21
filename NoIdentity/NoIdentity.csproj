@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPRehabModel\IPRehabModel.csproj" />
+    <Reference Include="IPRehabModel">
+      <HintPath>..\..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Identity\IdentityHostingStartup.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
@@ -30,7 +26,10 @@
 
   <ItemGroup>
     <Reference Include="IPRehabModel">
-      <HintPath>..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
+      <HintPath>..\..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Mailer">
+      <HintPath>..\..\..\..\CommonLibrary\Mailer\bin\Debug\net5.0\Mailer.dll</HintPath>
     </Reference>
   </ItemGroup>
 

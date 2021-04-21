@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabModel", "IPRehabModel\IPRehabModel.csproj", "{068E551C-CD8E-49F9-BA05-8A50EFF01D08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoIdentity", "NoIdentity\NoIdentity.csproj", "{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabRepository", "IPRehabRepository\IPRehabRepository.csproj", "{771C3A64-AF3A-4F36-86C7-5EC85BEE238F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehab", "IPRehab\IPRehab.csproj", "{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoIdentity", "NoIdentity\NoIdentity.csproj", "{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabModel", "..\IPRehabModel\IPRehabModel.csproj", "{BE6F97F0-472E-4910-946B-A794E5BC0C90}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabRepository", "..\IPRehabRepository\IPRehabRepository.csproj", "{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mailer", "..\..\..\CommonLibrary\Mailer\Mailer.csproj", "{FB0A7537-803E-406F-B8F0-0925C2A1795D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{068E551C-CD8E-49F9-BA05-8A50EFF01D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{068E551C-CD8E-49F9-BA05-8A50EFF01D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{068E551C-CD8E-49F9-BA05-8A50EFF01D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{068E551C-CD8E-49F9-BA05-8A50EFF01D08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{771C3A64-AF3A-4F36-86C7-5EC85BEE238F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{771C3A64-AF3A-4F36-86C7-5EC85BEE238F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{771C3A64-AF3A-4F36-86C7-5EC85BEE238F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{771C3A64-AF3A-4F36-86C7-5EC85BEE238F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8E3E782-1BB0-4EEA-BD21-E059FDCC4322}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE6F97F0-472E-4910-946B-A794E5BC0C90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE6F97F0-472E-4910-946B-A794E5BC0C90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE6F97F0-472E-4910-946B-A794E5BC0C90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE6F97F0-472E-4910-946B-A794E5BC0C90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB0A7537-803E-406F-B8F0-0925C2A1795D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB0A7537-803E-406F-B8F0-0925C2A1795D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB0A7537-803E-406F-B8F0-0925C2A1795D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB0A7537-803E-406F-B8F0-0925C2A1795D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
