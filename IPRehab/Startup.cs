@@ -1,6 +1,7 @@
 using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +23,7 @@ namespace IPRehab
          services.AddControllersWithViews();
          services.AddRazorPages();
          services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
+         services.AddSingleton<IEmailSender, EmailSender>();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +43,7 @@ namespace IPRehab
          app.UseStaticFiles();
 
          app.UseRouting();
+         //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
          app.UseAuthentication();
          app.UseAuthorization();
 
