@@ -1,0 +1,76 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "IPRehabContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "ProceduresReturnList": false,
+   "ProjectRootNamespace": "IPRehabModel",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[app].[tblAnswer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblCodeSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblEpisodeOfCare]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblPatient]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblQuestion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblQuestionInstruction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblSignature]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblUser]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[vCodeSetHierarchy]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[app].[vQuestionStandardChoices]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[app].[vQuestionStandardChoices_Condensed]",
+         "ObjectType": 3
+      }
+   ],
+   "UiHint": "VHAAUSDB9.RehabMetricsAndOutcomes",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSpatial": false
+}

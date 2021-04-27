@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoIdentity", "NoIdentity\No
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehab", "IPRehab\IPRehab.csproj", "{66BF17D1-C32F-4D76-9FDB-7CF53D79F502}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabModel", "..\IPRehabModel\IPRehabModel.csproj", "{BE6F97F0-472E-4910-946B-A794E5BC0C90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabModel", "IPRehabModel\IPRehabModel.csproj", "{BE6F97F0-472E-4910-946B-A794E5BC0C90}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabRepository", "..\IPRehabRepository\IPRehabRepository.csproj", "{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabRepository", "IPRehabRepository\IPRehabRepository.csproj", "{4E7D5907-A678-4C76-A4B5-4B1DFC1A41EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mailer", "..\..\..\CommonLibrary\Mailer\Mailer.csproj", "{FB0A7537-803E-406F-B8F0-0925C2A1795D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mailer", "..\..\CommonLibrary\Mailer\Mailer.csproj", "{FB0A7537-803E-406F-B8F0-0925C2A1795D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityLoader", "..\..\..\CommonLibrary\EntityLoader\EntityLoader.csproj", "{AF02CDEC-F371-4497-B7AB-EAAC7F9F59B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityLoader", "..\..\CommonLibrary\EntityLoader\EntityLoader.csproj", "{AF02CDEC-F371-4497-B7AB-EAAC7F9F59B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common Libraries", "Common Libraries", "{91EFC48C-B64D-4F2D-BCBC-FDFD448C4D9C}"
 EndProject
@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application Libraries", "Ap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{9A0D9918-F761-4F50-A824-C825B46AB4AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPRehabWebAPI", "..\IPRehabWebAPI\IPRehabWebAPI.csproj", "{C4F6FE2A-8EA3-4CE1-A0E7-710A7B65E19C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPRehabWebAPI", "IPRehabWebAPI\IPRehabWebAPI.csproj", "{C4F6FE2A-8EA3-4CE1-A0E7-710A7B65E19C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
