@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace IPRehab
 {
@@ -20,7 +21,12 @@ namespace IPRehab
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
-         services.AddControllersWithViews();
+         services.AddControllersWithViews().AddJsonOptions(o =>
+         {
+            //preserve circular reference
+            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+         });
+
          services.AddRazorPages();
          services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
          services.AddSingleton<IEmailSender, EmailSender>();
@@ -52,6 +58,7 @@ namespace IPRehab
             endpoints.MapControllerRoute(
                    name: "default",
                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
             endpoints.MapRazorPages();
          });
       }

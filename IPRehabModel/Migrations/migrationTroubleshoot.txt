@@ -1,0 +1,34 @@
+﻿C:\Program Files\dotnet\dotnet.exe exec --depsfile C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\bin\Debug\net5.0\IPRehab.deps.json --additionalprobingpath C:\Users\VHAPORSUNC\.nuget\packages --additionalprobingpath "C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages" --additionalprobingpath "C:\Program Files (x86)\Microsoft\Xamarin\NuGet" --runtimeconfig C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\bin\Debug\net5.0\IPRehab.runtimeconfig.json C:\Users\VHAPORSUNC\.nuget\packages\microsoft.entityframeworkcore.tools\5.0.4\tools\netcoreapp2.0\any\ef.dll migrations add add_question_stage --json --verbose --no-color --prefix-output --assembly C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\bin\Debug\net5.0\IPRehabModel.dll --startup-assembly C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\bin\Debug\net5.0\IPRehab.dll --project-dir C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehabModel\ --language C# --working-dir C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab --root-namespace IPRehabModel
+Using assembly 'IPRehabModel'.
+Using startup assembly 'IPRehab'.
+Using application base 'C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\bin\Debug\net5.0'.
+Using working directory 'C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab'.
+Using root namespace 'IPRehabModel'.
+Using project directory 'C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehabModel\'.
+Remaining arguments: .
+Finding DbContext classes...
+Finding IDesignTimeDbContextFactory implementations...
+Finding application service provider in assembly 'IPRehab'...
+Finding Microsoft.Extensions.Hosting service provider...
+Using environment 'Development'.
+Using application service provider from Microsoft.Extensions.Hosting.
+Found DbContext 'IPRehabContext'.
+Finding DbContext classes in the project...
+Using context 'IPRehabContext'.
+Finding design-time services for provider 'Microsoft.EntityFrameworkCore.SqlServer'...
+Using design-time services from provider 'Microsoft.EntityFrameworkCore.SqlServer'.
+Finding design-time services referenced by assembly 'IPRehab'...
+Finding design-time services referenced by assembly 'IPRehabModel'...
+No referenced design-time services were found.
+Finding IDesignTimeServices implementations in assembly 'IPRehab'...
+No design-time services were found.
+Reusing namespace of type 'updateIdentitycustommodel'.
+Reusing namespace of type '20210420213554_update Identity custom model.cs'.
+Reusing namespace of type 'IPRehabContextModelSnapshot.cs'.
+Writing migration to 'C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehabModel\Migrations\20210504033203_add_question_stage.cs'.
+Writing model snapshot to 'C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehabModel\Migrations\IPRehabContextModelSnapshot.cs'.
+To undo this action, use Remove-Migration.
+PM> update-database
+Build started...
+Build succeeded.
+Done.

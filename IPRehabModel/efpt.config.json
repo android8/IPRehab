@@ -59,7 +59,7 @@
          "ObjectType": 3
       }
    ],
-   "UiHint": "VHAAUSDB9.RehabMetricsAndOutcomes",
+   "UiHint": "VHAAUSDB9.RehabAssessmentCareTool",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,

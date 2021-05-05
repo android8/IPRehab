@@ -25,7 +25,7 @@ namespace IPRehab.Areas.Identity
                   );
 
                services.AddDefaultIdentity<ApplicationUser>(options =>
-                  options.SignIn.RequireConfirmedAccount = true)
+                  options.SignIn.RequireConfirmedAccount = false)
                .AddEntityFrameworkStores<IPRehabContext>();
             });
         }

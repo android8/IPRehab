@@ -4,5 +4,31 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <div class="flex-column">
+       <div>
+          <a asp-controller="Question"
+             asp-action="Edit" asp-route-stage="Initial" asp-route-id="3">Questions for initial</a>
+       </div>
+       <div>
+          <a asp-controller="Question"
+             asp-action="Edit" asp-route-stage="Interim" asp-route-id="7">Questions for interim</a>
+       </div>
+       <div>
+          <a asp-controller="Question"
+             asp-action="Edit" asp-route-stage="Followup" asp-route-id="2">Questions for followup</a>
+       </div>
+       <div>
+          <a asp-controller="Question"
+             asp-action="Edit" asp-route-stage="Discharge" asp-route-id="2">Questions for discharge</a>
+       </div>
+       <div>
+          <a asp-controller="Patient"
+             asp-action="Index" asp-route-name="like" asp-route-id="2">Paients</a>
+       </div>
+       <div>
+          <a asp-controller="User"
+             asp-action="Index" asp-route-name="like" asp-route-id="2">Users</a>
+       </div>
+    </div>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

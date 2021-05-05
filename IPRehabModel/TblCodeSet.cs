@@ -6,32 +6,34 @@ using System.Collections.Generic;
 
 namespace IPRehabModel
 {
-    public partial class TblCodeSet
-    {
-        public TblCodeSet()
-        {
-            InverseCodeSetParentNavigation = new HashSet<TblCodeSet>();
-            TblAnswer = new HashSet<TblAnswer>();
-            TblQuestionAnswerCodeSetFkNavigation = new HashSet<TblQuestion>();
-            TblQuestionFormFkNavigation = new HashSet<TblQuestion>();
-            TblQuestionFormSectionFkNavigation = new HashSet<TblQuestion>();
-        }
+   public partial class TblCodeSet
+   {
+      public TblCodeSet()
+      {
+         InverseCodeSetParentNavigation = new HashSet<TblCodeSet>();
+         TblAnswer = new HashSet<TblAnswer>();
+         TblQuestionStage = new HashSet<TblQuestionStage>();
+         TblQuestionAnswerCodeSetFkNavigation = new HashSet<TblQuestion>();
+         TblQuestionFormFkNavigation = new HashSet<TblQuestion>();
+         TblQuestionFormSectionFkNavigation = new HashSet<TblQuestion>();
+      }
 
-        public int CodeSetId { get; set; }
-        public int? CodeSetParent { get; set; }
-        public string CodeValue { get; set; }
-        public string CodeDescription { get; set; }
-        public int? HierarchyType { get; set; }
-        public bool? Active { get; set; }
-        public int? FyConstraint { get; set; }
-        public int? SortOrder { get; set; }
-        public string Comment { get; set; }
+      public int CodeSetId { get; set; }
+      public int? CodeSetParent { get; set; }
+      public string CodeValue { get; set; }
+      public string CodeDescription { get; set; }
+      public int? HierarchyType { get; set; }
+      public bool? Active { get; set; }
+      public int? FyConstraint { get; set; }
+      public int? SortOrder { get; set; }
+      public string Comment { get; set; }
 
-        public virtual TblCodeSet CodeSetParentNavigation { get; set; }
-        public virtual ICollection<TblCodeSet> InverseCodeSetParentNavigation { get; set; }
-        public virtual ICollection<TblAnswer> TblAnswer { get; set; }
-        public virtual ICollection<TblQuestion> TblQuestionAnswerCodeSetFkNavigation { get; set; }
-        public virtual ICollection<TblQuestion> TblQuestionFormFkNavigation { get; set; }
-        public virtual ICollection<TblQuestion> TblQuestionFormSectionFkNavigation { get; set; }
-    }
+      public virtual TblCodeSet CodeSetParentNavigation { get; set; }
+      public virtual ICollection<TblCodeSet> InverseCodeSetParentNavigation { get; set; }
+      public virtual ICollection<TblAnswer> TblAnswer { get; set; }
+      public virtual ICollection<TblQuestionStage> TblQuestionStage { get; set; }
+      public virtual ICollection<TblQuestion> TblQuestionAnswerCodeSetFkNavigation { get; set; }
+      public virtual ICollection<TblQuestion> TblQuestionFormFkNavigation { get; set; }
+      public virtual ICollection<TblQuestion> TblQuestionFormSectionFkNavigation { get; set; }
+   }
 }

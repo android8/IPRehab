@@ -1,0 +1,90 @@
+﻿@model IEnumerable<IPRehabModel.TblQuestion>
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.QuestionKey)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuestionTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GroupTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BranchingPoint)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MultiChoice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnswerCodeSetFkNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FormFkNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FormSectionFkNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuestionKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Order)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuestionTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Question)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GroupTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BranchingPoint)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MultiChoice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AnswerCodeSetFkNavigation.CodeDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormFkNavigation.CodeDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormSectionFkNavigation.CodeDescription)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.QuestionId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.QuestionId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.QuestionId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

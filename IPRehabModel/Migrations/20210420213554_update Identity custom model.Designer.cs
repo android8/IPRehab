@@ -908,19 +908,19 @@ namespace IPRehab.Data.Migrations
                     b.HasOne("IPRehabModel.TblCodeSet", "AnswerCodeSetFkNavigation")
                         .WithMany("TblQuestionAnswerCodeSetFkNavigation")
                         .HasForeignKey("AnswerCodeSetFk")
-                        .HasConstraintName("FK_app.tblQuestion_tblCodeSet")
+                        .HasConstraintName("FK_Answer_CodeSet")
                         .IsRequired();
 
                     b.HasOne("IPRehabModel.TblCodeSet", "FormFkNavigation")
                         .WithMany("TblQuestionFormFkNavigation")
                         .HasForeignKey("FormFk")
-                        .HasConstraintName("FK_tblQuestion_tblCodeSet_Form")
+                        .HasConstraintName("FK_Form_CodeSet")
                         .IsRequired();
 
                     b.HasOne("IPRehabModel.TblCodeSet", "FormSectionFkNavigation")
                         .WithMany("TblQuestionFormSectionFkNavigation")
                         .HasForeignKey("FormSectionFk")
-                        .HasConstraintName("FK_tblQuestion_tblCodeSet_FomSection");
+                        .HasConstraintName("FK_Section_CodeSet");
 
                     b.Navigation("AnswerCodeSetFkNavigation");
 

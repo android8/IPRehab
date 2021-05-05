@@ -6,30 +6,31 @@ using System.Collections.Generic;
 
 namespace IPRehabModel
 {
-    public partial class TblQuestion
-    {
-        public TblQuestion()
-        {
-            TblAnswer = new HashSet<TblAnswer>();
-            TblQuestionInstruction = new HashSet<TblQuestionInstruction>();
-        }
+   public partial class TblQuestion
+   {
+      public TblQuestion()
+      {
+         TblAnswer = new HashSet<TblAnswer>();
+         TblQuestionInstruction = new HashSet<TblQuestionInstruction>();
+      }
 
-        public int QuestionId { get; set; }
-        public string QuestionKey { get; set; }
-        public int? Order { get; set; }
-        public string QuestionTitle { get; set; }
-        public string Question { get; set; }
-        public string GroupTitle { get; set; }
-        public int FormFk { get; set; }
-        public int? FormSectionFk { get; set; }
-        public int AnswerCodeSetFk { get; set; }
-        public bool? BranchingPoint { get; set; }
-        public bool? MultiChoice { get; set; }
+      public int QuestionId { get; set; }
+      public string QuestionKey { get; set; }
+      public int? Order { get; set; }
+      public string QuestionTitle { get; set; }
+      public string Question { get; set; }
+      public string GroupTitle { get; set; }
+      public int FormFk { get; set; }
+      public int? FormSectionFk { get; set; }
+      public int AnswerCodeSetFk { get; set; }
+      public bool? BranchingPoint { get; set; }
+      public bool? MultiChoice { get; set; }
 
-        public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
-        public virtual TblCodeSet FormFkNavigation { get; set; }
-        public virtual TblCodeSet FormSectionFkNavigation { get; set; }
-        public virtual ICollection<TblAnswer> TblAnswer { get; set; }
-        public virtual ICollection<TblQuestionInstruction> TblQuestionInstruction { get; set; }
-    }
+      public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
+      public virtual TblCodeSet FormFkNavigation { get; set; }
+      public virtual TblCodeSet FormSectionFkNavigation { get; set; }
+      public virtual ICollection<TblAnswer> TblAnswer { get; set; }
+      public virtual ICollection<TblQuestionInstruction> TblQuestionInstruction { get; set; }
+      public virtual ICollection<TblQuestionStage> TblQuestionStage { get; set; }
+   }
 }
