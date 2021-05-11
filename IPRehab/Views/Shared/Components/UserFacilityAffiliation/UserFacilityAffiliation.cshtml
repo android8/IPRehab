@@ -1,0 +1,14 @@
+﻿@model IEnumerable<VUserAnswerFacilitySummary2>
+
+<select class="browser-default custom-select" name="userFacilityAffiliation" id="userFacilityAffiliation"
+        style="border: 1px solid #0366d6">
+  <option>Please click here to select an unanswered facility strategy sheet</option>
+  @foreach (var item in Model)
+  {
+<option value="@item.StaffFacilityRelationFacilityIdxRef"
+        data-stafffacilityrelationid="@item.StaffFacilityStaffFacilityRelationshipId"
+        data-facilityname="@item.FacilityVisnCommonStationName"
+        data-fy="@item.QnaireFy">@($"{item.FacilityVisnFacilityId} - {item.FacilityVisnCommonStationName.ToUpper()}") - FY@($"{item.QnaireFy}")
+</option>
+  }
+</select>

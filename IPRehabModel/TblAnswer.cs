@@ -6,16 +6,17 @@ using System.Collections.Generic;
 
 namespace IPRehabModel
 {
-    public partial class TblAnswer
-    {
-        public int EpsideOfCareIdfk { get; set; }
-        public int QuestionIdfk { get; set; }
-        public int AnswerCodeSetFk { get; set; }
-        public int AnswerSequenceNumber { get; set; }
-        public string Description { get; set; }
+   public partial class TblAnswer
+   {
+      public int EpsideOfCareIdfk { get; set; }
+      public int QuestionIdfk { get; set; }
+      public int AnswerCodeSetfk { get; set; }
+      public int AnswerSequenceNumber { get; set; }
+      public string Description { get; set; }
+      public int AnswerByUserIdfk { get; set; }
 
-        public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
-        public virtual TblEpisodeOfCare EpsideOfCareIdfkNavigation { get; set; }
-        public virtual TblQuestion QuestionIdfkNavigation { get; set; }
-    }
+      public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
+      public virtual TblEpisodeOfCare EpsideOfCareIdfkNavigation { get; set; }
+      public virtual TblQuestion QuestionIdfkNavigation { get; set; }
+   }
 }

@@ -43,9 +43,9 @@ namespace IPRehabModel
 
             entity.ToTable("tblAnswer", "app");
 
-            entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetFk, e.AnswerSequenceNumber }, "IX_tblAnswer");
+            entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer");
 
-            entity.HasIndex(e => e.AnswerCodeSetFk, "IX_tblAnswer_AnswerCodeSetFK");
+            entity.HasIndex(e => e.AnswerCodeSetfk, "IX_tblAnswer_AnswerCodeSetFK");
 
             entity.HasIndex(e => e.EpsideOfCareIdfk, "IX_tblAnswer_EpisodeOfCareIDFK");
 
@@ -55,7 +55,7 @@ namespace IPRehabModel
                    .ValueGeneratedNever()
                    .HasColumnName("EpsideOfCareIDFK");
 
-            entity.Property(e => e.AnswerCodeSetFk).HasColumnName("AnswerCodeSetFK");
+            entity.Property(e => e.AnswerCodeSetfk).HasColumnName("AnswerCodeSetFK");
 
             entity.Property(e => e.Description).IsUnicode(false);
 
@@ -63,7 +63,7 @@ namespace IPRehabModel
 
             entity.HasOne(d => d.AnswerCodeSetFkNavigation)
                    .WithMany(p => p.TblAnswer)
-                   .HasForeignKey(d => d.AnswerCodeSetFk)
+                   .HasForeignKey(d => d.AnswerCodeSetfk)
                    .OnDelete(DeleteBehavior.ClientSetNull)
                    .HasConstraintName("FK_tblAnswer_tblCodeSet");
 
@@ -324,10 +324,11 @@ namespace IPRehabModel
 
          modelBuilder.Entity<TblUser>(entity =>
          {
+            entity.HasKey(e => e.Id);
+
             entity.ToTable("tblUser", "app");
 
             entity.Property(e => e.Id)
-                   .ValueGeneratedNever()
                    .HasColumnName("ID");
 
             entity.Property(e => e.FirstName)

@@ -1,0 +1,59 @@
+﻿@model List<ChoiceViewModel>
+
+<div class="flex-start-row-wrap-textInput">
+  @foreach (var item in Model)
+  {
+    <div class="flex-item">
+      <div class="mdc-text-field-helper-line">
+        <p class="my-mdc-text-field-helper-text mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
+           id="text-field-outlined-helper-text">@item.ChoiceDescription</p>
+      </div>
+      @if (item.ChoiceDescription == "Governance" || item.ChoiceDescription == "Operations" || item.ChoiceDescription == "Pathway" ||
+          item.ChoiceDescription == "Well-being Program" || item.ChoiceDescription == "WH Clinical Care" ||
+          item.ChoiceDescription == "Employee WH" || item.ChoiceDescription == "Community Partnership")
+      {
+        <textarea name="@item.QuestionKey" id="@item.ChoiceID" class="my-mdc-textarea persistable" rows="3"
+                  aria-labelby="text-field-outlined-helper-text"
+                  data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+                  data-useranswerid="@item.UserAnswerID" data-codesetid="@item.ChoiceID"
+                  data-answersetid="@item.AnswerSetID"
+                  data-oldvalue="@item.OtherDescription"
+                  data-toggle="tooltip" data-placement="left"
+                  title="@(!string.IsNullOrEmpty(item?.OtherDescription) ? string.Format("Answered by {0}", item.AnsweredBy) : "")">@item.OtherDescription</textarea>
+      }
+      else
+      {
+        @*Material Design Filled Text Input*@
+        var numericDescriptor = -1;
+        @if (int.TryParse(item.OtherDescription, out numericDescriptor))
+        {
+          @*numeric input, if the item.OtherDescription is not a number, the input will be blank*@
+          <div class="inputContainer">
+            <input type="number" name="@item.QuestionKey" id="@item.ChoiceID"
+                   class="my-mdc-text-field__input mdc-text-field__input persistable numeric-text" value="@numericDescriptor"
+                   aria-labelledby="text-field-outlined-helper-text" maxlength="3" min="0" max="100" placeholder="enter a number without the % sign"
+                   data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+                   data-userAnswerid="@item.UserAnswerID" data-codesetid="@item.ChoiceID" data-oldvalue="@numericDescriptor"
+                   data-answersetid="@item.AnswerSetID"
+                   data-toggle="tooltip" data-placement="left"
+                   title="@(!string.IsNullOrEmpty(item?.OtherDescription) ? string.Format("Answered by {0}", item.AnsweredBy) : "")" />
+          </div>
+        }
+        else
+        {
+          @*text input*@
+          <div class="inputContainer">
+            <input type="text" name="@item.QuestionKey" id="@item.ChoiceID"
+                   class="my-mdc-textbox mdc-text-field__input persistable" value="@item.OtherDescription"
+                   aria-labelledby="text-field-outlined-helper-text" maxlength="3" min="0" max="100" placeholder="enter a number without the % sign"
+                   data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+                   data-useranswerid="@item.UserAnswerID" data-codesetid="@item.ChoiceID" data-oldvalue="@item.OtherDescription"
+                   data-answersetid="@item.AnswerSetID"
+                   data-toggle="tooltip" data-placement="left"
+                   title="@(!string.IsNullOrEmpty(item?.OtherDescription) ? string.Format("Answered by {0}", item.AnsweredBy) : "")" />
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

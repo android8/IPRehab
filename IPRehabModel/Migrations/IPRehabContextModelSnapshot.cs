@@ -264,6 +264,9 @@ namespace IPRehab.Data.Migrations
                         .HasColumnName("QuestionID")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool?>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<int>("AnswerCodeSetFk")
                         .HasColumnType("int")
                         .HasColumnName("AnswerCodeSetFK");
@@ -362,6 +365,9 @@ namespace IPRehab.Data.Migrations
                         .HasColumnType("int")
                         .HasColumnName("QuestionIdFK");
 
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
                     b.Property<int>("StageFk")
                         .HasColumnType("int")
                         .HasColumnName("StageFK");
@@ -413,8 +419,10 @@ namespace IPRehab.Data.Migrations
             modelBuilder.Entity("IPRehabModel.TblUser", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .HasColumnName("ID")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
                         .IsRequired()

@@ -1,13 +1,12 @@
 ﻿using IPRehab.Helpers;
-using IPRehabModel;
+using IPRehab.Models;
+using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -68,7 +67,8 @@ namespace IPRehab.Controllers
       // GET: QuestionController/Edit/5
       public async Task<ActionResult> Edit(string stage, int? id)
       {
-         List<TblQuestion> questions = new List<TblQuestion>();
+         ViewBag.Title = stage;
+         List<QuestionDTO> questions = new List<QuestionDTO>();
          JsonSerializerOptions options = new JsonSerializerOptions()
          {
             ReferenceHandler = ReferenceHandler.Preserve,
@@ -78,13 +78,55 @@ namespace IPRehab.Controllers
          };
 
          //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-         //HttpResponseMessage Res = await APIAgent<IEnumerable<TblQuestion>>.GetDataAsync(_apiBaseUrl, "api/Questions/GetInitialStage");
-         
-         var ApiResponse = await APIAgent.StreamWithSystemTextJson(
-            new Uri($"{_apiBaseUrl}/api/Questions/GetInitialStage"), options);
+         HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Questions/Get{stage}Stage"));
 
-         //returning the question list to view  
-         return View(ApiResponse);
+         string httpMsgContentReadMethod = "ReadAsStringAsync";
+         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+         {
+            List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
+            try
+            {
+               switch (httpMsgContentReadMethod)
+               {
+                  case "ReadAsStringAsync":
+                     string questionString = await Res.Content.ReadAsStringAsync();
+                     questions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<QuestionDTO>>(questionString);
+                     break;
+
+                  case "ReadAsAsync":
+                     questions = await Res.Content.ReadAsAsync<List<QuestionDTO>>();
+                     break;
+                  case "ReadAsStreamAsync":
+                     var contentStream = await Res.Content.ReadAsStreamAsync();
+                     questions = await JsonSerializer.DeserializeAsync<List<QuestionDTO>>(contentStream, options);
+                     break;
+               }
+               foreach (var dto in questions)
+               {
+                  /* convert IEnumerable<QuestionDTO> to IEnumerable<QuestionWithSelectItems>
+                   * where the ChoiceList property is a list of SelectListItem */
+                  QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
+                  vm.Add(qws);
+               }
+
+               //returning the question list to view  
+               return View(vm);
+            }
+            catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
+            {
+               Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
+               Console.WriteLine($"{ex.Message}");
+               if (ex.InnerException != null)
+               {
+                  Console.WriteLine($"{ex.InnerException.Message}");
+               }
+               return null;
+            }
+         }
+         else
+         {
+            return null;
+         }
       }
 
       // POST: QuestionController/Edit/5

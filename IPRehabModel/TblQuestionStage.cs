@@ -14,6 +14,8 @@ namespace IPRehabModel
 
       public int StageFk { get; set; }
 
+      public bool Required { get; set; }
+
       public virtual TblQuestion QuestionIdFkNavigation { get; set; }
       public virtual TblCodeSet StageFkNavigation { get; set; }
 

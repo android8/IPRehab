@@ -25,6 +25,7 @@ namespace IPRehabModel
       public int AnswerCodeSetFk { get; set; }
       public bool? BranchingPoint { get; set; }
       public bool? MultiChoice { get; set; }
+      public bool? Active { get; set; }
 
       public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
       public virtual TblCodeSet FormFkNavigation { get; set; }

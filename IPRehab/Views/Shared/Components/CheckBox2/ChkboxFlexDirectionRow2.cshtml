@@ -1,0 +1,24 @@
+﻿@model List<ChoiceViewModel>
+@{
+  string originalValue = string.Empty;
+  ChoiceViewModel checkedValue = Model.Where(x => x.Selected).FirstOrDefault();
+  if (checkedValue != null)
+  {
+    originalValue = checkedValue.ChoiceID.ToString();
+  }
+}
+<div class="flex-start-row-wrap" style="width:500px">
+  @foreach (var item in Model)
+  {
+    <div class="custom-control custom-checkbox checkbox-panel">
+      @*<label class="custom-control-label" for="chk@(item.CheckboxValue)">@item.CheckboxText</label>*@
+      <label for="@item.QuestionKey-@item.ChoiceID">@item.ChoiceDescription</label>
+      <input type="checkbox" class="custom-control-input persistable"
+             name="@item.QuestionKey-@item.ChoiceID" id="@item.QuestionKey-@item.ChoiceID"
+             title="@(!string.IsNullOrEmpty(item.AnsweredBy) ? string.Format("Answered by {0}",item.AnsweredBy) : "")"
+             value="@item.ChoiceID" checked="@item.Selected"
+             data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+             data-useranswerid="@item.UserAnswerID" data-oldvalue="@originalValue">
+    </div>
+  }
+</div>

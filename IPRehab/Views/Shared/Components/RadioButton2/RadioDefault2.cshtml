@@ -1,0 +1,40 @@
+﻿@model List<ChoiceViewModel>
+@{
+  string originalAnswerID = string.Empty;
+  string originalValue = string.Empty;
+
+  ChoiceViewModel checkedValue = Model.Where(x => x.Selected).FirstOrDefault();
+  if (checkedValue != null)
+  {
+    originalAnswerID = checkedValue.UserAnswerID.ToString();
+    originalValue = checkedValue.ChoiceID.ToString();
+  }
+}
+<div class="flex-start-row-wrap">
+  @*<fieldset>*@
+    @foreach (var item in Model)
+    {
+      <div class="custom-control custom-radio">
+        @if (item.Selected)
+        {
+          <input type="radio" class="custom-control-input persistable" name='@item.QuestionKey' 
+            id='@item.QuestionKey-@item.ChoiceID' value="@item.ChoiceID" checked
+            data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+            data-useranswerid="@originalAnswerID" data-oldvalue="@originalValue"
+            data-answersetid="@item.AnswerSetID"
+            data-toggle="tooltip" data-placement="left" 
+            title="@(!string.IsNullOrEmpty(item?.AnsweredBy) ? string.Format("Answered by {0}", item.AnsweredBy) : "")">
+        }
+        else
+        {
+          <input type="radio" class="custom-control-input persistable" name='@item.QuestionKey' 
+            id='@item.QuestionKey-@item.ChoiceID' value="@item.ChoiceID"
+            data-questionid="@item.QuestionID" data-questionkey="@item.QuestionKey" data-userid="@ViewData["UserID"]"
+            data-useranswerid="@originalAnswerID" data-oldvalue="@originalValue"
+            data-answersetid="@item.AnswerSetID">
+        }
+        <label for='@item.QuestionKey-@item.ChoiceID' class="custom-control-label">@item.ChoiceDescription</label>
+      </div>
+    }
+  @*</fieldset>*@
+</div>

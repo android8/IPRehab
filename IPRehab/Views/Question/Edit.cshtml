@@ -1,90 +1,145 @@
-﻿@model IEnumerable<IPRehabModel.TblQuestion>
+﻿
+@model IEnumerable<QuestionWithSelectItems>
 
 @{
-    ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+   ViewData["Title"] = ViewBag.Title;
+   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>@ViewBag.Title</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+   <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.QuestionKey)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Order)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QuestionTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Question)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GroupTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BranchingPoint)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MultiChoice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AnswerCodeSetFkNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FormFkNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FormSectionFkNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
+   <thead>
+      <tr>
+         <th>
+            @Html.DisplayNameFor(model => model.QuestionKey)
+         </th>
+         <th>
+            Sub-question
+         </th>
+         <th>
+            @Html.DisplayNameFor(model => model.Question)
+         </th>
+         <th>
+            Choices
+         </th>
+      </tr>
+   </thead>
+   <tbody>
+      @{
+         string thisQuestionTitle = "bla bla bla";
+         int domIDcounter = 0;
+         }
+      @foreach (var q in Model)
+      {
+         domIDcounter++;
+         q.QuestionKey = q.QuestionKey.Replace("-ADMISSION", string.Empty);
+
+         @* show question title only once per querstion *@
+         @if (thisQuestionTitle != q.QuestionTitle && q.QuestionTitle == string.Empty)
+         {
+            <tr><td class="questionTitleEmpty" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td></tr>
+         }
+         else
+         {
+            thisQuestionTitle = q.QuestionTitle;
+            <tr>
+               <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
+            </tr>
+         }
+         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.QuestionKey)
+               @Html.DisplayFor(m => q.QuestionKey)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Order)
+               @Html.DisplayFor(m => q.GroupTitle)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.QuestionTitle)
+               @Html.DisplayFor(m => q.Question)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Question)
+               @{
+                  int choiceCount = q.ChoiceList.Count();
+                  string choicePrompt = $"select 1 of {choiceCount} choices";
+                  string domID = $"{q.QuestionKey}{domIDcounter}";
+
+                  switch (choiceCount)
+                  {
+                     case int n when n > 3:
+                        @Html.DropDownList(Model.First().QuestionKey, q.ChoiceList, choicePrompt, new {@id="domID", @class = "select2" /*, @readonly = "readonly"*/ })
+                        break;
+
+                     case int n when n >= 2 && n <= 3:
+                        {
+                           foreach (var c in q.ChoiceList)
+                           {
+                              if (c.Selected)
+                              {
+                                 <div>
+                                    <input type="radio" id="@domID", name="@Model.First().QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
+                                 </div>
+                              }
+                              else
+                              {
+                                 <div>
+                                    <input type="radio" id="@domID", name="@Model.First().QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
+                                 </div>
+                              }
+                           }
+                        }
+                        break;
+
+                     case int n when n == 0:
+                        {
+                           switch (q.AnswerCodeCategory)
+                           {
+                              case "YN":
+                              case "Checked":
+                                 bool isChecked = false; //ToDO: eval
+                                 @Html.CheckBox(Model.First().QuestionKey, isChecked, new { htmlAttributes = new { @id = "domID", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                                 break;
+
+                              case "Date":
+                                 <input type="date" id="@domID"/>
+                                 break;
+
+                              case "ICD":
+                                 @Html.TextBox(Model.First().QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = "domID", @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                                 break;
+                              case "FreeText":
+                                 @Html.TextBox(Model.First().QuestionKey, "Enter text here", new { htmlAttributes = new { @id = "domID", @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                                 break;
+                           }
+                        }
+                        break;
+                  }
+               }
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GroupTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BranchingPoint)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MultiChoice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnswerCodeSetFkNavigation.CodeDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FormFkNavigation.CodeDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FormSectionFkNavigation.CodeDescription)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.QuestionId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.QuestionId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.QuestionId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+         </tr>
+      }
+   </tbody>
 </table>
+
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+   <script type="module" src="~/lib/select2/js/select2.js"></script>
+   <script>
+      $(function () {
+         var $select2 = $('.select2').select2();
+
+         //Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
+         //You can change the length according to your needs.
+         $('.select2 option').each(function () {
+            var myStr = $(this).text();
+            var newStr = myStr;
+            if (myStr.length > 50) {
+               newStr = myStr.match(/.{1,50}/g).join(' ');
+            }
+            $(this).text(newStr);
+         });
+      })
+   </script>
+}

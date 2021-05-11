@@ -7,29 +7,31 @@
   <ItemGroup>
     <Compile Remove="Controllers\TodoItemsController.cs" />
     <Compile Remove="Controllers\WeatherForecastController.cs" />
+    <Compile Remove="WeatherForecast.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="5.0.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="IPRehabModel">
-      <HintPath>..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
+      <HintPath>..\IPRehabRepository\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
     </Reference>
     <Reference Include="IPRehabRepository">
       <HintPath>..\IPRehabRepository\bin\Debug\net5.0\IPRehabRepository.dll</HintPath>
