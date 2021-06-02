@@ -1,3 +1,5 @@
+using IPRehabRepository;
+using IPRehabRepository.Contracts;
 using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,58 +11,58 @@ using System.Text.Json.Serialization;
 
 namespace IPRehab
 {
-   public class Startup
-   {
-      public Startup(IConfiguration configuration)
+  public class Startup
+  {
+    public Startup(IConfiguration configuration)
+    {
+      Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddControllersWithViews().AddJsonOptions(o =>
       {
-         Configuration = configuration;
-      }
+           //preserve circular reference
+           o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+      });
 
-      public IConfiguration Configuration { get; }
+      services.AddRazorPages();
+      services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
+      services.AddSingleton<IEmailSender, EmailSender>();
+    }
 
-      // This method gets called by the runtime. Use this method to add services to the container.
-      public void ConfigureServices(IServiceCollection services)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+      if (env.IsDevelopment())
       {
-         services.AddControllersWithViews().AddJsonOptions(o =>
-         {
-            //preserve circular reference
-            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-         });
-
-         services.AddRazorPages();
-         services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
-         services.AddSingleton<IEmailSender, EmailSender>();
+        app.UseDeveloperExceptionPage();
       }
-
-      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-      public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+      else
       {
-         if (env.IsDevelopment())
-         {
-            app.UseDeveloperExceptionPage();
-         }
-         else
-         {
-            app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            app.UseHsts();
-         }
-         app.UseHttpsRedirection();
-         app.UseStaticFiles();
-
-         app.UseRouting();
-         //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
-         app.UseAuthentication();
-         app.UseAuthorization();
-
-         app.UseEndpoints(endpoints =>
-         {
-            endpoints.MapControllerRoute(
-                   name: "default",
-                   pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            endpoints.MapRazorPages();
-         });
+        app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
       }
-   }
+      app.UseHttpsRedirection();
+      app.UseStaticFiles();
+
+      app.UseRouting();
+      //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
+      app.UseAuthentication();
+      app.UseAuthorization();
+
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapControllerRoute(
+                  name: "default",
+                  pattern: "{controller=Patient}/{action=Index}/{criteria?}");
+
+        endpoints.MapRazorPages();
+      });
+    }
+  }
 }

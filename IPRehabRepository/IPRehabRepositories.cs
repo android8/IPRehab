@@ -1,5 +1,6 @@
 ﻿using IPRehabModel;
 using IPRehabRepository.Contracts;
+using PatientModel;
 
 namespace IPRehabRepository
 {
@@ -31,6 +32,17 @@ namespace IPRehabRepository
    {
       public PatientRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
+      {
+      }
+   }
+
+   /// <summary>
+   /// This repository is derived from the FSOD sechema in VHAAUSBI25.vha.med.va.gov.DMHealthFactors database
+   /// </summary>
+   public class FSODPatientRepository : FSODRepositoryBase<FSODPatientDetailFY21Q2>, IFSODPatientRepository
+   {
+      public FSODPatientRepository(DmhealthfactorsContext repositoryContext)
+            : base(repositoryContext)
       {
       }
    }

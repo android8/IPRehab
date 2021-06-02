@@ -31,6 +31,7 @@ namespace IPRehabModel
       public virtual DbSet<VCodeSetHierarchy> VCodeSetHierarchy { get; set; }
       public virtual DbSet<VQuestionStandardChoices> VQuestionStandardChoices { get; set; }
       public virtual DbSet<VQuestionStandardChoicesCondensed> VQuestionStandardChoicesCondensed { get; set; }
+      public virtual DbSet<VFSODPatientDetail> VFSODPatientDetail { get; set; }
 
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
@@ -576,6 +577,45 @@ namespace IPRehabModel
                    .IsUnicode(false)
                    .HasColumnName("Valid Choice");
          });
+
+         modelBuilder.Entity<VFSODPatientDetail>(entity =>
+        {
+           entity.HasNoKey();
+
+           entity.ToView("vFSODPatientDetail", "shared");
+
+           entity.Property(e => e.VISN)
+               .HasMaxLength(4)
+               .IsUnicode(false);
+
+           entity.Property(e => e.Facility)
+               .HasMaxLength(356)
+               .IsUnicode(false);
+
+           entity.Property(e => e.District)
+               .HasMaxLength(10)
+               .IsUnicode(false);
+
+           entity.Property(e => e.Division)
+               .HasMaxLength(356)
+               .IsUnicode(false);
+
+           entity.Property(e => e.Name)
+               .HasMaxLength(30)
+               .IsUnicode(false);
+
+           entity.Property(e => e.PTFSSN)
+               .HasMaxLength(9)
+               .IsUnicode(false);
+
+           entity.Property(e => e.FSODSSN)
+               .HasMaxLength(9)
+               .IsUnicode(false);
+
+           entity.Property(e => e.FiscalPeriod)
+               .HasMaxLength(6)
+               .IsUnicode(false);
+        });
 
          OnModelCreatingPartial(modelBuilder);
 

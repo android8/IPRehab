@@ -18,9 +18,6 @@
             @Html.DisplayNameFor(model => model.QuestionKey)
          </th>
          <th>
-            Sub-question
-         </th>
-         <th>
             @Html.DisplayNameFor(model => model.Question)
          </th>
          <th>
@@ -39,11 +36,7 @@
          q.QuestionKey = q.QuestionKey.Replace("-ADMISSION", string.Empty);
 
          @* show question title only once per querstion *@
-         @if (thisQuestionTitle != q.QuestionTitle && q.QuestionTitle == string.Empty)
-         {
-            <tr><td class="questionTitleEmpty" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td></tr>
-         }
-         else
+         @if (thisQuestionTitle != q.QuestionTitle)
          {
             thisQuestionTitle = q.QuestionTitle;
             <tr>
@@ -53,9 +46,6 @@
          <tr>
             <td>
                @Html.DisplayFor(m => q.QuestionKey)
-            </td>
-            <td>
-               @Html.DisplayFor(m => q.GroupTitle)
             </td>
             <td>
                @Html.DisplayFor(m => q.Question)
@@ -69,7 +59,7 @@
                   switch (choiceCount)
                   {
                      case int n when n > 3:
-                        @Html.DropDownList(Model.First().QuestionKey, q.ChoiceList, choicePrompt, new {@id="domID", @class = "select2" /*, @readonly = "readonly"*/ })
+                        @Html.DropDownList(Model.First().QuestionKey, q.ChoiceList, choicePrompt, new {@id="domID", @class = "select2 wrapLongOption" /*, @readonly = "readonly"*/ })
                         break;
 
                      case int n when n >= 2 && n <= 3:

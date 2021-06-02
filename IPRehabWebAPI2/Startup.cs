@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PatientModel;
 using System.Text.Json.Serialization;
 
 namespace IPRehabWebAPI2
@@ -28,11 +29,12 @@ namespace IPRehabWebAPI2
          //services.AddDbContext<TodoContext>(
          //  opt => opt.UseInMemoryDatabase("TodoList"));
 
-         string thisConnectionString = Configuration.GetConnectionString("IPRehab");
+         string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
+         string FSODPatientConnectionString = Configuration.GetConnectionString("FSODPatientDetail");
          services.AddDbContext<IPRehabContext>(
-                  options => options.UseLazyLoadingProxies().UseSqlServer(
-                        thisConnectionString)
-                  );
+            o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
+         services.AddDbContext<DmhealthfactorsContext>(
+            o => o.UseLazyLoadingProxies().UseSqlServer(FSODPatientConnectionString));
 
          services.AddScoped<IQuestionRepository, QuestionRepository>();
          services.AddScoped<IAnswerRepository, AnswerRepository>();
@@ -43,13 +45,7 @@ namespace IPRehabWebAPI2
          services.AddScoped<IUserRepository, UserRepository>();
          services.AddScoped<ISignatureRepository, SignatureRepository>();
          services.AddScoped<IQuestionStageRepository, QuestionStageRepository>();
-
-         services.AddControllers().AddJsonOptions(o =>
-         {
-            //preserve circular reference
-            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            o.JsonSerializerOptions.WriteIndented = true;
-         });
+         services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
 
          /*set "launchUrl": "api/TodoItems" in properties\launchSettimgs.json to start with TodoItems page
           * "launchUrl": "swagger" to start with Swagger interface
@@ -58,6 +54,14 @@ namespace IPRehabWebAPI2
          {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "IPRehabWebAPI2", Version = "v1" });
          });
+
+         services.AddControllers(o=>o.EnableEndpointRouting=false);
+         //.AddJsonOptions(o =>
+         //{
+         //   //preserve circular reference
+         //   o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+         //   o.JsonSerializerOptions.WriteIndented = true;
+         //});
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,5 +1,6 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
+using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,22 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
-   public class QuestionController : Controller
+   public class QuestionController : BaseController
    {
-      private readonly ILogger<QuestionController> _logger;
-      private readonly IConfiguration _configuration;
-      private readonly string _apiBaseUrl;
-
-      public QuestionController(ILogger<QuestionController> logger, IConfiguration configuration)
+      public QuestionController(ILogger<QuestionController> logger, IConfiguration configuration): base(logger, configuration)
       {
-         _logger = logger;
-         _configuration = configuration;
-         _apiBaseUrl = _configuration.GetValue<string>("WebAPIBaseUrl");
       }
 
       // GET: QuestionController
@@ -69,62 +62,68 @@ namespace IPRehab.Controllers
       {
          ViewBag.Title = stage;
          List<QuestionDTO> questions = new List<QuestionDTO>();
-         JsonSerializerOptions options = new JsonSerializerOptions()
-         {
-            ReferenceHandler = ReferenceHandler.Preserve,
-            WriteIndented = true,
-            PropertyNameCaseInsensitive = true,
-            IgnoreNullValues = true
-         };
 
-         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-         HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Questions/Get{stage}Stage"));
-
-         string httpMsgContentReadMethod = "ReadAsStringAsync";
-         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+         try 
          {
-            List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
-            try
+            //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
+            HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage"));
+
+            string httpMsgContentReadMethod = "ReadAsStringAsync";
+            if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
             {
-               switch (httpMsgContentReadMethod)
+               List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
+               try
                {
-                  case "ReadAsStringAsync":
-                     string questionString = await Res.Content.ReadAsStringAsync();
-                     questions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<QuestionDTO>>(questionString);
-                     break;
+                  switch (httpMsgContentReadMethod)
+                  {
+                     case "ReadAsStringAsync":
+                        string questionString = await Res.Content.ReadAsStringAsync();
+                        questions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<QuestionDTO>>(questionString);
+                        break;
 
-                  case "ReadAsAsync":
-                     questions = await Res.Content.ReadAsAsync<List<QuestionDTO>>();
-                     break;
-                  case "ReadAsStreamAsync":
-                     var contentStream = await Res.Content.ReadAsStreamAsync();
-                     questions = await JsonSerializer.DeserializeAsync<List<QuestionDTO>>(contentStream, options);
-                     break;
+                     case "ReadAsAsync":
+                        questions = await Res.Content.ReadAsAsync<List<QuestionDTO>>();
+                        break;
+                     case "ReadAsStreamAsync":
+                        var contentStream = await Res.Content.ReadAsStreamAsync();
+                        questions = await JsonSerializer.DeserializeAsync<List<QuestionDTO>>(contentStream, _options);
+                        break;
+                  }
+                  foreach (var dto in questions)
+                  {
+                     /* convert IEnumerable<QuestionDTO> to IEnumerable<QuestionWithSelectItems>
+                      * where the ChoiceList property is a list of SelectListItem */
+                     QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
+                     vm.Add(qws);
+                  }
+
+                  //returning the question list to view  
+                  return View(vm);
                }
-               foreach (var dto in questions)
+               catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
                {
-                  /* convert IEnumerable<QuestionDTO> to IEnumerable<QuestionWithSelectItems>
-                   * where the ChoiceList property is a list of SelectListItem */
-                  QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
-                  vm.Add(qws);
+                  Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
+                  Console.WriteLine($"{ex.Message}");
+                  if (ex.InnerException != null)
+                  {
+                     Console.WriteLine($"{ex.InnerException.Message}");
+                  }
+                  return null;
                }
-
-               //returning the question list to view  
-               return View(vm);
             }
-            catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
+            else
             {
-               Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
-               Console.WriteLine($"{ex.Message}");
-               if (ex.InnerException != null)
-               {
-                  Console.WriteLine($"{ex.InnerException.Message}");
-               }
                return null;
             }
+         
          }
-         else
-         {
+         catch (Exception ex) {
+            Console.WriteLine("WebAPI call failure.");
+            Console.WriteLine($"{ex.Message}");
+            if (ex.InnerException != null)
+            {
+               Console.WriteLine($"{ex.InnerException.Message}");
+            }
             return null;
          }
       }

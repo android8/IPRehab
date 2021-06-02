@@ -5,13 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+    <Compile Remove="Contracts\I_FSOPatientRepositories.cs" />
+    <Compile Remove="FSOPatientRepositories.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="IPRehabModel">
       <HintPath>..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
+    </Reference>
+    <Reference Include="PatientModel">
+      <HintPath>..\PatientModel\bin\Debug\net5.0\PatientModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

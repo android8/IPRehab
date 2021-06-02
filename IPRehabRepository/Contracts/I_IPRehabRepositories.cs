@@ -1,4 +1,5 @@
 ﻿using IPRehabModel;
+using PatientModel;
 
 namespace IPRehabRepository.Contracts
 {
@@ -19,6 +20,14 @@ namespace IPRehabRepository.Contracts
    }
 
    public interface IPatientRepository : IRepositoryBase<TblPatient>
+   {
+   }
+
+   /// <summary>
+   /// external patient data source from BI25.DMHealthFactors
+   /// only needed for CRUD operation which would never happen other than select
+   /// </summary>
+   public interface IFSODPatientRepository : IRepositoryBase<FSODPatientDetailFY21Q2>
    {
    }
 

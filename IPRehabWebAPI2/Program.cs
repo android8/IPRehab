@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace IPRehabWebAPI2
 {
-   public class Program
+  public class Program
   {
     public static void Main(string[] args)
     {
@@ -14,7 +15,13 @@ namespace IPRehabWebAPI2
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
+              webBuilder.UseKestrel();
+              webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+              webBuilder.UseIISIntegration();
+              webBuilder.UseIIS();
               webBuilder.UseStartup<Startup>();
             });
   }
+
+
 }

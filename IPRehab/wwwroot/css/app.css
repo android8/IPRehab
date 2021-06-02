@@ -8,3 +8,10 @@
    color: gold;
    height: 2px;
 }
+
+.wrapLongOption {
+   width: 250px;
+   word-wrap: break-word !important;
+   text-overflow: inherit !important;
+   white-space: normal !important;
+}
