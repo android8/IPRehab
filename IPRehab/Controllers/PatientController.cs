@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace IPRehab.Controllers
 {
-  [Authorize]
+  //ToDo: [Authorize]
   public class PatientController : BaseController
   {
     public PatientController(ILogger<QuestionController> logger, IConfiguration configuration) : base(logger, configuration)
@@ -30,7 +30,7 @@ namespace IPRehab.Controllers
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-        HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient/{criteria}"));
+        HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}"));
 
         string httpMsgContentReadMethod = "ReadAsStringAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
