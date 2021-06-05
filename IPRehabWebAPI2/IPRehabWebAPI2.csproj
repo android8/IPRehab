@@ -5,6 +5,16 @@
     <UserSecretsId>d53ff4b2-085f-4c1d-9645-7c1b548f5326</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehabWebAPI2\IPRehabWebAPI2.xml</DocumentationFile>
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Controllers\PatientController.cs" />
     <Compile Remove="Controllers\TodoItemsController.cs" />

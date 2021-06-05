@@ -5,6 +5,10 @@
     <UserSecretsId>aspnet-IPRehab-54583FFC-5AB9-4644-B920-87211850A94C</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
@@ -57,7 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IPRehabRepository\IPRehabRepository.csproj" />
     <ProjectReference Include="..\IPRehabWebAPI2\IPRehabWebAPI2.csproj" />
   </ItemGroup>
 

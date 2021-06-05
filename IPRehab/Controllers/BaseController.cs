@@ -1,26 +1,26 @@
-﻿using IPRehabRepository.Contracts;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
   public class BaseController : Controller
   {
-    protected readonly ILogger<QuestionController> _logger;
     protected readonly IConfiguration _configuration;
     protected readonly string _apiBaseUrl;
+    protected readonly string _appVersion;
     protected readonly JsonSerializerOptions _options;
 
-    protected BaseController(ILogger<QuestionController> logger, IConfiguration configuration)
+    protected BaseController(IConfiguration configuration)
     {
-      _logger = logger;
       _configuration = configuration;
-      _apiBaseUrl = _configuration.GetValue<string>("WebAPIBaseUrl");
-
+      //_apiBaseUrl = _configuration.GetValue<string>("WebAPIBaseUrl");
+      _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
+      _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
       _options = new JsonSerializerOptions()
       {
         ReferenceHandler = ReferenceHandler.Preserve,
@@ -29,6 +29,13 @@ namespace IPRehab.Controllers
         IgnoreNullValues = true
       };
     }
+
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+      ViewBag.AppVersion = _appVersion;
+      await next();
+    }
+
 
     protected void DeserialExceptionHandler(Exception ex)
     {

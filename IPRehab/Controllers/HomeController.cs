@@ -1,17 +1,18 @@
 ﻿using IPRehab.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace IPRehab.Controllers
 {
   //ToDo: [Authorize]
-  public class HomeController : Controller
+  public class HomeController : BaseController
   {
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IConfiguration configuration) : base(configuration)
     {
       _logger = logger;
     }

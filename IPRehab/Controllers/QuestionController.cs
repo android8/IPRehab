@@ -1,8 +1,6 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
-using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -18,8 +16,10 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class QuestionController : BaseController
   {
-    public QuestionController(ILogger<QuestionController> logger, IConfiguration configuration) : base(logger, configuration)
+    ILogger<QuestionController> _logger;
+    public QuestionController(ILogger<QuestionController> logger, IConfiguration configuration) : base(configuration)
     {
+      _logger = logger;
     }
 
     // GET: QuestionController

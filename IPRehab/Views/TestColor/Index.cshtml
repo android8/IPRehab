@@ -1,0 +1,26 @@
+﻿@model IEnumerable<IPRehabWebAPI2.Models.TestColor>
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th>
+        Date
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+        RGB
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var c in Model)
+    {
+    <tr>
+      <td>@Html.DisplayFor(modelitem => c.Date)</td>
+      <td>@Html.DisplayFor(modelitem => c.Name)</td>
+      <td>@Html.DisplayFor(modelitem => c.RBG)</td>
+    </tr>
+    }
+  </tbody>
+</table>

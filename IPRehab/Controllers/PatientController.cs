@@ -1,6 +1,4 @@
 ﻿using IPRehab.Helpers;
-using IPRehab.Models;
-using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +9,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 
 namespace IPRehab.Controllers
 {
   //ToDo: [Authorize]
   public class PatientController : BaseController
   {
-    public PatientController(ILogger<QuestionController> logger, IConfiguration configuration) : base(logger, configuration)
+    ILogger<PatientController> _logger;
+    public PatientController(ILogger<PatientController> logger, IConfiguration configuration) : base(configuration)
     {
+      _logger = logger;
     }
 
     // GET: PatientController

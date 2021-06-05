@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IPRehabWebAPI2</name>
+    </assembly>
+    <members>
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String)">
+            <summary>
+            get patient matching the criteria and limit to user facility level
+            do not across facility boundary unless the user has access level beyond facility level
+            </summary>
+            <param name="criteria"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetInitStage">
+            <summary>
+            get initial intake questions (required or not)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetInterimStage">
+            <summary>
+            get interim stage questions (both required and not)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetDischargeStage">
+            <summary>
+            get discharge stage questions (required must be answer before discharge)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetFollowupStage">
+            <summary>
+            get follow up stage questions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetAdmissionForm">
+            <summary>
+            get question in the specified {form} paramter
+            </summary>
+            <param name="form">Form-BasicInfo, Form-Admission, Form-Discharge</param>
+            <returns></returns>
+        </member>
+        <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">
+            <summary>
+            Hydrate the DTO with selected domain properties
+            </summary>
+        </member>
+    </members>
+</doc>

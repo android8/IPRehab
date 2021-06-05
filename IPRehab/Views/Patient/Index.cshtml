@@ -7,13 +7,9 @@
 
 <h1>Patients</h1>
 
-<p>
-  <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-responsive-md">
   <thead>
     <tr>
-      <th></th>
       <th>
         @Html.DisplayNameFor(model => model.VISN)
       </th>
@@ -48,11 +44,6 @@
     {
       <tr>
         <td>
-          <div class="flex-sm-row">
-            <a asp-action="EditAsync" asp-route-id="@item.PTFSSN" class="btn-sm btn-primary btn-outline-primary">Edit</a>
-          </div>
-        </td>
-        <td>
           @Html.DisplayFor(modelItem => item.VISN)
         </td>
         <td>
@@ -81,7 +72,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="10" class="border-info">
+        <td colspan="9" class="border-info">
           <table class="table">
             <thead>
               <tr>
@@ -102,12 +93,13 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="10">
+                <td colspan="5">
                   <div class="flex-sm-row">
-                    <a asp-action="EditAsync" asp-route-stage="Initial" class="btn-sm btn-info">Initial</a>
-                    <a asp-action="EditAsync" asp-route-stage="Interim" class="btn-sm btn-secondary">Interim</a>
-                    <a asp-action="EditAsync" asp-route-stage="Discharge" class="btn-sm btn-success">Discharge</a>
-                    <a asp-action="EditAsync" asp-route-stage="Followup" class="btn-sm btn-warning">Followup</a>
+                    <a asp-controller="Episode" asp-action="Create" title="create new episode of care">New</a>
+                    <a asp-action="EditAsync" asp-route-stage="Initial" class="btn-sm btn-info" title="Edit episode of care initial questions">Initial</a>
+                    <a asp-action="EditAsync" asp-route-stage="Interim" class="btn-sm btn-secondary" title="Edit episode of care interim questions">Interim</a>
+                    <a asp-action="EditAsync" asp-route-stage="Discharge" class="btn-sm btn-success" title="Edit episode of care discharge questions">Discharge</a>
+                    <a asp-action="EditAsync" asp-route-stage="Followup" class="btn-sm btn-warning" title="Edit episode of care discharge questions">Followup</a>
                   </div>
                 </td>
               </tr>
@@ -127,10 +119,10 @@
                   <tr>
                     <td>
                       <div class="flex-sm-row">
-                        <a asp-action="EditAsync" asp-route-stage="Initial" asp-route-episodeId="@episode.EpisodeOfCareId" class="btn-sm btn-info btn-outline-info">Initial</a>
-                        <a asp-action="EditAsync" asp-route-stage="Interim" asp-route-episodeId="@episode.EpisodeOfCareId" class="btn-sm btn-secondary btn-outline-secondary">Interim</a>
-                        <a asp-action="EditAsync" asp-route-stage="Discharge" asp-route-episodeId="@episode.EpisodeOfCareId" class="btn-sm btn-success btn-outline-success">Discharge</a>
-                        <a asp-action="EditAsync" asp-route-stage="Followup" asp-route-episodeId="@episode.EpisodeOfCareId" class="btn-sm btn-warning btn-outline-warning">Followup</a>
+                        <a asp-action="EditAsync" asp-route-stage="Initial" class="btn-sm btn-info">Initial</a>
+                        <a asp-action="EditAsync" asp-route-stage="Interim" class="btn-sm btn-secondary">Interim</a>
+                        <a asp-action="EditAsync" asp-route-stage="Discharge" class="btn-sm btn-success">Discharge</a>
+                        <a asp-action="EditAsync" asp-route-stage="Followup" class="btn-sm btn-warning">Followup</a>
                       </div>
                     </td>
                     <td>
