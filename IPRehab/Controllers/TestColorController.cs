@@ -59,18 +59,18 @@ namespace IPRehab.Controllers
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
             DeserialExceptionHandler(ex);
-            return null;
+            return View(ex.Message);
           }
         }
         else
         {
-          return null;
+          return View("No content");
         }
       }
       catch (Exception ex)
       {
         WebAPIExceptionHander(ex);
-        return null;
+        return View(ex.Message);
       }
     }
   }

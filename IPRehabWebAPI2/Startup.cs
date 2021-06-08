@@ -66,13 +66,13 @@ namespace IPRehabWebAPI2
                                                 "https://localhost:44381");
                           });
       });
-      services.AddControllers(o => o.EnableEndpointRouting = false);
-      //.AddJsonOptions(o =>
-      //{
-      //   //preserve circular reference
-      //   o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-      //   o.JsonSerializerOptions.WriteIndented = true;
-      //});
+      services.AddControllers(o => o.EnableEndpointRouting = true)
+      .AddJsonOptions(o =>
+        {
+          //   //preserve circular reference
+          //   o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+          //   o.JsonSerializerOptions.WriteIndented = true;
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

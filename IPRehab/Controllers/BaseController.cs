@@ -32,7 +32,7 @@ namespace IPRehab.Controllers
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-      ViewBag.AppVersion = _appVersion;
+      ViewBag.AppVersion = $"Version {_appVersion}";
       await next();
     }
 
