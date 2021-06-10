@@ -60,8 +60,8 @@ namespace IPRehabWebAPI2.Helpers
         Sta6aKey = p.Sta6aKey,
         Bedsecn = p.bedsecn,
         Name = p.Name,
-        PTFSSN = p.PTFSSN,
-        FSODSSN = p.FSODSSN,
+        PTFSSN = string.IsNullOrEmpty(p.PTFSSN) ? string.Empty :  $"*{p.PTFSSN.Substring(p.PTFSSN.Length - 4, 4)}",
+        FSODSSN = string.IsNullOrEmpty(p.FSODSSN) ? string.Empty : $"*{p.PTFSSN.Substring(p.FSODSSN.Length - 4, 4)}",
         FiscalPeriod = p.FiscalPeriod,
         FiscalPeriodInt = p.FiscalPeriodInt
       };

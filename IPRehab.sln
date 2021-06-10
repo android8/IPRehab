@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{9A0D9918-F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPRehabWebAPI2", "IPRehabWebAPI2\IPRehabWebAPI2.csproj", "{1F4B9E60-D310-44DD-9C53-E3D523582AA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientModel", "PatientModel\PatientModel.csproj", "{B47F5B1E-8CD6-4A33-A180-35EB4030DF48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientModel", "PatientModel\PatientModel.csproj", "{B47F5B1E-8CD6-4A33-A180-35EB4030DF48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

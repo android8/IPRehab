@@ -1,4 +1,13 @@
-﻿.questionTitle {
+﻿th, td {
+  padding:0 5px;
+  text-align:center;
+}
+
+.commandBtn{
+  margin:5px 0;
+}
+
+.questionTitle {
    background-color: #040534;
    color:gold;
 }
@@ -14,4 +23,8 @@
    word-wrap: break-word !important;
    text-overflow: inherit !important;
    white-space: normal !important;
+}
+
+.rowNumber{
+  background-color:lightgrey;
 }
