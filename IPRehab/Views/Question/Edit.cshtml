@@ -2,134 +2,131 @@
 @model IEnumerable<QuestionWithSelectItems>
 
 @{
-   ViewData["Title"] = ViewBag.Title;
-   Layout = "~/Views/Shared/_Layout.cshtml";
+  ViewData["Title"] = ViewBag.Title;
+  Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>@ViewBag.Title</h1>
 
 <p>
-   <a asp-action="Create">Create New</a>
+  <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-   <thead>
-      <tr>
-         <th>
-            @Html.DisplayNameFor(model => model.QuestionKey)
-         </th>
-         <th>
-            @Html.DisplayNameFor(model => model.Question)
-         </th>
-         <th>
-            Choices
-         </th>
-      </tr>
-   </thead>
-   <tbody>
-      @{
-         string thisQuestionTitle = "bla bla bla";
-         int domIDcounter = 0;
-         }
-      @foreach (var q in Model)
+  <thead>
+    <tr>
+      <th>
+        @Html.DisplayNameFor(model => model.QuestionKey)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => model.Question)
+      </th>
+      <th>
+        Choices
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      string thisQuestionTitle = "bla bla bla";
+    }
+    @foreach (var q in Model)
+    {
+      q.QuestionKey = q.QuestionKey.Replace("-ADMISSION", string.Empty);
+
+      @* show question title only once per querstion *@
+      @if (thisQuestionTitle != q.QuestionTitle)
       {
-         domIDcounter++;
-         q.QuestionKey = q.QuestionKey.Replace("-ADMISSION", string.Empty);
-
-         @* show question title only once per querstion *@
-         @if (thisQuestionTitle != q.QuestionTitle)
-         {
-            thisQuestionTitle = q.QuestionTitle;
-            <tr>
-               <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
-            </tr>
-         }
-         <tr>
-            <td>
-               @Html.DisplayFor(m => q.QuestionKey)
-            </td>
-            <td>
-               @Html.DisplayFor(m => q.Question)
-            </td>
-            <td>
-               @{
-                  int choiceCount = q.ChoiceList.Count();
-                  string choicePrompt = $"select 1 of {choiceCount} choices";
-                  string domID = $"{q.QuestionKey}{domIDcounter}";
-
-                  switch (choiceCount)
-                  {
-                     case int n when n > 3:
-                        @Html.DropDownList(Model.First().QuestionKey, q.ChoiceList, choicePrompt, new {@id="domID", @class = "select2 wrapLongOption" /*, @readonly = "readonly"*/ })
-                        break;
-
-                     case int n when n >= 2 && n <= 3:
-                        {
-                           foreach (var c in q.ChoiceList)
-                           {
-                              if (c.Selected)
-                              {
-                                 <div>
-                                    <input type="radio" id="@domID", name="@Model.First().QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
-                                 </div>
-                              }
-                              else
-                              {
-                                 <div>
-                                    <input type="radio" id="@domID", name="@Model.First().QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
-                                 </div>
-                              }
-                           }
-                        }
-                        break;
-
-                     case int n when n == 0:
-                        {
-                           switch (q.AnswerCodeCategory)
-                           {
-                              case "YN":
-                              case "Checked":
-                                 bool isChecked = false; //ToDO: eval
-                                 @Html.CheckBox(Model.First().QuestionKey, isChecked, new { htmlAttributes = new { @id = "domID", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
-                                 break;
-
-                              case "Date":
-                                 <input type="date" id="@domID"/>
-                                 break;
-
-                              case "ICD":
-                                 @Html.TextBox(Model.First().QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = "domID", @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                                 break;
-                              case "FreeText":
-                                 @Html.TextBox(Model.First().QuestionKey, "Enter text here", new { htmlAttributes = new { @id = "domID", @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                                 break;
-                           }
-                        }
-                        break;
-                  }
-               }
-            </td>
-         </tr>
+        thisQuestionTitle = q.QuestionTitle;
+        <tr>
+          <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
+        </tr>
       }
-   </tbody>
+      <tr>
+        <td>
+          @Html.DisplayFor(m => q.QuestionKey)
+        </td>
+        <td>
+          @Html.DisplayFor(m => q.Question)
+        </td>
+        <td id="answer">
+          @{
+            int choiceCount = q.ChoiceList.Count();
+            string choicePrompt = $"select 1 of {choiceCount} choices";
+
+            switch (choiceCount)
+            {
+              case int n when n > 3:
+                @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @dispaly = "hidden", @id = q.QuestionKey, @class = "select2 wrapLongOption" /*, @readonly = "readonly"*/ })
+                break;
+
+              case int n when n >= 2 && n <= 3:
+                {
+                  foreach (var c in q.ChoiceList)
+                  {
+                    if (c.Selected)
+                    {
+                      <div>
+                        <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
+                      </div>
+                    }
+                    else
+                    {
+                      <div>
+                        <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
+                      </div>
+                    }
+                  }
+                }
+                break;
+
+              case int n when n == 0:
+                {
+                  switch (q.AnswerCodeCategory)
+                  {
+                    case "YN":
+                    case "Checked":
+                      bool isChecked = false; //ToDO: eval
+                      @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = q.QuestionKey, @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                      break;
+
+                    case "Date":
+                      <input type="date" id="@q.QuestionKey" />
+                      break;
+
+                    case "ICD":
+                      @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                      break;
+                    case "FreeText":
+                      @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                      break;
+                  }
+                }
+                break;
+            }
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
 </table>
 
 @section Scripts {
-   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-   <script type="module" src="~/lib/select2/js/select2.js"></script>
-   <script>
-      $(function () {
-         var $select2 = $('.select2').select2();
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  <script type="module" src="~/lib/select2/js/select2.js"></script>
+  <script>
+    $(function () {
+      var $select2 = $('.select2').select2();
 
-         //Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
-         //You can change the length according to your needs.
-         $('.select2 option').each(function () {
-            var myStr = $(this).text();
-            var newStr = myStr;
-            if (myStr.length > 50) {
-               newStr = myStr.match(/.{1,50}/g).join(' ');
-            }
-            $(this).text(newStr);
-         });
-      })
-   </script>
+      //Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
+      //You can change the length according to your needs.
+      $('.select2 option').each(function () {
+        var myStr = $(this).text();
+        var newStr = myStr;
+        if (myStr.length > 50) {
+          newStr = myStr.match(/.{1,50}/g).join(' ');
+        }
+        $(this).text(newStr);
+      });
+    })
+  </script>
 }

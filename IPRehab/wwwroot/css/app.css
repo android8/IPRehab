@@ -1,6 +1,27 @@
-﻿th, td {
+﻿.banner {
+  background-color: #0e2640 !important;
+  color: white;
+}
+.banner .nav-link {
+  color: white !important;
+}
+
+.banner .navbar-brand {
+  color: white !important;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 20px !important;
+  background-color: #0e2640;
+}
+
+th {
   padding:0 5px;
-  text-align:center;
+  text-align:center !important;
 }
 
 .commandBtn{
@@ -26,5 +47,9 @@
 }
 
 .rowNumber{
+  background-color:lightgrey;
+}
+
+.select2-results__options{
   background-color:lightgrey;
 }

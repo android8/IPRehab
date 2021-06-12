@@ -51,6 +51,7 @@
     @{int row = 0; }
     @foreach (var item in Model)
     {
+      <!--Patient row-->
       <tr>
         <td class="rowNumber">@(++row)</td>
         <td>
@@ -81,6 +82,8 @@
           @Html.DisplayFor(modelItem => item.FiscalPeriod)
         </td>
       </tr>
+
+      <!--Episode of Care row-->
       @if (item.CareEpisodes?.Count() != 0)
       {
         <tr>
