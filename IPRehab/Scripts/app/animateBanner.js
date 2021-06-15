@@ -9,7 +9,7 @@ function pageLoad() {
     function getMediaWidth() {
         let x = window.matchMedia("(max-width:768px)");
         if (x.matches) {
-            return "-65px";
+            return "-70px";
         }
         else {
             return "-60px";

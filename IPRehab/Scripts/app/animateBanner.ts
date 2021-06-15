@@ -14,7 +14,7 @@ function pageLoad(): void {
   function getMediaWidth() {
     let x: any = window.matchMedia("(max-width:768px)");
     if (x.matches) {
-      return "-65px";
+      return "-70px";
     }
     else {
       return "-60px";

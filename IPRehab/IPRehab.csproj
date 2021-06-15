@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
     <Content Remove="wwwroot\js\app\animateBanner.js" />
     <Content Remove="wwwroot\js\app\animateBanner.js.map" />
     <Content Remove="wwwroot\js\app\app.js" />
@@ -78,6 +79,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="compilerconfig.json" />
     <None Include="wwwroot\js\app\animateBanner.js" />
     <None Include="wwwroot\js\app\animateBanner.js.map" />
     <None Include="wwwroot\js\app\app.js" />

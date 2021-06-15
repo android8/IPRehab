@@ -6,7 +6,7 @@ import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 $(function () {
-   pageLoad();
+  pageLoad();
 });
 
 function pageLoad(): void {
