@@ -10,6 +10,9 @@
   color: white !important;
 }
 
+.main{
+  margin-top: 20px !important;
+}
 .footer {
   position: fixed;
   bottom: 0;
