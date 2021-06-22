@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Security.Principal;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace IPRehab.Controllers
 {
   public class BaseController : Controller
   {
+    protected IIdentity _windowsIdentity;
     protected readonly IConfiguration _configuration;
     protected readonly string _apiBaseUrl;
     protected readonly string _appVersion;
@@ -18,7 +20,6 @@ namespace IPRehab.Controllers
     protected BaseController(IConfiguration configuration)
     {
       _configuration = configuration;
-      //_apiBaseUrl = _configuration.GetValue<string>("WebAPIBaseUrl");
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
       _options = new JsonSerializerOptions()
@@ -32,6 +33,8 @@ namespace IPRehab.Controllers
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+      _windowsIdentity = HttpContext.User.Identity;
+      ViewBag.WindowsIdentityName = _windowsIdentity.Name;
       ViewBag.AppVersion = $"Version {_appVersion}";
       await next();
     }
