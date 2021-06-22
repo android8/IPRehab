@@ -12,9 +12,12 @@ $(function () {
 function pageLoad(): void {
   const urlParams: any = new URLSearchParams(window.location.search.substring(1));
   const previousCriteria: string = urlParams.get('criteria'); //get criteria in the querystring
+  const previousSearchInputValue: string = $("#searchCriteria").val().toString(); //get criteria from the input ellement
   //$('#previousCriteria').text(previousCriteria);
 
-  $('#searchCriteria').val(previousCriteria);
+  if (previousSearchInputValue == '')
+    $('#searchCriteria').val(previousCriteria); //only set the val of the input when the input has no value set by the server
+
   $('#search').on('click', function () {
     let host: string = location.host;
     let searchCriteria: string = $('#searchCriteria').val().toString();

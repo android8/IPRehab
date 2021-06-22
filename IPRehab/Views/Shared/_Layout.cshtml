@@ -31,6 +31,11 @@
             </li>
           </ul>
           <partial name="_LoginPartial" />
+          <ul class="navbar-nav flex-grow-1">
+            <li class="nav-item">
+              <span class="nav-link">@ViewBag.WindowsIdentityName</span>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -48,6 +53,7 @@
         </div>
       </div>
     </div>
+    <partial name="_CookieConsentPartial" />
     <main role="main" class="pb-3 main">
       @RenderBody()
     </main>
@@ -55,7 +61,7 @@
 
   <footer class="border-top footer text-muted hoverFooter">
     <div class="container">
-      &copy; 2021 - IPRehab (@ViewBag.AppVersion) <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+      <span class="text-white">&copy; 2021 - IPRehab (@ViewBag.AppVersion) <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></span>
     </div>
   </footer>
   <script src="~/lib/jquery/dist/jquery.min.js"></script>

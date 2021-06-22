@@ -62,14 +62,21 @@ namespace IPRehab.Controllers
     // GET: QuestionController/Edit/5
     public async Task<ActionResult> Edit(string stage, int? id)
     {
-      ViewBag.Title = stage;
+      ViewBag.Title = stage == "Followup"? "Follow Up": stage;
       List<QuestionDTO> questions = new List<QuestionDTO>();
 
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-        HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage"));
-
+        HttpResponseMessage Res;
+        if (string.IsNullOrEmpty(stage))
+        {
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/GetAll"));
+        }
+        else
+        { 
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage")); 
+        }
         string httpMsgContentReadMethod = "ReadAsStringAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
         {

@@ -1,10 +1,12 @@
 using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Text.Json.Serialization;
 
 namespace IPRehab
@@ -21,6 +23,23 @@ namespace IPRehab
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddDistributedMemoryCache();
+      services.Configure<CookiePolicyOptions>(options =>
+      {
+        //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
+        // This lambda determines whether user consent for non-essential 
+        // cookies is needed for a given request.
+        options.CheckConsentNeeded = context => true; // true if consent required
+        // requires using Microsoft.AspNetCore.Http;
+        options.MinimumSameSitePolicy = SameSiteMode.None;
+      });
+      services.AddSession(options =>
+      {
+        options.IdleTimeout = TimeSpan.FromMinutes(20);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+      });
+
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
            //preserve circular reference
@@ -47,11 +66,16 @@ namespace IPRehab
       }
       app.UseHttpsRedirection();
       app.UseStaticFiles();
-
+      
+      //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
+      app.UseCookiePolicy();
+      
       app.UseRouting();
       //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
       app.UseAuthentication();
       app.UseAuthorization();
+
+      app.UseSession(); //must be before UseMvc or UseEndpoints
 
       app.UseEndpoints(endpoints =>
       {

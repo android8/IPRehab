@@ -8,621 +8,620 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace IPRehabModel
 {
-   public partial class IPRehabContext : IdentityDbContext<ApplicationUser> /*DbContext*/
-   {
-      public IPRehabContext()
+  public partial class IPRehabContext : IdentityDbContext<ApplicationUser> /*DbContext*/
+  {
+    public IPRehabContext()
+    {
+    }
+
+    public IPRehabContext(DbContextOptions<IPRehabContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<TblAnswer> TblAnswer { get; set; }
+    public virtual DbSet<TblCodeSet> TblCodeSet { get; set; }
+    public virtual DbSet<TblEpisodeOfCare> TblEpisodeOfCare { get; set; }
+    public virtual DbSet<TblPatient> TblPatient { get; set; }
+    public virtual DbSet<TblQuestion> TblQuestion { get; set; }
+    public virtual DbSet<TblQuestionInstruction> TblQuestionInstruction { get; set; }
+    public virtual DbSet<TblQuestionStage> TblQuestionStage { get; set; }
+    public virtual DbSet<TblSignature> TblSignature { get; set; }
+    public virtual DbSet<TblUser> TblUser { get; set; }
+    public virtual DbSet<VCodeSetHierarchy> VCodeSetHierarchy { get; set; }
+    public virtual DbSet<VQuestionStandardChoices> VQuestionStandardChoices { get; set; }
+    public virtual DbSet<VQuestionStandardChoicesCondensed> VQuestionStandardChoicesCondensed { get; set; }
+    public virtual DbSet<VFSODPatientDetail> VFSODPatientDetail { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.HasDefaultSchema("app")
+          .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+      modelBuilder.Entity<TblAnswer>(entity =>
       {
-      }
+        entity.HasKey(e => e.EpsideOfCareIdfk);
 
-      public IPRehabContext(DbContextOptions<IPRehabContext> options)
-          : base(options)
+        entity.ToTable("tblAnswer", "app");
+
+        entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer");
+
+        entity.HasIndex(e => e.AnswerCodeSetfk, "IX_tblAnswer_AnswerCodeSetFK");
+
+        entity.HasIndex(e => e.EpsideOfCareIdfk, "IX_tblAnswer_EpisodeOfCareIDFK");
+
+        entity.HasIndex(e => e.QuestionIdfk, "IX_tblAnswer_QuestionIDFK");
+
+        entity.Property(e => e.EpsideOfCareIdfk)
+                  .ValueGeneratedNever()
+                  .HasColumnName("EpsideOfCareIDFK");
+
+        entity.Property(e => e.AnswerCodeSetfk).HasColumnName("AnswerCodeSetFK");
+
+        entity.Property(e => e.Description).IsUnicode(false);
+
+        entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
+
+        entity.HasOne(d => d.AnswerCodeSetFkNavigation)
+                  .WithMany(p => p.TblAnswer)
+                  .HasForeignKey(d => d.AnswerCodeSetfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblCodeSet");
+
+        entity.HasOne(d => d.EpsideOfCareIdfkNavigation)
+                  .WithOne(p => p.TblAnswer)
+                  .HasForeignKey<TblAnswer>(d => d.EpsideOfCareIdfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
+
+        entity.HasOne(d => d.QuestionIdfkNavigation)
+                  .WithMany(p => p.TblAnswer)
+                  .HasForeignKey(d => d.QuestionIdfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblQuestion");
+      });
+
+      modelBuilder.Entity<TblCodeSet>(entity =>
       {
-      }
+        entity.HasKey(e => e.CodeSetId);
 
-      public virtual DbSet<TblAnswer> TblAnswer { get; set; }
-      public virtual DbSet<TblCodeSet> TblCodeSet { get; set; }
-      public virtual DbSet<TblEpisodeOfCare> TblEpisodeOfCare { get; set; }
-      public virtual DbSet<TblPatient> TblPatient { get; set; }
-      public virtual DbSet<TblQuestion> TblQuestion { get; set; }
-      public virtual DbSet<TblQuestionInstruction> TblQuestionInstruction { get; set; }
-      public virtual DbSet<TblQuestionStage> TblQuestionStage { get; set; }
-      public virtual DbSet<TblSignature> TblSignature { get; set; }
-      public virtual DbSet<TblUser> TblUser { get; set; }
-      public virtual DbSet<VCodeSetHierarchy> VCodeSetHierarchy { get; set; }
-      public virtual DbSet<VQuestionStandardChoices> VQuestionStandardChoices { get; set; }
-      public virtual DbSet<VQuestionStandardChoicesCondensed> VQuestionStandardChoicesCondensed { get; set; }
-      public virtual DbSet<VFSODPatientDetail> VFSODPatientDetail { get; set; }
+        entity.ToTable("tblCodeSet", "app");
 
-      protected override void OnModelCreating(ModelBuilder modelBuilder)
+        entity.HasIndex(e => new { e.CodeSetParent, e.CodeValue }, "IX_tblCodeSet")
+                  .IsUnique();
+
+        entity.Property(e => e.CodeSetId).HasColumnName("CodeSetID");
+
+        entity.Property(e => e.CodeDescription)
+                  .IsRequired()
+                  .HasMaxLength(400)
+                  .IsUnicode(false);
+
+        entity.Property(e => e.CodeValue)
+                  .IsRequired()
+                  .HasMaxLength(30)
+                  .IsUnicode(false);
+
+        entity.Property(e => e.Comment)
+                  .HasMaxLength(200)
+                  .IsUnicode(false);
+
+        entity.HasOne(d => d.CodeSetParentNavigation)
+                  .WithMany(p => p.InverseCodeSetParentNavigation)
+                  .HasForeignKey(d => d.CodeSetParent)
+                  .HasConstraintName("FK_tblCodeSet_tblCodeSet");
+      });
+
+      modelBuilder.Entity<TblEpisodeOfCare>(entity =>
       {
-         modelBuilder.HasDefaultSchema("app")
-             .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+        entity.HasKey(e => e.EpisodeOfCareId)
+                  .HasName("PK_app.tblEpisodeOfCare");
 
-         modelBuilder.Entity<TblAnswer>(entity =>
-         {
-            entity.HasKey(e => e.EpsideOfCareIdfk);
+        entity.ToTable("tblEpisodeOfCare", "app");
 
-            entity.ToTable("tblAnswer", "app");
+        entity.Property(e => e.EpisodeOfCareId).HasColumnName("EpisodeOfCareID");
 
-            entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer");
+        entity.Property(e => e.AdmissionDate).HasColumnType("date");
 
-            entity.HasIndex(e => e.AnswerCodeSetfk, "IX_tblAnswer_AnswerCodeSetFK");
+        entity.Property(e => e.OnsetDate).HasColumnType("date");
 
-            entity.HasIndex(e => e.EpsideOfCareIdfk, "IX_tblAnswer_EpisodeOfCareIDFK");
+        entity.Property(e => e.PatientIcnfk)
+                  .IsRequired()
+                  .HasMaxLength(10)
+                  .IsUnicode(false)
+                  .HasColumnName("PatientICNFK");
 
-            entity.HasIndex(e => e.QuestionIdfk, "IX_tblAnswer_QuestionIDFK");
+        entity.HasOne(d => d.PatientIcnfkNavigation)
+                  .WithMany(p => p.TblEpisodeOfCare)
+                  .HasForeignKey(d => d.PatientIcnfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_app.tblEpisodeOfCare_app.tblPatient");
+      });
 
-            entity.Property(e => e.EpsideOfCareIdfk)
-                   .ValueGeneratedNever()
-                   .HasColumnName("EpsideOfCareIDFK");
+      modelBuilder.Entity<TblPatient>(entity =>
+      {
+        entity.HasKey(e => e.Icn);
 
-            entity.Property(e => e.AnswerCodeSetfk).HasColumnName("AnswerCodeSetFK");
+        entity.ToTable("tblPatient", "app");
 
-            entity.Property(e => e.Description).IsUnicode(false);
+        entity.HasIndex(e => new { e.LastName, e.FirstName, e.MiddleName, e.Last4Ssn }, "IX_tblPatient_UniqueName")
+                  .IsUnique();
 
-            entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
+        entity.Property(e => e.Icn)
+                  .HasMaxLength(10)
+                  .IsUnicode(false)
+                  .HasColumnName("ICN");
 
-            entity.HasOne(d => d.AnswerCodeSetFkNavigation)
-                   .WithMany(p => p.TblAnswer)
-                   .HasForeignKey(d => d.AnswerCodeSetfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblAnswer_tblCodeSet");
+        entity.Property(e => e.DateOfBirth).HasColumnType("date");
 
-            entity.HasOne(d => d.EpsideOfCareIdfkNavigation)
-                   .WithOne(p => p.TblAnswer)
-                   .HasForeignKey<TblAnswer>(d => d.EpsideOfCareIdfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
+        entity.Property(e => e.FirstName)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
 
-            entity.HasOne(d => d.QuestionIdfkNavigation)
-                   .WithMany(p => p.TblAnswer)
-                   .HasForeignKey(d => d.QuestionIdfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblAnswer_tblQuestion");
-         });
+        entity.Property(e => e.Ien)
+                  .IsRequired()
+                  .HasMaxLength(10)
+                  .IsUnicode(false)
+                  .HasColumnName("IEN");
 
-         modelBuilder.Entity<TblCodeSet>(entity =>
-         {
-            entity.HasKey(e => e.CodeSetId);
+        entity.Property(e => e.Last4Ssn)
+                  .IsRequired()
+                  .HasMaxLength(4)
+                  .IsUnicode(false)
+                  .HasColumnName("Last4SSN")
+                  .IsFixedLength(true);
 
-            entity.ToTable("tblCodeSet", "app");
+        entity.Property(e => e.LastName)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
 
-            entity.HasIndex(e => new { e.CodeSetParent, e.CodeValue }, "IX_tblCodeSet")
-                   .IsUnique();
+        entity.Property(e => e.MiddleName)
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+      });
 
-            entity.Property(e => e.CodeSetId).HasColumnName("CodeSetID");
+      modelBuilder.Entity<TblQuestion>(entity =>
+      {
+        entity.HasKey(e => e.QuestionId)
+                  .HasName("PK_app.tblQuestion");
 
-            entity.Property(e => e.CodeDescription)
-                   .IsRequired()
-                   .HasMaxLength(400)
-                   .IsUnicode(false);
+        entity.ToTable("tblQuestion", "app");
 
-            entity.Property(e => e.CodeValue)
-                   .IsRequired()
-                   .HasMaxLength(30)
-                   .IsUnicode(false);
+        entity.HasIndex(e => new { e.QuestionKey, e.FormFk }, "IX_tblQuestion_QuestionKey").IsUnique();
 
-            entity.Property(e => e.Comment)
-                   .HasMaxLength(200)
-                   .IsUnicode(false);
+        entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
-            entity.HasOne(d => d.CodeSetParentNavigation)
-                   .WithMany(p => p.InverseCodeSetParentNavigation)
-                   .HasForeignKey(d => d.CodeSetParent)
-                   .HasConstraintName("FK_tblCodeSet_tblCodeSet");
-         });
+        entity.Property(e => e.AnswerCodeSetFk).HasColumnName("AnswerCodeSetFK");
 
-         modelBuilder.Entity<TblEpisodeOfCare>(entity =>
-         {
-            entity.HasKey(e => e.EpisodeOfCareId)
-                   .HasName("PK_app.tblEpisodeOfCare");
+        entity.Property(e => e.FormFk).HasColumnName("FormFK");
 
-            entity.ToTable("tblEpisodeOfCare", "app");
+        entity.Property(e => e.FormSectionFk).HasColumnName("FormSectionFK");
 
-            entity.Property(e => e.EpisodeOfCareId).HasColumnName("EpisodeOfCareID");
+        entity.Property(e => e.GroupTitle)
+                  .HasMaxLength(50)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.AdmissionDate).HasColumnType("date");
+        entity.Property(e => e.Question)
+                  .IsRequired()
+                  .IsUnicode(false);
 
-            entity.Property(e => e.OnsetDate).HasColumnType("date");
+        entity.Property(e => e.QuestionKey)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.PatientIcnfk)
-                   .IsRequired()
-                   .HasMaxLength(10)
-                   .IsUnicode(false)
-                   .HasColumnName("PatientICNFK");
+        entity.Property(e => e.QuestionTitle)
+                  .HasMaxLength(200)
+                  .IsUnicode(false);
 
-            entity.HasOne(d => d.PatientIcnfkNavigation)
-                   .WithMany(p => p.TblEpisodeOfCare)
-                   .HasForeignKey(d => d.PatientIcnfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_app.tblEpisodeOfCare_app.tblPatient");
-         });
-
-         modelBuilder.Entity<TblPatient>(entity =>
-         {
-            entity.HasKey(e => e.Icn);
-
-            entity.ToTable("tblPatient", "app");
+        entity.HasOne(d => d.AnswerCodeSetFkNavigation)
+                  .WithMany(p => p.TblQuestionAnswerCodeSetFkNavigation)
+                  .HasForeignKey(d => d.AnswerCodeSetFk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Answer_CodeSet");
 
-            entity.HasIndex(e => new { e.LastName, e.FirstName, e.MiddleName, e.Last4Ssn }, "IX_tblPatient_UniqueName")
-                   .IsUnique();
+        entity.HasOne(d => d.FormFkNavigation)
+                  .WithMany(p => p.TblQuestionFormFkNavigation)
+                  .HasForeignKey(d => d.FormFk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Form_CodeSet");
 
-            entity.Property(e => e.Icn)
-                   .HasMaxLength(10)
-                   .IsUnicode(false)
-                   .HasColumnName("ICN");
+        entity.HasOne(d => d.FormSectionFkNavigation)
+                  .WithMany(p => p.TblQuestionFormSectionFkNavigation)
+                  .HasForeignKey(d => d.FormSectionFk)
+                  .HasConstraintName("FK_Section_CodeSet");
+      });
 
-            entity.Property(e => e.DateOfBirth).HasColumnType("date");
+      modelBuilder.Entity<TblQuestionInstruction>(entity =>
+      {
+        entity.HasKey(e => e.InstructionId)
+                  .HasName("PK_tblInstruction");
 
-            entity.Property(e => e.FirstName)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
+        entity.ToTable("tblQuestionInstruction", "app");
 
-            entity.Property(e => e.Ien)
-                   .IsRequired()
-                   .HasMaxLength(10)
-                   .IsUnicode(false)
-                   .HasColumnName("IEN");
+        entity.HasIndex(e => new { e.QuestionIdfk, e.Order }, "IX_tblInstruction")
+                  .IsUnique();
 
-            entity.Property(e => e.Last4Ssn)
-                   .IsRequired()
-                   .HasMaxLength(4)
-                   .IsUnicode(false)
-                   .HasColumnName("Last4SSN")
-                   .IsFixedLength(true);
+        entity.Property(e => e.InstructionId).HasColumnName("InstructionID");
 
-            entity.Property(e => e.LastName)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
+        entity.Property(e => e.Instruction)
+                  .IsRequired()
+                  .IsUnicode(false);
 
-            entity.Property(e => e.MiddleName)
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
-         });
+        entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
 
-         modelBuilder.Entity<TblQuestion>(entity =>
-         {
-            entity.HasKey(e => e.QuestionId)
-                   .HasName("PK_app.tblQuestion");
+        entity.HasOne(d => d.QuestionIdfkNavigation)
+                  .WithMany(p => p.TblQuestionInstruction)
+                  .HasForeignKey(d => d.QuestionIdfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblInstruction_tblQuestion");
+      });
 
-            entity.ToTable("tblQuestion", "app");
+      modelBuilder.Entity<TblQuestionStage>(entity =>
+      {
+        entity.HasKey(e => e.Id);
 
-            entity.HasIndex(e => e.QuestionKey, "IX_tblQuestion_QuestionKey")
-                   .IsUnique();
+        entity.ToTable("tblQuestionStage", "app");
 
-            entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+        entity.HasIndex(e => new { e.QuestionIdFk, e.StageFk }, "IX_tblQuestionStage").IsUnique();
 
-            entity.Property(e => e.AnswerCodeSetFk).HasColumnName("AnswerCodeSetFK");
+        entity.HasIndex(e => e.QuestionIdFk, "IX_tblQuestionStage_QuestionIdFk");
 
-            entity.Property(e => e.FormFk).HasColumnName("FormFK");
+        entity.HasIndex(e => e.StageFk, "IX_tblQuestionStage_StageFk");
 
-            entity.Property(e => e.FormSectionFk).HasColumnName("FormSectionFK");
+        entity.Property(e => e.QuestionIdFk)
+                  .ValueGeneratedNever()
+                  .HasColumnName("QuestionIdFK");
 
-            entity.Property(e => e.GroupTitle)
-                   .HasMaxLength(50)
-                   .IsUnicode(false);
+        entity.Property(e => e.StageFk).HasColumnName("StageFK");
 
-            entity.Property(e => e.Question)
-                   .IsRequired()
-                   .IsUnicode(false);
+        entity.HasOne(d => d.StageFkNavigation)
+                  .WithMany(p => p.TblQuestionStage)
+                  .HasForeignKey(d => d.StageFk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblQuestionStage_tblCodeSet");
 
-            entity.Property(e => e.QuestionKey)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
+        entity.HasOne(d => d.QuestionIdFkNavigation)
+                  .WithMany(p => p.TblQuestionStage)
+                  .HasForeignKey(d => d.QuestionIdFk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblQuestionStage_tblQuestion");
+      });
 
-            entity.Property(e => e.QuestionTitle)
-                   .HasMaxLength(200)
-                   .IsUnicode(false);
+      modelBuilder.Entity<TblSignature>(entity =>
+      {
+        entity.HasKey(e => e.EpisodeCareIdfk);
 
-            entity.HasOne(d => d.AnswerCodeSetFkNavigation)
-                   .WithMany(p => p.TblQuestionAnswerCodeSetFkNavigation)
-                   .HasForeignKey(d => d.AnswerCodeSetFk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_Answer_CodeSet");
+        entity.ToTable("tblSignature", "app");
 
-            entity.HasOne(d => d.FormFkNavigation)
-                   .WithMany(p => p.TblQuestionFormFkNavigation)
-                   .HasForeignKey(d => d.FormFk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_Form_CodeSet");
+        entity.HasIndex(e => e.Signature, "IX_tblSignature")
+                  .IsUnique();
 
-            entity.HasOne(d => d.FormSectionFkNavigation)
-                   .WithMany(p => p.TblQuestionFormSectionFkNavigation)
-                   .HasForeignKey(d => d.FormSectionFk)
-                   .HasConstraintName("FK_Section_CodeSet");
-         });
+        entity.Property(e => e.EpisodeCareIdfk)
+                  .ValueGeneratedNever()
+                  .HasColumnName("EpisodeCareIDFK");
 
-         modelBuilder.Entity<TblQuestionInstruction>(entity =>
-         {
-            entity.HasKey(e => e.InstructionId)
-                   .HasName("PK_tblInstruction");
+        entity.Property(e => e.DateInformationProvided).HasColumnType("date");
 
-            entity.ToTable("tblQuestionInstruction", "app");
+        entity.Property(e => e.Signature)
+                  .IsRequired()
+                  .HasMaxLength(50)
+                  .IsFixedLength(true);
 
-            entity.HasIndex(e => new { e.QuestionIdfk, e.Order }, "IX_tblInstruction")
-                   .IsUnique();
+        entity.Property(e => e.Title)
+                  .IsRequired()
+                  .HasMaxLength(100)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.InstructionId).HasColumnName("InstructionID");
+        entity.HasOne(d => d.EpisodeCareIdfkNavigation)
+                  .WithOne(p => p.TblSignature)
+                  .HasForeignKey<TblSignature>(d => d.EpisodeCareIdfk)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblSignature_tblEpisodeOfCare");
+      });
 
-            entity.Property(e => e.Instruction)
-                   .IsRequired()
-                   .IsUnicode(false);
+      modelBuilder.Entity<TblUser>(entity =>
+      {
+        entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
+        entity.ToTable("tblUser", "app");
 
-            entity.HasOne(d => d.QuestionIdfkNavigation)
-                   .WithMany(p => p.TblQuestionInstruction)
-                   .HasForeignKey(d => d.QuestionIdfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblInstruction_tblQuestion");
-         });
+        entity.Property(e => e.Id)
+                  .HasColumnName("ID");
 
-         modelBuilder.Entity<TblQuestionStage>(entity =>
-         {
-            entity.HasKey(e => e.Id);
+        entity.Property(e => e.FirstName)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+
+        entity.Property(e => e.LastName)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+      });
 
-            entity.ToTable("tblQuestionStage", "app");
+      modelBuilder.Entity<VCodeSetHierarchy>(entity =>
+      {
+        entity.HasNoKey();
 
-            entity.HasIndex(e => new { e.QuestionIdFk, e.StageFk }, "IX_tblQuestionStage").IsUnique();
+        entity.ToView("vCodeSetHierarchy", "app");
 
-            entity.HasIndex(e => e.QuestionIdFk, "IX_tblQuestionStage_QuestionIdFk");
+        entity.Property(e => e.AncestorDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("ANCESTOR description");
 
-            entity.HasIndex(e => e.StageFk, "IX_tblQuestionStage_StageFk");
+        entity.Property(e => e.AncestorId).HasColumnName("ANCESTOR ID");
 
-            entity.Property(e => e.QuestionIdFk)
-                   .ValueGeneratedNever()
-                   .HasColumnName("QuestionIdFK");
+        entity.Property(e => e.AncestorValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("ANCESTOR value");
 
-            entity.Property(e => e.StageFk).HasColumnName("StageFK");
+        entity.Property(e => e.AntiquityDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("ANTIQUITY description");
 
-            entity.HasOne(d => d.StageFkNavigation)
-                   .WithMany(p => p.TblQuestionStage)
-                   .HasForeignKey(d => d.StageFk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblQuestionStage_tblCodeSet");
+        entity.Property(e => e.AntiquityId).HasColumnName("ANTIQUITY ID");
 
-            entity.HasOne(d => d.QuestionIdFkNavigation)
-                   .WithMany(p => p.TblQuestionStage)
-                   .HasForeignKey(d => d.QuestionIdFk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblQuestionStage_tblQuestion");
-         });
+        entity.Property(e => e.AntiquityValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("ANTIQUITY value");
 
-         modelBuilder.Entity<TblSignature>(entity =>
-         {
-            entity.HasKey(e => e.EpisodeCareIdfk);
+        entity.Property(e => e.ChildDescription)
+                  .IsRequired()
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("CHILD description");
 
-            entity.ToTable("tblSignature", "app");
+        entity.Property(e => e.ChildId).HasColumnName("CHILD ID");
 
-            entity.HasIndex(e => e.Signature, "IX_tblSignature")
-                   .IsUnique();
+        entity.Property(e => e.ChildValue)
+                  .IsRequired()
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("CHILD value");
 
-            entity.Property(e => e.EpisodeCareIdfk)
-                   .ValueGeneratedNever()
-                   .HasColumnName("EpisodeCareIDFK");
+        entity.Property(e => e.GrandDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("GRAND description");
 
-            entity.Property(e => e.DateInformationProvided).HasColumnType("date");
+        entity.Property(e => e.GrandId).HasColumnName("GRAND ID");
 
-            entity.Property(e => e.Signature)
-                   .IsRequired()
-                   .HasMaxLength(50)
-                   .IsFixedLength(true);
+        entity.Property(e => e.GrandValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("GRAND value");
 
-            entity.Property(e => e.Title)
-                   .IsRequired()
-                   .HasMaxLength(100)
-                   .IsUnicode(false);
+        entity.Property(e => e.GreatDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("GREAT description");
 
-            entity.HasOne(d => d.EpisodeCareIdfkNavigation)
-                   .WithOne(p => p.TblSignature)
-                   .HasForeignKey<TblSignature>(d => d.EpisodeCareIdfk)
-                   .OnDelete(DeleteBehavior.ClientSetNull)
-                   .HasConstraintName("FK_tblSignature_tblEpisodeOfCare");
-         });
+        entity.Property(e => e.GreatId).HasColumnName("GREAT ID");
 
-         modelBuilder.Entity<TblUser>(entity =>
-         {
-            entity.HasKey(e => e.Id);
+        entity.Property(e => e.GreatValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("GREAT value");
 
-            entity.ToTable("tblUser", "app");
+        entity.Property(e => e.Hierarchy)
+                  .HasMaxLength(400)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.Id)
-                   .HasColumnName("ID");
+        entity.Property(e => e.ParentComment)
+                  .HasMaxLength(200)
+                  .IsUnicode(false)
+                  .HasColumnName("PARENT comment");
 
-            entity.Property(e => e.FirstName)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
+        entity.Property(e => e.ParentDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("PARENT description");
 
-            entity.Property(e => e.LastName)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
-         });
+        entity.Property(e => e.ParentId).HasColumnName("PARENT ID");
 
-         modelBuilder.Entity<VCodeSetHierarchy>(entity =>
-         {
-            entity.HasNoKey();
+        entity.Property(e => e.ParentValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("PARENT value");
+      });
 
-            entity.ToView("vCodeSetHierarchy", "app");
+      modelBuilder.Entity<VQuestionStandardChoices>(entity =>
+      {
+        entity.HasNoKey();
 
-            entity.Property(e => e.AncestorDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("ANCESTOR description");
+        entity.ToView("vQuestionStandardChoices", "app");
 
-            entity.Property(e => e.AncestorId).HasColumnName("ANCESTOR ID");
+        entity.Property(e => e.AncestorDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("ANCESTOR description");
 
-            entity.Property(e => e.AncestorValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("ANCESTOR value");
+        entity.Property(e => e.AncestorId).HasColumnName("ANCESTOR ID");
 
-            entity.Property(e => e.AntiquityDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("ANTIQUITY description");
+        entity.Property(e => e.AncestorValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("ANCESTOR value");
 
-            entity.Property(e => e.AntiquityId).HasColumnName("ANTIQUITY ID");
+        entity.Property(e => e.AnswerCodeSetFk).HasColumnName("AnswerCodeSetFK");
 
-            entity.Property(e => e.AntiquityValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("ANTIQUITY value");
+        entity.Property(e => e.AntiquityDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("ANTIQUITY description");
 
-            entity.Property(e => e.ChildDescription)
-                   .IsRequired()
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("CHILD description");
+        entity.Property(e => e.AntiquityId).HasColumnName("ANTIQUITY ID");
 
-            entity.Property(e => e.ChildId).HasColumnName("CHILD ID");
+        entity.Property(e => e.AntiquityValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("ANTIQUITY value");
 
-            entity.Property(e => e.ChildValue)
-                   .IsRequired()
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("CHILD value");
+        entity.Property(e => e.ChildDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("CHILD description");
 
-            entity.Property(e => e.GrandDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("GRAND description");
+        entity.Property(e => e.ChildId).HasColumnName("CHILD ID");
 
-            entity.Property(e => e.GrandId).HasColumnName("GRAND ID");
+        entity.Property(e => e.ChildValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("CHILD value");
 
-            entity.Property(e => e.GrandValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("GRAND value");
+        entity.Property(e => e.FormFk).HasColumnName("FormFK");
 
-            entity.Property(e => e.GreatDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("GREAT description");
+        entity.Property(e => e.FormSectionFk).HasColumnName("FormSectionFK");
 
-            entity.Property(e => e.GreatId).HasColumnName("GREAT ID");
+        entity.Property(e => e.GrandDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("GRAND description");
 
-            entity.Property(e => e.GreatValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("GREAT value");
+        entity.Property(e => e.GrandId).HasColumnName("GRAND ID");
 
-            entity.Property(e => e.Hierarchy)
-                   .HasMaxLength(400)
-                   .IsUnicode(false);
+        entity.Property(e => e.GrandValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("GRAND value");
 
-            entity.Property(e => e.ParentComment)
-                   .HasMaxLength(200)
-                   .IsUnicode(false)
-                   .HasColumnName("PARENT comment");
+        entity.Property(e => e.GreatDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("GREAT description");
 
-            entity.Property(e => e.ParentDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("PARENT description");
+        entity.Property(e => e.GreatId).HasColumnName("GREAT ID");
 
-            entity.Property(e => e.ParentId).HasColumnName("PARENT ID");
+        entity.Property(e => e.GreatValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("GREAT value");
 
-            entity.Property(e => e.ParentValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("PARENT value");
-         });
+        entity.Property(e => e.GroupTitle)
+                  .HasMaxLength(50)
+                  .IsUnicode(false);
 
-         modelBuilder.Entity<VQuestionStandardChoices>(entity =>
-         {
-            entity.HasNoKey();
+        entity.Property(e => e.Hierarchy)
+                  .HasMaxLength(400)
+                  .IsUnicode(false);
 
-            entity.ToView("vQuestionStandardChoices", "app");
+        entity.Property(e => e.ParentDescription)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("PARENT description");
 
-            entity.Property(e => e.AncestorDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("ANCESTOR description");
+        entity.Property(e => e.ParentId).HasColumnName("PARENT ID");
 
-            entity.Property(e => e.AncestorId).HasColumnName("ANCESTOR ID");
+        entity.Property(e => e.ParentValue)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("PARENT value");
 
-            entity.Property(e => e.AncestorValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("ANCESTOR value");
+        entity.Property(e => e.Question)
+                  .IsRequired()
+                  .IsUnicode(false);
 
-            entity.Property(e => e.AnswerCodeSetFk).HasColumnName("AnswerCodeSetFK");
+        entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
-            entity.Property(e => e.AntiquityDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("ANTIQUITY description");
+        entity.Property(e => e.QuestionKey)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.AntiquityId).HasColumnName("ANTIQUITY ID");
+        entity.Property(e => e.QuestionTitle)
+                  .HasMaxLength(200)
+                  .IsUnicode(false);
+      });
 
-            entity.Property(e => e.AntiquityValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("ANTIQUITY value");
+      modelBuilder.Entity<VQuestionStandardChoicesCondensed>(entity =>
+      {
+        entity.HasNoKey();
 
-            entity.Property(e => e.ChildDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("CHILD description");
+        entity.ToView("vQuestionStandardChoices_Condensed", "app");
 
-            entity.Property(e => e.ChildId).HasColumnName("CHILD ID");
+        entity.Property(e => e.ChoiceCode)
+                  .HasMaxLength(30)
+                  .IsUnicode(false)
+                  .HasColumnName("Choice Code");
 
-            entity.Property(e => e.ChildValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("CHILD value");
+        entity.Property(e => e.CodeSet).HasColumnName("Code Set");
 
-            entity.Property(e => e.FormFk).HasColumnName("FormFK");
+        entity.Property(e => e.CodeSetComment)
+                  .HasMaxLength(200)
+                  .IsUnicode(false)
+                  .HasColumnName("Code Set Comment");
 
-            entity.Property(e => e.FormSectionFk).HasColumnName("FormSectionFK");
+        entity.Property(e => e.Order).HasColumnName("order");
 
-            entity.Property(e => e.GrandDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("GRAND description");
+        entity.Property(e => e.Question)
+                  .IsRequired()
+                  .IsUnicode(false);
 
-            entity.Property(e => e.GrandId).HasColumnName("GRAND ID");
+        entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
-            entity.Property(e => e.GrandValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("GRAND value");
+        entity.Property(e => e.QuestionKey)
+                  .IsRequired()
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
 
-            entity.Property(e => e.GreatDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("GREAT description");
+        entity.Property(e => e.ValidChoice)
+                  .HasMaxLength(400)
+                  .IsUnicode(false)
+                  .HasColumnName("Valid Choice");
+      });
 
-            entity.Property(e => e.GreatId).HasColumnName("GREAT ID");
+      modelBuilder.Entity<VFSODPatientDetail>(entity =>
+     {
+       entity.HasNoKey();
 
-            entity.Property(e => e.GreatValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("GREAT value");
+       entity.ToView("vFSODPatientDetail", "shared");
 
-            entity.Property(e => e.GroupTitle)
-                   .HasMaxLength(50)
-                   .IsUnicode(false);
+       entity.Property(e => e.VISN)
+              .HasMaxLength(4)
+              .IsUnicode(false);
 
-            entity.Property(e => e.Hierarchy)
-                   .HasMaxLength(400)
-                   .IsUnicode(false);
+       entity.Property(e => e.Facility)
+              .HasMaxLength(356)
+              .IsUnicode(false);
 
-            entity.Property(e => e.ParentDescription)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("PARENT description");
+       entity.Property(e => e.District)
+              .HasMaxLength(10)
+              .IsUnicode(false);
 
-            entity.Property(e => e.ParentId).HasColumnName("PARENT ID");
+       entity.Property(e => e.Division)
+              .HasMaxLength(356)
+              .IsUnicode(false);
 
-            entity.Property(e => e.ParentValue)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("PARENT value");
+       entity.Property(e => e.Name)
+              .HasMaxLength(30)
+              .IsUnicode(false);
 
-            entity.Property(e => e.Question)
-                   .IsRequired()
-                   .IsUnicode(false);
+       entity.Property(e => e.PTFSSN)
+              .HasMaxLength(9)
+              .IsUnicode(false);
 
-            entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+       entity.Property(e => e.FSODSSN)
+              .HasMaxLength(9)
+              .IsUnicode(false);
 
-            entity.Property(e => e.QuestionKey)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
+       entity.Property(e => e.FiscalPeriod)
+              .HasMaxLength(6)
+              .IsUnicode(false);
+     });
 
-            entity.Property(e => e.QuestionTitle)
-                   .HasMaxLength(200)
-                   .IsUnicode(false);
-         });
+      OnModelCreatingPartial(modelBuilder);
 
-         modelBuilder.Entity<VQuestionStandardChoicesCondensed>(entity =>
-         {
-            entity.HasNoKey();
+      //prevent requires a primary key to be defined error
+      base.OnModelCreating(modelBuilder);
+    }
 
-            entity.ToView("vQuestionStandardChoices_Condensed", "app");
-
-            entity.Property(e => e.ChoiceCode)
-                   .HasMaxLength(30)
-                   .IsUnicode(false)
-                   .HasColumnName("Choice Code");
-
-            entity.Property(e => e.CodeSet).HasColumnName("Code Set");
-
-            entity.Property(e => e.CodeSetComment)
-                   .HasMaxLength(200)
-                   .IsUnicode(false)
-                   .HasColumnName("Code Set Comment");
-
-            entity.Property(e => e.Order).HasColumnName("order");
-
-            entity.Property(e => e.Question)
-                   .IsRequired()
-                   .IsUnicode(false);
-
-            entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
-
-            entity.Property(e => e.QuestionKey)
-                   .IsRequired()
-                   .HasMaxLength(20)
-                   .IsUnicode(false);
-
-            entity.Property(e => e.ValidChoice)
-                   .HasMaxLength(400)
-                   .IsUnicode(false)
-                   .HasColumnName("Valid Choice");
-         });
-
-         modelBuilder.Entity<VFSODPatientDetail>(entity =>
-        {
-           entity.HasNoKey();
-
-           entity.ToView("vFSODPatientDetail", "shared");
-
-           entity.Property(e => e.VISN)
-               .HasMaxLength(4)
-               .IsUnicode(false);
-
-           entity.Property(e => e.Facility)
-               .HasMaxLength(356)
-               .IsUnicode(false);
-
-           entity.Property(e => e.District)
-               .HasMaxLength(10)
-               .IsUnicode(false);
-
-           entity.Property(e => e.Division)
-               .HasMaxLength(356)
-               .IsUnicode(false);
-
-           entity.Property(e => e.Name)
-               .HasMaxLength(30)
-               .IsUnicode(false);
-
-           entity.Property(e => e.PTFSSN)
-               .HasMaxLength(9)
-               .IsUnicode(false);
-
-           entity.Property(e => e.FSODSSN)
-               .HasMaxLength(9)
-               .IsUnicode(false);
-
-           entity.Property(e => e.FiscalPeriod)
-               .HasMaxLength(6)
-               .IsUnicode(false);
-        });
-
-         OnModelCreatingPartial(modelBuilder);
-
-         //prevent requires a primary key to be defined error
-         base.OnModelCreating(modelBuilder);
-      }
-
-      partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-   }
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+  }
 }

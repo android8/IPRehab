@@ -29,7 +29,7 @@ function pageLoad(): void {
     }
     else {
       console.log('screen is >= 768 pixels wide');
-      return "-75px";
+      return "-70px";
     }
   }
 

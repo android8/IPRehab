@@ -1,5 +1,4 @@
-﻿using IPRehabModel;
-using IPRehabRepository.Contracts;
+﻿using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -59,10 +58,11 @@ namespace IPRehabWebAPI2.Controllers
           break;
       }
 
-      int defaultDate = int.Parse($"{DateTime.Today.Year}{quarter}") - 1;
+      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{quarter}") - 1;
 
       var firstGrant = await _patientRepository.FindByCondition(x =>
-                         defaultDate == x.FiscalPeriodInt || defaultDate - 1 == x.FiscalPeriodInt).OrderByDescending(x => x.FiscalPeriodInt)
+                         defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt)
+                          .OrderByDescending(x => x.FiscalPeriodInt)
                         .Select(p => HydrateDTO.HydrateUserFacilityGrant(p)).FirstOrDefaultAsync();
 
       List<PatientDTO> patients;

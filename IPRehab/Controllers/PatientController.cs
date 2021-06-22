@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
@@ -26,12 +28,41 @@ namespace IPRehab.Controllers
     {
       ViewBag.Title = "Patient";
       List<PatientDTO> patients = new List<PatientDTO>();
+
+      string sessionCriteria;
+      CancellationToken cancellationToken = new CancellationToken();
+      await HttpContext.Session.LoadAsync(cancellationToken);
+      sessionCriteria = HttpContext.Session.GetString("SearchCriteria");
+      if (!string.IsNullOrEmpty(sessionCriteria))
+      {
+        if (criteria != sessionCriteria && string.IsNullOrEmpty(criteria))
+        {
+          //session cookie and the parameter (blank) are different, use SearchCriteria in session cookie
+          criteria = sessionCriteria.ToString();
+          ViewBag.PreviousCriteria = sessionCriteria;
+        }
+        else
+        {
+          //parameter is not blank then update SearchCriteria in the session cookie value
+          HttpContext.Session.SetString("SearchCriteria", criteria);
+          ViewBag.PreviousCriteria = criteria;
+        }
+      }
+      else
+      {
+        if (!string.IsNullOrEmpty(criteria))
+        {
+          //no cookie and the parameter is not blank then update SearchCriteria in the session cookie value
+          HttpContext.Session.SetString("SearchCriteria", criteria);
+          ViewBag.PreviousCriteria = criteria;
+        }
+      }
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
         HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}"));
 
-        string httpMsgContentReadMethod = "ReadAsStringAsync";
+        string httpMsgContentReadMethod = "ReadAsStreamAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
         {
           try
@@ -39,10 +70,10 @@ namespace IPRehab.Controllers
             switch (httpMsgContentReadMethod)
             {
               //use Newtonsoft json deserializer
-              case "ReadAsStringAsync":
-                string patientsString = await Res.Content.ReadAsStringAsync();
-                patients = Newtonsoft.Json.JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
-                break;
+              //case "ReadAsStringAsync":
+              //  string patientsString = await Res.Content.ReadAsStringAsync();
+              //  patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
+              //  break;
 
               case "ReadAsAsync":
                 patients = await Res.Content.ReadAsAsync<List<PatientDTO>>();
@@ -125,10 +156,10 @@ namespace IPRehab.Controllers
             switch (httpMsgContentReadMethod)
             {
               //use Newtonsoft json deserializer
-              case "ReadAsStringAsync":
-                string patientsString = await Res.Content.ReadAsStringAsync();
-                patient = Newtonsoft.Json.JsonConvert.DeserializeObject<PatientDTO>(patientsString);
-                break;
+              //case "ReadAsStringAsync":
+              //  string patientsString = await Res.Content.ReadAsStringAsync();
+              //  patient = JsonConvert.DeserializeObject<PatientDTO>(patientsString);
+              //  break;
 
               case "ReadAsAsync":
                 patient = await Res.Content.ReadAsAsync<PatientDTO>();

@@ -18,6 +18,7 @@ namespace IPRehabWebAPI2.Helpers
     {
       return new QuestionDTO
       {
+        Form = q.FormFkNavigation.CodeDescription,
         QuestionID = q.QuestionId,
         QuestionKey = q.QuestionKey,
         QuestionTitle = q.QuestionTitle,
@@ -26,13 +27,13 @@ namespace IPRehabWebAPI2.Helpers
         AnswerCodeSetID = q.AnswerCodeSetFk,
         AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue,
         DisplayOrder = q.Order,
-        ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation
+        ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x=>x.SortOrder)
                         .Select(s => new CodeSetDTO
                         {
                           CodeSetID = s.CodeSetId,
                           CodeSetParent = s.CodeSetParent,
                           CodeValue = s.CodeValue,
-                          CodeDescription = s.CodeDescription,
+                          CodeDescription = $"{s.CodeValue}. {s.CodeDescription}",
                           Comment = s.Comment
                         }).ToList()
       };

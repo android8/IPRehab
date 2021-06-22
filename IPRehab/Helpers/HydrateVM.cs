@@ -5,26 +5,27 @@ using System.Collections.Generic;
 
 namespace IPRehab.Helpers
 {
-   public class HydrateVM
-   {
-      public static QuestionWithSelectItems Hydrate(QuestionDTO dto)
+  public class HydrateVM
+  {
+    public static QuestionWithSelectItems Hydrate(QuestionDTO dto)
+    {
+      QuestionWithSelectItems qws = new QuestionWithSelectItems();
+      qws.Form = dto.Form;
+      qws.QuestionID = dto.QuestionID;
+      qws.QuestionKey = dto.QuestionKey;
+      qws.QuestionTitle = dto.QuestionTitle;
+      qws.Question = dto.Question;
+      qws.GroupTitle = dto.GroupTitle;
+      qws.AnswerCodeSetID = dto.AnswerCodeSetID;
+      qws.AnswerCodeCategory = dto.AnswerCodeCategory;
+      qws.ChoiceList = new List<SelectListItem>();
+      foreach (var c in dto.ChoiceList)
       {
-         QuestionWithSelectItems qws = new QuestionWithSelectItems();
-         qws.QuestionID = dto.QuestionID;
-         qws.QuestionKey = dto.QuestionKey;
-         qws.Question = dto.Question;
-         qws.QuestionTitle = dto.QuestionTitle;
-         qws.GroupTitle = dto.GroupTitle;
-         qws.AnswerCodeSetID = dto.AnswerCodeSetID;
-         qws.AnswerCodeCategory = dto.AnswerCodeCategory;
-         qws.ChoiceList = new List<SelectListItem>();
-         foreach (var c in dto.ChoiceList)
-         {
-            bool selecteThis = false; //ToDo: get the answer ID to determine if this item should be selected
-            SelectListItem selectItem = new SelectListItem { Text = c.CodeDescription, Value = c.CodeSetID.ToString(),Selected= selecteThis};
-            qws.ChoiceList.Add(selectItem);
-         }
-         return qws;
+        bool selecteThis = false; //ToDo: get the answer ID to determine if this item should be selected
+        SelectListItem selectItem = new SelectListItem { Text = c.CodeDescription, Value = c.CodeSetID.ToString(), Selected = selecteThis };
+        qws.ChoiceList.Add(selectItem);
       }
-   }
+      return qws;
+    }
+  }
 }
