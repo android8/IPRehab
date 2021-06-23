@@ -72,6 +72,7 @@ namespace IPRehab.Controllers
         if (string.IsNullOrEmpty(stage))
         {
           Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/GetAll"));
+          ViewBag.Title = "IRF-PAI Form";
         }
         else
         { 

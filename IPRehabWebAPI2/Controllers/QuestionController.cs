@@ -27,9 +27,9 @@ namespace IPRehabWebAPI2.Controllers
     public ActionResult GetAll()
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
-                        .OrderBy(x => x.FormFkNavigation.CodeDescription)
+                        .OrderBy(x=>x.Order).ThenBy(x => x.QuestionKey)
                         .Select(q => HydrateDTO.HydrateQuestion(q)
-                      ).ToList().OrderBy(x=>x.Form).ThenBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+                      ).ToList();
 
       return Ok(questions);
     }

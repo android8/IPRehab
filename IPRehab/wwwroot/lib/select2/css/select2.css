@@ -116,6 +116,7 @@
   filter: alpha(opacity=0); }
 
 .select2-hidden-accessible {
+  display:hidden;
   border: 0 !important;
   clip: rect(0 0 0 0) !important;
   -webkit-clip-path: inset(50%) !important;

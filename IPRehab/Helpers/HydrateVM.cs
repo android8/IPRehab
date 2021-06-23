@@ -2,6 +2,7 @@
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace IPRehab.Helpers
 {
@@ -15,7 +16,8 @@ namespace IPRehab.Helpers
       qws.QuestionKey = dto.QuestionKey;
       qws.QuestionTitle = dto.QuestionTitle;
       qws.Question = dto.Question;
-      qws.GroupTitle = dto.GroupTitle;
+      qws.GroupTitle = string.IsNullOrEmpty(dto.GroupTitle) ? string.Empty: 
+        Regex.IsMatch(dto.GroupTitle, @"^\d")? dto.GroupTitle.Remove(0,2): dto.GroupTitle;
       qws.AnswerCodeSetID = dto.AnswerCodeSetID;
       qws.AnswerCodeCategory = dto.AnswerCodeCategory;
       qws.ChoiceList = new List<SelectListItem>();

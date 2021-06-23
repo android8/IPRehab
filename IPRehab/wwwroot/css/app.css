@@ -1,25 +1,30 @@
 ﻿/*sandwitch button*/
-.navbar-light .navbar-toggler-icon
-{
+.navbar-light .navbar-toggler-icon {
   background-color: white;
-/*  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/
+  /*  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/
 }
 
 .banner {
   background-color: #0e2640 !important;
   color: white;
 }
-.banner .nav-link {
-  color: white !important;
+
+  .banner .nav-link {
+    color: white !important;
+  }
+
+  .banner .navbar-brand {
+    color: white !important;
+  }
+
+.fixed {
+  position: fixed;
 }
 
-.banner .navbar-brand {
-  color: white !important;
-}
-
-.main{
+.main {
   margin-top: 20px !important;
 }
+
 .footer {
   position: fixed;
   bottom: 0;
@@ -30,36 +35,52 @@
 }
 
 th {
+  padding: 0 5px;
+  text-align: center !important;
+}
+
+td{
   padding:0 5px;
-  text-align:center !important;
+  text-align:left;
 }
 
-.commandBtn{
-  margin:5px 0;
-}
-
-.questionTitle {
-   background-color: #040534;
-   color:gold;
+.commandBtn {
+  margin: 5px 0;
 }
 
 .questionTitle {
-   background-color: #040534;
-   color: gold;
-   height: 2px;
+  background-color: #040534;
+  color: gold;
+  height: 2px;
+}
+
+.questionText{
+  font-weight:bold;
+  text-align:justify;
+}
+
+.patientRow {
+  background-color: #0e2640;
+  color:white;
 }
 
 .wrapLongOption {
-   width: 250px;
-   word-wrap: break-word !important;
-   text-overflow: inherit !important;
-   white-space: normal !important;
+  display: flex;
+  width: 250px;
+  word-wrap: break-word !important;
+  text-overflow: inherit !important;
+  white-space: normal !important;
 }
 
-.rowNumber{
-  background-color:lightgrey;
+.select2-results__options {
+  background-color: black;
+  color: gold;
 }
 
-.select2-results__options{
-  background-color:lightgrey;
+.select2-selection__rendered {
+  color: mediumblue !important;
+}
+
+.paddingTop{
+  padding-top:60px
 }
