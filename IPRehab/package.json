@@ -2,12 +2,15 @@
   "name": "myproject",
   "version": "1.0.0",
   "dependencies": {
-    "@types/jquery": "^3.5.5"
+    "@types/jquery": "^3.5.5",
+    "sass": "^1.35.1"
   },
   "devDependencies": {
     "bootstrap-ui": "^3.1.0",
     "del": "^6.0.0",
-    "gulp": "^3.9.1",
-    "materialize-css": "^1.0.0"
+    "gulp": "^4.0.2",
+    "gulp-sass": "^5.0.0",
+    "materialize-css": "^1.0.0",
+    "node": "^10.24.1"
   }
 }
