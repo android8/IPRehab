@@ -39,13 +39,11 @@ namespace IPRehab.Controllers
         {
           //session cookie and the parameter (blank) are different, use SearchCriteria in session cookie
           criteria = sessionCriteria.ToString();
-          ViewBag.PreviousCriteria = sessionCriteria;
         }
         else
         {
           //parameter is not blank then update SearchCriteria in the session cookie value
           HttpContext.Session.SetString("SearchCriteria", criteria);
-          ViewBag.PreviousCriteria = criteria;
         }
       }
       else
@@ -54,13 +52,23 @@ namespace IPRehab.Controllers
         {
           //no cookie and the parameter is not blank then update SearchCriteria in the session cookie value
           HttpContext.Session.SetString("SearchCriteria", criteria);
-          ViewBag.PreviousCriteria = criteria;
         }
       }
+         
+      ViewBag.PreviousCriteria = criteria;
+      
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-        HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}"));
+        HttpResponseMessage Res;
+        if (string.IsNullOrEmpty(criteria))
+        {
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient"));
+        }
+        else
+        {
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}"));
+        }
 
         string httpMsgContentReadMethod = "ReadAsStreamAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")

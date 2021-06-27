@@ -5,15 +5,24 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
   }
 
-  <div class="flex-column">
-    <div>
-      <h1 class="fixed">@ViewBag.Title</h1>
+  <aside>
+    <div class="flex-start-row-nowrap">
+      <div>
+        <input type="checkbox" id="createNew" />New
+        <a id="initial" asp-action="Create" asp-stageType="Initial" class="btn-sm btn-primary">Initial</a>
+        <a id="interim" asp-action="Create" asp-stageType="Initerim" class="btn-sm btn-primary">Interim</a>
+        <a id="discharge" asp-action="Create" asp-stageType="Discharge" class="btn-sm btn-primary">Discharge</a>
+        <a id="followup" asp-action="Create" asp-stageType="Followup" class="btn-sm btn-primary">Follow Up</a>
+        <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients Index</a>
+      </div>
+    </div>
+  </aside>
+
+  <div>
+    <div class="fixed">
+      <h1>@ViewBag.Title</h1>
     </div>
     <div class="paddingTop">
-      <p class="fixed">
-        <a asp-action="Create" class="btn-sm btn-primary">Create New</a>
-        <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients Index</a>
-      </p>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -38,102 +47,102 @@
               @if (thisQuestionTitle != q.QuestionTitle)
               {
                 thisQuestionTitle = q.QuestionTitle;
-          <tr>
-            <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
-          </tr>
+                <tr>
+                  <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
+                </tr>
               }
-          <tr>
-            <td class="questionText">
-              @if (q.Question != currentQuestion)
-              {
-                currentQuestion = q.Question;
-                @Html.DisplayFor(m => q.Question)
-              }
-            </td>
-            <td>
-              @if (string.IsNullOrEmpty(q.GroupTitle))
-              {
-                if (q.QuestionKey != "AssessmentCompleted")
-                {
-                  @($"{q.QuestionKey}")
-                }
-              }
-              else
-              {
-                @($"{q.QuestionKey}-{q.GroupTitle}")
-              }
-            </td>
-            <td id="answer">
-              @{
-              int choiceCount = q.ChoiceList.Count();
-              string choicePrompt = $"select 1 of {choiceCount} choices";
-
-              switch (choiceCount)
-              {
-                case int n when n > 3:
-                {
-                  @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new {@id = q.QuestionKey, @class = "select2 wrapLongOption", @readonly = "readonly" })
-                  <br />
-                }
-                break;
-
-                case int n when n >= 2 && n <= 3:
-                {
-                  foreach (var c in q.ChoiceList)
+              <tr>
+                <td class="questionText">
+                  @if (q.Question != currentQuestion)
                   {
-                    if (c.Selected)
+                    currentQuestion = q.Question;
+                    @Html.DisplayFor(m => q.Question)
+                  }
+                </td>
+                <td>
+                  @if (string.IsNullOrEmpty(q.GroupTitle))
+                  {
+                    if (q.QuestionKey != "AssessmentCompleted")
                     {
-              <div>
-                <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
-              </div>
-                    }
-                    else
-                    {
-              <div>
-                <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
-              </div>
+                      @($"{q.QuestionKey}")
                     }
                   }
-                }
-                break;
-
-                case int n when n == 0:
-                {
-                  switch (q.AnswerCodeCategory)
+                  else
                   {
-                    case "YN":
-                    case "Checked":
-                    {
-                      bool isChecked = false; //ToDO: eval
-                      @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = q.QuestionKey, @class = "optionStyle" /*, @readonly = "readonly"*/ } });
-                    }
-                    break;
+                    @($"{q.QuestionKey}-{q.GroupTitle}")
+                  }
+                </td>
+                <td id="answer">
+                  @{
+                    int choiceCount = q.ChoiceList.Count();
+                    string choicePrompt = $"select 1 of {choiceCount} choices";
 
-                    case "Date":
+                    switch (choiceCount)
                     {
-                    <input type="date" id="@q.QuestionKey" />
-                    }
-                    break;
+                      case int n when n > 3:
+                        {
+                          @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = q.QuestionKey, @class = "select2 wrapLongOption", @readonly = "readonly" })
+                          <br />
+                        }
+                        break;
 
-                    case "ICD":
-                    {
-                      @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                    }
-                    break;
+                      case int n when n >= 2 && n <= 3:
+                        {
+                          foreach (var c in q.ChoiceList)
+                          {
+                            if (c.Selected)
+                            {
+                              <div>
+                                <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
+                              </div>
+                            }
+                            else
+                            {
+                              <div>
+                                <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
+                              </div>
+                            }
+                          }
+                        }
+                        break;
 
-                    case "FreeText":
-                    {
-                      @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                      break;
+                      case int n when n == 0:
+                        {
+                          switch (q.AnswerCodeCategory)
+                          {
+                            case "YN":
+                            case "Checked":
+                              {
+                                bool isChecked = false; //ToDO: eval
+                                @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = q.QuestionKey, @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                              }
+                              break;
+
+                            case "Date":
+                              {
+                                <input type="date" id="@q.QuestionKey" />
+                              }
+                              break;
+
+                            case "ICD":
+                              {
+                                @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                              }
+                              break;
+
+                            case "FreeText":
+                              {
+                                @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                                break;
+                              }
+                          }
+                        }
+                        break;
                     }
                   }
-                }
-                break;
-              }
-              }
-            </td>
-          </tr>
-          }
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>

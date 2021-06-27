@@ -33,32 +33,10 @@ namespace IPRehabWebAPI2.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatient(string criteria)
     {
-      string quarter = string.Empty; ;
-      switch (DateTime.Today.Month)
-      {
-        case 10:
-        case 11:
-        case 12:
-          quarter = "1";
-          break;
-        case 1:
-        case 2:
-        case 3:
-          quarter = "2";
-          break;
-        case 4:
-        case 5:
-        case 6:
-          quarter = "3";
-          break;
-        case 7:
-        case 8:
-        case 9:
-          quarter = "4";
-          break;
-      }
+      int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1};
+      var currentQuarter = quarters[DateTime.Today.Month - 1];
 
-      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{quarter}") - 1;
+      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarter}");
 
       var firstGrant = await _patientRepository.FindByCondition(x =>
                          defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt)
