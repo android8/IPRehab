@@ -16,10 +16,6 @@
 .fixed {
   position: fixed; }
 
-.left {
-  top: -200px;
-  left: 200px; }
-
 .main {
   margin-top: 20px !important; }
 
@@ -30,6 +26,11 @@
   white-space: nowrap;
   line-height: 20px !important;
   background-color: #0e2640; }
+
+alert-info {
+  color: #ff6a00;
+  background-color: #f8edb4;
+  /*border-color: #bee5eb;*/ }
 
 th {
   padding: 0 5px;
@@ -191,11 +192,11 @@ td {
 .flex-container-evenly-justified {
   display: flex;
   flex-flow: row nowrap;
-  align-items: baseline;
   /*vertical alignment*/
-  justify-content: space-between;
+  align-items: center;
   /*horizontal aligment evenly*/
-  width: 100%; }
+  justify-content: space-between;
+  width: 80%; }
 
 .flex-item-left-justify {
   align-self: flex-start; }
