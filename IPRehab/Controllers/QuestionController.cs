@@ -35,9 +35,9 @@ namespace IPRehab.Controllers
     }
 
     // GET: QuestionController/Create
-    public ActionResult Create()
+    public ActionResult Create(string stage)
     {
-      return View();
+      return RedirectToAction(nameof(Edit), new { stage = stage, redirectFrom = "Create" });
     }
 
     // POST: QuestionController/Create
@@ -60,24 +60,62 @@ namespace IPRehab.Controllers
     /// <param name="id"></param>
     /// <returns></returns>
     // GET: QuestionController/Edit/5
-    public async Task<ActionResult> Edit(string stage, int? id)
+    public async Task<ActionResult> Edit(string stage, string patientID, int episodeID, string redirectFrom)
     {
-      ViewBag.Title = stage == "Followup"? "Follow Up": stage;
+      string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
+      string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : stage == "Followup" ? "Follow Up" : $"{stage}";
+      ViewBag.Title = $"{title}";
+      ViewBag.Action = $"{action}";
+      string badgeBackgroundColor=string.Empty;
+
+      switch (stage)
+      {
+        case "":
+          badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionCmd1";
+          break;
+        case "Initial":
+          badgeBackgroundColor = (action == "Edit") ? "badge-info" : "createActionCmd2";
+          break;
+        case "Interim":
+          badgeBackgroundColor = (action == "Edit") ? "badge-secondary" : "createActionCmd3";
+          break;
+        case "Discharge":
+          badgeBackgroundColor = (action == "Edit") ? "badge-success" : "createActionCmd4";
+          break;
+        case "Followup":
+          badgeBackgroundColor = (action == "Edit" ? "badge-warning" : "createActionCmd5";
+          break;
+      }
+      ViewBag.ModeColor = badgeBackgroundColor;
+ 
       List<QuestionDTO> questions = new List<QuestionDTO>();
+      bool includeAnswer = (action == "Edit");
+
+      RehabActionViewModel actionButtonVM = new RehabActionViewModel();
+      actionButtonVM.EpisodeID = episodeID;
+      actionButtonVM.PatientID = patientID;
+      ViewBag.ActionBtnVM = actionButtonVM;
 
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
         HttpResponseMessage Res;
-        if (string.IsNullOrEmpty(stage))
+        switch (stage)
         {
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/GetAll"));
-          ViewBag.Title = "IRF-PAI Form";
+          case "Initial":
+          case "Interim":
+          case "Discharge":
+          case "Followup":
+            //Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage"));
+            Res = await APIAgent.GetDataAsync(
+              new Uri($"{_apiBaseUrl}/api/Question/GetStage?stageName={stage}&includeAnswer={includeAnswer}"));
+            break;
+          default:
+            Res = await APIAgent.GetDataAsync(
+              new Uri($"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}"));
+            break;
         }
-        else
-        { 
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage")); 
-        }
+
         string httpMsgContentReadMethod = "ReadAsStringAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
         {

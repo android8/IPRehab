@@ -1,15 +1,22 @@
 ﻿@model IEnumerable<QuestionWithSelectItems>
 
 @{
-  ViewData["Title"] = ViewBag.Title;
+  ViewData["Title"] = $"{ViewBag.Rediect}{ViewBag.Title}";
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <aside>
   <div class="flex-container-evenly-justified fixed">
-    <h1>@ViewBag.Title</h1>
-    <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients Index</a>
-    @{await Html.RenderPartialAsync("_RehabActionBtns");}
+    <div class="flex-container-evenly-justified">
+      <h1>@ViewBag.Title</h1>
+      <span class="badge (@ViewBag.ModeColor)">@ViewBag.action</span>
+    </div>
+    <div class="flex-container-evenly-justified">
+      @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}
+      &nbsp;
+      <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients List</a>
+    </div>
+    <div style="width:50px"></div>
   </div>
 </aside>
 
@@ -144,6 +151,7 @@
 @section Scripts {
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
   <script type="module" src="~/lib/select2/js/select2.js"></script>
+  <script type="module" src="~/js/app/form.js"></script>
   <script>
     $(function () {
       var $select2 = $('.select2').select2();

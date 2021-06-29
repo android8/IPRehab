@@ -38,10 +38,6 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
-    <Content Remove="wwwroot\js\app\animateBanner.js" />
-    <Content Remove="wwwroot\js\app\animateBanner.js.map" />
-    <Content Remove="wwwroot\js\app\app.js" />
-    <Content Remove="wwwroot\js\app\app.js.map" />
     <Content Remove="wwwroot\js\file.ts" />
   </ItemGroup>
 
@@ -87,8 +83,10 @@
     <None Include="compilerconfig.json" />
     <None Include="wwwroot\js\app\animateBanner.js" />
     <None Include="wwwroot\js\app\animateBanner.js.map" />
-    <None Include="wwwroot\js\app\app.js" />
-    <None Include="wwwroot\js\app\app.js.map" />
+    <None Include="wwwroot\js\app\form.js" />
+    <None Include="wwwroot\js\app\form.js.map" />
+    <None Include="wwwroot\js\app\patientList.js" />
+    <None Include="wwwroot\js\app\patientList.js.map" />
     <None Include="wwwroot\materialize-css\CHANGELOG.md" />
     <None Include="wwwroot\materialize-css\dist\.DS_Store" />
     <None Include="wwwroot\materialize-css\dist\css\.DS_Store" />
@@ -98,6 +96,12 @@
     <None Include="wwwroot\materialize-css\Gruntfile.js" />
     <None Include="wwwroot\materialize-css\LICENSE" />
     <None Include="wwwroot\materialize-css\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Scripts\app\patientList - Copy.js.map">
+      <DependentUpon>patientList.js.map</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

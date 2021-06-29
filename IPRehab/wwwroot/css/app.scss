@@ -17,13 +17,22 @@
     color: white !important;
   }
 
+#cookieConsent{
+  position:sticky !important;
+  background-color:#00ffff;
+}
+
 .fixed {
-  position: fixed;
+  position: fixed !important;
+  width:100%;
+  background-color:white;
+  margin:0 0 30% 0;
+  /*padding-top:10px*/
 }
 
 .main {
-  margin-top: 20px !important;
-}
+/*  margin-top: 20px !important;
+*/}
 
 .footer {
   position: fixed;
@@ -33,6 +42,7 @@
   line-height: 20px !important;
   background-color: #0e2640;
 }
+
 alert-info {
   color: #ff6a00;
   background-color: #becff4;
@@ -49,8 +59,9 @@ td{
   text-align:left;
 }
 
+
 .commandBtn {
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .questionTitle {
@@ -80,7 +91,7 @@ td{
 .select2-results__options {
   background-color: black;
   color: gold;
-  padding: 5px 5px 5px 0;
+  padding: 0 20px;
 }
 
 .select2-selection__rendered {
@@ -104,6 +115,10 @@ td{
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.roate2 {
+  transform: rotate(-90deg) translate(0px,-40px);
 }
 
 .flex-start-row-nowrap {
@@ -225,7 +240,6 @@ td{
   align-items: center;
   /*horizontal aligment evenly*/
   justify-content: space-between;
-  width: 80%;
 }
 
 .flex-item-left-justify {
@@ -234,4 +248,22 @@ td{
 
 .flex-item-right-justify {
   align-self: flex-end;
+}
+
+.createActionCmd1{
+  background-color:#b200ff;
+}
+
+.createActionCmd2 {
+  background-color: #00ffff;
+}
+
+.createActionCmd3 {
+  background-color: #ff6a00;
+}
+.createActionCmd4 {
+  background-color: #ff006e;
+}
+.createActionCmd5 {
+  background-color: #4cff00;
 }

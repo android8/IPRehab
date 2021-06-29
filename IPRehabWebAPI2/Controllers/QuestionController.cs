@@ -24,13 +24,16 @@ namespace IPRehabWebAPI2.Controllers
 
     [Route("GetAll")]
     [HttpGet()]
-    public ActionResult GetAll()
+    public ActionResult GetAll(bool includeAnswer)
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
-                        .OrderBy(x=>x.Order).ThenBy(x => x.QuestionKey)
+                        .OrderBy(x => x.Order).ThenBy(x => x.QuestionKey)
                         .Select(q => HydrateDTO.HydrateQuestion(q)
                       ).ToList();
-
+      if (includeAnswer)
+      {
+        //populate answers
+      }
       return Ok(questions);
     }
 
@@ -52,34 +55,45 @@ namespace IPRehabWebAPI2.Controllers
 
     [Route("GetStage")]
     [HttpGet()]
-    public IActionResult GetStage(string stageName)
+    public IActionResult GetStage(string stageName, bool includeAnswer)
     {
-      IOrderedEnumerable<TblQuestion> questions;
-      if (stageName != "Interim")
+      switch (stageName)
       {
-        questions = (IOrderedEnumerable<TblQuestion>)_questionRepository.FindByCondition(
-          x => x.Active.Value != false && !"2. Discharge Goal".Contains(x.GroupTitle) &&
-          x.TblQuestionStage.Where(
-             s => s.QuestionIdFk == x.QuestionId &&
-             s.StageFkNavigation.CodeValue == stageName
-          ).Any())
-          .Select(q => HydrateDTO.HydrateQuestion(q))
-          .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+        case "Interim":
+          {
+            var questions = _questionRepository.FindByCondition(
+              x => x.Active.Value != false && !"2. Discharge Goal".Contains(x.GroupTitle) &&
+              x.TblQuestionStage.Where(
+                 s => s.QuestionIdFk == x.QuestionId &&
+                 s.StageFkNavigation.CodeValue == stageName
+              ).Any())
+              .Select(q => HydrateDTO.HydrateQuestion(q))
+              .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+            if (includeAnswer)
+            {
+              //populate answers
+            }
+            return Ok(questions);
+          }
+        default:
+          {
+            var questions = _questionRepository.FindByCondition(x => x.Active.Value != false &&
+              x.TblQuestionStage.Where(
+                s => s.QuestionIdFk == x.QuestionId &&
+                    s.StageFkNavigation.CodeValue == stageName
+              ).Any()
+            )
+            .Select(
+               q => HydrateDTO.HydrateQuestion(q)
+            )
+            .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+            if (includeAnswer)
+            {
+              //populate answers
+            }
+            return Ok(questions);
+          }
       }
-      else
-      {
-        questions = (IOrderedEnumerable<TblQuestion>)_questionRepository.FindByCondition(x => x.Active.Value != false &&
-          x.TblQuestionStage.Where(
-            s => s.QuestionIdFk == x.QuestionId &&
-                s.StageFkNavigation.CodeValue == stageName
-          ).Any()
-        )
-        .Select(
-           q => HydrateDTO.HydrateQuestion(q)
-        )
-        .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
-      }
-      return Ok(questions);
     }
 
     /// <summary>
@@ -120,7 +134,7 @@ namespace IPRehabWebAPI2.Controllers
     public IActionResult GetInterimStage()
     {
       var questions = _questionRepository.FindByCondition(
-                        x => x.Active.Value != false && 
+                        x => x.Active.Value != false &&
                         (!"2. Discharge Goal".Contains(x.GroupTitle) || string.IsNullOrEmpty(x.GroupTitle)) &&
                         x.TblQuestionStage.Where(
                            s => s.QuestionIdFk == x.QuestionId &&

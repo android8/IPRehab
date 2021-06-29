@@ -28,14 +28,6 @@ function pageLoad() {
         $('#recordCount').text('');
         $this.attr('href', href);
     });
-    //handle rehab action checkbox
-    $('#optionCreate').on('click', function () {
-        alert('create option box is checked');
-        let optionCreate = $(this).val();
-        if (optionCreate == 'true') {
-            alert('create buttons are set');
-        }
-    });
 }
 export {};
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=patientList.js.map
