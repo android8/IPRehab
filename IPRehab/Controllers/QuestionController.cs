@@ -65,7 +65,7 @@ namespace IPRehab.Controllers
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
       string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : stage == "Followup" ? "Follow Up" : $"{stage}";
       ViewBag.Title = $"{title}";
-      ViewBag.Action = $"{action}";
+      ViewBag.Action = $"{action} Mode";
       string badgeBackgroundColor=string.Empty;
 
       switch (stage)
@@ -83,7 +83,7 @@ namespace IPRehab.Controllers
           badgeBackgroundColor = (action == "Edit") ? "badge-success" : "createActionCmd4";
           break;
         case "Followup":
-          badgeBackgroundColor = (action == "Edit" ? "badge-warning" : "createActionCmd5";
+          badgeBackgroundColor = (action == "Edit") ? "badge-warning" : "createActionCmd5";
           break;
       }
       ViewBag.ModeColor = badgeBackgroundColor;

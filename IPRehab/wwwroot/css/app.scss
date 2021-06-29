@@ -64,13 +64,13 @@ td{
   margin: 10px 0;
 }
 
-.questionTitle {
+#questionTitle {
   background-color: #040534;
   color: gold;
   height: 2px;
 }
 
-.questionText{
+#questionText{
   font-weight:bold;
   text-align:justify;
 }
@@ -78,6 +78,8 @@ td{
 .patientRow {
   background-color: #0e2640;
   color:white;
+  margin:20px !important;
+  padding:20px !important;
 }
 
 .wrapLongOption {

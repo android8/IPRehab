@@ -9,7 +9,7 @@
   <div class="flex-container-evenly-justified fixed">
     <div class="flex-container-evenly-justified">
       <h1>@ViewBag.Title</h1>
-      <span class="badge (@ViewBag.ModeColor)">@ViewBag.action</span>
+      <span class="badge @ViewBag.ModeColor">@ViewBag.action</span>
     </div>
     <div class="flex-container-evenly-justified">
       @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}
@@ -25,50 +25,50 @@
     <table class="table table-striped">
       <thead>
         <tr>
+          <th></th>
           <th>
             @Html.DisplayNameFor(model => model.Question)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.QuestionKey)
+            @*@Html.DisplayNameFor(model => model.QuestionKey)*@
+            Question Key
           </th>
-          <th>
-            Choices
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @{
-          string thisQuestionTitle = "bla bla bla";
-          string currentQuestion = "";
-          foreach (var q in Model)
-          {
-            @* show question title only once per querstion *@
+        <th>
+          Choices
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @{
+        string thisQuestionTitle = "bla bla bla";
+        string currentQuestion = "";
+        int row=0;
+        foreach (var q in Model)
+        {
+          row++;
+          @* show question title only once per querstion *@
             @if (thisQuestionTitle != q.QuestionTitle)
             {
               thisQuestionTitle = q.QuestionTitle;
-              <tr>
-                <td class="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
+<tr>
+                <td id="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
               </tr>
             }
             <tr>
-              <td class="questionText">
+              <td><span class="badge badge-pill">@row</span></td>
+              <td id="questionText">
+                <!--show only once the same question-->
                 @if (q.Question != currentQuestion)
                 {
                   currentQuestion = q.Question;
                   @Html.DisplayFor(m => q.Question)
                 }
               </td>
-              <td>
-                @if (string.IsNullOrEmpty(q.GroupTitle))
+              <td id="questionKeyAndTitle">
+                @($"{q.QuestionKey}")
+                @if (!string.IsNullOrEmpty(q.GroupTitle))
                 {
-                  if (q.QuestionKey != "AssessmentCompleted")
-                  {
-                    @($"{q.QuestionKey}")
-                  }
-                }
-                else
-                {
-                  @($"{q.QuestionKey}-{q.GroupTitle}")
+                  @($" - {q.GroupTitle}")
                 }
               </td>
               <td id="answer">
