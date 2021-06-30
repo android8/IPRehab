@@ -23,6 +23,21 @@ function pageLoad() {
             resetRehabBtns(targetScope);
         }
     });
+    $('.gotoSection').click(function () {
+        let $this = $(this);
+        let anchorId = $this.data("anchorid");
+        scrollToAnchor(anchorId);
+    });
+    $("#questionTab").hover(function () {
+        $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
+    }, function () {
+        $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
+    });
+}
+/* scroll to an anchor */
+function scrollToAnchor(aid) {
+    let aTag = $('a[name="' + aid + '"]');
+    $('html,body').animate({ scrollTop: aTag.offset().top }, 'fast');
 }
 function setRehabBtns(targetScope) {
     let currentIdx = 0;

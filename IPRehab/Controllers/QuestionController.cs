@@ -62,32 +62,12 @@ namespace IPRehab.Controllers
     // GET: QuestionController/Edit/5
     public async Task<ActionResult> Edit(string stage, string patientID, int episodeID, string redirectFrom)
     {
+      string badgeBackgroundColor = string.Empty;
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
       string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : stage == "Followup" ? "Follow Up" : $"{stage}";
       ViewBag.Title = $"{title}";
       ViewBag.Action = $"{action} Mode";
-      string badgeBackgroundColor=string.Empty;
 
-      switch (stage)
-      {
-        case "":
-          badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionCmd1";
-          break;
-        case "Initial":
-          badgeBackgroundColor = (action == "Edit") ? "badge-info" : "createActionCmd2";
-          break;
-        case "Interim":
-          badgeBackgroundColor = (action == "Edit") ? "badge-secondary" : "createActionCmd3";
-          break;
-        case "Discharge":
-          badgeBackgroundColor = (action == "Edit") ? "badge-success" : "createActionCmd4";
-          break;
-        case "Followup":
-          badgeBackgroundColor = (action == "Edit") ? "badge-warning" : "createActionCmd5";
-          break;
-      }
-      ViewBag.ModeColor = badgeBackgroundColor;
- 
       List<QuestionDTO> questions = new List<QuestionDTO>();
       bool includeAnswer = (action == "Edit");
 
@@ -100,21 +80,30 @@ namespace IPRehab.Controllers
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
         HttpResponseMessage Res;
+        string apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStage?stageName={stage}&includeAnswer={includeAnswer}";
         switch (stage)
         {
-          case "Initial":
-          case "Interim":
-          case "Discharge":
-          case "Followup":
-            //Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/Question/Get{stage}Stage"));
-            Res = await APIAgent.GetDataAsync(
-              new Uri($"{_apiBaseUrl}/api/Question/GetStage?stageName={stage}&includeAnswer={includeAnswer}"));
+          case null:
+          case "":
+            apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}";
+            badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionAll";
             break;
-          default:
-            Res = await APIAgent.GetDataAsync(
-              new Uri($"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}"));
+          case "Initial":
+            badgeBackgroundColor = (action == "Edit") ? "badge-info" : "createActionInitial";
+            break;
+          case "Interim":
+            badgeBackgroundColor = (action == "Edit") ? "badge-secondary" : "createActionInterim";
+            break;
+          case "Discharge":
+            badgeBackgroundColor = (action == "Edit") ? "badge-success" : "createActionDischarge";
+            break;
+          case "Followup":
+            badgeBackgroundColor = (action == "Edit") ? "badge-warning" : "createActionFollowup";
             break;
         }
+        Res = await APIAgent.GetDataAsync(new Uri($"{apiEndpoint}"));
+
+        ViewBag.ModeColor = badgeBackgroundColor;
 
         string httpMsgContentReadMethod = "ReadAsStringAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
@@ -137,6 +126,7 @@ namespace IPRehab.Controllers
                 questions = await JsonSerializer.DeserializeAsync<List<QuestionDTO>>(contentStream, _options);
                 break;
             }
+
             foreach (var dto in questions)
             {
               /* convert IEnumerable<QuestionDTO> to IEnumerable<QuestionWithSelectItems>
@@ -144,6 +134,9 @@ namespace IPRehab.Controllers
               QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
               vm.Add(qws);
             }
+
+            //model for section navigator side bar
+            ViewBag.QuestionSections = HydrateVM.GetQuestionSections(questions);
 
             //returning the question list to view  
             return View(vm);

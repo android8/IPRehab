@@ -2,6 +2,7 @@
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace IPRehab.Helpers
@@ -28,6 +29,17 @@ namespace IPRehab.Helpers
         qws.ChoiceList.Add(selectItem);
       }
       return qws;
+    }
+
+    public static List<SectionInfo> GetQuestionSections(List<QuestionDTO> questions)
+    {
+      var sections = questions.Select(x => x.QuestionTitle).AsParallel().Distinct()
+        .Select(x=> new SectionInfo {
+          SectionName = x
+        }).OrderBy(x=>x.SectionName).ToList();
+      
+
+      return sections;
     }
   }
 }

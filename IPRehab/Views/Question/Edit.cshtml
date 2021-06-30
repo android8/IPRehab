@@ -5,6 +5,12 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<nav>
+  @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
+    { "sectionInfo", ((List<SectionInfo>)ViewBag.QuestionSections) }
+  })
+</nav>
+
 <aside>
   <div class="flex-container-evenly-justified fixed">
     <div class="flex-container-evenly-justified">
@@ -50,8 +56,11 @@
             @if (thisQuestionTitle != q.QuestionTitle)
             {
               thisQuestionTitle = q.QuestionTitle;
-<tr>
-                <td id="questionTitle" colspan="4">@Html.DisplayFor(m => q.QuestionTitle)</td>
+              <tr>
+                <td id="questionTitle" colspan="4">
+                  <a name="@(q.QuestionTitle)"></a>
+                  @Html.DisplayFor(m => q.QuestionTitle)
+                </td>
               </tr>
             }
             <tr>
