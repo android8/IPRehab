@@ -1,4 +1,8 @@
-﻿/*sandwitch button*/
+﻿body {
+  scrollbar-width: thin;
+}
+
+/*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
   background-color: white;
   /*  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/
@@ -7,6 +11,7 @@
 .banner {
   background-color: #0e2640 !important;
   color: white;
+  z-index:500;
 }
 
 .banner .nav-link {
@@ -18,7 +23,7 @@
 }
 
 .pulldown {
-  top: -2px !important;
+  top: -4px !important;
   position: fixed;
   z-index: 100;
   color: #0e2640;
@@ -33,18 +38,26 @@
   font-weight:bold;
 }
 
-#cookieConsent {
-  position: sticky !important;
-  background-color: #00ffff;
+.cookieConsent {
+  padding-left:50px;
+  background-color: #00ffff !important;
 }
 
-.fixed {
+.fixedTop {
   position: fixed !important;
+  top:0;
   width: 100%;
   background-color: white;
   /*padding-top:10px*/
 }
 
+.fixedBottom {
+  position: fixed !important;
+  bottom:0;
+  width: 100%;
+  background-color: white;
+  /*padding-top:10px*/
+}
 .main {
   /*  margin-top: 20px !important;
 */
@@ -67,8 +80,8 @@ alert-info {
 
 th {
   padding: 0 5px;
-  text-align: center !important;
-}
+/*  text-align: center !important;
+*/}
 
 td {
   padding: 0 5px;
@@ -78,6 +91,14 @@ td {
 
 .commandBtn {
   margin: 10px 0;
+}
+
+#questionnaire {
+  min: 0 15px;
+}
+
+#questionnaire tbody tr td {
+  padding: 5px;
 }
 
 #questionTitle {
@@ -118,6 +139,18 @@ td {
 
 .paddingTop {
   padding-top:60px;
+}
+
+.borderTop {
+  border-top: 2px solid black;
+  border-left: 1ps solid black;
+  border-right: 1ps solid black;
+}
+
+.borderBottom {
+  border-left: 1ps solid black;
+  border-right: 1ps solid black;
+  border-bottom: 2px solid black;
 }
 
 .rotate {
@@ -233,7 +266,7 @@ td {
   top: 0px;
   left: -230px;
   width: 250px;
-  height: 99%;
+  height: 100%;
   overflow-y: scroll;
   z-index: 100;
   border: none;

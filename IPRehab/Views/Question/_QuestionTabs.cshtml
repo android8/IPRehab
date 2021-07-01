@@ -2,7 +2,7 @@
   <div class="sectionNavHeader">Sections</div>
   @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
   {
-    <div role="presentation" class="nav-item gotoSection" id="gotoSection" data-anchorid="@sectionInfo.SectionName">
+    <div role="presentation" class="nav-item gotoSection" id="gotoSection" data-anchorid="@sectionInfo.SectionKey">
       @sectionInfo.SectionName
       @if (sectionInfo.HasAnswer)
       {

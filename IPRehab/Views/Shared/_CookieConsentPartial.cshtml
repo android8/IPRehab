@@ -10,18 +10,20 @@
 
 @if (showBanner)
 {
-  <div id="cookieConsent" class="alert alert-info alert-dismissible fade show" role="alert">
-    This site use cookies to enable certain interactive features. <a asp-page="/Privacy">Learn More</a>.
-    <button type="button" class="accept-policy close" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
+  <div class="flex-container-evenly-justified alert alert-info alert-dismissible fade show cookieConsent fixedBottom">
+    <div id="consentText" role="alert">
+      This app uses cookies to improve user experience, and analyze website traffic. By clicking “Accept” you consent to store on your device all the technologies described in in the Cookie Policy.” <a asp-page="/Privacy">Learn More</a>.
+    </div>
+    <button id="btnConcent" class="badge badge-warning" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
       <span aria-hidden="true">Accept</span>
     </button>
   </div>
   <script>
     (function () {
-      var button = document.querySelector("#cookieConsent button[data-cookie-string]");
-      button.addEventListener("click", function (event) {
-        document.cookie = button.dataset.cookieString;
-      }, false);
+      var btnConsent = $("#btnConsent");
+      btnConsent.click(function (event) {
+        document.cookie = btnConsent.data("data-cookie-string");
+      });
     })();
   </script>
 }

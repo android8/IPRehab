@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace IPRehabWebAPI2.Controllers
@@ -38,10 +39,20 @@ namespace IPRehabWebAPI2.Controllers
 
       int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarter}");
 
+      //current quarter data
       var firstGrant = await _patientRepository.FindByCondition(x =>
                          defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt)
                           .OrderByDescending(x => x.FiscalPeriodInt)
                         .Select(p => HydrateDTO.HydrateUserFacilityGrant(p)).FirstOrDefaultAsync();
+
+      //last quarter data in case the new quarter data is not populated yet
+      firstGrant = await _patientRepository.FindByCondition(x =>
+                   defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 2 == x.FiscalPeriodInt)
+                    .OrderByDescending(x => x.FiscalPeriodInt)
+                  .Select(p => HydrateDTO.HydrateUserFacilityGrant(p)).FirstOrDefaultAsync();
+      
+      if (firstGrant == null)
+        return Content("Database may not be populated at the beginning of a new quarter.");
 
       List<PatientDTO> patients;
       List<EpisodeOfCareDTO> episodes;
@@ -84,7 +95,7 @@ namespace IPRehabWebAPI2.Controllers
 
       if (patients == null)
       {
-        return NotFound();
+        return Content("Database may not be populated at the beginning of a new quarter.");
       }
       else
       {

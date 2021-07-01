@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - IPRehab</title>
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="~/css/site.css" />
-  <link rel="stylesheet" href="~/css/app.css" />
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-  <link href="~/css/cube annimation/cube.css" rel="stylesheet" />
+  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/cube annimation/cube.css" asp-append-version="true" />
 </head>
 <body>
   <header>
@@ -43,24 +43,27 @@
       <div class="pulldown"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
     </div>
   </header>
-  <div class="container">
-    <main role="main" class="pb-3 main">
-      <div class="spinnerContainer">
-        <div class="cube">
-          <div class="sides">
-            <div class="top"></div>
-            <div class="right"></div>
-            <div class="bottom"></div>
-            <div class="left"></div>
-            <div class="front"></div>
-            <div class="back"></div>
+  <main role="main" class="pb-3 main">
+    <div class="container">
+      <aside>
+        <div class="spinnerContainer">
+          <div class="cube">
+            <div class="sides">
+              <div class="top"></div>
+              <div class="right"></div>
+              <div class="bottom"></div>
+              <div class="left"></div>
+              <div class="front"></div>
+              <div class="back"></div>
+            </div>
           </div>
         </div>
-      </div>
-      <partial name="_CookieConsentPartial" />
+      </aside>
       @RenderBody()
-    </main>
-  </div>
+    </div>
+  </main>
+
+  <partial name="_CookieConsentPartial" />
 
   <footer class="border-top footer text-muted hoverFooter">
     <div class="container">
@@ -69,9 +72,8 @@
   </footer>
   <script src="~/lib/jquery/dist/jquery.min.js"></script>
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="~/js/site.js" asp-append-version="true"></script>
-  <script src="~/js/app/animateBanner.js"></script>
-  <script type="text/javascript">
+  <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
+  <script type="text/javascript" asp-append-version="true">
     $(function () {
       $('.spinnerContainer').hide();
     })

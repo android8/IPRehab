@@ -9,6 +9,7 @@ namespace IPRehab.Models
   {
     public int SectionID { get; set; }
     public string SectionName { get; set; }
+    public string SectionKey { get; set; }
     public bool HasAnswer { get; set; }
   }
 }

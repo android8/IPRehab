@@ -1,4 +1,5 @@
 ﻿using IPRehab.Helpers;
+using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -97,21 +99,21 @@ namespace IPRehab.Controllers
             //returning the question list to view  
             return View(patients);
           }
-          catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
+          catch // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            DeserialExceptionHandler(ex);
-            return null;
+            //DeserialExceptionHandler(ex);
+            return RedirectToAction("Error", "Home");
           }
         }
         else
         {
-          return null;
+          return RedirectToAction("Error", "Home");
         }
       }
-      catch (Exception ex)
+      catch
       {
-        WebAPIExceptionHander(ex);
-        return null;
+        //WebAPIExceptionHander(ex);
+        return RedirectToAction("Error", "Home");
       }
     }
 

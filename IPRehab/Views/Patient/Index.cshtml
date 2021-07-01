@@ -7,13 +7,13 @@
 
 @section Scripts {
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-  <script type="module" src="~/js/app/patientList.js"></script>
-  <script type="module" src="~/js/app/form.js"></script>
+  <script type="module" src="~/js/app/patientList.js" asp-append-version="true"></script>
+  <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
 }
 
 <div class="flex-column">
   <div>
-    <h1 class="fixed">Patients</h1>
+    <h1 class="fixedTop">Patients</h1>
   </div>
   <div class="paddingTop">
     <input id="searchCriteria" type="text" placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64" value="@ViewBag.PreviousCriteria" />
@@ -59,7 +59,7 @@
         {
           <!--Patient row-->
           <tr class="patientRow">
-            <td>@(++row)</td>
+            <td><div class="nav-pills">@(++row)</div></td>
             <td>
               @Html.DisplayFor(modelItem => item.VISN)
             </td>

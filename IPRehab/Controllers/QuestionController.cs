@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -136,7 +137,9 @@ namespace IPRehab.Controllers
             }
 
             //model for section navigator side bar
-            ViewBag.QuestionSections = HydrateVM.GetQuestionSections(questions);
+            var distinctSections = HydrateVM.GetQuestionSections(vm);
+            ViewBag.QuestionSections = distinctSections;
+
 
             //returning the question list to view  
             return View(vm);

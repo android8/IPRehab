@@ -13,6 +13,7 @@ namespace IPRehab.Helpers
     {
       QuestionWithSelectItems qws = new QuestionWithSelectItems();
       qws.Form = dto.Form;
+      qws.Section = GetSectionKey(dto);
       qws.QuestionID = dto.QuestionID;
       qws.QuestionKey = dto.QuestionKey;
       qws.QuestionTitle = dto.QuestionTitle;
@@ -31,15 +32,35 @@ namespace IPRehab.Helpers
       return qws;
     }
 
-    public static List<SectionInfo> GetQuestionSections(List<QuestionDTO> questions)
+    public static List<SectionInfo> GetQuestionSections(List<QuestionWithSelectItems> questions)
     {
-      var sections = questions.Select(x => x.QuestionTitle).AsParallel().Distinct()
-        .Select(x=> new SectionInfo {
-          SectionName = x
+      var sections = questions.Select(x => $"{x.QuestionTitle} {x.Section}").AsParallel().Distinct()
+        .Select(x => new SectionInfo {
+          SectionName = x,
+          SectionKey = GetLastKeyWord(x),
         }).OrderBy(x=>x.SectionName).ToList();
-      
-
       return sections;
+    }
+
+    private static string GetLastKeyWord(string sectionKey) {
+      string[] keys = sectionKey.Split(' ');
+      string key = keys[keys.Length - 1];
+      return key;
+    }
+
+    private static string GetSectionKey(QuestionDTO question)
+    {
+      string sectionKey = string.Empty;
+      if (question.QuestionKey.StartsWith("Q"))
+        return "(Q)";
+      if (question.QuestionKey == "AssessmentCompleted")
+        return "(Complete)";
+      if (question.QuestionKey.StartsWith("GG") || question.QuestionKey.StartsWith("BB"))
+        return $"({question.QuestionKey.Substring(0, 6)})" ;
+      else
+      {
+        return $"({question.QuestionKey.Substring(0, 5).TrimEnd()})";
+      }
     }
   }
 }
