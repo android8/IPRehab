@@ -46,7 +46,7 @@ namespace IPRehab
            //preserve circular reference
            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
       });
-
+      services.AddResponseCaching();
       services.AddRazorPages();
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
       services.AddSingleton<IEmailSender, EmailSender>();
@@ -77,6 +77,25 @@ namespace IPRehab
       app.UseAuthorization();
 
       app.UseSession(); //must be before UseMvc or UseEndpoints
+
+      // UseCors must be called before UseResponseCaching
+      // app.UseCors("myAllowSpecificOrigins");
+
+      app.UseResponseCaching();
+
+      app.Use(async (context, next) =>
+      {
+        context.Response.GetTypedHeaders().CacheControl =
+            new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+            {
+              Public = true,
+              MaxAge = TimeSpan.FromSeconds(10)
+            };
+        context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+            new string[] { "Accept-Encoding" };
+
+        await next();
+      });
 
       app.UseEndpoints(endpoints =>
       {

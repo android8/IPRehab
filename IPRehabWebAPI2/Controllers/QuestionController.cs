@@ -165,7 +165,6 @@ namespace IPRehabWebAPI2.Controllers
     /// <summary>
     /// get question in the specified {form} paramter
     /// </summary>
-    /// <param name="form">Form-BasicInfo, Form-Admission, Form-Discharge</param>
     /// <returns></returns>
     // GET: api/<QuestionController>/GetBaseFormAsync     [Route("api/[controller]/GetAdmissionForm")]
     [HttpGet()]

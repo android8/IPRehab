@@ -147,10 +147,16 @@ td {
   padding: 0 20px;
 }
 
-.select2-selection__rendered {
-  color: mediumblue !important;
+.select2-selection--single {
+  height: 100% !important;
 }
 
+.select2-selection__rendered {
+  color: mediumblue !important;
+  word-wrap: break-word !important;
+  text-overflow: inherit !important;
+  white-space: normal !important;
+}
 .paddingTop {
   padding-top:60px;
 }

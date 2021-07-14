@@ -40,7 +40,6 @@
             <summary>
             get question in the specified {form} paramter
             </summary>
-            <param name="form">Form-BasicInfo, Form-Admission, Form-Discharge</param>
             <returns></returns>
         </member>
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">

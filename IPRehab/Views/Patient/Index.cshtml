@@ -12,13 +12,18 @@
 }
 
 <div class="flex-column">
-  <div>
-    <h1 class="fixedTop">Patients</h1>
+  <div class="flex-container-evenly-justified">
+    <h1 class="fixedTop">
+      Patients
+      <span>
+        <input id="searchCriteria" type="text" placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64" value="@ViewBag.PreviousCriteria" />
+        <a id="search" asp-action="Index" asp-route-criteria="" class="btn-sm btn-info">Search</a>&nbsp;
+        <span id="previousCriteria"></span>&nbsp;
+        <span id="recordCount">@Model.Count() records</span>
+      </span>
+    </h1>
   </div>
-  <div class="paddingTop">
-    <input id="searchCriteria" type="text" placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64" value="@ViewBag.PreviousCriteria" />
-    <a id="search" asp-action="Index" asp-route-criteria="" class="btn-sm btn-info">Search</a>&nbsp;<span id="previousCriteria"></span>&nbsp;<span id="recordCount">@Model.Count() records</span>
-  </div>
+
   <div>
     <table class="table-responsive-md table-bordered">
       <thead>

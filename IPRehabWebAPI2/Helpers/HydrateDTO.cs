@@ -41,8 +41,8 @@ namespace IPRehabWebAPI2.Helpers
 
     private static string GetGroupTitle(TblQuestion q, string questionStage)
     {
-      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage
-        .Where(x => x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage)?.Count() == 0)
+      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage.Where(x => 
+        x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage)?.Count() == 0)
         return q.GroupTitle;
       else
       {
