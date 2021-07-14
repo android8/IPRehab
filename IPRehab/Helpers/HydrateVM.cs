@@ -38,7 +38,7 @@ namespace IPRehab.Helpers
         .Select(x => new SectionInfo {
           SectionName = x,
           SectionKey = GetLastKeyWord(x),
-        }).OrderBy(x=>x.SectionName).ToList();
+        }).OrderBy(x=>x.SectionName).ThenBy(x=>x.SectionKey).ToList();
       return sections;
     }
 
@@ -55,6 +55,8 @@ namespace IPRehab.Helpers
         return "(Q)";
       if (question.QuestionKey == "AssessmentCompleted")
         return "(Complete)";
+      if (question.QuestionKey == "A1005" || question.QuestionKey == "A1010")
+        return "(A10*)";
       if (question.QuestionKey.StartsWith("GG") || question.QuestionKey.StartsWith("BB"))
         return $"({question.QuestionKey.Substring(0, 6)})" ;
       else

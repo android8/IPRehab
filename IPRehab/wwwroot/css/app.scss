@@ -1,5 +1,5 @@
 ﻿body {
-  scrollbar-width: thin;
+  scrollbar-width: 5px;
 }
 
 /*sandwitch button*/
@@ -31,16 +31,16 @@
 
 .sectionNavHeader {
   position:fixed;
-  width:235px;
+  width:250px;
   color: gold;
   background-color: #0e2640;
   text-align:center;
   font-weight:bold;
 }
 
-.cookieConsent {
-  padding-left:50px;
-  background-color: #00ffff !important;
+.acceptConsent {
+  background-color:black !important;
+  color:white !important;
 }
 
 .fixedTop {
@@ -56,7 +56,6 @@
   bottom:0;
   width: 100%;
   background-color: white;
-  /*padding-top:10px*/
 }
 .main {
   /*  margin-top: 20px !important;
@@ -94,20 +93,31 @@ td {
 }
 
 #questionnaire {
-  min: 0 15px;
+  padding: 0 15px;
 }
 
 #questionnaire tbody tr td {
   padding: 5px;
 }
 
-#questionTitle {
+.formName {
+  background-color: gold;
+  font-size: 1.5em;
+  color: black;
+  padding: 0;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+  border-radius: 5px 5px 0 0;
+}
+
+.questionTitle {
   background-color: #040534;
   color: gold;
   height: 2px;
 }
 
-#questionText {
+.questionText {
   font-weight: bold;
   text-align: justify;
 }
@@ -121,10 +131,14 @@ td {
 
 .wrapLongOption {
   display: flex;
-  width: 250px;
+  width: 250px !important;
   word-wrap: break-word !important;
   text-overflow: inherit !important;
   white-space: normal !important;
+}
+
+.radioLabel {
+  display: inline !important;
 }
 
 .select2-results__options {
@@ -187,6 +201,7 @@ td {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-end;
+  padding:0 !important;
 }
 
 .flex-start-row-wrap-textInput {
@@ -220,6 +235,18 @@ td {
   flex-wrap: nowrap;
   justify-content: flex-start;
   /*align-items: center;*/
+}
+
+.flex-end-row-nowrap{
+  display:flex;
+  flex-direction:row;
+  flex-wrap: nowrap;
+  justify-content:center;
+}
+
+tr#nonPaddinRow, tr#nonPaddinRow td {
+  padding: 0px !important;
+  background-color: white;
 }
 
 .flex-center {
@@ -267,7 +294,7 @@ td {
   left: -230px;
   width: 250px;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   z-index: 100;
   border: none;
   opacity: 1;

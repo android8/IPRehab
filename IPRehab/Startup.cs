@@ -32,7 +32,7 @@ namespace IPRehab
         options.CheckConsentNeeded = context => true; // true if consent required
         // requires using Microsoft.AspNetCore.Http;
         options.MinimumSameSitePolicy = SameSiteMode.None;
-        options.ConsentCookie.Expiration = TimeSpan.FromMinutes(10);
+        options.ConsentCookie.Expiration = TimeSpan.FromMinutes(30);
       });
       services.AddSession(options =>
       {

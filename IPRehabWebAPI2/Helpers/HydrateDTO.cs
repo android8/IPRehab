@@ -7,14 +7,13 @@ using System.Linq;
 
 namespace IPRehabWebAPI2.Helpers
 {
-
   /// <summary>
   /// Hydrate the DTO with selected domain properties
   /// </summary>
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(TblQuestion q)
+    public static QuestionDTO HydrateQuestion(TblQuestion q, string questionStage)
     {
       return new QuestionDTO
       {
@@ -23,7 +22,8 @@ namespace IPRehabWebAPI2.Helpers
         QuestionKey = q.QuestionKey,
         QuestionTitle = q.QuestionTitle,
         Question = q.Question,
-        GroupTitle = q.GroupTitle,
+        //use TblQuestionStage.StageGroupTitle if it is not null or empty else use TblQuestion.GroupTitle
+        GroupTitle = GetGroupTitle(q, questionStage),
         AnswerCodeSetID = q.AnswerCodeSetFk,
         AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue,
         DisplayOrder = q.Order,
@@ -33,10 +33,34 @@ namespace IPRehabWebAPI2.Helpers
                           CodeSetID = s.CodeSetId,
                           CodeSetParent = s.CodeSetParent,
                           CodeValue = s.CodeValue,
-                          CodeDescription = $"{s.CodeValue}. {s.CodeDescription}",
+                          CodeDescription = s.CodeDescription.Contains(s.CodeValue) && s.CodeValue.Length > 1 ? $"{s.CodeDescription}" : $"{s.CodeValue}. {s.CodeDescription}",
                           Comment = s.Comment
                         }).ToList()
       };
+    }
+
+    private static string GetGroupTitle(TblQuestion q, string questionStage)
+    {
+      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage
+        .Where(x => x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage)?.Count() == 0)
+        return q.GroupTitle;
+      else
+      {
+        var stagedQuestions = q.TblQuestionStage.Where(x => x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage);
+        var groupTitle = string.IsNullOrEmpty(stagedQuestions.First().StageGroupTitle) ? q.GroupTitle : stagedQuestions.First().StageGroupTitle;
+        return groupTitle;
+
+
+        //if (stagedQuestions == null || stagedQuestions.Count() == 0)
+        //{
+        //  return q.GroupTitle;
+        //}
+        //else
+        //{
+        //  var groupTitle = string.IsNullOrEmpty(stagedQuestions.First().StageGroupTitle) ? q.GroupTitle : stagedQuestions.First().StageGroupTitle;
+        //  return groupTitle;          
+        //}
+      }
     }
 
     public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatientDetailFY21Q2 p)

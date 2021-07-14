@@ -277,6 +277,10 @@ namespace IPRehabModel
 
         entity.Property(e => e.StageFk).HasColumnName("StageFK");
 
+        entity.Property(e => e.StageGroupTitle)
+                  .HasMaxLength(50)
+                  .IsUnicode(false);
+
         entity.HasOne(d => d.StageFkNavigation)
                   .WithMany(p => p.TblQuestionStage)
                   .HasForeignKey(d => d.StageFk)

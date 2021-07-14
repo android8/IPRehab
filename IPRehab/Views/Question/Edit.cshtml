@@ -29,133 +29,160 @@
 <article class="paddingTop">
   <table class="table-striped" id="questionnaire">
     <thead>
-        <tr>
-          @*<th></th>*@
-          <th>
-            @Html.DisplayNameFor(model => model.Question)
-          </th>
-          <th>
-            @*@Html.DisplayNameFor(model => model.QuestionKey)*@
-            Question Key
-          </th>
+      <tr>
+        @*<th></th>*@
         <th>
-          Choices
+          @*@Html.DisplayNameFor(model => model.Question)*@
+        </th>
+        <th>
+          @*@Html.DisplayNameFor(model => model.QuestionKey)*@
+          @*Question Key*@
+        </th>
+        <th>
+          @*Choices*@
         </th>
       </tr>
     </thead>
     <tbody>
       @{
+        string currentForm = "";
         string currentSection = "";
         string currentQuestion = "";
+        string cssClass = string.Empty;
+
         int row = 0;
         foreach (var q in Model)
         {
+          if (currentForm != q.Form && ViewBag.Title == "IRF-PAI Form")
+          {
+            currentForm = q.Form;
+            <tr id="nonPaddinRow">
+              <td></td>
+              <td></td>
+              <td><div class="flex-end-row-nowrap formName">@currentForm</div></td>
+            </tr>
+          }
+
           row++;
           @* show question title only once per querstion *@
           @if (currentSection != q.Section)
           {
             currentSection = q.Section;
             <tr>
-              <td id="questionTitle" colspan="4">
+              <td class="questionTitle" colspan="4">
                 <a name="@q.Section"></a>
                 @Html.DisplayFor(m => q.QuestionTitle)
               </td>
             </tr>
           }
 
-          string cssClass = string.Empty;
-          if (q.Question != currentQuestion)
-          { cssClass = "borderTop"; }
-          else
-          { cssClass = "borderBottom"; }
+          if (q.Question != currentQuestion) 
+            { cssClass = "borderTop"; }
+          else 
+            { cssClass = "borderBottom"; }
 
           <tr class="@cssClass">
             @*<td><span class="badge badge-pill">@row</span></td>*@
-            <td id="questionText">
+            <td class="questionText">
               <!--show only once the same question-->
               @if (q.Question != currentQuestion)
-{
+              {
                 currentQuestion = q.Question;
                 @Html.DisplayFor(m => q.Question)
-}
+              }
             </td>
-            <td id="questionKeyAndTitle">
+            <td class="questionKeyAndTitle">
               @($"{q.QuestionKey}")
               @if (!string.IsNullOrEmpty(q.GroupTitle))
-{
-                @($" - {q.GroupTitle}")
-}
-            </td>
-            <td id="answer">
-              @{
-              int choiceCount = q.ChoiceList.Count();
-              string choicePrompt = $"select 1 of {choiceCount} choices";
-
-              switch (choiceCount)
               {
-                                case int n when n > 3:
-                                  {
-                                    @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = q.QuestionKey, @class = "select2 wrapLongOption", @readonly = "readonly" })
-                                    <br />
-                                  }
-                                  break;
-
-                                case int n when n >= 2 && n <= 3:
-                                  {
-                                    foreach (var c in q.ChoiceList)
-                                    {
-                                      if (c.Selected)
-                                      {
-                                        <div>
-                                          <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" checked /> &nbsp;@c.Text
-                                        </div>
-                                      }
-                                      else
-                                      {
-                                        <div>
-                                          <input type="radio" id="@q.QuestionKey" , name="@q.QuestionKey" value="@c.Value" data-answerId="anserIdGoesHere" class="optionStyle" /> &nbsp;@c.Text
-                                        </div>
-                                      }
-                                    }
-                                  }
-                                  break;
-
-                                case int n when n == 0:
-                                  {
-                                    switch (q.AnswerCodeCategory)
-                                    {
-                                      case "YN":
-                                      case "Checked":
-                                        {
-                                          bool isChecked = false; //ToDO: eval
-                                          @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = q.QuestionKey, @class = "optionStyle" /*, @readonly = "readonly"*/ } });
-                                        }
-                                        break;
-
-                                      case "Date":
-                                        {
-                                          <input type="date" id="@q.QuestionKey" />
-                                        }
-                                        break;
-
-                                      case "ICD":
-                                        {
-                                          @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                                        }
-                                        break;
-
-                                      case "FreeText":
-                                        {
-                                          @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
-                                          break;
-                                        }
-                                    }
-                                  }
-                                  break;
+                @($" - {q.GroupTitle}")
               }
+            </td>
+            <td class="answer">
+              @{
+                int choiceCount = q.ChoiceList.Count();
+                string choicePrompt = $"select 1 of {choiceCount} choices";
+
+                switch (choiceCount)
+                {
+                  case int n when n > 3:
+                    {
+                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.GroupTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
+                      <label for="@($"{q.QuestionKey}{q.GroupTitle}")" aria-label="dropdown null label"></label>
+                    }
+                    break;
+
+                  case 2:
+                  case 3:
+                    {
+                      foreach (var c in q.ChoiceList)
+                      {
+                        <div>
+                          @Html.RadioButton(q.QuestionKey, q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}{c.Value}" })
+                          <label for="@($"{q.QuestionKey}{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
+                        </div>
+                      }
+                    }
+                    break;
+
+                  case 1:
+                  case 0:
+                    {
+                      switch (q.AnswerCodeCategory)
+                      {
+                        case "YN":
+                        case "Checked":
+                          {
+                            bool isChecked = false; //ToDO: eval
+                            if (q.ChoiceList != null && q.ChoiceList.Count() != 0 && q.ChoiceList.First().Selected)
+                              isChecked = true;
+
+                            @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                            <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
+                          }
+                          break;
+
+                        case "Date":
+                          {
+                            <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
+                            <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                          }
+                          break;
+
+                        case "ICD":
+                          {
+                            <label for="@q.QuestionKey" aria-label="textbox label"></label>
+                            @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                          }
+                          break;
+
+                        case "FreeText":
+                          {
+                            <label for="@q.QuestionKey" aria-label="free text label"></label>
+                            @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                            break;
+                          }
+                      }
+                    }
+                    break;
+                }
               }
             </td>
           </tr>
+
+          if (ViewBag.Title != "IRF-PAI Form" && currentSection == "GG0130" && q.QuestionKey == "GG0130H")
+          {
+            <tr>
+              <td colspan="3"><div class="flex-item-right-justify" id="SelfCareScore">Self Care Aggregate Score: TBD</div></td>
+            </tr>
+          }
+
+          if (ViewBag.Title != "IRF-PAI Form" && currentSection == "GG0170" && q.QuestionKey == "GG0170G" && q.GroupTitle == "Discharge Goal")
+            {
+            <tr>
+              <td colspan="3"><div class="flex-item-right-justify" id="SelfCareScore">Mobility Aggregate Score: TBD</div></td>
+            </tr>
+          }
         }
       }
     </tbody>
@@ -168,7 +195,7 @@
   <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
   <script>
     $(function () {
-      var $select2 = $('.select2').select2();
+      //var $select2 = $('.select2').select2();
 
       //Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
       //You can change the length according to your needs.
