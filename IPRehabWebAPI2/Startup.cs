@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PatientModel;
 using System.Text.Json.Serialization;
+using UserModel;
 
 namespace IPRehabWebAPI2
 {
@@ -32,10 +33,13 @@ namespace IPRehabWebAPI2
 
       string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
       string FSODPatientConnectionString = Configuration.GetConnectionString("FSODPatientDetail");
+      string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
       services.AddDbContext<IPRehabContext>(
          o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
       services.AddDbContext<DmhealthfactorsContext>(
          o => o.UseLazyLoadingProxies().UseSqlServer(FSODPatientConnectionString));
+      services.AddDbContext<MasterreportsContext>(
+        o => o.UseLazyLoadingProxies().UseSqlServer(MasterReportsConnectionString));
 
       services.AddScoped<IQuestionRepository, QuestionRepository>();
       services.AddScoped<IAnswerRepository, AnswerRepository>();

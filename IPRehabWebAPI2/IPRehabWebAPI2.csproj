@@ -43,14 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="IPRehabModel">
-      <HintPath>..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
-    </Reference>
-    <Reference Include="IPRehabRepository">
-      <HintPath>..\IPRehabRepository\bin\Debug\net5.0\IPRehabRepository.dll</HintPath>
-    </Reference>
-    <Reference Include="PatientModel">
-      <HintPath>..\PatientModel\bin\Debug\net5.0\PatientModel.dll</HintPath>
+    <ProjectReference Include="..\IPRehabModel\IPRehabModel.csproj" />
+    <ProjectReference Include="..\IPRehabRepository\IPRehabRepository.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UserModel">
+      <HintPath>..\UserModel\bin\Debug\net5.0\UserModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

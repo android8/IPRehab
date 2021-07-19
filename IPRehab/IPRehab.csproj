@@ -67,13 +67,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPRehabModel\IPRehabModel.csproj" />
     <ProjectReference Include="..\IPRehabWebAPI2\IPRehabWebAPI2.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="IPRehabModel">
-      <HintPath>..\IPRehabModel\bin\Debug\net5.0\IPRehabModel.dll</HintPath>
-    </Reference>
     <Reference Include="Mailer">
       <HintPath>..\..\..\CommonLibrary\Mailer\bin\Debug\net5.0\Mailer.dll</HintPath>
     </Reference>

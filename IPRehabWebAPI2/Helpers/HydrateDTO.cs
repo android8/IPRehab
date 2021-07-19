@@ -4,6 +4,7 @@ using PatientModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UserModel;
 
 namespace IPRehabWebAPI2.Helpers
 {
@@ -27,7 +28,7 @@ namespace IPRehabWebAPI2.Helpers
         AnswerCodeSetID = q.AnswerCodeSetFk,
         AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue,
         DisplayOrder = q.Order,
-        ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x=>x.SortOrder)
+        ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
                         .Select(s => new CodeSetDTO
                         {
                           CodeSetID = s.CodeSetId,
@@ -41,7 +42,7 @@ namespace IPRehabWebAPI2.Helpers
 
     private static string GetGroupTitle(TblQuestion q, string questionStage)
     {
-      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage.Where(x => 
+      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage.Where(x =>
         x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage)?.Count() == 0)
         return q.GroupTitle;
       else
@@ -103,6 +104,26 @@ namespace IPRehabWebAPI2.Helpers
         AdmissionDate = e.AdmissionDate,
         PatientIcnfk = "TBD"
       };
+    }
+
+    public static MastUserDTO HydrateUser(uspVSSCMain_SelectAccessInformationFromNSSDResult u)
+    {
+      MastUserDTO user = new MastUserDTO
+      {
+        UserID = u.UserID,
+        UserIdentity = u.UserID,
+        NTDomain = u.NTDomain,
+        NTUserName = u.NTUserName,
+        VISN = u.VISN,
+        Facility = u.Facility,
+        LName = u.LName,
+        FName = u.FName,
+        AppID = u.AppID,
+        AcclevID = u.AcclevID,
+        CPRSnssd = u.CPRSnssd,
+        Sunsetdat = u.Sunsetdat
+      };
+      return user;
     }
   }
 }

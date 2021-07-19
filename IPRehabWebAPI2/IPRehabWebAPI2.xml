@@ -12,6 +12,13 @@
             <param name="criteria"></param>
             <returns></returns>
         </member>
+        <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
+            <summary>
+            get user by executing stored procedure at MasterReports.uspVSSCMain_SelectAccessInformationFromNSSD
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetInitStage">
             <summary>
             get initial intake questions (required or not)

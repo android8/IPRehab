@@ -1,23 +1,23 @@
 ﻿using IPRehabRepository.Contracts;
-using PatientModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using UserModel;
 
 namespace IPRehabRepository
 {
   /// <summary>
   /// https://code-maze.com/net-core-web-development-part4/
-  /// Repository project references RepositoryGenericInterface and PatientModel library project which connects to VHAAUSBI25.DMHealthFactors, and inside the Repository project create the abstract class RepositoryBase which implements the interface IRepositoryBase. Reference this project to the main project too. This abstract class, as well as IRepositoryBase interface, uses generic type T to work with. This type T gives even more reusability to the RepositoryBase class. That means we don’t have to specify the exact model (class) right now for the RepositoryBase to work with.
+  /// Repository project references RepositoryGenericInterface and UserModel library project which is connect to VHAAusDB2.MasterReports, and inside the Repository project create the abstract class RepositoryBase which implements the interface IRepositoryBase. Reference this project to the main project too. This abstract class, as well as IRepositoryBase interface, uses generic type T to work with. This type T gives even more reusability to the RepositoryBase class. That means we don’t have to specify the exact model (class) right now for the RepositoryBase to work with.
   /// </summary>
   /// <typeparam name="T">Generic class to be solidified by the inheriting class</typeparam>
-  public abstract class FSODRepositoryBase<T> : IRepositoryBase<T> where T : class
+  public abstract class MasterReportsRepositoryBase<T> : IRepositoryBase<T> where T : class
    {
-      protected DmhealthfactorsContext RepositoryContext { get; set; }
+      protected MasterreportsContext RepositoryContext { get; set; }
 
-      public FSODRepositoryBase(DmhealthfactorsContext repositoryContext)
+      public MasterReportsRepositoryBase(MasterreportsContext repositoryContext)
       {
          this.RepositoryContext = repositoryContext;
       }
