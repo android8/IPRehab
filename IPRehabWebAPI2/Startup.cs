@@ -70,6 +70,7 @@ namespace IPRehabWebAPI2
                                                 "https://localhost:44381");
                           });
       });
+      services.AddMemoryCache();
       services.AddControllers(o => o.EnableEndpointRouting = true)
       .AddJsonOptions(o =>
         {

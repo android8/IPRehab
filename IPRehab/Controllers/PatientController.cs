@@ -1,5 +1,4 @@
 ﻿using IPRehab.Helpers;
-using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -58,7 +56,8 @@ namespace IPRehab.Controllers
       }
          
       ViewBag.PreviousCriteria = criteria;
-      
+
+      string networkName = HttpContext.User.Identity.Name;
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
@@ -69,7 +68,7 @@ namespace IPRehab.Controllers
         }
         else
         {
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}"));
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?networkID={networkName}&criteria={criteria}"));
         }
 
         string httpMsgContentReadMethod = "ReadAsStreamAsync";
@@ -95,7 +94,7 @@ namespace IPRehab.Controllers
                 patients = await JsonSerializer.DeserializeAsync<List<PatientDTO>>(contentStream, _options);
                 break;
             }
-
+            
             //returning the question list to view  
             return View(patients);
           }
