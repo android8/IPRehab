@@ -59,133 +59,152 @@
         </tr>
       </thead>
       <tbody>
-        @{int row = 0; }
-        @foreach (var item in Model)
+        @if (Model.Count() == 0)
         {
-          <!--Patient row-->
-          <tr class="patientRow">
-            <td><div class="nav-pills">@(++row)</div></td>
-            <td>
-              @Html.DisplayFor(modelItem => item.VISN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Facility)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.District)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Division)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Sta6aKey)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Bedsecn)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.PTFSSN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.FiscalPeriod)
+          <tr>
+            <td colspan="4">
+              <div class="noData">
+                <ul>
+                  No data perhaps because the following reasons:
+
+                  <li>The new quarter data is not available yet</li>
+                  <li>Your access levels do not allow viewing the patients in the specified location</li>
+                  <li>No data matching the specified criteria</li>
+                </ul>
+              </div>
             </td>
           </tr>
-
-          <!--Episode of Care row-->
-          @if (item.CareEpisodes?.Count() != 0)
+        }
+        else
+        {
+          int row = 0;
+          foreach (var item in Model)
           {
-            <tr>
-              <td colspan="10" class="text-danger">
-                No epside of care
+            <!--Patient row-->
+            <tr class="patientRow">
+              <td><div class="nav-pills">@(++row)</div></td>
+              <td>
+                @Html.DisplayFor(modelItem => item.VISN)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.Facility)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.District)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.Division)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.Sta6aKey)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.Bedsecn)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.Name)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.PTFSSN)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.FiscalPeriod)
               </td>
             </tr>
-          }
-          else
-          {
-            <tr>
-              <td colspan="10">
-                <table class="table-striped table-responsive-md table-bordered">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().EpisodeOfCareId)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().AdmissionDate)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().OnsetDate)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().PatientIcnfk)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        @{await Html.RenderPartialAsync("_RehabActionBtns",
-                            new RehabActionViewModel()
-                            {
-                              EpisodeID = 12345,
-                              PatientID = "PatientXYZ"
-                            });
-                        }
-                      </td>
-                      <td>132</td>
-                      <td>6/2/2021</td>
-                      <td>3/23/2021</td>
-                      <td>PatientXYZ</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        @{await Html.RenderPartialAsync("_RehabActionBtns",
-                            new RehabActionViewModel()
-                            {
-                              EpisodeID = 23456,
-                              PatientID = "PatientABC"
-                            });
-                        }
-                      </td>
-                      <td>875</td>
-                      <td>6/23/2021</td>
-                      <td>5/15/2021</td>
-                      <td>PatientABC</td>
-                    </tr>
-                    @foreach (var episode in item.CareEpisodes)
-                    {
+
+            <!--Episode of Care row-->
+            @if (item.CareEpisodes?.Count() != 0)
+            {
+              <tr>
+                <td colspan="10" class="text-danger">
+                  No epside of care
+                </td>
+              </tr>
+            }
+            else
+            {
+              <tr>
+                <td colspan="10">
+                  <table class="table-striped table-responsive-md table-bordered">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().EpisodeOfCareId)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().AdmissionDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().OnsetDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().PatientIcnfk)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       <tr>
                         <td>
                           @{await Html.RenderPartialAsync("_RehabActionBtns",
                               new RehabActionViewModel()
                               {
-                                EpisodeID = episode.EpisodeOfCareId,
-                                PatientID = episode.PatientIcnfk
+                                EpisodeID = 12345,
+                                PatientID = "PatientXYZ"
                               });
                           }
                         </td>
-                        <td>
-                          @Html.DisplayFor(modelItem => episode.EpisodeOfCareId)
-                        </td>
-                        <td>
-                          @Html.DisplayFor(modelItem => episode.AdmissionDate)
-                        </td>
-                        <td>
-                          @Html.DisplayFor(modelItem => episode.OnsetDate)
-                        </td>
-                        <td>
-                          @Html.DisplayFor(modelItem => episode.PatientIcnfk)
-                        </td>
+                        <td>132</td>
+                        <td>6/2/2021</td>
+                        <td>3/23/2021</td>
+                        <td>PatientXYZ</td>
                       </tr>
-                    }
-                  </tbody>
-                </table>
-              </td>
-            </tr>
+                      <tr>
+                        <td>
+                          @{await Html.RenderPartialAsync("_RehabActionBtns",
+                              new RehabActionViewModel()
+                              {
+                                EpisodeID = 23456,
+                                PatientID = "PatientABC"
+                              });
+                          }
+                        </td>
+                        <td>875</td>
+                        <td>6/23/2021</td>
+                        <td>5/15/2021</td>
+                        <td>PatientABC</td>
+                      </tr>
+                      @foreach (var episode in item.CareEpisodes)
+                      {
+                        <tr>
+                          <td>
+                            @{await Html.RenderPartialAsync("_RehabActionBtns",
+                                new RehabActionViewModel()
+                                {
+                                  EpisodeID = episode.EpisodeOfCareId,
+                                  PatientID = episode.PatientIcnfk
+                                });
+                            }
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.EpisodeOfCareId)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.AdmissionDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.OnsetDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.PatientIcnfk)
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            }
           }
         }
       </tbody>

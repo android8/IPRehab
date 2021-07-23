@@ -117,18 +117,11 @@ namespace IPRehabWebAPI2.Controllers
         viewablePatients.AddRange(thesePatients);
       }
 
-      if (viewablePatients == null || viewablePatients.Count == 0)
+      foreach (var p in viewablePatients)
       {
-        return Content($"{defaultQuarter} data is not ready, or there is no data matching {criteria}, or your access levels are limited.");
-      }
-      else
-      {
-        foreach (var p in viewablePatients)
-        {
-          episodes = await _episodeOfCareRepository.FindByCondition(p =>
-            p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
-          p.CareEpisodes = episodes;
-        }
+        episodes = await _episodeOfCareRepository.FindByCondition(p =>
+          p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+        p.CareEpisodes = episodes;
       }
 
       return Ok(viewablePatients);

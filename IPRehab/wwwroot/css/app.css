@@ -78,6 +78,16 @@ alert-info {
   /*border-color: #bee5eb;*/
 }
 
+.noData {
+  display: flex;
+  color: red;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 50px;
+  width: 100%;
+  height: 100%;
+}
+
 th {
   padding: 0 5px;
   /*  text-align: center !important;

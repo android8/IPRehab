@@ -30,31 +30,18 @@ namespace IPRehab.Controllers
       List<PatientDTO> patients = new List<PatientDTO>();
 
       string sessionCriteria;
+      string sessionKey = "SearchCriteria";
       CancellationToken cancellationToken = new CancellationToken();
       await HttpContext.Session.LoadAsync(cancellationToken);
       sessionCriteria = HttpContext.Session.GetString("SearchCriteria");
-      if (!string.IsNullOrEmpty(sessionCriteria))
+      if (criteria != sessionCriteria)
       {
-        if (criteria != sessionCriteria && string.IsNullOrEmpty(criteria))
-        {
-          //session cookie and the parameter (blank) are different, use SearchCriteria in session cookie
-          criteria = sessionCriteria.ToString();
-        }
+        if (string.IsNullOrEmpty(criteria))
+          HttpContext.Session.Remove(sessionKey);            
         else
-        {
-          //parameter is not blank then update SearchCriteria in the session cookie value
-          HttpContext.Session.SetString("SearchCriteria", criteria);
-        }
+          HttpContext.Session.SetString(sessionKey, criteria);
       }
-      else
-      {
-        if (!string.IsNullOrEmpty(criteria))
-        {
-          //no cookie and the parameter is not blank then update SearchCriteria in the session cookie value
-          HttpContext.Session.SetString("SearchCriteria", criteria);
-        }
-      }
-         
+
       ViewBag.PreviousCriteria = criteria;
 
       string networkName = HttpContext.User.Identity.Name;
