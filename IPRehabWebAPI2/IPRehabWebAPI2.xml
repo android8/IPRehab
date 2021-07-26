@@ -4,12 +4,13 @@
         <name>IPRehabWebAPI2</name>
     </assembly>
     <members>
-        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String)">
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.Boolean)">
             <summary>
             get patient matching the criteria and limit to user facility level
             do not across facility boundary unless the user has access level beyond facility level
             </summary>
             <param name="criteria"></param>
+            <param name="withEpisode"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
@@ -47,6 +48,23 @@
             <summary>
             get question in the specified {form} paramter
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetUserAccessLevels(UserModel.MasterreportsContext,System.String)">
+            <summary>
+            Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
+            </summary>
+            <param name="context"></param>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetPatients(IPRehabRepository.Contracts.IFSODPatientRepository,System.Int32,System.String)">
+            <summary>
+            use generic IFODPatientRepository to get patient filtered by quarter and criteria
+            </summary>
+            <param name="_patientRepository"></param>
+            <param name="currentQuarter"></param>
+            <param name="criteria"></param>
             <returns></returns>
         </member>
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">

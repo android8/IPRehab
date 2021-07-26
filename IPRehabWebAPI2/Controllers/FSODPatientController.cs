@@ -34,81 +34,31 @@ namespace IPRehabWebAPI2.Controllers
     /// do not across facility boundary unless the user has access level beyond facility level
     /// </summary>
     /// <param name="criteria"></param>
+    /// <param name="withEpisode"></param>
     /// <returns></returns>
     // GET: api/Patients
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatient(string criteria)
+    public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatient(string criteria, bool withEpisode)
     {
       string networkName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
-      var helpers = new UserPermissionHelper(_memoryCache); 
-      var userAccessLevels = await helpers.GetUserAccessLevels(_masterReportsContext, networkName);
+      if (string.IsNullOrEmpty(networkName))
+      {
+        return NotFound(new { Message = "Windows Identity is null.  Make sure the service allows Windows Authentication" });
+      }
+
+      var inMemoryCache = new CacheHelper(_memoryCache); 
+      var userAccessLevels = await inMemoryCache.GetUserAccessLevels(_masterReportsContext, networkName);
       var userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToArray();
 
       int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1};
       var currentQuarterNumber = quarters[DateTime.Today.Month - 1];
 
-      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarterNumber}");
+      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarterNumber}"); //result like 20213, 20221
 
       List<PatientDTO> patients;
       List<EpisodeOfCareDTO> episodes;
-    
-      //no criteria
-      if (string.IsNullOrEmpty(criteria))
-      { 
-        //current quarter patients
-        patients = await _patientRepository.FindByCondition(x => 
-          (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt)
-        ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
 
-        //previous quarter patients
-        if (patients == null || patients.Count == 0)
-        { 
-          patients = await _patientRepository.FindByCondition(x =>
-            (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 2 == x.FiscalPeriodInt)
-          ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-        }
-      }
-      //with criteria
-      else
-      {
-        int numericCriteria;
-        //numeri criteria
-        if (int.TryParse(criteria, out numericCriteria))
-        {
-          //current quarter patients
-          patients = await _patientRepository.FindByCondition(x => 
-            (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt) 
-            && (x.ADMParent_Key == numericCriteria || x.Sta6aKey == numericCriteria || x.bedsecn == numericCriteria || x.FiscalPeriodInt == numericCriteria || x.PTFSSN.Contains(criteria) || x.Facility.Contains(criteria) || x.VISN.Contains(criteria))
-          ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-
-          //previous quarter patients
-          if (patients == null || patients.Count == 0)
-          {
-            patients = await _patientRepository.FindByCondition(x => 
-              (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 2 == x.FiscalPeriodInt)
-              && (x.ADMParent_Key == numericCriteria || x.Sta6aKey == numericCriteria || x.bedsecn == numericCriteria || x.FiscalPeriodInt == numericCriteria || x.PTFSSN.Contains(criteria) || x.Facility.Contains(criteria) || x.VISN.Contains(criteria))
-            ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-          }
-        }
-        //alpha criteria
-        else
-        {
-          //current quarter patients
-            patients = await _patientRepository.FindByCondition(x => 
-              (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 1 == x.FiscalPeriodInt) 
-              && (x.Name.Contains(criteria) || x.PTFSSN.Contains(criteria) || x.Facility.Contains(criteria) || x.VISN.Contains(criteria) || x.District.Contains(criteria) || x.FiscalPeriod.Contains(criteria))
-            ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-
-          //previous quarter patients
-          if (patients == null || patients.Count == 0)
-          {
-            patients = await _patientRepository.FindByCondition(x =>
-              (defaultQuarter == x.FiscalPeriodInt || defaultQuarter - 2 == x.FiscalPeriodInt) 
-              && (x.Name.Contains(criteria) || x.PTFSSN.Contains(criteria) || x.Facility.Contains(criteria) || x.VISN.Contains(criteria) || x.District.Contains(criteria) || x.FiscalPeriod.Contains(criteria))
-            ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-          }
-        }
-      }
+      patients = await inMemoryCache.GetPatients(_patientRepository, defaultQuarter, criteria);
 
       List<PatientDTO> viewablePatients = new List<PatientDTO>();
       foreach(string s in userFacilities)
@@ -117,11 +67,14 @@ namespace IPRehabWebAPI2.Controllers
         viewablePatients.AddRange(thesePatients);
       }
 
-      foreach (var p in viewablePatients)
+      if (withEpisode)
       {
-        episodes = await _episodeOfCareRepository.FindByCondition(p =>
-          p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
-        p.CareEpisodes = episodes;
+        foreach (var p in viewablePatients)
+        {
+          episodes = await _episodeOfCareRepository.FindByCondition(p =>
+            p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+          p.CareEpisodes = episodes;
+        }
       }
 
       return Ok(viewablePatients);

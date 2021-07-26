@@ -30,7 +30,7 @@ namespace IPRehabWebAPI2.Controllers
     [HttpGet()]
     public async Task<ActionResult<IEnumerable<MastUserDTO>>> GetUserPermission(string networkID)
     {
-      var helper = new UserPermissionHelper(_memoryCache);
+      var helper = new CacheHelper(_memoryCache);
       var userAccessLevels = await helper.GetUserAccessLevels(_masterReportsContext, networkID);
       return Ok(userAccessLevels);
     }
