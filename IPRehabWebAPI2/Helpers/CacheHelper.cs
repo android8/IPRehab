@@ -184,21 +184,22 @@ namespace IPRehabWebAPI2.Helpers
     private string CleanUserName(string networkID)
     {
       string networkName = networkID;
-      if (!string.IsNullOrEmpty(networkName) && (networkName.Contains('\\') || networkName.Contains("%2F")))
-      {
-        String[] separator = { "\\", "%2F" };
-        var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-
-        if (networkNameWithDomain.Length > 0)
-          networkName = networkNameWithDomain[1];
-        else
-          networkName = networkNameWithDomain[0];
-      }
+      if (string.IsNullOrEmpty(networkName))
+        return null;
       else
       {
-        return null;
+        if (networkName.Contains('\\') || networkName.Contains("%2F"))
+        {
+          String[] separator = { "\\", "%2F" };
+          var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+          if (networkNameWithDomain.Length > 0)
+            networkName = networkNameWithDomain[1];
+          else
+            networkName = networkNameWithDomain[0];
+        }
+        return networkName;
       }
-      return networkName;
     }
   }
 }

@@ -37,14 +37,13 @@ namespace IPRehab.Controllers
       if (criteria != sessionCriteria)
       {
         if (string.IsNullOrEmpty(criteria))
-          HttpContext.Session.Remove(sessionKey);            
+          HttpContext.Session.Remove(sessionKey);
         else
           HttpContext.Session.SetString(sessionKey, criteria);
       }
 
       ViewBag.PreviousCriteria = criteria;
 
-      string networkName = HttpContext.User.Identity.Name;
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
@@ -55,7 +54,7 @@ namespace IPRehab.Controllers
         }
         else
         {
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?networkID={networkName}&criteria={criteria}"));
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true"));
         }
 
         string httpMsgContentReadMethod = "ReadAsStreamAsync";
@@ -81,25 +80,25 @@ namespace IPRehab.Controllers
                 patients = await JsonSerializer.DeserializeAsync<List<PatientDTO>>(contentStream, _options);
                 break;
             }
-            
+
             //returning the question list to view  
             return View(patients);
           }
-          catch // Could be ArgumentNullException or UnsupportedMediaTypeException
+          catch(Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
           {
             //DeserialExceptionHandler(ex);
-            return RedirectToAction("Error", "Home");
+            return Content($"json serialization error. {ex.Message}");
           }
         }
         else
         {
-          return RedirectToAction("Error", "Home");
+          return Content("Web API content is not an object or media type is not applicaiton/json");
         }
       }
-      catch
+      catch(Exception ex)
       {
         //WebAPIExceptionHander(ex);
-        return RedirectToAction("Error", "Home");
+        return Content($"Web API call failure. {ex.Message}");
       }
     }
 

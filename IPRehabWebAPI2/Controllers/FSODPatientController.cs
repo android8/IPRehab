@@ -40,6 +40,7 @@ namespace IPRehabWebAPI2.Controllers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatient(string criteria, bool withEpisode)
     {
+      //internally retrieve windows identity from User.Claims
       string networkName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
       if (string.IsNullOrEmpty(networkName))
       {
