@@ -108,7 +108,7 @@ namespace IPRehab.Areas.Identity.Pages.Account
 
                      return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                   }
-                  catch(Exception ex)
+                  catch
                   {
                      return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                   }

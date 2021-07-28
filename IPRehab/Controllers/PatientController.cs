@@ -87,18 +87,18 @@ namespace IPRehab.Controllers
           catch(Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
           {
             //DeserialExceptionHandler(ex);
-            return Content($"json serialization error. {ex.Message}");
+            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
           }
         }
         else
         {
-          return Content("Web API content is not an object or media type is not applicaiton/json");
+          return PartialView("_ErrorPartialView", "Web API content is not an object or mrededia type is not applicaiton/json");
         }
       }
       catch(Exception ex)
       {
         //WebAPIExceptionHander(ex);
-        return Content($"Web API call failure. {ex.Message}");
+        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
       }
     }
 

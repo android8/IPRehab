@@ -3,10 +3,18 @@
   <!-- ToDo: pass in the item_PTFSSN with a view component and set asp-route-patientid below-->
   <input type="checkbox" id="@($"optionCreate{Model.EpisodeID}")" />
   <label for="@($"optionCreate{Model.EpisodeID}")">Create&nbsp;<i class="fa fa-caret-right"></i></label>
-  <a asp-controller="question" asp-action="Edit" asp-route-stage="" asp-route-patientid="@Model.PatientID" asp-route-episodeid="@Model.EpisodeID" class="badge badge-primary rehabAction" title="Edit episode of care">N</a>
-  <a asp-controller="question" asp-action="Edit" asp-route-stage="Initial" asp-route-patientid="@Model.PatientID" asp-route-episodeid="@Model.EpisodeID" class="badge badge-info rehabAction" title="Edit episode of care initial questions">I</a>
-  <a asp-controller="question" asp-action="Edit" asp-route-stage="Interim" asp-route-patientid="@Model.PatientID" asp-route-episodeid="@Model.EpisodeID" class="badge badge-secondary rehabAction" title="Edit episode of care interim questions">I</a>
-  <a asp-controller="question" asp-action="Edit" asp-route-stage="Discharge" asp-route-patientid="@Model.PatientID" asp-route-episodeid="@Model.EpisodeID" class="badge badge-success rehabAction" title="Edit episode of care discharge questions">D</a>
-  <a asp-controller="question" asp-action="Edit" asp-route-stage="Followup" asp-route-patientid="@Model.PatientID" asp-route-episodeid="@Model.EpisodeID" class="badge badge-warning rehabAction" title="Edit episode of care follow up questions">F</a>
+  <!--
+  <a href='~/question/Edit?stage=&patientID=@Model.PatientID&episodeID=@Model.EpisodeID&redirectFrom=' class="badge badge-primary rehabAction" title="Edit episode of care">N</a>
+  <a href='~/question/Edit?stage=Initial&patientID=@Model.PatientID&episodeID=@Model.EpisodeID&redirectFrom=' class="badge badge-info rehabAction" title="Edit episode of care initial questions">Ini</a>
+  <a href='~/question/Edit?stage=Interim&patientID=@Model.PatientID&episodeID=@Model.EpisodeID&redirectFrom=' class="badge badge-secondary rehabAction" title="Edit episode of care interim questions">Int</a>
+  <a href='~/question/Edit?stage=Discharge&patientID=@Model.PatientID&episodeID=@Model.EpisodeID&redirectFrom=' class="badge badge-success rehabAction" title="Edit episode of care discharge questions">D</a>
+  <a href='~/question/Edit?stage=Followup&patientID=@Model.PatientID&episodeID=@Model.EpisodeID&redirectFrom=' class="badge badge-warning rehabAction" title="Edit episode of care follow up questions">F</a>
+  -->
+
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-primary rehabAction" title="Edit episode of care">N</a>
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="Initial" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-info rehabAction" title="Edit episode of care initial questions">I</a>
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="Interim" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-secondary rehabAction" title="Edit episode of care interim questions">I</a>
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="Discharge" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-success rehabAction" title="Edit episode of care discharge questions">D</a>
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="Followup" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-warning rehabAction" title="Edit episode of care follow up questions">F</a>
 </div>
 

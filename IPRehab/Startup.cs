@@ -23,7 +23,6 @@ namespace IPRehab
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddDistributedMemoryCache();
       services.Configure<CookiePolicyOptions>(options =>
       {
         //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
@@ -41,6 +40,8 @@ namespace IPRehab
         options.Cookie.IsEssential = true;
       });
 
+      //services.AddDistributedMemoryCache();
+      services.AddMemoryCache();
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
            //preserve circular reference

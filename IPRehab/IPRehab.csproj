@@ -9,6 +9,13 @@
     <DocumentationFile>C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
@@ -100,6 +107,10 @@
     <None Update="Scripts\app\patientList - Copy.js.map">
       <DependentUpon>patientList.js.map</DependentUpon>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs\" />
   </ItemGroup>
 
 </Project>
