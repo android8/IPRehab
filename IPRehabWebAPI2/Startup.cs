@@ -27,13 +27,10 @@ namespace IPRehabWebAPI2
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      /* inject EFCore */
-      //services.AddDbContext<TodoContext>(
-      //  opt => opt.UseInMemoryDatabase("TodoList"));
-
       string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
       string FSODPatientConnectionString = Configuration.GetConnectionString("FSODPatientDetail");
       string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
+
       services.AddDbContext<IPRehabContext>(
          o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
       services.AddDbContext<DmhealthfactorsContext>(
@@ -52,7 +49,7 @@ namespace IPRehabWebAPI2
       services.AddScoped<IQuestionStageRepository, QuestionStageRepository>();
       services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
 
-      /*set "launchUrl": "api/TodoItems" in properties\launchSettimgs.json to start with TodoItems page
+      /*set "launchUrl": "api/FSODPatient" in properties\launchSettimgs.json to start with FSODPatient page
        * "launchUrl": "swagger" to start with Swagger interface
        */
       services.AddSwaggerGen(c =>
@@ -70,7 +67,9 @@ namespace IPRehabWebAPI2
                                                 "https://localhost:44381");
                           });
       });
+
       services.AddMemoryCache();
+
       services.AddControllers(o => o.EnableEndpointRouting = true)
       .AddJsonOptions(o =>
         {
@@ -86,6 +85,7 @@ namespace IPRehabWebAPI2
       if (env.IsDevelopment() || env.IsProduction())
       {
         app.UseDeveloperExceptionPage();
+        
         app.UseSwagger();
         //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IPRehabWebAPI2 v1"));
         app.UseSwaggerUI(c =>

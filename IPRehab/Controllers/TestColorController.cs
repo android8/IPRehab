@@ -58,8 +58,7 @@ namespace IPRehab.Controllers
           }
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            DeserialExceptionHandler(ex);
-            return View(ex.Message);
+            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
           }
         }
         else
@@ -69,8 +68,7 @@ namespace IPRehab.Controllers
       }
       catch (Exception ex)
       {
-        WebAPIExceptionHander(ex);
-        return View(ex.Message);
+        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
       }
     }
   }

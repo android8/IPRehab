@@ -33,7 +33,7 @@ namespace IPRehab.Controllers
       string sessionKey = "SearchCriteria";
       CancellationToken cancellationToken = new CancellationToken();
       await HttpContext.Session.LoadAsync(cancellationToken);
-      sessionCriteria = HttpContext.Session.GetString("SearchCriteria");
+      sessionCriteria = HttpContext.Session.GetString(sessionKey);
       if (criteria != sessionCriteria)
       {
         if (string.IsNullOrEmpty(criteria))
@@ -46,7 +46,7 @@ namespace IPRehab.Controllers
 
       try
       {
-        //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
+        //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
         HttpResponseMessage Res;
         if (string.IsNullOrEmpty(criteria))
         {
@@ -86,7 +86,6 @@ namespace IPRehab.Controllers
           }
           catch(Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            //DeserialExceptionHandler(ex);
             return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
           }
         }
@@ -97,7 +96,6 @@ namespace IPRehab.Controllers
       }
       catch(Exception ex)
       {
-        //WebAPIExceptionHander(ex);
         return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
       }
     }
@@ -172,8 +170,7 @@ namespace IPRehab.Controllers
           }
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            DeserialExceptionHandler(ex);
-            return null;
+            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
           }
         }
         else
@@ -183,10 +180,8 @@ namespace IPRehab.Controllers
       }
       catch (Exception ex)
       {
-        WebAPIExceptionHander(ex);
-        return null;
+        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
       }
-
     }
 
     // POST: PatientController/Edit/5

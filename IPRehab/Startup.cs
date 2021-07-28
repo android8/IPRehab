@@ -31,7 +31,7 @@ namespace IPRehab
         options.CheckConsentNeeded = context => true; // true if consent required
         // requires using Microsoft.AspNetCore.Http;
         options.MinimumSameSitePolicy = SameSiteMode.None;
-        options.ConsentCookie.Expiration = TimeSpan.FromMinutes(30);
+        options.ConsentCookie.Expiration = TimeSpan.FromMinutes(20);
       });
       services.AddSession(options =>
       {
@@ -40,8 +40,8 @@ namespace IPRehab
         options.Cookie.IsEssential = true;
       });
 
-      //services.AddDistributedMemoryCache();
-      services.AddMemoryCache();
+      //services.AddDistributedMemoryCache(); //do not use because out of process 
+      //services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
            //preserve circular reference

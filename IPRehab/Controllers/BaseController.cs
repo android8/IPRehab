@@ -52,26 +52,6 @@ namespace IPRehab.Controllers
       await next();
     }
 
-    protected void DeserialExceptionHandler(Exception ex)
-    {
-      Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
-      Console.WriteLine($"{ex.Message}");
-      if (ex.InnerException != null)
-      {
-        Console.WriteLine($"{ex.InnerException.Message}");
-      }
-    }
-
-    protected void WebAPIExceptionHander(Exception ex)
-    {
-      Console.WriteLine("WebAPI call failure.");
-      Console.WriteLine($"{ex.Message}");
-      if (ex.InnerException != null)
-      {
-        Console.WriteLine($"{ex.InnerException.Message}");
-      }
-    }
-
     protected async Task<List<MastUserDTO>> UserPermissionFromSessionAsync()
     {
       try
