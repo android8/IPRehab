@@ -2,7 +2,6 @@
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +12,6 @@ namespace IPRehabWebAPI2.Helpers
 {
   public class CacheHelper
   {
-    private IMemoryCache _cache;
-
-    public CacheHelper(IMemoryCache memoryCache)
-    {
-      _cache = memoryCache;
-    }
-
     /// <summary>
     /// Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
     /// </summary>
@@ -28,17 +20,9 @@ namespace IPRehabWebAPI2.Helpers
     /// <returns></returns>
     public async Task<List<MastUserDTO>> GetUserAccessLevels(MasterreportsContext context, string networkID)
     {
-      string cacheKey = networkID; //use domain and network ID
       string userName = CleanUserName(networkID); //use network ID without domain
       List<MastUserDTO> userAccessLevels = new List<MastUserDTO>();
 
-      if (_cache.TryGetValue(cacheKey, out var userAccessLevelsFromSession))
-      {
-        userAccessLevels = (List<MastUserDTO>)userAccessLevelsFromSession;
-        return userAccessLevels;
-      }
-      else
-      {
         SqlParameter[] paramNetworkID = new SqlParameter[]
         {
           new SqlParameter(){
@@ -59,14 +43,6 @@ namespace IPRehabWebAPI2.Helpers
           userAccessLevels.Add(userDTO);
         }
 
-        MemoryCacheEntryOptions options = new MemoryCacheEntryOptions
-        {
-          AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1), // cache will expire in 1 day
-          SlidingExpiration = TimeSpan.FromMinutes(60) // cache will expire if inactive for 60 seconds
-        };
-
-        _cache.Set<List<MastUserDTO>>(cacheKey, userAccessLevels, options);
-      }
       return userAccessLevels;
     }
 
@@ -87,12 +63,6 @@ namespace IPRehabWebAPI2.Helpers
       int twoQuarterAgo = currentQuarter - 2;
 
       List<PatientDTO> patients;
-      if (_cache.TryGetValue(cacheKey, out var cachedPatients))
-      {
-        return (List<PatientDTO>)cachedPatients;
-      }
-      else
-      {
         //no criteria
         if (string.IsNullOrEmpty(criteria))
         {
@@ -176,8 +146,6 @@ namespace IPRehabWebAPI2.Helpers
             }
           }
         }
-      }
-      _cache.Set<List<PatientDTO>>(cacheKey, patients);
       return patients;
     }
 

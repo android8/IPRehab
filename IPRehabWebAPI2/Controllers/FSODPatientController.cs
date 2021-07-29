@@ -3,7 +3,6 @@ using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,13 +19,11 @@ namespace IPRehabWebAPI2.Controllers
     private readonly IFSODPatientRepository _patientRepository;
     private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
     private readonly MasterreportsContext _masterReportsContext;
-    private readonly IMemoryCache _memoryCache;
-    public FSODPatientController(IFSODPatientRepository patientRepository, IEpisodeOfCareRepository episodeOfCareRepository, MasterreportsContext masterReportContext, IMemoryCache memoryCache)
+    public FSODPatientController(IFSODPatientRepository patientRepository, IEpisodeOfCareRepository episodeOfCareRepository, MasterreportsContext masterReportContext)
     {
       _patientRepository = patientRepository;
       _episodeOfCareRepository = episodeOfCareRepository;
       _masterReportsContext = masterReportContext;
-      _memoryCache = memoryCache;
     }
 
     /// <summary>
@@ -47,7 +44,7 @@ namespace IPRehabWebAPI2.Controllers
         return NotFound(new { Message = "Windows Identity is null.  Make sure the service allows Windows Authentication" });
       }
 
-      var inMemoryCache = new CacheHelper(_memoryCache); 
+      var inMemoryCache = new CacheHelper(); 
       var userAccessLevels = await inMemoryCache.GetUserAccessLevels(_masterReportsContext, networkName);
       var userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToArray();
 

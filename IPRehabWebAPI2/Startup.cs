@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PatientModel;
-using System.Text.Json.Serialization;
 using UserModel;
 
 namespace IPRehabWebAPI2
@@ -67,8 +66,6 @@ namespace IPRehabWebAPI2
                                                 "https://localhost:44381");
                           });
       });
-
-      services.AddMemoryCache();
 
       services.AddControllers(o => o.EnableEndpointRouting = true)
       .AddJsonOptions(o =>
