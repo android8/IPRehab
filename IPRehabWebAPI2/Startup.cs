@@ -53,7 +53,7 @@ namespace IPRehabWebAPI2
        */
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "IPRehabWebAPI2", Version = "v1" });
+        c.SwaggerDoc("v2", new OpenApiInfo { Title = "IPRehabWebAPI2", Version = "v2" });
       });
 
       services.AddCors(options =>
@@ -84,15 +84,14 @@ namespace IPRehabWebAPI2
         app.UseDeveloperExceptionPage();
         
         app.UseSwagger();
-        //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IPRehabWebAPI2 v1"));
         app.UseSwaggerUI(c =>
         {
           #if DEBUG
             // For Debug in Kestrel
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web API V1");
+            c.SwaggerEndpoint("/swagger/v2/swagger.json", "Web API V2");
           #else
             // To deploy on IIS
-            c.SwaggerEndpoint("/iprehabmetricswebapi/swagger/v1/swagger.json", "Web API V1");
+            c.SwaggerEndpoint("/iprehabmetricswebapi/swagger/v2/swagger.json", "Web API V2");
           #endif
           //c.RoutePrefix = string.Empty;
         });
