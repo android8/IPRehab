@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web.Http.ModelBinding;
 using UserModel;
 
 namespace IPRehabWebAPI2.Controllers
@@ -41,41 +42,63 @@ namespace IPRehabWebAPI2.Controllers
       string networkName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
       if (string.IsNullOrEmpty(networkName))
       {
-        return NotFound(new { Message = "Windows Identity is null.  Make sure the service allows Windows Authentication" });
+        return NotFound("Windows Identity is null.  Make sure the service allows Windows Authentication");
       }
 
-      var inMemoryCache = new CacheHelper(); 
-      var userAccessLevels = await inMemoryCache.GetUserAccessLevels(_masterReportsContext, networkName);
-      var userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToArray();
+      var cacheHelper = new CacheHelper(); 
+      var userAccessLevels = await cacheHelper.GetUserAccessLevels(_masterReportsContext, networkName);
+      var userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
 
-      int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1};
-      var currentQuarterNumber = quarters[DateTime.Today.Month - 1];
-
-      int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarterNumber}"); //result like 20213, 20221
-
-      List<PatientDTO> patients;
-      List<EpisodeOfCareDTO> episodes;
-
-      patients = await inMemoryCache.GetPatients(_patientRepository, defaultQuarter, criteria);
-
-      List<PatientDTO> viewablePatients = new List<PatientDTO>();
-      foreach(string s in userFacilities)
+      if (userFacilities?.Count == 0)
       {
-        var thesePatients = patients.Where(x => x.Facility.Contains(s)).ToList();
-        viewablePatients.AddRange(thesePatients);
+        return BadRequest("You are not permitted to view any facility's patients");
       }
-
-      if (withEpisode)
+      else
       {
-        foreach (var p in viewablePatients)
+        int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
+        var currentQuarterNumber = quarters[DateTime.Today.Month - 1];
+
+        int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarterNumber}"); //result like 20213, 20221
+
+        IEnumerable<PatientDTO> patients = null;
+        try
         {
-          episodes = await _episodeOfCareRepository.FindByCondition(p =>
-            p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
-          p.CareEpisodes = episodes;
-        }
-      }
+          patients = await cacheHelper.GetPatients(_patientRepository, defaultQuarter, criteria);
 
-      return Ok(viewablePatients);
+          //patients = patients.Where(x => userFacilities.Any(y => EF.Functions.Like(x.Facility, y)));
+          //patients = patients.Where(x => userFacilities.Any(fac => x.Facility.Contains(fac)));
+
+          List<PatientDTO> viewablePatients = new List<PatientDTO>();
+          foreach (PatientDTO pat in patients)
+          {
+            foreach (string fac in userFacilities)
+            {
+              if (pat.Facility.IndexOf("648") >= 0)
+              {
+                viewablePatients.Add(pat);
+                break;
+              }
+            }
+          }
+
+          patients = viewablePatients;
+          if (withEpisode)
+          {
+            foreach (var p in patients)
+            {
+              List<EpisodeOfCareDTO> episodes = await _episodeOfCareRepository.FindByCondition(p =>
+                p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+              p.CareEpisodes = episodes;
+            }
+          }
+        }
+        catch(Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+          throw;
+        }
+      return Ok(patients);
+      }
     }
 
     // GET: api/Patients/5

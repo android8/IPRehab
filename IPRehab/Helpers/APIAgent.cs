@@ -14,25 +14,17 @@ namespace IPRehab.Helpers
   {
     public static async Task<HttpResponseMessage> GetDataAsync(Uri uri)
     {
-      //WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
-      //NetworkCredential credentials = null;
-      //credentials = new NetworkCredential(windowsIdentity.Name, string.Empty);
-
       HttpClientHandler handler = new HttpClientHandler();
 
       handler.UseDefaultCredentials = true;
 
-      //Windows authentication is enabled so no need to set the crendials
-      //handler.Credentials = credentials;
-
       using var client = new HttpClient(handler);
       client.DefaultRequestHeaders.Clear();
-      //Define request data format  
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-      //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
       var httpResponseMsg = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-      httpResponseMsg.EnsureSuccessStatusCode();
+
+      //httpResponseMsg.EnsureSuccessStatusCode();
       return httpResponseMsg;
     }
 

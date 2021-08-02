@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using IPRehab.Helpers;
+using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +59,8 @@ namespace IPRehab.Controllers
           }
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
+            return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+              .Create("JSON serialization error", ex.Message, ex.InnerException?.Message));
           }
         }
         else
@@ -68,7 +70,8 @@ namespace IPRehab.Controllers
       }
       catch (Exception ex)
       {
-        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+          .Create("API call exception", ex.Message, ex.InnerException?.Message));
       }
     }
   }

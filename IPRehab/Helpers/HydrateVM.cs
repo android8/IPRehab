@@ -14,6 +14,7 @@ namespace IPRehab.Helpers
       QuestionWithSelectItems qws = new QuestionWithSelectItems();
       qws.Form = dto.Form;
       qws.Section = GetSectionKey(dto);
+      qws.Required = dto.Required;
       qws.QuestionID = dto.QuestionID;
       qws.QuestionKey = dto.QuestionKey;
       qws.QuestionTitle = dto.QuestionTitle;

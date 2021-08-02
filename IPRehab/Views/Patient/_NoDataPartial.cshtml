@@ -1,0 +1,14 @@
+﻿@{
+  Layout = "_Layout";
+}
+
+@{await Html.RenderPartialAsync("_SearchPartial", 0);}
+
+<div class="flex-md-column paddingTop text-danger">
+  <div class="font-weight-bold">No data</div>
+  <ul>
+    <li>The new quarter data is not available yet</li>
+    <li>Your access levels do not allow viewing the patients in the specified location</li>
+    <li>No data matching the specified criteria</li>
+  </ul>
+</div>

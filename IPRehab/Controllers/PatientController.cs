@@ -1,4 +1,5 @@
 ﻿using IPRehab.Helpers;
+using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,59 +45,71 @@ namespace IPRehab.Controllers
 
       ViewBag.PreviousCriteria = criteria;
 
+      HttpResponseMessage Res;
+
+      string url = string.Empty;
       try
       {
         //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
-        HttpResponseMessage Res;
         if (string.IsNullOrEmpty(criteria))
         {
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient"));
+          url = $"{_apiBaseUrl}/api/FSODPatient";
+          Res = await APIAgent.GetDataAsync(new Uri(url));
         }
         else
         {
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true"));
-        }
-
-        string httpMsgContentReadMethod = "ReadAsStreamAsync";
-        if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
-        {
-          try
-          {
-            switch (httpMsgContentReadMethod)
-            {
-              //use Newtonsoft json deserializer
-              //case "ReadAsStringAsync":
-              //  string patientsString = await Res.Content.ReadAsStringAsync();
-              //  patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
-              //  break;
-
-              case "ReadAsAsync":
-                patients = await Res.Content.ReadAsAsync<List<PatientDTO>>();
-                break;
-
-              //use .Net 5 built-in deserializer
-              case "ReadAsStreamAsync":
-                var contentStream = await Res.Content.ReadAsStreamAsync();
-                patients = await JsonSerializer.DeserializeAsync<List<PatientDTO>>(contentStream, _options);
-                break;
-            }
-
-            //returning the question list to view  
-            return View(patients);
-          }
-          catch(Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
-          {
-            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
-          }
-        }
-        else
-        {
-          return PartialView("_ErrorPartialView", "Web API content is not an object or mrededia type is not applicaiton/json");
+          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true";
+          Res = await APIAgent.GetDataAsync(new Uri(url));
         }
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
-        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+          .Create("Fail to call Web API", ex.Message, ex.InnerException?.Message));
+      }
+
+      string httpMsgContentReadMethod = "ReadAsStreamAsync";
+      System.IO.Stream contentStream = null;
+      if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+      {
+        try
+        {
+          switch (httpMsgContentReadMethod)
+          {
+            //use Newtonsoft json deserializer
+            //case "ReadAsStringAsync":
+            //  string patientsString = await Res.Content.ReadAsStringAsync();
+            //  patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
+            //  break;
+
+            case "ReadAsAsync":
+              patients = await Res.Content.ReadAsAsync<List<PatientDTO>>();
+              break;
+
+            //use .Net 5 built-in deserializer
+            case "ReadAsStreamAsync":
+              contentStream = await Res.Content.ReadAsStreamAsync();
+              patients = await JsonSerializer.DeserializeAsync<List<PatientDTO>>(contentStream, _options);
+              break;
+          }
+
+          if (patients?.Count == 0)
+            return View("_NoDataPartial");
+
+          //returning the question list to view  
+          return View(patients);
+        }
+        catch (Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
+        {
+          return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+            .Create("Json deserialization error", ex.Message, ex.InnerException?.Message));
+        }
+      }
+      else
+      {
+        var ex = new Exception();
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+        .Create("Web API content is not an object or mededia type is not applicaiton/json", string.Empty, string.Empty));
       }
     }
 
@@ -139,7 +152,7 @@ namespace IPRehab.Controllers
         if (stage != RehabStageEnum.Undefined && !string.IsNullOrEmpty(ssn))
         {
           //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient/{stage.ToString()}?{ssn}"));
+          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient/{ssn}"));
         }
         string httpMsgContentReadMethod = "ReadAsStringAsync";
         if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
@@ -170,7 +183,8 @@ namespace IPRehab.Controllers
           }
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            return PartialView("_ErrorPartialView", $"JSON serialization exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
+            return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+              .Create("Json deserialization error", ex.Message, ex.InnerException?.Message));
           }
         }
         else
@@ -180,7 +194,8 @@ namespace IPRehab.Controllers
       }
       catch (Exception ex)
       {
-        return PartialView("_ErrorPartialView", $"API call exception: {ex?.Message} {ex?.InnerException?.Message} {ex?.StackTrace}");
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+          .Create("Web API call failure", ex.Message, ex.InnerException?.Message));
       }
     }
 

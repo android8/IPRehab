@@ -40,7 +40,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblAnswer>(entity =>
       {
-        entity.HasKey(e => e.EpsideOfCareIdfk);
+        entity.HasKey(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk});
 
         entity.ToTable("tblAnswer", "app");
 
@@ -55,12 +55,20 @@ namespace IPRehabModel
         entity.Property(e => e.EpsideOfCareIdfk)
                   .ValueGeneratedNever()
                   .HasColumnName("EpsideOfCareIDFK");
-
+       
+        entity.Property(e => e.StageIdfk).HasColumnName("StageIDFK");
+        
         entity.Property(e => e.AnswerCodeSetfk).HasColumnName("AnswerCodeSetFK");
 
         entity.Property(e => e.Description).IsUnicode(false);
 
         entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
+
+        entity.HasOne(d => d.StageIdFkNavigation)
+          .WithMany(p => p.TblAnswerStage)
+          .HasForeignKey(d => d.StageIdfk)
+          .OnDelete(DeleteBehavior.ClientSetNull)
+          .HasConstraintName("FK_tblAnswer_tblCodeSet_Stage");
 
         entity.HasOne(d => d.AnswerCodeSetFkNavigation)
                   .WithMany(p => p.TblAnswer)

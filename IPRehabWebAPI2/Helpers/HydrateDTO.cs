@@ -20,6 +20,8 @@ namespace IPRehabWebAPI2.Helpers
       {
         Form = q.FormFkNavigation.CodeDescription,
         QuestionID = q.QuestionId,
+        Required = q.TblQuestionStage.Where(x=>
+          x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage).SingleOrDefault()?.Required,
         QuestionKey = q.QuestionKey,
         QuestionTitle = q.QuestionTitle,
         Question = q.Question,

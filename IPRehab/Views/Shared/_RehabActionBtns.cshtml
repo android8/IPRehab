@@ -12,6 +12,7 @@
   -->
 
   <a asp-controller="question" asp-action="Edit" asp-route-stage="" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-primary rehabAction" title="Edit episode of care">N</a>
+  <a asp-controller="question" asp-action="Edit" asp-route-stage="Base" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-dark rehabAction" title="Edit episode of care">B</a>
   <a asp-controller="question" asp-action="Edit" asp-route-stage="Initial" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-info rehabAction" title="Edit episode of care initial questions">I</a>
   <a asp-controller="question" asp-action="Edit" asp-route-stage="Interim" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-secondary rehabAction" title="Edit episode of care interim questions">I</a>
   <a asp-controller="question" asp-action="Edit" asp-route-stage="Discharge" asp-route-patientID="@Model.PatientID" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="" class="badge badge-success rehabAction" title="Edit episode of care discharge questions">D</a>

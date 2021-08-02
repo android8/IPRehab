@@ -162,11 +162,12 @@ namespace IPRehabWebAPI2.Controllers
 
       return Ok(questions);
     }
+
     /// <summary>
     /// get question in the specified {form} paramter
     /// </summary>
     /// <returns></returns>
-    // GET: api/<QuestionController>/GetBaseFormAsync     [Route("api/[controller]/GetAdmissionForm")]
+    // GET: api/<QuestionController>/GetAdmissionForm     [Route("api/[controller]/GetAdmissionForm")]
     [HttpGet()]
     public IActionResult GetAdmissionForm()
     {
