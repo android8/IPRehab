@@ -88,11 +88,11 @@
           </tr>
 
  <!--Episode of Care row-->
-          @if (item.CareEpisodes?.Count() != 0)
+          @if (item.CareEpisodes?.Count() == 0)
             {
           <tr>
             <td colspan="10" class="text-danger">
-              No epside of care
+              No episode of care
             </td>
           </tr>
             }
@@ -119,36 +119,6 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns",
-                              new RehabActionViewModel()
-                              {
-                                EpisodeID = 12345,
-                                PatientID = "PatientXYZ"
-                              });
-                      }
-                    </td>
-                    <td>132</td>
-                    <td>6/2/2021</td>
-                    <td>3/23/2021</td>
-                    <td>PatientXYZ</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns",
-                              new RehabActionViewModel()
-                              {
-                                EpisodeID = 23456,
-                                PatientID = "PatientABC"
-                              });
-                      }
-                    </td>
-                    <td>875</td>
-                    <td>6/23/2021</td>
-                    <td>5/15/2021</td>
-                    <td>PatientABC</td>
-                  </tr>
                   @foreach (var episode in item.CareEpisodes)
                       {
                   <tr>

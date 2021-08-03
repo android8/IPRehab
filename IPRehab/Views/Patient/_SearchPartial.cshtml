@@ -5,7 +5,7 @@
     Patients
     <span>
       <input id="searchCriteria" type="text" placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64" value="@ViewBag.PreviousCriteria" />
-      <a id="search" asp-action="Index" asp-route-criteria="" class="btn-sm btn-info">Search</a>&nbsp;
+      <a id="search" asp-action="Index" asp-route-criteria="@ViewBag.PreviousCriteria"  class="btn-sm btn-info">Search</a>&nbsp;
       <span id="previousCriteria"></span>&nbsp;
       <span id="recordCount">@Model records</span>
     </span>

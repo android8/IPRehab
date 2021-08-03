@@ -65,29 +65,30 @@ namespace IPRehabWebAPI2.Controllers
         {
           patients = await cacheHelper.GetPatients(_patientRepository, defaultQuarter, criteria);
 
-          //patients = patients.Where(x => userFacilities.Any(y => EF.Functions.Like(x.Facility, y)));
-          //patients = patients.Where(x => userFacilities.Any(fac => x.Facility.Contains(fac)));
+          //patients = patients.Where(x => userFacilities.Any(y => EF.Functions.Like(x.Facility, $"%{648}%")));
+          patients = patients.Where(x => userFacilities.Any(fac => x.Facility.Contains("648")));
 
-          List<PatientDTO> viewablePatients = new List<PatientDTO>();
-          foreach (PatientDTO pat in patients)
-          {
-            foreach (string fac in userFacilities)
-            {
-              if (pat.Facility.IndexOf("648") >= 0)
-              {
-                viewablePatients.Add(pat);
-                break;
-              }
-            }
-          }
+          //List<PatientDTO> viewablePatients = new List<PatientDTO>();
+          //foreach (PatientDTO pat in patients)
+          //{
+          //  foreach (string fac in userFacilities)
+          //  {
+          //    if (pat.Facility.IndexOf(fac) >= 0)
+          //    {
+          //      viewablePatients.Add(pat);
+          //      break;
+          //    }
+          //  }
+          //}
 
-          patients = viewablePatients;
+          //patients = viewablePatients;
           if (withEpisode)
           {
             foreach (var p in patients)
             {
-              List<EpisodeOfCareDTO> episodes = await _episodeOfCareRepository.FindByCondition(p =>
-                p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+              List<EpisodeOfCareDTO> episodes = await _episodeOfCareRepository.FindByCondition(episode =>
+                episode.PatientIcnfk == p.PTFSSN)
+                .Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
               p.CareEpisodes = episodes;
             }
           }

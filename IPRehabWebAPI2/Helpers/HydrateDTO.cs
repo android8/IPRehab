@@ -104,7 +104,7 @@ namespace IPRehabWebAPI2.Helpers
         EpisodeOfCareId = e.EpisodeOfCareId,
         OnsetDate = e.OnsetDate,
         AdmissionDate = e.AdmissionDate,
-        PatientIcnfk = "TBD"
+        PatientIcnfk = e.PatientIcnfk
       };
     }
 

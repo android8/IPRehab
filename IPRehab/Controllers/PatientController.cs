@@ -51,16 +51,8 @@ namespace IPRehab.Controllers
       try
       {
         //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
-        if (string.IsNullOrEmpty(criteria))
-        {
-          url = $"{_apiBaseUrl}/api/FSODPatient";
-          Res = await APIAgent.GetDataAsync(new Uri(url));
-        }
-        else
-        {
           url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true";
           Res = await APIAgent.GetDataAsync(new Uri(url));
-        }
       }
       catch (Exception ex)
       {

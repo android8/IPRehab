@@ -148,9 +148,8 @@ namespace IPRehabRepository
 
       IQueryable<T> IRepositoryBase<T>.FindByCondition(Expression<Func<T, bool>> expression)
       {
-         var questions = RepositoryContext.Set<T>().Where(expression).AsQueryable();
+         return RepositoryContext.Set<T>().Where(expression).AsQueryable();
          //return this.RepositoryContext.Set<T>().Where(expression).AsNoTracking();
-         return questions;
       }
 
       public async Task<int> CreateAsync(T entity)
