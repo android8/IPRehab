@@ -20,7 +20,7 @@ namespace IPRehabWebAPI2.Helpers
       {
         Form = q.FormFkNavigation.CodeDescription,
         QuestionID = q.QuestionId,
-        Required = q.TblQuestionStage.Where(x=>
+        Required = q.TblQuestionStage.Where(x =>
           x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage).SingleOrDefault()?.Required,
         QuestionKey = q.QuestionKey,
         QuestionTitle = q.QuestionTitle,
@@ -40,6 +40,35 @@ namespace IPRehabWebAPI2.Helpers
                           Comment = s.Comment
                         }).ToList()
       };
+    }
+
+    public static AnswerDTO HydrateAnswer(TblAnswer a) {
+      EpisodeOfCareDTO episode = new()
+      {
+        EpisodeOfCareID = a.EpsideOfCareIdfk,
+        OnsetDate = a.EpsideOfCareIdfkNavigation.OnsetDate,
+        AdmissionDate = a.EpsideOfCareIdfkNavigation.AdmissionDate,
+        PatientIcnFK = a.EpsideOfCareIdfkNavigation.PatientIcnfk
+      };
+
+      TblCodeSet answerCodeSet = new()
+      {
+        CodeSetId = a.AnswerCodeSetFkNavigation.CodeSetId,
+        CodeValue = a.AnswerCodeSetFkNavigation.CodeValue,
+        CodeDescription = a.AnswerCodeSetFkNavigation.CodeDescription,
+        Comment = a.AnswerCodeSetFkNavigation.Comment
+      };
+
+      AnswerDTO answerDTO = new() {
+        EpisodeOfCare = episode,
+        QuestionIdFK = a.QuestionIdfk,
+        CareStage = a.StageIdFkNavigation.CodeDescription,
+        AnswerCodeSet = answerCodeSet,
+        AnswerSequenceNumber = a.AnswerSequenceNumber,
+        Description = a.Description,
+        ByUser = a.AnswerByUserId
+      };
+      return answerDTO;
     }
 
     private static string GetGroupTitle(TblQuestion q, string questionStage)
@@ -101,10 +130,10 @@ namespace IPRehabWebAPI2.Helpers
     {
       return new EpisodeOfCareDTO
       {
-        EpisodeOfCareId = e.EpisodeOfCareId,
+        EpisodeOfCareID = e.EpisodeOfCareId,
         OnsetDate = e.OnsetDate,
         AdmissionDate = e.AdmissionDate,
-        PatientIcnfk = e.PatientIcnfk
+        PatientIcnFK = e.PatientIcnfk
       };
     }
 

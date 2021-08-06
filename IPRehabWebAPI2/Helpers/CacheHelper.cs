@@ -52,10 +52,8 @@ namespace IPRehabWebAPI2.Helpers
     /// <param name="_patientRepository"></param>
     /// <param name="currentQuarter"></param>
     /// <param name="criteria"></param>
-    ///     /// <param name="grantedFacilities"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, int currentQuarter, string criteria
-      /*, List<string> grantedFacilities*/)
+    public async Task<IEnumerable<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, int currentQuarter, string criteria)
     {
       string cacheKey = criteria;
       if (string.IsNullOrEmpty(criteria))

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IPRehabModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,5 +19,10 @@ namespace IPRehabWebAPI2.Models
     public string AnswerCodeCategory { get; set; }
     public int? DisplayOrder { get; set; }
     public List<CodeSetDTO> ChoiceList { get; set; }
+
+    /// <summary>
+    /// Each question hAs primarily a single answer but can be multiple
+    /// </summary>
+    public List<AnswerDTO> Answers { get; set; }
   }
 }

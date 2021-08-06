@@ -4,7 +4,11 @@ using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,10 +20,17 @@ namespace IPRehabWebAPI2.Controllers
   public class QuestionController : ControllerBase
   {
     private readonly IQuestionRepository _questionRepository;
+    private readonly IEpisodeOfCareRepository _episodeRepository;
+    private readonly IAnswerRepository _answerRepository;
+    private readonly IQuestionStageRepository _questionStageRepository;
 
-    public QuestionController(IQuestionRepository questionRepository)
+    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, IAnswerRepository answerRepository,
+      IQuestionStageRepository questionStageRepository)
     {
       _questionRepository = questionRepository;
+      _episodeRepository = episodeRepository;
+      _answerRepository = answerRepository;
+      _questionStageRepository = questionStageRepository;
     }
 
     [Route("GetAll")]
@@ -30,7 +41,7 @@ namespace IPRehabWebAPI2.Controllers
         x.TblQuestionStage.Where(
           s => s.StageFkNavigation.CodeValue == "All" && s.QuestionIdFkNavigation.FormFkNavigation.CodeValue == "Form-Discharge"
         ).Any())
-        .OrderBy(x=>x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
+        .OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
         .Select(q => HydrateDTO.HydrateQuestion(q, string.Empty)
       ).ToList();
       if (includeAnswer)
@@ -56,21 +67,55 @@ namespace IPRehabWebAPI2.Controllers
       return Ok(model);
     }
 
-    [Route("GetStage")]
+    [Route("GetStageAsync/{stageName}")]
     [HttpGet()]
-    public IActionResult GetStage(string stageName, bool includeAnswer)
+    public async Task<IActionResult> GetStageAsync(string stageName, bool includeAnswer, int episodeID)
     {
-      var questions = _questionRepository.FindByCondition(x => x.Active.Value != false &&
-        x.TblQuestionStage.Where(
-          s => s.QuestionIdFk == x.QuestionId &&
-              s.StageFkNavigation.CodeValue == stageName
-        ).Any()
-      ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
-      .Select(q => HydrateDTO.HydrateQuestion(q, stageName))
-      .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+      stageName = stageName.Trim().ToUpper();
+      IOrderedEnumerable<QuestionDTO> questions = null;
+      try
+      {
+        //var testQuestions = await _questionRepository.FindByCondition(q => q.Active.Value != false).ToListAsync();
+        //var questionStage = await _questionStageRepository.FindByCondition(s => s.StageFkNavigation.CodeDescription.Trim().ToUpper() == stageName).ToListAsync();
+
+        questions = _questionRepository.FindByCondition(q =>
+          q.Active.Value != false &&
+          q.TblQuestionStage.Where(s =>
+            s.StageFkNavigation.CodeValue.Trim().ToUpper() == stageName)
+          .Any()
+        ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
+        .Select(q => HydrateDTO.HydrateQuestion(q, stageName))
+        .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Unable to get questions in the specified stage. {ex.Message}");
+      }
       if (includeAnswer)
       {
-        //populate answers
+        try
+        {
+          //populate answers
+          foreach (var q in questions)
+          {
+            var thisEpisode = await _episodeRepository.FindByCondition(episode =>
+              episode.EpisodeOfCareId == episodeID).FirstOrDefaultAsync();
+
+            var thisQuestionAnswers = thisEpisode.TblAnswer.Where(a => a.QuestionIdfk == q.QuestionID)
+              .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
+              
+
+            if (thisQuestionAnswers?.Count() > 0)
+            {
+              q.Answers = thisQuestionAnswers;
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Unable to find answers or episode. {ex.Message}");
+          throw;
+        }
       }
       return Ok(questions);
     }

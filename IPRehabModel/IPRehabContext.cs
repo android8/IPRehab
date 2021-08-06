@@ -40,11 +40,11 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblAnswer>(entity =>
       {
-        entity.HasKey(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk});
+        entity.HasKey(e => new { e.AnswerId}).HasName("PK_tblAnswer");
 
         entity.ToTable("tblAnswer", "app");
 
-        entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer");
+        entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer").IsUnique();
 
         entity.HasIndex(e => e.AnswerCodeSetfk, "IX_tblAnswer_AnswerCodeSetFK");
 
@@ -64,6 +64,8 @@ namespace IPRehabModel
 
         entity.Property(e => e.QuestionIdfk).HasColumnName("QuestionIDFK");
 
+        entity.Property(e => e.AnswerByUserId).HasColumnName("AnswerByUserID");
+
         entity.HasOne(d => d.StageIdFkNavigation)
           .WithMany(p => p.TblAnswerStage)
           .HasForeignKey(d => d.StageIdfk)
@@ -77,8 +79,8 @@ namespace IPRehabModel
                   .HasConstraintName("FK_tblAnswer_tblCodeSet");
 
         entity.HasOne(d => d.EpsideOfCareIdfkNavigation)
-                  .WithOne(p => p.TblAnswer)
-                  .HasForeignKey<TblAnswer>(d => d.EpsideOfCareIdfk)
+                  .WithMany(p => p.TblAnswer)
+                  .HasForeignKey(d => d.EpsideOfCareIdfk)
                   .OnDelete(DeleteBehavior.ClientSetNull)
                   .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
 
@@ -91,7 +93,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblCodeSet>(entity =>
       {
-        entity.HasKey(e => e.CodeSetId);
+        entity.HasKey(e => e.CodeSetId).HasName("PK_tblCodeSet");
 
         entity.ToTable("tblCodeSet", "app");
 
@@ -148,7 +150,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblPatient>(entity =>
       {
-        entity.HasKey(e => e.Icn);
+        entity.HasKey(e => e.Icn).HasName("PK_tblPatient");
 
         entity.ToTable("tblPatient", "app");
 
@@ -269,7 +271,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblQuestionStage>(entity =>
       {
-        entity.HasKey(e => e.Id);
+        entity.HasKey(e => e.Id).HasName("PK_tblQuestionStage");
 
         entity.ToTable("tblQuestionStage", "app");
 
@@ -304,7 +306,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblSignature>(entity =>
       {
-        entity.HasKey(e => e.EpisodeCareIdfk);
+        entity.HasKey(e => e.EpisodeCareIdfk).HasName("PK_tblSignature");
 
         entity.ToTable("tblSignature", "app");
 
@@ -336,7 +338,7 @@ namespace IPRehabModel
 
       modelBuilder.Entity<TblUser>(entity =>
       {
-        entity.HasKey(e => e.Id);
+        entity.HasKey(e => e.Id).HasName("PK_tblUser");
 
         entity.ToTable("tblUser", "app");
 

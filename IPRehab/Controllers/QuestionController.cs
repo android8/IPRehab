@@ -81,12 +81,12 @@ namespace IPRehab.Controllers
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
         HttpResponseMessage Res;
-        string apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStage?stageName={stage}&includeAnswer={includeAnswer}";
+        string apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
         switch (stage)
         {
           case null:
           case "":
-            apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}";
+            apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
             badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionAll";
             break;
           case "Initial":

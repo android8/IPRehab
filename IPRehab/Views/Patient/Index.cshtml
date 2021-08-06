@@ -105,7 +105,7 @@
                   <tr>
                     <th></th>
                     <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().EpisodeOfCareId)
+                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().EpisodeOfCareID)
                     </th>
                     <th>
                       @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().AdmissionDate)
@@ -114,7 +114,7 @@
                       @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().OnsetDate)
                     </th>
                     <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().PatientIcnfk)
+                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().PatientIcnFK)
                     </th>
                   </tr>
                 </thead>
@@ -126,13 +126,13 @@
                       @{await Html.RenderPartialAsync("_RehabActionBtns",
                                 new RehabActionViewModel()
                                 {
-                                  EpisodeID = episode.EpisodeOfCareId,
-                                  PatientID = episode.PatientIcnfk
+                                  EpisodeID = episode.EpisodeOfCareID,
+                                  PatientID = episode.PatientIcnFK
                                 });
                       }
                     </td>
                     <td>
-                      @Html.DisplayFor(modelItem => episode.EpisodeOfCareId)
+                      @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
                     </td>
                     <td>
                       @Html.DisplayFor(modelItem => episode.AdmissionDate)
@@ -141,7 +141,7 @@
                       @Html.DisplayFor(modelItem => episode.OnsetDate)
                     </td>
                     <td>
-                      @Html.DisplayFor(modelItem => episode.PatientIcnfk)
+                      @Html.DisplayFor(modelItem => episode.PatientIcnFK)
                     </td>
                   </tr>
                       }

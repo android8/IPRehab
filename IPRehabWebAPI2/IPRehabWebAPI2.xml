@@ -65,12 +65,16 @@
             <param name="_patientRepository"></param>
             <param name="currentQuarter"></param>
             <param name="criteria"></param>
-                /// <param name="grantedFacilities"></param>
             <returns></returns>
         </member>
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">
             <summary>
             Hydrate the DTO with selected domain properties
+            </summary>
+        </member>
+        <member name="P:IPRehabWebAPI2.Models.QuestionDTO.Answers">
+            <summary>
+            Each question hAs primarily a single answer but can be multiple
             </summary>
         </member>
     </members>

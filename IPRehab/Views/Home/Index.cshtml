@@ -22,12 +22,16 @@
            asp-action="Edit" asp-route-stage="Followup">Followup Questions</a>
       </div>
       <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="">All Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
         <a asp-controller="Patient"
            asp-action="Index" asp-route-criteria="">Paients</a>
+      </div>
+      <div class="btn-sm btn-block btn-outline-dark">
+        <a asp-controller="Answer"
+           asp-action="Index" asp-route-criteria="">Answers</a>
+      </div>
+      <div class="btn-sm btn-block btn-outline-dark">
+        <a asp-controller="Question"
+           asp-action="Edit" asp-route-stage="">All Questions</a>
       </div>
       <div class="btn-sm btn-block btn-outline-dark">
         <a asp-controller="TestColor"

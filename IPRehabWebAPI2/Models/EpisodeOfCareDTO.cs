@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IPRehabWebAPI2.Models
 {
   public partial class EpisodeOfCareDTO
   {
     [DisplayName("Episode")]
-    public int EpisodeOfCareId { get; set; }
+    public int EpisodeOfCareID { get; set; }
 
     [DisplayFormat(DataFormatString = "{0:d}")]
     [DisplayName("Onset Date")]
@@ -21,6 +19,6 @@ namespace IPRehabWebAPI2.Models
     public DateTime AdmissionDate { get; set; }
 
     [DisplayName("Patient ICN")]
-    public string PatientIcnfk { get; set; }
+    public string PatientIcnFK { get; set; }
   }
 }

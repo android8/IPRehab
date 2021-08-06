@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IPRehabModel.TblEpisodeOfCare>
+﻿@model IEnumerable<IPRehabWebAPI2.Models.EpisodeOfCareDTO>
 
 @{
     ViewData["Title"] = "Index";
@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.AdmissionDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PatientIcnfkNavigation)
+                @Html.DisplayNameFor(model => model.PatientIcnFK)
             </th>
             <th></th>
         </tr>
@@ -35,12 +35,12 @@
                 @Html.DisplayFor(modelItem => item.AdmissionDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PatientIcnfkNavigation.Icn)
+                @Html.DisplayFor(modelItem => item.PatientIcnFK)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.EpisodeOfCareId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EpisodeOfCareId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EpisodeOfCareId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.EpisodeOfCareID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.EpisodeOfCareID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.EpisodeOfCareID">Delete</a>
             </td>
         </tr>
 }
