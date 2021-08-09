@@ -48,14 +48,14 @@ namespace IPRehabWebAPI2.Controllers
       var cacheHelper = new CacheHelper(); 
       List<MastUserDTO> userAccessLevels = await cacheHelper.GetUserAccessLevels(_masterReportsContext, networkName);
 
-      if (userAccessLevels?.Count == 0)
+      if (!userAccessLevels.Any())
       {
         return BadRequest("You are not permitted to view any facility's patients");
       }
       else
       {
-        //List<string> permittedFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
-        List<string> permittedFacilities = new List<string>() { "648" };
+        List<string> userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
+        //List<string> userFacilities = new List<string>() { "648" };
 
         int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
         var currentQuarterNumber = quarters[DateTime.Today.Month - 1];
@@ -66,7 +66,10 @@ namespace IPRehabWebAPI2.Controllers
         try
         {
           patients = await cacheHelper.GetPatients(_patientRepository, defaultQuarter, criteria);
-          patients = patients.Where(x => permittedFacilities.Any(y => x.Facility.Contains(y)));
+          
+          var patientFacilities = patients.Select(x => x.Facility).Distinct().ToList();
+          
+          patients = patients.Where(p=> userFacilities.Any(i=>p.Facility.Contains(i))).ToList();
 
           //List<PatientDTO> viewablePatients = new List<PatientDTO>();
           //foreach (PatientDTO pat in patients)
@@ -86,10 +89,11 @@ namespace IPRehabWebAPI2.Controllers
           {
             foreach (var p in patients)
             {
-              List<EpisodeOfCareDTO> episodes = await _episodeOfCareRepository.FindByCondition(episode =>
-                episode.PatientIcnfk == p.PTFSSN)
-                .Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
-              p.CareEpisodes = episodes;
+             var  theseEpisodes = await _episodeOfCareRepository.FindByCondition(episode =>
+                episode.PatientIcnfk == p.PTFSSN).ToListAsync();
+              if (theseEpisodes.Any()) { 
+                p.CareEpisodes = theseEpisodes.Select(e => HydrateDTO.HydrateEpisodeOfCare(e));
+              }
             }
           }
         }

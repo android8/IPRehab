@@ -10,7 +10,7 @@
   <script type="module" src="~/js/app/patientList.js" asp-append-version="true"></script>
   <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
   <script type="text/javascript">
-    
+
   </script>
 }
 
@@ -53,102 +53,102 @@
       <tbody>
         @{
           int row = 0;
-          foreach (var item in Model)
+          foreach (var patient in Model)
           {
- <!--Patient row-->
-          <tr class="patientRow">
-            <td><div class="nav-pills">@(++row)</div></td>
-            <td>
-              @Html.DisplayFor(modelItem => item.VISN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Facility)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.District)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Division)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Sta6aKey)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Bedsecn)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.PTFSSN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => item.FiscalPeriod)
-            </td>
-          </tr>
+            <!--Patient row-->
+            <tr class="patientRow">
+              <td><div class="nav-pills">@(++row)</div></td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.VISN)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.Facility)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.District)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.Division)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.Sta6aKey)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.Bedsecn)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.Name)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.PTFSSN)
+              </td>
+              <td>
+                @Html.DisplayFor(modelItem => patient.FiscalPeriod)
+              </td>
+            </tr>
 
- <!--Episode of Care row-->
-          @if (item.CareEpisodes?.Count() == 0)
+            <!--Episode of Care row-->
+            @if (!patient.CareEpisodes.Any())
             {
-          <tr>
-            <td colspan="10" class="text-danger">
-              No episode of care
-            </td>
-          </tr>
+              <tr>
+                <td colspan="10" class="text-danger">
+                  No episode of care
+                </td>
+              </tr>
             }
             else
             {
-          <tr>
-            <td colspan="10">
-              <table class="table-striped table-responsive-md table-bordered">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().EpisodeOfCareID)
-                    </th>
-                    <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().AdmissionDate)
-                    </th>
-                    <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().OnsetDate)
-                    </th>
-                    <th>
-                      @Html.DisplayNameFor(modelItem => item.CareEpisodes.First().PatientIcnFK)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach (var episode in item.CareEpisodes)
+              <tr>
+                <td colspan="10">
+                  <table class="table-striped table-responsive-md table-bordered">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().EpisodeOfCareID)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().AdmissionDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().OnsetDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().PatientIcnFK)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach (var episode in patient.CareEpisodes)
                       {
-                  <tr>
-                    <td>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns",
-                                new RehabActionViewModel()
-                                {
-                                  EpisodeID = episode.EpisodeOfCareID,
-                                  PatientID = episode.PatientIcnFK
-                                });
+                        <tr>
+                          <td>
+                            @{await Html.RenderPartialAsync("_RehabActionBtns",
+                                      new RehabActionViewModel()
+                                      {
+                                        EpisodeID = episode.EpisodeOfCareID,
+                                        PatientID = episode.PatientIcnFK
+                                      });
+                            }
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.AdmissionDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.OnsetDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => episode.PatientIcnFK)
+                          </td>
+                        </tr>
                       }
-                    </td>
-                    <td>
-                      @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
-                    </td>
-                    <td>
-                      @Html.DisplayFor(modelItem => episode.AdmissionDate)
-                    </td>
-                    <td>
-                      @Html.DisplayFor(modelItem => episode.OnsetDate)
-                    </td>
-                    <td>
-                      @Html.DisplayFor(modelItem => episode.PatientIcnFK)
-                    </td>
-                  </tr>
-                      }
-                </tbody>
-              </table>
-            </td>
-          </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
             }
           }
         }

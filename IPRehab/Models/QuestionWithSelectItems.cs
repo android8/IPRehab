@@ -16,9 +16,14 @@ namespace IPRehab.Models
     public string QuestionTitle { get; set; }
     public string Question { get; set; }
     public string GroupTitle { get; set; }
+    public int AnswerCodeSetParentID { get; set; }
     public int AnswerCodeSetID { get; set; }
     public int? DisplayOrder { get; set; }
     public List<SelectListItem> ChoiceList { get; set; }
     public string AnswerCodeCategory { get; set; }
+
+    public QuestionWithSelectItems() {
+      ChoiceList = new List<SelectListItem>();
+    }
   }
 }

@@ -38,9 +38,9 @@ namespace IPRehabWebAPI2.Controllers
     public ActionResult GetAll(bool includeAnswer)
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false ||
-        x.TblQuestionStage.Where(
+        x.TblQuestionStage.Any(
           s => s.StageFkNavigation.CodeValue == "All" && s.QuestionIdFkNavigation.FormFkNavigation.CodeValue == "Form-Discharge"
-        ).Any())
+        ))
         .OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
         .Select(q => HydrateDTO.HydrateQuestion(q, string.Empty)
       ).ToList();
@@ -75,14 +75,10 @@ namespace IPRehabWebAPI2.Controllers
       IOrderedEnumerable<QuestionDTO> questions = null;
       try
       {
-        //var testQuestions = await _questionRepository.FindByCondition(q => q.Active.Value != false).ToListAsync();
-        //var questionStage = await _questionStageRepository.FindByCondition(s => s.StageFkNavigation.CodeDescription.Trim().ToUpper() == stageName).ToListAsync();
-
         questions = _questionRepository.FindByCondition(q =>
           q.Active.Value != false &&
-          q.TblQuestionStage.Where(s =>
+          q.TblQuestionStage.Any(s =>
             s.StageFkNavigation.CodeValue.Trim().ToUpper() == stageName)
-          .Any()
         ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
         .Select(q => HydrateDTO.HydrateQuestion(q, stageName))
         .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
@@ -103,9 +99,8 @@ namespace IPRehabWebAPI2.Controllers
 
             var thisQuestionAnswers = thisEpisode.TblAnswer.Where(a => a.QuestionIdfk == q.QuestionID)
               .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
-              
 
-            if (thisQuestionAnswers?.Count() > 0)
+            if (thisQuestionAnswers.Any())
             {
               q.Answers = thisQuestionAnswers;
             }
@@ -129,10 +124,10 @@ namespace IPRehabWebAPI2.Controllers
     public IActionResult GetInitStage()
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false &&
-                       x.TblQuestionStage.Where(
+                       x.TblQuestionStage.Any(
                          s => s.QuestionIdFk == x.QuestionId &&
                              s.StageFkNavigation.CodeValue == "Initial"
-                       ).Any()
+                       )
                      )
                      .Select(
                         q => HydrateDTO.HydrateQuestion(q, "Initial")
@@ -160,10 +155,10 @@ namespace IPRehabWebAPI2.Controllers
       var questions = _questionRepository.FindByCondition(
                         x => x.Active.Value != false &&
                         (!"2. Discharge Goal".Contains(x.GroupTitle) || string.IsNullOrEmpty(x.GroupTitle)) &&
-                        x.TblQuestionStage.Where(
+                        x.TblQuestionStage.Any(
                            s => s.QuestionIdFk == x.QuestionId &&
                            s.StageFkNavigation.CodeValue == "Interim"
-                        ).Any())
+                        ))
                         .Select(q => HydrateDTO.HydrateQuestion(q, "Interim"))
                         .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
 
@@ -181,9 +176,9 @@ namespace IPRehabWebAPI2.Controllers
       var questions = _questionRepository.FindByCondition(x =>
                         x.Active.Value != false &&
                         (!"1. Admission Performance".Contains(x.GroupTitle) || string.IsNullOrEmpty(x.GroupTitle)) &&
-                        x.TblQuestionStage.Where(
+                        x.TblQuestionStage.Any(
                        s => s.QuestionIdFk == x.QuestionId &&
-                           s.StageFkNavigation.CodeValue == "Discharge").Any())
+                           s.StageFkNavigation.CodeValue == "Discharge"))
                            .Select(q => HydrateDTO.HydrateQuestion(q, "Discharge"))
                            .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
 
@@ -199,9 +194,9 @@ namespace IPRehabWebAPI2.Controllers
     public IActionResult GetFollowupStage()
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false &&
-                     x.TblQuestionStage.Where(
+                     x.TblQuestionStage.Any(
                        s => s.QuestionIdFk == x.QuestionId &&
-                           s.StageFkNavigation.CodeValue == "Followup").Any())
+                           s.StageFkNavigation.CodeValue == "Followup"))
                            .Select(q => HydrateDTO.HydrateQuestion(q, "Followup"))
                            .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
 

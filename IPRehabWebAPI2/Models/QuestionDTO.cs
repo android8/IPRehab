@@ -24,5 +24,10 @@ namespace IPRehabWebAPI2.Models
     /// Each question hAs primarily a single answer but can be multiple
     /// </summary>
     public List<AnswerDTO> Answers { get; set; }
+
+    public QuestionDTO() {
+      ChoiceList = new List<CodeSetDTO>();
+      Answers = new List<AnswerDTO>();
+    }
   }
 }

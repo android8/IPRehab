@@ -181,7 +181,8 @@ namespace IPRehab.Controllers
         }
         else
         {
-          return null;
+          return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+            .Create("JSOn content is not an object or not in application/json medial type.", string.Empty, string.Empty));
         }
       }
       catch (Exception ex)

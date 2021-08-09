@@ -51,9 +51,9 @@ namespace IPRehabWebAPI2.Helpers
         PatientIcnFK = a.EpsideOfCareIdfkNavigation.PatientIcnfk
       };
 
-      TblCodeSet answerCodeSet = new()
+      CodeSetDTO answerCodeSet = new()
       {
-        CodeSetId = a.AnswerCodeSetFkNavigation.CodeSetId,
+        CodeSetID = a.AnswerCodeSetFkNavigation.CodeSetId,
         CodeValue = a.AnswerCodeSetFkNavigation.CodeValue,
         CodeDescription = a.AnswerCodeSetFkNavigation.CodeDescription,
         Comment = a.AnswerCodeSetFkNavigation.Comment
@@ -73,25 +73,14 @@ namespace IPRehabWebAPI2.Helpers
 
     private static string GetGroupTitle(TblQuestion q, string questionStage)
     {
-      if (string.IsNullOrEmpty(questionStage) || q.TblQuestionStage.Where(x =>
-        x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage)?.Count() == 0)
+      if (string.IsNullOrEmpty(questionStage) || !q.TblQuestionStage.Any(x =>
+        x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage))
         return q.GroupTitle;
       else
       {
         var stagedQuestions = q.TblQuestionStage.Where(x => x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage);
         var groupTitle = string.IsNullOrEmpty(stagedQuestions.First().StageGroupTitle) ? q.GroupTitle : stagedQuestions.First().StageGroupTitle;
         return groupTitle;
-
-
-        //if (stagedQuestions == null || stagedQuestions.Count() == 0)
-        //{
-        //  return q.GroupTitle;
-        //}
-        //else
-        //{
-        //  var groupTitle = string.IsNullOrEmpty(stagedQuestions.First().StageGroupTitle) ? q.GroupTitle : stagedQuestions.First().StageGroupTitle;
-        //  return groupTitle;          
-        //}
       }
     }
 

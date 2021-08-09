@@ -146,30 +146,21 @@ namespace IPRehab.Controllers
           }
           catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
           {
-            Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
-            Console.WriteLine($"{ex.Message}");
-            if (ex.InnerException != null)
-            {
-              Console.WriteLine($"{ex.InnerException.Message}");
-            }
-            return null;
+              return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+                .Create("JSON serialization error.", ex.Message, ex.InnerException?.Message));
           }
         }
         else
         {
-          return null;
+          return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+            .Create("JSON content is not a objec or not an applicaiton/json media type.", string.Empty, string.Empty));
         }
 
       }
       catch (Exception ex)
       {
-        Console.WriteLine("WebAPI call failure.");
-        Console.WriteLine($"{ex.Message}");
-        if (ex.InnerException != null)
-        {
-          Console.WriteLine($"{ex.InnerException.Message}");
-        }
-        return null;
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+          .Create("WebAPI call failure.", ex.Message, ex.InnerException?.Message));
       }
     }
 

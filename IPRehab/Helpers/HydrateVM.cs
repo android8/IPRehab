@@ -1,6 +1,7 @@
 ﻿using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,13 +24,8 @@ namespace IPRehab.Helpers
         Regex.IsMatch(dto.GroupTitle, @"^\d")? dto.GroupTitle.Remove(0,2): dto.GroupTitle;
       qws.AnswerCodeSetID = dto.AnswerCodeSetID;
       qws.AnswerCodeCategory = dto.AnswerCodeCategory;
-      qws.ChoiceList = new List<SelectListItem>();
-      foreach (var c in dto.ChoiceList)
-      {
-        bool selecteThis = false; //ToDo: get the answer ID to determine if this item should be selected
-        SelectListItem selectItem = new SelectListItem { Text = c.CodeDescription, Value = c.CodeSetID.ToString(), Selected = selecteThis };
-        qws.ChoiceList.Add(selectItem);
-      }
+      qws.ChoiceList = SetSelectedChoice(dto.ChoiceList, dto.Answers, dto.AnswerCodeCategory);
+
       return qws;
     }
 
@@ -64,6 +60,75 @@ namespace IPRehab.Helpers
       {
         return $"({question.QuestionKey.Substring(0, 5).TrimEnd()})";
       }
+    }
+
+    private static List<SelectListItem> SetSelectedChoice(List<CodeSetDTO> validChoices, List<AnswerDTO> answers, string answerCodeCategory)
+    {
+      List<SelectListItem> selectedChoices = new List<SelectListItem>();
+      string text = string.Empty;
+
+      if (!validChoices.Any() && answers.Any())
+      {
+        /* questions with Y/N, check, or free text answer types will have empty validChoices parameter */
+        AnswerDTO thisAnswer = answers.First(); /* so just make the the SelectListItem out of the answer if any */
+        if (answerCodeCategory == "Date")
+        {
+          text = ParseString(thisAnswer.Description); 
+        }
+        else
+        {
+          text = thisAnswer.Description;
+        }
+
+        SelectListItem thisChiceItem = new SelectListItem { 
+          Text = text, 
+          Value = thisAnswer.AnswerCodeSet.CodeSetID.ToString(), 
+          Selected = true };
+        selectedChoices.Add(thisChiceItem);
+
+        return selectedChoices;
+      }
+      else
+      {
+        foreach (var c in validChoices)
+        {
+          if (answerCodeCategory == "Date")
+          {
+            text = ParseString(c.CodeDescription);
+          }
+          else
+          {
+            text = c.CodeDescription;
+          }
+          var isThisChoice = answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
+          SelectListItem thisChiceItem = new SelectListItem { 
+            Text = text, 
+            Value = c.CodeSetID.ToString(), 
+            Selected = isThisChoice 
+          };
+          selectedChoices.Add(thisChiceItem);
+        }
+        return selectedChoices;
+      }
+    }
+
+    private static string ParseString(string thisString)
+    {
+      string text = string.Empty;
+      char[] parsers = { '/', ' ', '-' };
+      string[] dateParts = thisString.Split(parsers);
+      for (int i = 0; i < 3; i++)
+      {
+        text += $"{dateParts[i]}";
+        if (i < 2)
+          text += "/";
+      }
+      DateTime aDate;
+      if(DateTime.TryParse(text, out aDate))
+      {
+        text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
+      }
+      return text;
     }
   }
 }

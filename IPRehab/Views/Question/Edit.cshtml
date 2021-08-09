@@ -151,11 +151,13 @@
                       switch (q.AnswerCodeCategory)
                       {
                         case "YN":
-                        case "Checked":
+                        case "Checked": /* each checkbox binds to on or off state so the ChoiceList has only one item */
                           {
-                            bool isChecked = false; //ToDO: eval
-                            if (q.ChoiceList != null && q.ChoiceList.Count() != 0 && q.ChoiceList.First().Selected)
+                            bool isChecked = false;
+                            if (q.ChoiceList.Any())
+                            {
                               isChecked = true;
+                            }
 
                             @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
                             <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
@@ -165,7 +167,17 @@
                         case "Date":
                           {
                             <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
-                            <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            if (q.ChoiceList.Any())
+                            {
+                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                                     placeholder="MM/dd/yyyy"
+                                     value="@($"{q.ChoiceList.First()?.Text}")" />
+                            }
+                            else
+                            {
+                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                                     placeholder="MM/dd/yyyy" />
+                            }
                           }
                           break;
 
@@ -185,31 +197,31 @@
                       }
                     }
                     break;
-                }
+              }
               }
             </td>
           </tr>
 
           @if ((ViewBag.Title == "Base" && q.QuestionKey == "GG0130H" && q.GroupTitle == "3. Discharge Performance") ||
-          ((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
+         ((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
           {
             <tr>
               <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Self Care Aggregate Score: TBD</div></div></td>
             </tr>
           }
           @if (
-          (ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
-          (ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
-          (ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
-          (ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
-          (ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
-         )
+         (ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
+         (ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
+         (ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
+         (ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
+         (ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
+        )
           {
             <tr>
               <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Mobility Aggregate Score: TBD</div></div></td>
             </tr>
           }
-        }
+      }
       }
     </tbody>
   </table>
