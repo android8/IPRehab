@@ -11,7 +11,7 @@
 .banner {
   background-color: #0e2640 !important;
   color: white;
-  z-index:500;
+  z-index: 500;
 }
 
 .banner .nav-link {
@@ -30,22 +30,22 @@
 }
 
 .sectionNavHeader {
-  position:fixed;
-  width:250px;
+  position: fixed;
+  width: 250px;
   color: gold;
   background-color: #0e2640;
-  text-align:center;
-  font-weight:bold;
+  text-align: center;
+  font-weight: bold;
 }
 
 .acceptConsent {
-  background-color:black !important;
-  color:white !important;
+  background-color: black !important;
+  color: white !important;
 }
 
 .fixedTop {
   position: fixed !important;
-  top:0;
+  top: 0;
   width: 100%;
   background-color: white;
   /*padding-top:10px*/
@@ -53,10 +53,11 @@
 
 .fixedBottom {
   position: fixed !important;
-  bottom:0;
+  bottom: 0;
   width: 100%;
   background-color: white;
 }
+
 .main {
   /*  margin-top: 20px !important;
 */
@@ -79,17 +80,19 @@ alert-info {
 
 .noData {
   display: flex;
-  color:red;
+  color: red;
   flex-direction: row;
   justify-content: space-between;
   padding: 50px;
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
+
 th {
   padding: 0 5px;
-/*  text-align: center !important;
-*/}
+  /*  text-align: center !important;
+*/
+}
 
 td {
   padding: 0 5px;
@@ -168,7 +171,7 @@ td {
 }
 
 .paddingTop {
-  padding-top:60px;
+  padding-top: 60px;
 }
 
 .borderTop {
@@ -217,7 +220,7 @@ td {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-end;
-  padding:0 !important;
+  padding: 0 !important;
 }
 
 .flex-start-row-wrap-textInput {
@@ -253,11 +256,11 @@ td {
   /*align-items: center;*/
 }
 
-.flex-end-row-nowrap{
-  display:flex;
-  flex-direction:row;
+.flex-end-row-nowrap {
+  display: flex;
+  flex-direction: row;
   flex-wrap: nowrap;
-  justify-content:center;
+  justify-content: center;
 }
 
 tr#nonPaddinRow, tr#nonPaddinRow td {
@@ -330,48 +333,55 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*font-size: smaller;*/
 }
 
-#questionTab>.nav-item:nth-child(2) {
-  margin-top:20px;
+#questionTab > .nav-item:nth-child(2) {
+  margin-top: 20px;
 }
 
-  #questionTab .nav-item:hover {
-    cursor: pointer;
-    background: gold;
-  }
+#questionTab .nav-item:hover {
+  cursor: pointer;
+  background: gold;
+}
 
-  .flex-container-evenly-justified {
-    display: flex;
-    flex-flow: row nowrap;
-    /*vertical alignment*/
-    align-items: center;
-    /*horizontal aligment evenly*/
-    justify-content: space-between;
-  }
+.flex-container-evenly-justified {
+  display: flex;
+  flex-flow: row nowrap;
+  /*vertical alignment*/
+  align-items: center;
+  /*horizontal aligment evenly*/
+  justify-content: space-between;
+}
 
-  .flex-item-left-justify {
-    align-self: flex-start;
-  }
+.flex-item-left-justify {
+  align-self: flex-start;
+}
 
-  .flex-item-right-justify {
-    align-self: flex-end;
-  }
+.flex-item-right-justify {
+  align-self: flex-end;
+}
 
-  .createActionAll {
-    background-color: #b200ff;
-  }
+.createActionAll {
+  background-color: #f7eca9;
+}
 
-  .createActionInitial {
-    background-color: #00ffff;
-  }
+.createActionBase {
+  background-color: #ff6a00;
+  color:white;
+}
 
-  .createActionInterim {
-    background-color: #ff6a00;
-  }
+.createActionInitial {
+  background-color: #00ffff;
+}
 
-  .createActionDischarge {
-    background-color: #ff006e;
-  }
+.createActionInterim {
+  background-color: #6640ec;
+  color:white;
+}
 
-  .createActionFollowup {
-    background-color: #4cff00;
-  }
+.createActionDischarge {
+  background-color: #ff006e;
+  color:white;
+}
+
+.createActionFollowup {
+  background-color: #4cff00;
+}

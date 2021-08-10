@@ -360,7 +360,12 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 .createActionAll {
-  background-color: #b200ff;
+  background-color: #f7eca9;
+}
+
+.createActionBase {
+  background-color: #ff6a00;
+  color: white;
 }
 
 .createActionInitial {
@@ -368,11 +373,13 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 .createActionInterim {
-  background-color: #ff6a00;
+  background-color: #6640ec;
+  color: white;
 }
 
 .createActionDischarge {
   background-color: #ff006e;
+  color: white;
 }
 
 .createActionFollowup {

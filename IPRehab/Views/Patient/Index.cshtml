@@ -92,7 +92,18 @@
             {
               <tr>
                 <td colspan="10" class="text-danger">
-                  No episode of care
+                  <div class="flex-start-row-nowrap">
+                    <div>No episode of care</div>
+                    <div>
+                      @{await Html.RenderPartialAsync("_RehabActionBtns",
+                                              new RehabActionViewModel()
+                                              {
+                                                EpisodeID = -1,
+                                                PatientID = patient.PTFSSN
+                                              });
+                      }
+                    </div>
+                  </div>
                 </td>
               </tr>
             }

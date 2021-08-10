@@ -65,7 +65,7 @@ namespace IPRehab.Controllers
     {
       string badgeBackgroundColor = string.Empty;
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
-      string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : stage == "Followup" ? "Follow Up" : $"{stage}";
+      string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       ViewBag.Title = $"{title}";
       ViewBag.Action = $"{action} Mode";
 
@@ -88,6 +88,9 @@ namespace IPRehab.Controllers
           case "":
             apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
             badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionAll";
+            break;
+          case "Base":
+            badgeBackgroundColor = (action == "Edit") ? "badge-dark" : "createActionBase";
             break;
           case "Initial":
             badgeBackgroundColor = (action == "Edit") ? "badge-info" : "createActionInitial";
