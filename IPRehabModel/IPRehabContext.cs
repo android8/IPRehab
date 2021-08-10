@@ -44,7 +44,7 @@ namespace IPRehabModel
 
         entity.ToTable("tblAnswer", "app");
 
-        entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.AnswerCodeSetfk, e.AnswerSequenceNumber }, "IX_tblAnswer").IsUnique();
+        entity.HasIndex(e => new { e.EpsideOfCareIdfk, e.QuestionIdfk, e.StageIdfk, e.AnswerCodeSetfk }, "IX_tblAnswer").IsUnique();
 
         entity.HasIndex(e => e.AnswerCodeSetfk, "IX_tblAnswer_AnswerCodeSetFK");
 

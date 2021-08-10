@@ -120,8 +120,11 @@ namespace IPRehabWebAPI2.Helpers
       return new EpisodeOfCareDTO
       {
         EpisodeOfCareID = e.EpisodeOfCareId,
+        
+        /* always used Q12 and Q13 answers because they are the latest */
+        AdmissionDate = DateTime.Parse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12").First().Description)),
+       
         OnsetDate = e.OnsetDate,
-        AdmissionDate = e.AdmissionDate,
         PatientIcnFK = e.PatientIcnfk
       };
     }
@@ -144,6 +147,25 @@ namespace IPRehabWebAPI2.Helpers
         Sunsetdat = u.Sunsetdat
       };
       return user;
+    }
+
+    private static string ParseString(string thisString)
+    {
+      string text = string.Empty;
+      char[] parsers = { '/', ' ', '-' };
+      string[] dateParts = thisString.Split(parsers);
+      for (int i = 0; i < 3; i++)
+      {
+        text += $"{dateParts[i]}";
+        if (i < 2)
+          text += "/";
+      }
+      DateTime aDate;
+      if (DateTime.TryParse(text, out aDate))
+      {
+        text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
+      }
+      return text;
     }
   }
 }
