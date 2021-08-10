@@ -16,6 +16,7 @@
     <div class="flex-container-evenly-justified">
       <h1>@ViewBag.Title</h1>
       <span class="badge @ViewBag.ModeColor">@ViewBag.action</span>
+      <span class="text-center patientName">@(((RehabActionViewModel)ViewBag.ActionBtnVM).PatientName)</span>
     </div>
     <div class="flex-container-evenly-justified">
       @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}

@@ -86,6 +86,7 @@ namespace IPRehabWebAPI2.Controllers
       catch (Exception ex)
       {
         Console.WriteLine($"Unable to get questions in the specified stage. {ex.Message}");
+        throw;
       }
       if (includeAnswer)
       {

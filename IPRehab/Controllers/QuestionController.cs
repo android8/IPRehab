@@ -61,7 +61,7 @@ namespace IPRehab.Controllers
     /// <param name="id"></param>
     /// <returns></returns> 
     // GET: QuestionController/Edit/5
-    public async Task<ActionResult> Edit(string stage, string patientID, int episodeID, string redirectFrom)
+    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string redirectFrom)
     {
       string badgeBackgroundColor = string.Empty;
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
@@ -75,6 +75,7 @@ namespace IPRehab.Controllers
       RehabActionViewModel actionButtonVM = new RehabActionViewModel();
       actionButtonVM.EpisodeID = episodeID;
       actionButtonVM.PatientID = patientID;
+      actionButtonVM.PatientName = patientName;
       ViewBag.ActionBtnVM = actionButtonVM;
 
       try

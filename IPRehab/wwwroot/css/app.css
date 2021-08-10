@@ -72,6 +72,12 @@ body {
   background-color: #0e2640;
 }
 
+.patientName {
+  font-weight: bold;
+  font-size: large;
+  padding: 0 20px;
+}
+
 alert-info {
   color: #ff6a00;
   background-color: #becff4;

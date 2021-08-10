@@ -117,14 +117,22 @@ namespace IPRehabWebAPI2.Helpers
 
     public static EpisodeOfCareDTO HydrateEpisodeOfCare(TblEpisodeOfCare e)
     {
+      /* always used Q12 and Q23 answers to determine episode dates */
+      DateTime admissionDate = new DateTime(DateTime.MinValue.Ticks);
+      DateTime.TryParse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12").First().Description), out admissionDate);
+      if (admissionDate.Ticks == DateTime.MinValue.Ticks)
+        admissionDate = e.AdmissionDate;
+
+      DateTime onsetDate = new DateTime(DateTime.MinValue.Ticks);
+      DateTime.TryParse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q23").First().Description), out onsetDate);
+      if (onsetDate.Ticks == DateTime.MinValue.Ticks)
+        onsetDate = e.OnsetDate;
+
       return new EpisodeOfCareDTO
       {
         EpisodeOfCareID = e.EpisodeOfCareId,
-        
-        /* always used Q12 and Q13 answers because they are the latest */
-        AdmissionDate = DateTime.Parse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12").First().Description)),
-       
-        OnsetDate = e.OnsetDate,
+        AdmissionDate = admissionDate,
+        OnsetDate =  onsetDate,
         PatientIcnFK = e.PatientIcnfk
       };
     }
