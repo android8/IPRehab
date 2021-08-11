@@ -16,21 +16,20 @@ namespace IPRehabWebAPI2.Helpers
     //ToDo: should use AutoMapper
     public static QuestionDTO HydrateQuestion(TblQuestion q, string questionStage)
     {
-      return new QuestionDTO
-      {
-        Form = q.FormFkNavigation.CodeDescription,
-        QuestionID = q.QuestionId,
-        Required = q.TblQuestionStage.Where(x =>
-          x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage).SingleOrDefault()?.Required,
-        QuestionKey = q.QuestionKey,
-        QuestionTitle = q.QuestionTitle,
-        Question = q.Question,
-        //use TblQuestionStage.StageGroupTitle if it is not null or empty else use TblQuestion.GroupTitle
-        GroupTitle = GetGroupTitle(q, questionStage),
-        AnswerCodeSetID = q.AnswerCodeSetFk,
-        AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue,
-        DisplayOrder = q.Order,
-        ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
+      QuestionDTO questionDTO = new QuestionDTO();
+      questionDTO.Form = q.FormFkNavigation.CodeDescription;
+      questionDTO.QuestionID = q.QuestionId;
+      questionDTO.Required = q.TblQuestionStage.Where(x =>
+          x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
+      questionDTO.QuestionKey = q.QuestionKey;
+      questionDTO.QuestionTitle = q.QuestionTitle;
+      questionDTO.Question = q.Question;
+      //use TblQuestionStage.StageGroupTitle if it is not null or empty else use TblQuestion.GroupTitle
+      questionDTO.GroupTitle = GetGroupTitle(q, questionStage);
+      questionDTO.AnswerCodeSetID = q.AnswerCodeSetFk;
+      questionDTO.AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue;
+      questionDTO.DisplayOrder = q.Order;
+      questionDTO.ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
                         .Select(s => new CodeSetDTO
                         {
                           CodeSetID = s.CodeSetId,
@@ -38,8 +37,9 @@ namespace IPRehabWebAPI2.Helpers
                           CodeValue = s.CodeValue,
                           CodeDescription = s.CodeDescription.Contains(s.CodeValue) && s.CodeValue.Length > 1 ? $"{s.CodeDescription}" : $"{s.CodeValue}. {s.CodeDescription}",
                           Comment = s.Comment
-                        }).ToList()
-      };
+                        }).ToList();
+
+      return questionDTO;
     }
 
     public static AnswerDTO HydrateAnswer(TblAnswer a) {
@@ -119,12 +119,20 @@ namespace IPRehabWebAPI2.Helpers
     {
       /* always used Q12 and Q23 answers to determine episode dates */
       DateTime admissionDate = new DateTime(DateTime.MinValue.Ticks);
-      DateTime.TryParse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12").First().Description), out admissionDate);
+      var firstAdmissionDate = e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12");
+      if (firstAdmissionDate.Any())
+      {
+        DateTime.TryParse(ParseString(firstAdmissionDate.First().Description), out admissionDate);
+      }
       if (admissionDate.Ticks == DateTime.MinValue.Ticks)
         admissionDate = e.AdmissionDate;
 
       DateTime onsetDate = new DateTime(DateTime.MinValue.Ticks);
-      DateTime.TryParse(ParseString(e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q23").First().Description), out onsetDate);
+      var firstOnsetDate = e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q23");
+      if (firstOnsetDate.Any())
+      {
+        DateTime.TryParse(ParseString(firstOnsetDate.First().Description), out onsetDate);
+      }
       if (onsetDate.Ticks == DateTime.MinValue.Ticks)
         onsetDate = e.OnsetDate;
 

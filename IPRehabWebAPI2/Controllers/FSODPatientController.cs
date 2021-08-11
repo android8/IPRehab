@@ -55,7 +55,7 @@ namespace IPRehabWebAPI2.Controllers
       else
       {
         List<string> userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
-        //List<string> userFacilities = new List<string>() { "648" };
+        userFacilities = new List<string>() { "648" };
 
         int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
         var currentQuarterNumber = quarters[DateTime.Today.Month - 1];

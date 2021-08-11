@@ -102,7 +102,7 @@ namespace IPRehab
       {
         endpoints.MapControllerRoute(
                   name: "default",
-                  pattern: "{controller=Patient}/{action=Index}/{criteria?}");
+                  pattern: "{controller=Home}/{action=Splash}");
 
         endpoints.MapRazorPages();
       });

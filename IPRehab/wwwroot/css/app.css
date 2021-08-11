@@ -1,3 +1,34 @@
+.splashscreen {
+  /*  position: absolute;
+  top: 0;
+  left: 0;*/
+  width: 100vw;
+  height: 500vh;
+  background-color: #0e2640;
+  background-image: url("../images/R.jfif");
+  /* Set background image to fixed (don't scroll along with the page) */
+  background-attachment: fixed;
+  /* Center the background image */
+  background-position: center;
+  /* Set the background image to no repeat */
+  background-repeat: no-repeat;
+  /* Scale the background image to be as large as possible */
+  background-size: cover;
+}
+
+.splashscreen #flashText {
+  display: flex;
+  color: #00efff;
+  font-size: 5em;
+  padding: 10% 20% 20% 20%;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  background-image: -webkit-linear-gradient(#fff, #00efff, #195594);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 body {
   scrollbar-width: 5px;
 }
@@ -43,6 +74,14 @@ body {
   color: white !important;
 }
 
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+  width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .fixedTop {
   position: fixed !important;
   top: 0;
@@ -75,7 +114,6 @@ body {
 .patientName {
   font-weight: bold;
   font-size: large;
-  padding: 0 20px;
 }
 
 alert-info {

@@ -4,7 +4,7 @@
         <name>IPRehab</name>
     </assembly>
     <members>
-        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.Int32,System.String)">
+        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.String,System.Int32,System.String)">
             <summary>
             https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
             </summary>

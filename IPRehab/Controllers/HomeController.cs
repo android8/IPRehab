@@ -16,6 +16,11 @@ namespace IPRehab.Controllers
       _logger = logger;
     }
 
+    public IActionResult Splash()
+    {
+      return View();
+    }
+
     public IActionResult Index()
     {
       return View();
