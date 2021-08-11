@@ -5,7 +5,7 @@
   width: 100vw;
   height: 500vh;
   background-color: #0e2640;
-  background-image: url("../images/R.jfif");
+  background-image: url("../images/chiropractor_jumping_on_table_lg_clr.gif");
   /* Set background image to fixed (don't scroll along with the page) */
   background-attachment: fixed;
   /* Center the background image */
@@ -13,17 +13,15 @@
   /* Set the background image to no repeat */
   background-repeat: no-repeat;
   /* Scale the background image to be as large as possible */
-  background-size: cover;
+  background-size:auto;
 }
 
 .splashscreen #flashText {
   display: flex;
   color: #00efff;
   font-size: 5em;
-  padding: 10% 20% 20% 20%;
   align-items: center;
   justify-content: center;
-  position: fixed;
   background-image: -webkit-linear-gradient(#fff, #00efff, #195594);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -80,6 +78,11 @@ body {
   padding-left: 0;
   margin-right: auto;
   margin-left: auto;
+}
+
+.splashSpinnerContainer{
+  margin-right:0;
+  margin-bottom:0;
 }
 
 .fixedTop {
