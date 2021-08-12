@@ -1,0 +1,10 @@
+﻿@model EpisodeOfCareDTO
+
+
+
+  <input type="hidden" name="episodeOfCareID" id="episodeOfCareID" value="@Model.EpisodeOfCareID" />
+  <input type="hidden" name="patientICN" id="patientICN" value="@Model.PatientIcnFK" />
+  <label for="onsetDate">Onset Date</label>
+  <input type="text" name="onsetDate" id="onsetDate" value="@Model.OnsetDate" class="text ui-widget-content ui-corner-all">
+  <label for="admissionDate">admissionDate</label>
+  <input type="text" name="admissionDate" id="admissionDate" value="@Model.AdmissionDate" class="text ui-widget-content ui-corner-all">

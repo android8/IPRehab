@@ -10,7 +10,9 @@
   <script type="module" src="~/js/app/patientList.js" asp-append-version="true"></script>
   <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
   <script type="text/javascript">
-
+    $(function () {
+      $(".disabled").removeClass("disabled"); //delay enabling command buttons under render is completed 
+    });
   </script>
 }
 

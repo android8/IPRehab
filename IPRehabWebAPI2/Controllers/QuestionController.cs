@@ -72,7 +72,7 @@ namespace IPRehabWebAPI2.Controllers
     public async Task<IActionResult> GetStageAsync(string stageName, bool includeAnswer, int episodeID)
     {
       stageName = stageName.Trim().ToUpper();
-      IOrderedEnumerable<QuestionDTO> questions = null;
+      List<QuestionDTO> questions = null;
       try
       {
         questions = _questionRepository.FindByCondition(q =>
@@ -81,7 +81,22 @@ namespace IPRehabWebAPI2.Controllers
             s.StageFkNavigation.CodeValue.Trim().ToUpper() == stageName)
         ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
         .Select(q => HydrateDTO.HydrateQuestion(q, stageName))
-        .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+        .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey)
+        .ToList();
+
+        if (episodeID == -1 /* new episode hoist Q12, Q23 to top of the list*/)
+        {
+          var episodeKeyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23");
+          if (episodeKeyQuestions != null)
+          {
+            var hoisted = questions;
+            episodeKeyQuestions = episodeKeyQuestions.ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
+            hoisted = questions.Except(episodeKeyQuestions).ToList();
+             /* hoist OnsetDate question to the top of the list */
+            hoisted.InsertRange(0, episodeKeyQuestions);
+            questions = hoisted;            
+          }
+        }
       }
       catch (Exception ex)
       {
