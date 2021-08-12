@@ -18,11 +18,12 @@
 
 .splashscreen #flashText {
   display: flex;
-  color: #00efff;
+  color: #1c2d8e;
   font-size: 5em;
   align-items: center;
   justify-content: center;
-  background-image: -webkit-linear-gradient(#fff, #00efff, #195594);
+  /*position:fixed;*/
+  background-image: -webkit-linear-gradient(#fff, #a6bad0, #433181);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
