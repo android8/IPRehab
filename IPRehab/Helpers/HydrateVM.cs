@@ -25,7 +25,7 @@ namespace IPRehab.Helpers
       qws.AnswerCodeSetID = dto.AnswerCodeSetID;
       qws.AnswerCodeCategory = dto.AnswerCodeCategory;
       qws.ChoiceList = SetSelectedChoice(dto.ChoiceList, dto.Answers, dto.AnswerCodeCategory);
-
+      qws.Instructions = dto.QuestionInsructions;
       return qws;
     }
 

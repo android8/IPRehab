@@ -256,6 +256,8 @@ namespace IPRehabModel
 
         entity.Property(e => e.InstructionId).HasColumnName("InstructionID");
 
+        entity.Property(e => e.DisplayLocation).IsUnicode(false);
+
         entity.Property(e => e.Instruction)
                   .IsRequired()
                   .IsUnicode(false);

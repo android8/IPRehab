@@ -38,7 +38,7 @@ namespace IPRehabWebAPI2.Helpers
                           CodeDescription = s.CodeDescription.Contains(s.CodeValue) && s.CodeValue.Length > 1 ? $"{s.CodeDescription}" : $"{s.CodeValue}. {s.CodeDescription}",
                           Comment = s.Comment
                         }).ToList();
-
+      questionDTO.QuestionInsructions = GetInstruction(q);
       return questionDTO;
     }
 
@@ -182,6 +182,24 @@ namespace IPRehabWebAPI2.Helpers
         text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
       }
       return text;
+    }
+
+    private static List<QuestionInstructionDTO> GetInstruction(TblQuestion q)
+    {
+      if (q.TblQuestionInstruction.Any(i => i.QuestionIdfk == q.QuestionId))
+      {
+        return q.TblQuestionInstruction.Where(i => i.QuestionIdfk == q.QuestionId)
+          .Select(i=> new QuestionInstructionDTO {
+            InstructionId = i.InstructionId,
+            QuestionIdfk = q.QuestionId,
+            Instruction =i.Instruction,
+            DisplayLocation = i.DisplayLocation
+        }).ToList();
+      }
+      else
+      {
+        return null;
+      }
     }
   }
 }

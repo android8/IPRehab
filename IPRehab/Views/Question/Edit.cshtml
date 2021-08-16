@@ -28,8 +28,8 @@
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
     <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
   </svg> answer is required
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill keyQuestion" viewBox="0 0 16 16">
-    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+    <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
   </svg> key question
   <table class="table-striped" id="questionnaire">
     <thead>
@@ -54,11 +54,11 @@
           if (currentForm != q.Form && ViewBag.Title == "IRF-PAI Form")
           {
             currentForm = q.Form;
-        <tr id="nonPaddinRow">
-          <td></td>
-          <td></td>
-          <td><div class="flex-end-row-nowrap formName">@currentForm</div></td>
-        </tr>
+            <tr id="nonPaddinRow">
+              <td></td>
+              <td></td>
+              <td><div class="flex-end-row-nowrap formName">@currentForm</div></td>
+            </tr>
           }
 
           row++;
@@ -67,12 +67,31 @@
           if (currentSection != q.Section)
           {
             currentSection = q.Section;
-        <tr>
-          <td class="questionTitle" colspan="4">
-            <a name="@q.Section"></a>
-            @Html.DisplayFor(m => q.QuestionTitle)
-          </td>
-        </tr>
+            <tr>
+              <td class="questionTitle" colspan="4">
+                <a name="@q.Section"></a>
+                @Html.DisplayFor(m => q.QuestionTitle)
+                @if (q.Instructions != null)
+                {
+                  bool sectionIconDone = false;
+                  foreach (var ins in q.Instructions)
+                  {
+                    if (ins.DisplayLocation == "Section Header")
+                    {
+                      if (!sectionIconDone)
+                      {
+                        sectionIconDone = true;
+                        //show instruction icon
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                      </svg>
+                      }
+                    <span class="questionInstruction">@ins.Instruction&nbsp;&nbsp;</span>
+                    }
+                  }
+                }
+              </td>
+            </tr>
           }
 
           if (q.Question != currentQuestion && q.QuestionTitle != currentTitle)
@@ -80,10 +99,10 @@
           else
             cssClass = "borderBottom";
 
-        <tr class="@cssClass">
-          @*<td><span class="badge badge-pill">@row</span></td>*@
-          <td class="questionText">
-            @if (q.Question != currentQuestion)
+          <tr class="@cssClass">
+            @*<td><span class="badge badge-pill">@row</span></td>*@
+            <td class="questionText">
+              @if (q.Question != currentQuestion)
               {
                 /* show only once the same question */
                 currentQuestion = q.Question;
@@ -91,21 +110,43 @@
                 {
                   if (q.QuestionKey == "Q12" || q.QuestionKey == "Q23")
                   {
-                  /* show key question star */
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill keyQuestion" viewBox="0 0 16 16">
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                  </svg>
+                    /* show key question star */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+                      <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                    </svg>
                   }
                   else
                   {
-                  /* show star */
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                  </svg>
+                    /* show star */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                    </svg>
                   }
                 }
 
                 @Html.DisplayFor(m => q.Question)
+
+                @if (q.Instructions != null)
+                {
+                  bool questionIconDone = false;
+                  foreach (var ins in q.Instructions)
+                  {
+                    if (ins.DisplayLocation != "Section Header")
+                    {
+                      if (!questionIconDone)
+                      {
+                        questionIconDone = true;
+                        //show instruction icon
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                        </svg>
+                      }
+                      <div class="questionInstruction">
+                        @ins.Instruction
+                      </div>
+                    }
+                  }
+                }
               }
               else
               {
@@ -116,24 +157,25 @@
                   if (q.Required.HasValue && q.Required.Value == true)
                   {
                     //show star
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-            </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                    </svg>
                   }
 
-            @Html.DisplayFor(m => q.Question)
+                  @Html.DisplayFor(m => q.Question)
                 }
               }
-          </td>
-          <td class="questionKeyAndTitle">
-            @($"{q.QuestionKey}")
-            @if (!string.IsNullOrEmpty(q.GroupTitle))
+
+            </td>
+            <td class="questionKeyAndTitle">
+              @($"{q.QuestionKey}")
+              @if (!string.IsNullOrEmpty(q.GroupTitle))
               {
-            @($" - {q.GroupTitle}")
+                @($" - {q.GroupTitle}")
               }
-          </td>
-          <td class="answer">
-            @{
+            </td>
+            <td class="answer">
+              @{
                 int choiceCount = q.ChoiceList.Count();
                 string choicePrompt = $"select 1 of {choiceCount} choices";
 
@@ -141,8 +183,8 @@
                 {
                   case int n when n > 3:
                     {
-              @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.GroupTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
-              <label for="@($"{q.QuestionKey}{q.GroupTitle}")" aria-label="dropdown null label"></label>
+                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.GroupTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
+                      <label for="@($"{q.QuestionKey}{q.GroupTitle}")" aria-label="dropdown null label"></label>
                     }
                     break;
 
@@ -151,10 +193,10 @@
                     {
                       foreach (var c in q.ChoiceList)
                       {
-              <div>
-                @Html.RadioButton(q.QuestionKey, q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}{c.Value}" })
-                <label for="@($"{q.QuestionKey}{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
-              </div>
+                        <div>
+                          @Html.RadioButton(q.QuestionKey, q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}{c.Value}" })
+                          <label for="@($"{q.QuestionKey}{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
+                        </div>
                       }
                     }
                     break;
@@ -173,67 +215,67 @@
                               isChecked = true;
                             }
 
-              @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
-              <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
+                            @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                            <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
                           }
                           break;
 
                         case "Date":
                           {
-              <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
+                            <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
                             if (q.ChoiceList.Any())
                             {
-              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
-                     placeholder="MM/dd/yyyy"
-                     value="@($"{q.ChoiceList.First()?.Text}")" />
+                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                                     placeholder="MM/dd/yyyy"
+                                     value="@($"{q.ChoiceList.First()?.Text}")" />
                             }
                             else
                             {
-              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
-                     placeholder="MM/dd/yyyy" />
+                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                                     placeholder="MM/dd/yyyy" />
                             }
                           }
                           break;
 
                         case "ICD":
                           {
-              <label for="@q.QuestionKey" aria-label="textbox label"></label>
-              @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                            <label for="@q.QuestionKey" aria-label="textbox label"></label>
+                            @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
                           }
                           break;
 
                         case "FreeText":
                           {
-              <label for="@q.QuestionKey" aria-label="free text label"></label>
-              @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                            <label for="@q.QuestionKey" aria-label="free text label"></label>
+                            @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
                             break;
                           }
                       }
                     }
                     break;
                 }
-            }
-          </td>
-        </tr>
+              }
+            </td>
+          </tr>
 
-        @if ((ViewBag.Title == "Base" && q.QuestionKey == "GG0130H" && q.GroupTitle == "3. Discharge Performance") ||
-       ((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
+          @if ((ViewBag.Title == "Base" && q.QuestionKey == "GG0130H" && q.GroupTitle == "3. Discharge Performance") ||
+    ((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
           {
-        <tr>
-          <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Self Care Aggregate Score: TBD</div></div></td>
-        </tr>
+            <tr>
+              <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Self Care Aggregate Score: TBD</div></div></td>
+            </tr>
           }
-        @if (
-       (ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
-       (ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
-       (ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
-       (ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
-       (ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
-      )
+          @if (
+    (ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
+    (ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
+    (ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
+    (ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
+    (ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
+   )
           {
-        <tr>
-          <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Mobility Aggregate Score: TBD</div></div></td>
-        </tr>
+            <tr>
+              <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Mobility Aggregate Score: TBD</div></div></td>
+            </tr>
           }
         }
       }

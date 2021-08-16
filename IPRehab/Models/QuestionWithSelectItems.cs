@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IPRehab.Models
 {
@@ -18,12 +16,15 @@ namespace IPRehab.Models
     public string GroupTitle { get; set; }
     public int AnswerCodeSetParentID { get; set; }
     public int AnswerCodeSetID { get; set; }
+    public int DisplayLocation { get; set; }
     public int? DisplayOrder { get; set; }
+    public List<QuestionInstructionDTO> Instructions { get; set; }
     public List<SelectListItem> ChoiceList { get; set; }
     public string AnswerCodeCategory { get; set; }
 
     public QuestionWithSelectItems() {
       ChoiceList = new List<SelectListItem>();
+      Instructions = new List<QuestionInstructionDTO>();
     }
   }
 }

@@ -14,6 +14,7 @@ namespace IPRehabModel
     [Required]
     public int QuestionIdfk { get; set; }
     public int? Order { get; set; }
+    public string DisplayLocation { get; set; }
     [Required]
     public string Instruction { get; set; }
     [Required]

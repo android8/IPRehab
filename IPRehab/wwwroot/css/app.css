@@ -186,7 +186,12 @@ td {
 
 .questionText {
   font-weight: bold;
-  text-align: justify;
+  text-align: left;
+}
+
+.questionInstruction {
+  font-size: smaller;
+  font-weight: normal;
 }
 
 .patientRow {

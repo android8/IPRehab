@@ -19,6 +19,7 @@ namespace IPRehabWebAPI2.Models
     public string AnswerCodeCategory { get; set; }
     public int? DisplayOrder { get; set; }
     public List<CodeSetDTO> ChoiceList { get; set; }
+    public List<QuestionInstructionDTO> QuestionInsructions { get; set; }
 
     /// <summary>
     /// Each question hAs primarily a single answer but can be multiple
@@ -27,6 +28,7 @@ namespace IPRehabWebAPI2.Models
 
     public QuestionDTO() {
       ChoiceList = new List<CodeSetDTO>();
+      QuestionInsructions = new List<QuestionInstructionDTO>();
       Answers = new List<AnswerDTO>();
     }
   }
