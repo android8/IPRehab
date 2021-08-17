@@ -14,6 +14,7 @@
   background-repeat: no-repeat;
   /* Scale the background image to be as large as possible */
   background-size: auto;
+  overflow: hidden;
 }
 
 .splashscreen #flashText {
@@ -26,6 +27,13 @@
   background-image: -webkit-linear-gradient(#fff, #a6bad0, #433181);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.splashscreen #waitMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
 body {
@@ -182,11 +190,17 @@ td {
   background-color: #040534;
   color: gold;
   height: 2px;
+  font-weight: bold;
 }
 
 .questionText {
   font-weight: bold;
   text-align: left;
+}
+
+.instructionIcon {
+  width: 12px;
+  height: 12px;
 }
 
 .questionInstruction {

@@ -29,7 +29,7 @@ namespace IPRehab.Helpers
       return qws;
     }
 
-    public static List<SectionInfo> GetQuestionSections(List<QuestionWithSelectItems> questions)
+    public static List<SectionInfo> GetDistinctSections(List<QuestionWithSelectItems> questions)
     {
       var sections = questions.Select(x => $"{x.QuestionTitle} {x.Section}").AsParallel().Distinct()
         .Select(x => new SectionInfo {

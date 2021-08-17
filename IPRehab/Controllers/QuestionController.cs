@@ -141,7 +141,7 @@ namespace IPRehab.Controllers
             }
 
             //model for section navigator side bar
-            var distinctSections = HydrateVM.GetQuestionSections(vm);
+            var distinctSections = HydrateVM.GetDistinctSections(vm);
             ViewBag.QuestionSections = distinctSections;
 
 

@@ -189,6 +189,7 @@ namespace IPRehabWebAPI2.Helpers
       if (q.TblQuestionInstruction.Any(i => i.QuestionIdfk == q.QuestionId))
       {
         return q.TblQuestionInstruction.Where(i => i.QuestionIdfk == q.QuestionId)
+          .OrderBy(i=>i.Order)
           .Select(i=> new QuestionInstructionDTO {
             InstructionId = i.InstructionId,
             QuestionIdfk = q.QuestionId,
