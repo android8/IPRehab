@@ -62,27 +62,29 @@
           }
 
           row++;
+          if (row == 1) currentSection = q.Section;
+
           string fullSectionInstruction = string.Empty;
           string fullQuestionInstruction = string.Empty;
+          if (q.Instructions != null)
+          {
+            foreach (var ins in q.Instructions)
+            {
+              if (ins.DisplayLocation != null && ins.DisplayLocation.Trim() == "Section Header")
+              {
+                fullSectionInstruction += string.Format("{0} ", ins.Instruction);
+              }
+              else
+              {
+                fullQuestionInstruction += string.Format("{0} ", ins.Instruction);
+              }
+            }
+          }
 
           //show question title only once per querstion
           if (currentSection != q.Section)
           {
             currentSection = q.Section;
-            if (q.Instructions != null)
-            {
-              foreach (var ins in q.Instructions)
-              {
-                if (ins.DisplayLocation != null && ins.DisplayLocation.Trim() == "Section Header")
-                {
-                  fullSectionInstruction += string.Format("{0} ", ins.Instruction);
-                }
-                else
-                {
-                  fullQuestionInstruction += string.Format("{0} ", ins.Instruction);
-                }
-              }
-            }
             <tr>
               <td class="questionTitle" colspan="4">
 
