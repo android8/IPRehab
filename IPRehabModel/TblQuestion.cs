@@ -2,45 +2,52 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblQuestion
-  {
-    public TblQuestion()
+    [Table("tblQuestion", Schema = "app")]
+    [Index(nameof(QuestionKey), nameof(GroupTitle), Name = "IX_tblQuestion", IsUnique = true)]
+    public partial class tblQuestion
     {
-      TblAnswer = new HashSet<TblAnswer>();
-      TblQuestionInstruction = new HashSet<TblQuestionInstruction>();
-      TblQuestionStage = new HashSet<TblQuestionStage>();
+        public tblQuestion()
+        {
+            tblAnswer = new HashSet<tblAnswer>();
+            tblQuestionInstruction = new HashSet<tblQuestionInstruction>();
+            tblQuestionStage = new HashSet<tblQuestionStage>();
+        }
+
+        [Key]
+        public int QuestionID { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string QuestionKey { get; set; }
+        public int? Order { get; set; }
+        [StringLength(200)]
+        public string QuestionSection { get; set; }
+        [Required]
+        [StringLength(1000)]
+        public string Question { get; set; }
+        [StringLength(50)]
+        public string GroupTitle { get; set; }
+        public int AnswerCodeSetFK { get; set; }
+        public bool? BranchingPoint { get; set; }
+        public bool? MultiChoice { get; set; }
+        public bool? Active { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
+
+        [ForeignKey(nameof(AnswerCodeSetFK))]
+        [InverseProperty(nameof(tblCodeSet.tblQuestion))]
+        public virtual tblCodeSet AnswerCodeSetFKNavigation { get; set; }
+        [InverseProperty("QuestionIDFKNavigation")]
+        public virtual ICollection<tblAnswer> tblAnswer { get; set; }
+        [InverseProperty("QuestionIDFKNavigation")]
+        public virtual ICollection<tblQuestionInstruction> tblQuestionInstruction { get; set; }
+        [InverseProperty("QuestionIDFKNavigation")]
+        public virtual ICollection<tblQuestionStage> tblQuestionStage { get; set; }
     }
-
-    public virtual TblCodeSet AnswerCodeSetFkNavigation { get; set; }
-    public virtual TblCodeSet FormFkNavigation { get; set; }
-    public virtual TblCodeSet FormSectionFkNavigation { get; set; }
-    public virtual ICollection<TblAnswer> TblAnswer { get; set; }
-    public virtual ICollection<TblQuestionInstruction> TblQuestionInstruction { get; set; }
-    public virtual ICollection<TblQuestionStage> TblQuestionStage { get; set; }
-
-    [Required]
-    public int QuestionId { get; set; }
-    [Required]
-    public string QuestionKey { get; set; }
-    public int? Order { get; set; }
-    public string QuestionTitle { get; set; }
-    [Required]
-    public string Question { get; set; }
-    public string GroupTitle { get; set; }
-    [Required]
-    public int FormFk { get; set; }
-    public int? FormSectionFk { get; set; }
-    [Required]
-    public int AnswerCodeSetFk { get; set; }
-    public bool? BranchingPoint { get; set; }
-    public bool? MultiChoice { get; set; }
-    public bool? Active { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
-  }
 }

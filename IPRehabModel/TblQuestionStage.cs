@@ -2,26 +2,35 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblQuestionStage
-  {
-    [Required]
-    public int Id { get; set; }
-    [Required]
-    public int QuestionIdFk { get; set; }
-    [Required]
-    public int StageFk { get; set; }
-    [Required]
-    public bool Required { get; set; }
-    public string StageGroupTitle { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
+    [Table("tblQuestionStage", Schema = "app")]
+    [Index(nameof(QuestionIDFK), nameof(StageFK), Name = "IX_tblQuestionStage", IsUnique = true)]
+    [Index(nameof(QuestionIDFK), Name = "IX_tblQuestionStage_QuestionIdFk")]
+    [Index(nameof(StageFK), Name = "IX_tblQuestionStage_StageFk")]
+    public partial class tblQuestionStage
+    {
+        [Key]
+        public int Id { get; set; }
+        public int QuestionIDFK { get; set; }
+        public int StageFK { get; set; }
+        [Required]
+        public bool? Required { get; set; }
+        [StringLength(50)]
+        public string StageGroupTitle { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
 
-    public virtual TblQuestion QuestionIdFkNavigation { get; set; }
-    public virtual TblCodeSet StageFkNavigation { get; set; }
-  }
+        [ForeignKey(nameof(QuestionIDFK))]
+        [InverseProperty(nameof(tblQuestion.tblQuestionStage))]
+        public virtual tblQuestion QuestionIDFKNavigation { get; set; }
+        [ForeignKey(nameof(StageFK))]
+        [InverseProperty(nameof(tblCodeSet.tblQuestionStage))]
+        public virtual tblCodeSet StageFKNavigation { get; set; }
+    }
 }

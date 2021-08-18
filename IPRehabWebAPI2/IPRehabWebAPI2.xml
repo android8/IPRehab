@@ -20,36 +20,6 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetInitStage">
-            <summary>
-            get initial intake questions (required or not)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetInterimStage">
-            <summary>
-            get interim stage questions (both required and not)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetDischargeStage">
-            <summary>
-            get discharge stage questions (required must be answer before discharge)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetFollowupStage">
-            <summary>
-            get follow up stage questions
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:IPRehabWebAPI2.Controllers.QuestionController.GetAdmissionForm">
-            <summary>
-            get question in the specified {form} paramter
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetUserAccessLevels(UserModel.MasterreportsContext,System.String)">
             <summary>
             Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels

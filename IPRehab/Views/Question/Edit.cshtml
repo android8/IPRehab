@@ -223,13 +223,13 @@
                             <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
                             if (q.ChoiceList.Any())
                             {
-                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                              <input type="date" id="@($"{q.QuestionKey}")" name="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
                                      placeholder="MM/dd/yyyy"
                                      value="@($"{q.ChoiceList.First()?.Text}")" />
                             }
                             else
                             {
-                              <input type="date" id="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("MM/dd/yyyy")"
+                              <input type="date" id="@($"{q.QuestionKey}")" name="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
                                      placeholder="MM/dd/yyyy" />
                             }
                           }
@@ -257,22 +257,22 @@
           </tr>
 
           @if ((ViewBag.Title == "Base" && q.QuestionKey == "GG0130H" && q.GroupTitle == "3. Discharge Performance") ||
-((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
+           ((ViewBag.Title == "Initial" || ViewBag.Title == "Interim" || ViewBag.Title == "Discharge") && q.QuestionKey == "GG0130H"))
           {
             <tr>
-              <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Self Care Aggregate Score: TBD</div></div></td>
+              <td colspan="3"><div class="flex-row-reverse green text-lg-right" id="SelfCareScore">Self Care Aggregate Score: TBD</div></td>
             </tr>
           }
           @if (
-(ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
-(ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
-(ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
-(ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
-(ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
-)
+             (ViewBag.Title == "Base" && q.QuestionKey == "GG0170SS1") ||
+             (ViewBag.Title == "Initial" && q.QuestionKey == "GG0170SS1") ||
+             (ViewBag.Title == "Interim" && q.QuestionKey == "GG0170SS1") ||
+             (ViewBag.Title == "Discharge" && q.QuestionKey == "GG0170SS3") ||
+             (ViewBag.Title == "Follow Up" && q.QuestionKey == "GG0170SS1")
+             )
           {
             <tr>
-              <td colspan="3"><div class="flex-row-reverse green" id="SelfCareScore"><div>Mobility Aggregate Score: TBD</div></div></td>
+              <td colspan="3"><div class="flex-row-reverse green text-xl-right" id="MobilityScore">Mobility Aggregate Score: TBD</div></td>
             </tr>
           }
         }

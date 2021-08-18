@@ -2,24 +2,33 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblSignature
-  {
-    [Required]
-    public int EpisodeCareIdfk { get; set; }
-    [Required]
-    public byte[] Signature { get; set; }
-    [Required]
-    public string Title { get; set; }
-    [Required]
-    public DateTime DateInformationProvided { get; set; }
-    public TimeSpan? Time { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
-    public virtual TblEpisodeOfCare EpisodeCareIdfkNavigation { get; set; }
-  }
+    [Table("tblSignature", Schema = "app")]
+    [Index(nameof(Signature), Name = "IX_tblSignature", IsUnique = true)]
+    public partial class tblSignature
+    {
+        [Key]
+        public int EpisodeCareIDFK { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public byte[] Signature { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Title { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime DateInformationProvided { get; set; }
+        public TimeSpan? Time { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
+
+        [ForeignKey(nameof(EpisodeCareIDFK))]
+        [InverseProperty(nameof(tblEpisodeOfCare.tblSignature))]
+        public virtual tblEpisodeOfCare EpisodeCareIDFKNavigation { get; set; }
+    }
 }

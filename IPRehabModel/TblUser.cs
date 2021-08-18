@@ -2,20 +2,30 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblUser
-  {
-    [Required]
-    public int Id { get; set; }
-    [Required]
-    public string FirstName { get; set; }
-    [Required]
-    public string LastName { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
-  }
+    [Table("tblUser", Schema = "app")]
+    [Index(nameof(LastName), nameof(FirstName), Name = "IX_tblUser_Name")]
+    [Index(nameof(NetworkName), Name = "IX_tblUser_NetworkName", IsUnique = true)]
+    public partial class tblUser
+    {
+        [Key]
+        public int ID { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string FirstName { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string LastName { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string NetworkName { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
+    }
 }

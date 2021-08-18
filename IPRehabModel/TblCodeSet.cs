@@ -2,46 +2,59 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblCodeSet
-  {
-    public TblCodeSet()
+    [Table("tblCodeSet", Schema = "app")]
+    [Index(nameof(CodeSetParent), nameof(CodeValue), Name = "IX_tblCodeSet", IsUnique = true)]
+    public partial class tblCodeSet
     {
-      InverseCodeSetParentNavigation = new HashSet<TblCodeSet>();
-      TblAnswerStage = new HashSet<TblAnswer>();
-      TblAnswer = new HashSet<TblAnswer>();
-      TblQuestionStage = new HashSet<TblQuestionStage>();
-      TblQuestionAnswerCodeSetFkNavigation = new HashSet<TblQuestion>();
-      TblQuestionFormFkNavigation = new HashSet<TblQuestion>();
-      TblQuestionFormSectionFkNavigation = new HashSet<TblQuestion>();
+        public tblCodeSet()
+        {
+            InverseCodeSetParentNavigation = new HashSet<tblCodeSet>();
+            tblAnswerAnswerCodeSetFKNavigation = new HashSet<tblAnswer>();
+            tblAnswerStageIDFKNavigation = new HashSet<tblAnswer>();
+            tblQuestion = new HashSet<tblQuestion>();
+            tblQuestionInstruction = new HashSet<tblQuestionInstruction>();
+            tblQuestionStage = new HashSet<tblQuestionStage>();
+        }
+
+        [Key]
+        public int CodeSetID { get; set; }
+        public int? CodeSetParent { get; set; }
+        [Required]
+        [StringLength(30)]
+        public string CodeValue { get; set; }
+        [Required]
+        [StringLength(400)]
+        public string CodeDescription { get; set; }
+        public int? HierarchyType { get; set; }
+        public bool? Active { get; set; }
+        public int? FyConstraint { get; set; }
+        public int? SortOrder { get; set; }
+        [StringLength(200)]
+        public string Comment { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
+
+        [ForeignKey(nameof(CodeSetParent))]
+        [InverseProperty(nameof(tblCodeSet.InverseCodeSetParentNavigation))]
+        public virtual tblCodeSet CodeSetParentNavigation { get; set; }
+        [InverseProperty(nameof(tblCodeSet.CodeSetParentNavigation))]
+        public virtual ICollection<tblCodeSet> InverseCodeSetParentNavigation { get; set; }
+        [InverseProperty(nameof(tblAnswer.AnswerCodeSetFKNavigation))]
+        public virtual ICollection<tblAnswer> tblAnswerAnswerCodeSetFKNavigation { get; set; }
+        [InverseProperty(nameof(tblAnswer.StageIDFKNavigation))]
+        public virtual ICollection<tblAnswer> tblAnswerStageIDFKNavigation { get; set; }
+        [InverseProperty("AnswerCodeSetFKNavigation")]
+        public virtual ICollection<tblQuestion> tblQuestion { get; set; }
+        [InverseProperty("StageCodeSetIDFKNavigation")]
+        public virtual ICollection<tblQuestionInstruction> tblQuestionInstruction { get; set; }
+        [InverseProperty("StageFKNavigation")]
+        public virtual ICollection<tblQuestionStage> tblQuestionStage { get; set; }
     }
-
-    public virtual TblCodeSet CodeSetParentNavigation { get; set; }
-    public virtual ICollection<TblCodeSet> InverseCodeSetParentNavigation { get; set; }
-    public virtual ICollection<TblAnswer> TblAnswer { get; set; }
-    public virtual ICollection<TblAnswer> TblAnswerStage { get; set; }
-    public virtual ICollection<TblQuestionStage> TblQuestionStage { get; set; }
-    public virtual ICollection<TblQuestion> TblQuestionAnswerCodeSetFkNavigation { get; set; }
-    public virtual ICollection<TblQuestion> TblQuestionFormFkNavigation { get; set; }
-    public virtual ICollection<TblQuestion> TblQuestionFormSectionFkNavigation { get; set; }
-
-    [Required]
-    public int CodeSetId { get; set; }
-    public int? CodeSetParent { get; set; }
-    [Required]
-    public string CodeValue { get; set; }
-    [Required]
-    public string CodeDescription { get; set; }
-    public int? HierarchyType { get; set; }
-    public bool? Active { get; set; }
-    public int? FyConstraint { get; set; }
-    public int? SortOrder { get; set; }
-    public string Comment { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
-  }
 }

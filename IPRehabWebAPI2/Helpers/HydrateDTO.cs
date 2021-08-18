@@ -14,25 +14,25 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(TblQuestion q, string questionStage)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage)
     {
-      QuestionDTO questionDTO = new QuestionDTO();
-      questionDTO.Form = q.FormFkNavigation.CodeDescription;
-      questionDTO.QuestionID = q.QuestionId;
-      questionDTO.Required = q.TblQuestionStage.Where(x =>
-          x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
+      QuestionDTO questionDTO = new();
+      questionDTO.Form = questionStage;
+      questionDTO.QuestionID = q.QuestionID;
+      questionDTO.Required = q.tblQuestionStage.Where(x =>
+          x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
-      questionDTO.QuestionTitle = q.QuestionTitle;
+      questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
-      //use TblQuestionStage.StageGroupTitle if it is not null or empty else use TblQuestion.GroupTitle
+      //use tblQuestionStage.StageGroupTitle if it is not null or empty else use tblQuestion.GroupTitle
       questionDTO.GroupTitle = GetGroupTitle(q, questionStage);
-      questionDTO.AnswerCodeSetID = q.AnswerCodeSetFk;
-      questionDTO.AnswerCodeCategory = q.AnswerCodeSetFkNavigation.CodeValue;
+      questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
+      questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
-      questionDTO.ChoiceList = q.AnswerCodeSetFkNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
+      questionDTO.ChoiceList = q.AnswerCodeSetFKNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
                         .Select(s => new CodeSetDTO
                         {
-                          CodeSetID = s.CodeSetId,
+                          CodeSetID = s.CodeSetID,
                           CodeSetParent = s.CodeSetParent,
                           CodeValue = s.CodeValue,
                           CodeDescription = s.CodeDescription.Contains(s.CodeValue) && s.CodeValue.Length > 1 ? $"{s.CodeDescription}" : $"{s.CodeValue}. {s.CodeDescription}",
@@ -42,51 +42,50 @@ namespace IPRehabWebAPI2.Helpers
       return questionDTO;
     }
 
-    public static AnswerDTO HydrateAnswer(TblAnswer a) {
+    public static AnswerDTO HydrateAnswer(tblAnswer a) {
       EpisodeOfCareDTO episode = new()
       {
-        EpisodeOfCareID = a.EpsideOfCareIdfk,
-        OnsetDate = a.EpsideOfCareIdfkNavigation.OnsetDate,
-        AdmissionDate = a.EpsideOfCareIdfkNavigation.AdmissionDate,
-        PatientIcnFK = a.EpsideOfCareIdfkNavigation.PatientIcnfk
+        EpisodeOfCareID = a.EpsideOfCareIDFK,
+        OnsetDate = a.EpsideOfCareIDFKNavigation.OnsetDate,
+        AdmissionDate = a.EpsideOfCareIDFKNavigation.AdmissionDate,
+        PatientIcnFK = a.EpsideOfCareIDFKNavigation.PatientICNFK
       };
 
       CodeSetDTO answerCodeSet = new()
       {
-        CodeSetID = a.AnswerCodeSetFkNavigation.CodeSetId,
-        CodeValue = a.AnswerCodeSetFkNavigation.CodeValue,
-        CodeDescription = a.AnswerCodeSetFkNavigation.CodeDescription,
-        Comment = a.AnswerCodeSetFkNavigation.Comment
+        CodeSetID = a.AnswerCodeSetFKNavigation.CodeSetID,
+        CodeValue = a.AnswerCodeSetFKNavigation.CodeValue,
+        CodeDescription = a.AnswerCodeSetFKNavigation.CodeDescription,
+        Comment = a.AnswerCodeSetFKNavigation.Comment
       };
 
       AnswerDTO answerDTO = new() {
         EpisodeOfCare = episode,
-        QuestionIdFK = a.QuestionIdfk,
-        CareStage = a.StageIdFkNavigation.CodeDescription,
+        QuestionIDFK = a.QuestionIDFK,
+        CareStage = a.StageIDFKNavigation.CodeDescription,
         AnswerCodeSet = answerCodeSet,
         AnswerSequenceNumber = a.AnswerSequenceNumber,
         Description = a.Description,
-        ByUser = a.AnswerByUserId
+        ByUser = a.AnswerByUserID
       };
       return answerDTO;
     }
 
-    private static string GetGroupTitle(TblQuestion q, string questionStage)
+    private static string GetGroupTitle(tblQuestion q, string questionStage)
     {
-      if (string.IsNullOrEmpty(questionStage) || !q.TblQuestionStage.Any(x =>
-        x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage))
+      var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID && 
+          (x.StageFKNavigation.CodeValue == questionStage || x.StageFKNavigation.CodeDescription == questionStage));
+      if (!alternateTitle.Any())
         return q.GroupTitle;
       else
       {
-        var stagedQuestions = q.TblQuestionStage.Where(x => x.QuestionIdFk == q.QuestionId && x.StageFkNavigation.CodeValue == questionStage);
-        var groupTitle = string.IsNullOrEmpty(stagedQuestions.First().StageGroupTitle) ? q.GroupTitle : stagedQuestions.First().StageGroupTitle;
-        return groupTitle;
+        return alternateTitle.First().StageGroupTitle;
       }
     }
 
     public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatientDetailFY21Q2 p)
     {
-      UserFacilityGrant grants = new UserFacilityGrant();
+      UserFacilityGrant grants = new();
       grants.District.Add(p.District);
       grants.Division.Add(p.Division);
       grants.Facility.Add(p.Facility);
@@ -115,39 +114,45 @@ namespace IPRehabWebAPI2.Helpers
       };
     }
 
-    public static EpisodeOfCareDTO HydrateEpisodeOfCare(TblEpisodeOfCare e)
+    public static EpisodeOfCareDTO HydrateEpisodeOfCare(tblEpisodeOfCare e)
     {
       /* always used Q12 and Q23 answers to determine episode dates */
-      DateTime admissionDate = new DateTime(DateTime.MinValue.Ticks);
-      var firstAdmissionDate = e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q12");
-      if (firstAdmissionDate.Any())
+      DateTime admissionDate = new(DateTime.MinValue.Ticks);
+      DateTime onsetDate = new(DateTime.MinValue.Ticks);
+      IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a => 
+        a.EpsideOfCareIDFK == e.EpisodeOfCareID && (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
+        .OrderBy(a=>a.QuestionIDFKNavigation.Order).ThenBy(a=>a.QuestionIDFKNavigation.QuestionKey);
+      if (keyDates.Any())
       {
-        DateTime.TryParse(ParseString(firstAdmissionDate.First().Description), out admissionDate);
-      }
-      if (admissionDate.Ticks == DateTime.MinValue.Ticks)
-        admissionDate = e.AdmissionDate;
+        if (DateTime.TryParse(ParseString(keyDates.First().Description), out admissionDate))
+        {
+          if (admissionDate.Ticks == DateTime.MinValue.Ticks)
+          {
+            admissionDate = e.AdmissionDate;
+          }
+        }
 
-      DateTime onsetDate = new DateTime(DateTime.MinValue.Ticks);
-      var firstOnsetDate = e.TblAnswer.Where(a => a.EpsideOfCareIdfk == e.EpisodeOfCareId && a.QuestionIdfkNavigation.QuestionKey == "Q23");
-      if (firstOnsetDate.Any())
-      {
-        DateTime.TryParse(ParseString(firstOnsetDate.First().Description), out onsetDate);
+        if (DateTime.TryParse(ParseString(keyDates.Last().Description), out onsetDate))
+        {
+          if (onsetDate.Ticks == DateTime.MinValue.Ticks)
+          {
+            onsetDate = e.OnsetDate;
+          }
+        }
       }
-      if (onsetDate.Ticks == DateTime.MinValue.Ticks)
-        onsetDate = e.OnsetDate;
 
       return new EpisodeOfCareDTO
       {
-        EpisodeOfCareID = e.EpisodeOfCareId,
+        EpisodeOfCareID = e.EpisodeOfCareID,
         AdmissionDate = admissionDate,
         OnsetDate =  onsetDate,
-        PatientIcnFK = e.PatientIcnfk
+        PatientIcnFK = e.PatientICNFK
       };
     }
 
     public static MastUserDTO HydrateUser(uspVSSCMain_SelectAccessInformationFromNSSDResult u)
     {
-      MastUserDTO user = new MastUserDTO
+      MastUserDTO user = new()
       {
         UserID = u.UserID,
         UserIdentity = u.UserID,
@@ -176,23 +181,22 @@ namespace IPRehabWebAPI2.Helpers
         if (i < 2)
           text += "/";
       }
-      DateTime aDate;
-      if (DateTime.TryParse(text, out aDate))
+      if (DateTime.TryParse(text, out DateTime aDate))
       {
         text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
       }
       return text;
     }
 
-    private static List<QuestionInstructionDTO> GetInstruction(TblQuestion q)
+    private static List<QuestionInstructionDTO> GetInstruction(tblQuestion q)
     {
-      if (q.TblQuestionInstruction.Any(i => i.QuestionIdfk == q.QuestionId))
+      if (q.tblQuestionInstruction.Any(i => i.QuestionIDFK == q.QuestionID))
       {
-        return q.TblQuestionInstruction.Where(i => i.QuestionIdfk == q.QuestionId)
+        return q.tblQuestionInstruction.Where(i => i.QuestionIDFK == q.QuestionID)
           .OrderBy(i=>i.Order)
           .Select(i=> new QuestionInstructionDTO {
-            InstructionId = i.InstructionId,
-            QuestionIdfk = q.QuestionId,
+            InstructionId = i.InstructionID,
+            QuestionIDFK = q.QuestionID,
             Instruction =i.Instruction,
             DisplayLocation = i.DisplayLocation
         }).ToList();

@@ -2,34 +2,45 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace IPRehabModel
 {
-  public partial class TblPatient
-  {
-    public TblPatient()
+    [Table("tblPatient", Schema = "app")]
+    [Index(nameof(LastName), nameof(FirstName), nameof(MiddleName), nameof(Last4SSN), Name = "IX_tblPatient_UniqueName", IsUnique = true)]
+    public partial class tblPatient
     {
-      TblEpisodeOfCare = new HashSet<TblEpisodeOfCare>();
+        public tblPatient()
+        {
+            tblEpisodeOfCare = new HashSet<tblEpisodeOfCare>();
+        }
+
+        [Key]
+        [StringLength(10)]
+        public string ICN { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string IEN { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string FirstName { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string LastName { get; set; }
+        [StringLength(20)]
+        public string MiddleName { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime DateOfBirth { get; set; }
+        [Required]
+        [StringLength(4)]
+        public string Last4SSN { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime LastUpdate { get; set; }
+
+        [InverseProperty("PatientICNFKNavigation")]
+        public virtual ICollection<tblEpisodeOfCare> tblEpisodeOfCare { get; set; }
     }
-
-    [Required]
-    public string Icn { get; set; }
-    [Required]
-    public string Ien { get; set; }
-    [Required]
-    public string FirstName { get; set; }
-    [Required]
-    public string LastName { get; set; }
-    public string MiddleName { get; set; }
-    [Required]
-    public DateTime DateOfBirth { get; set; }
-    [Required]
-    public string Last4Ssn { get; set; }
-    [Required]
-    public DateTime LastUpdate { get; set; }
-
-    public virtual ICollection<TblEpisodeOfCare> TblEpisodeOfCare { get; set; }
-  }
 }
