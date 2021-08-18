@@ -14,7 +14,7 @@ namespace IPRehab.Helpers
   {
     public static async Task<HttpResponseMessage> GetDataAsync(Uri uri)
     {
-      HttpClientHandler handler = new HttpClientHandler();
+      HttpClientHandler handler = new();
 
       handler.UseDefaultCredentials = true;
 
@@ -28,7 +28,7 @@ namespace IPRehab.Helpers
       return httpResponseMsg;
     }
 
-    public static async Task<IEnumerable<TblQuestion>> ReadAsAsyncWithSystemTextJson(Uri uri, JsonSerializerOptions options, string contentReadMethod)
+    public static async Task<IEnumerable<tblQuestion>> ReadAsAsyncWithSystemTextJson(Uri uri, JsonSerializerOptions options, string contentReadMethod)
     {
       using var client = new HttpClient();
       client.DefaultRequestHeaders.Clear();
@@ -43,10 +43,10 @@ namespace IPRehab.Helpers
         switch (contentReadMethod)
         {
           case "ReadAsAsync":
-            return await httpResponse.Content.ReadAsAsync<IEnumerable<TblQuestion>>();
+            return await httpResponse.Content.ReadAsAsync<IEnumerable<tblQuestion>>();
           case "ReadAsStreamAsync":
             var contentStream = await httpResponse.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<IEnumerable<TblQuestion>>(contentStream, options);
+            return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
         }
       }
       catch // Could be ArgumentNullException or UnsupportedMediaTypeException
@@ -57,7 +57,7 @@ namespace IPRehab.Helpers
       return null;
     }
 
-    public static async Task<IEnumerable<TblQuestion>> StreamWithSystemTextJson(Uri uri, JsonSerializerOptions options)
+    public static async Task<IEnumerable<tblQuestion>> StreamWithSystemTextJson(Uri uri, JsonSerializerOptions options)
     {
       using var client = new HttpClient();
       client.DefaultRequestHeaders.Clear();
@@ -72,7 +72,7 @@ namespace IPRehab.Helpers
         var contentStream = await httpResponse.Content.ReadAsStreamAsync();
         try
         {
-          return await JsonSerializer.DeserializeAsync<IEnumerable<TblQuestion>>(contentStream, options);
+          return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
         }
         catch (JsonException ex) // Invalid JSON
         {

@@ -4,7 +4,7 @@ using PatientModel;
 
 namespace IPRehabRepository
 {
-   public class AnswerRepository : RepositoryBase<TblAnswer>, IAnswerRepository
+   public class AnswerRepository : RepositoryBase<tblAnswer>, IAnswerRepository
    {
       public AnswerRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -12,7 +12,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class CodeSetRepository : RepositoryBase<TblCodeSet>, ICodeSetRepository
+   public class CodeSetRepository : RepositoryBase<tblCodeSet>, ICodeSetRepository
    {
       public CodeSetRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -20,7 +20,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class EpisodeOfCareRepository : RepositoryBase<TblEpisodeOfCare>, IEpisodeOfCareRepository
+   public class EpisodeOfCareRepository : RepositoryBase<tblEpisodeOfCare>, IEpisodeOfCareRepository
    {
       public EpisodeOfCareRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -28,7 +28,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class PatientRepository : RepositoryBase<TblPatient>, IPatientRepository
+   public class PatientRepository : RepositoryBase<tblPatient>, IPatientRepository
    {
       public PatientRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -47,7 +47,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class QuestionRepository : RepositoryBase<TblQuestion>, IQuestionRepository
+   public class QuestionRepository : RepositoryBase<tblQuestion>, IQuestionRepository
    {
       public QuestionRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -55,7 +55,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class QuestionInstructionRepository : RepositoryBase<TblQuestionInstruction>, IQuestionInstructionRepository
+   public class QuestionInstructionRepository : RepositoryBase<tblQuestionInstruction>, IQuestionInstructionRepository
    {
       public QuestionInstructionRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -63,7 +63,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class SignatureRepository : RepositoryBase<TblSignature>, ISignatureRepository
+   public class SignatureRepository : RepositoryBase<tblSignature>, ISignatureRepository
    {
       public SignatureRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -71,7 +71,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class UserRepository : RepositoryBase<TblUser>, IUserRepository
+   public class UserRepository : RepositoryBase<tblUser>, IUserRepository
    {
       public UserRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
@@ -79,7 +79,7 @@ namespace IPRehabRepository
       }
    }
 
-   public class QuestionStageRepository : RepositoryBase<TblQuestionStage>, IQuestionStageRepository
+   public class QuestionStageRepository : RepositoryBase<tblQuestionStage>, IQuestionStageRepository
    {
       public QuestionStageRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)

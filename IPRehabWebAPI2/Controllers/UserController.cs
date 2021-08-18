@@ -22,16 +22,16 @@ namespace IPRehabWebAPI2.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TblUser>>> GetUser()
+        public async Task<ActionResult<IEnumerable<tblUser>>> GetUser()
         {
-            return await _context.TblUser.ToListAsync();
+            return await _context.tblUser.ToListAsync();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TblUser>> GetUser(int id)
+        public async Task<ActionResult<tblUser>> GetUser(int id)
         {
-            var tblUser = await _context.TblUser.FindAsync(id);
+            var tblUser = await _context.tblUser.FindAsync(id);
 
             if (tblUser == null)
             {
@@ -44,9 +44,9 @@ namespace IPRehabWebAPI2.Controllers
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, TblUser tblUser)
+        public async Task<IActionResult> PutUser(int id, tblUser tblUser)
         {
-            if (id != tblUser.Id)
+            if (id != tblUser.ID)
             {
                 return BadRequest();
             }
@@ -75,16 +75,16 @@ namespace IPRehabWebAPI2.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TblUser>> PostUser(TblUser tblUser)
+        public async Task<ActionResult<tblUser>> PostUser(tblUser tblUser)
         {
-            _context.TblUser.Add(tblUser);
+            _context.tblUser.Add(tblUser);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (TblUserExists(tblUser.Id))
+                if (TblUserExists(tblUser.ID))
                 {
                     return Conflict();
                 }
@@ -94,20 +94,20 @@ namespace IPRehabWebAPI2.Controllers
                 }
             }
 
-            return CreatedAtAction("GetTblUser", new { id = tblUser.Id }, tblUser);
+            return CreatedAtAction("GettblUser", new { id = tblUser.ID }, tblUser);
         }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var tblUser = await _context.TblUser.FindAsync(id);
+            var tblUser = await _context.tblUser.FindAsync(id);
             if (tblUser == null)
             {
                 return NotFound();
             }
 
-            _context.TblUser.Remove(tblUser);
+            _context.tblUser.Remove(tblUser);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -115,7 +115,7 @@ namespace IPRehabWebAPI2.Controllers
 
         private bool TblUserExists(int id)
         {
-            return _context.TblUser.Any(e => e.Id == id);
+            return _context.tblUser.Any(e => e.ID == id);
         }
     }
 }

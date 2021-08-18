@@ -14,160 +14,158 @@ namespace IPRehabRepository
   /// </summary>
   /// <typeparam name="T">Generic class to be solidified by the inheriting class</typeparam>
   public abstract class FSODRepositoryBase<T> : IRepositoryBase<T> where T : class
-   {
-      protected DmhealthfactorsContext RepositoryContext { get; set; }
+  {
+    protected DmhealthfactorsContext RepositoryContext { get; set; }
 
-      public FSODRepositoryBase(DmhealthfactorsContext repositoryContext)
+    public FSODRepositoryBase(DmhealthfactorsContext repositoryContext)
+    {
+      this.RepositoryContext = repositoryContext;
+    }
+
+    ///// <summary>
+    ///// pass a list of records to be inserted
+    ///// </summary>
+    ///// <param name="entityList"></param>
+    ///// <returns></returns>
+    //public async Task BulkInsertAsync(IList<T> entityList)
+    //{
+    //  await RepositoryContext.BulkInsertAsync(entityList);
+    //}
+
+    ///// <summary>
+    ///// Delete all records matching the entityList
+    ///// </summary>
+    ///// <param name="entityList"></param>
+    ///// <returns></returns>
+    //public async Task BulkDeleteAsync(IList<T> entityList)
+    //{
+    //  await RepositoryContext.BulkDeleteAsync(entityList);
+    //}
+
+    ///// <summary>
+    ///// bulk update columns in matching records with new value contained in entityList
+    ///// </summary>
+    ///// <param name="entityList"></param>
+    ///// <returns></returns>
+    //public async Task BulkUpdateAsync(IList<T> entityList)
+    //{
+    //  await RepositoryContext.BulkUpdateAsync(entityList);
+    //}
+
+    //public async Task BulkInsertOrUpdateAsync(IList<T> entityList)
+    //{
+    //  await RepositoryContext.BulkInsertOrUpdateAsync(entityList);
+    //}
+
+    public int BatchInsert(IList<T> entityList)
+    {
+      int inserted = 0;
+      foreach (T entity in entityList)
       {
-         this.RepositoryContext = repositoryContext;
+        this.RepositoryContext.Set<T>().Add(entity);
+        inserted++;
       }
+      return inserted;
+    }
 
-      ///// <summary>
-      ///// pass a list of records to be inserted
-      ///// </summary>
-      ///// <param name="entityList"></param>
-      ///// <returns></returns>
-      //public async Task BulkInsertAsync(IList<T> entityList)
-      //{
-      //  await RepositoryContext.BulkInsertAsync(entityList);
-      //}
-
-      ///// <summary>
-      ///// Delete all records matching the entityList
-      ///// </summary>
-      ///// <param name="entityList"></param>
-      ///// <returns></returns>
-      //public async Task BulkDeleteAsync(IList<T> entityList)
-      //{
-      //  await RepositoryContext.BulkDeleteAsync(entityList);
-      //}
-
-      ///// <summary>
-      ///// bulk update columns in matching records with new value contained in entityList
-      ///// </summary>
-      ///// <param name="entityList"></param>
-      ///// <returns></returns>
-      //public async Task BulkUpdateAsync(IList<T> entityList)
-      //{
-      //  await RepositoryContext.BulkUpdateAsync(entityList);
-      //}
-
-      //public async Task BulkInsertOrUpdateAsync(IList<T> entityList)
-      //{
-      //  await RepositoryContext.BulkInsertOrUpdateAsync(entityList);
-      //}
-
-      public int BatchInsert(IList<T> entityList)
+    public int BatchDelete(IList<T> entityList)
+    {
+      int deleted = 0;
+      foreach (T entity in entityList)
       {
-         int inserted = 0;
-         foreach (T entity in entityList)
-         {
-            this.RepositoryContext.Set<T>().Add(entity);
-            inserted++;
-         }
-         return inserted;
+        this.RepositoryContext.Set<T>().Remove(entity);
+        deleted++;
       }
+      return deleted;
+    }
 
-      public int BatchDelete(IList<T> entityList)
+    public object TransactionalDeleteAndInsert2(IList<T> deleteEntityList, IList<T> insertEntityList)
+    {
+      using var transaction = this.RepositoryContext.Database.BeginTransaction();
+      int totalDeleted = this.BatchDelete(deleteEntityList);
+      this.RepositoryContext.SaveChanges();
+
+      int totalInserted = this.BatchInsert(insertEntityList);
+
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer ON");
+      this.RepositoryContext.SaveChanges();
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer OFF");
+
+      transaction.Commit();
+
+      var objResult = new
       {
-         int deleted = 0;
-         foreach (T entity in entityList)
-         {
-            this.RepositoryContext.Set<T>().Remove(entity);
-            deleted++;
-         }
-         return deleted;
-      }
+        TotalDeleted = totalDeleted,
+        TotalInserted = totalInserted,
+        InsertedEntities = insertEntityList //the newly inserted entities have new record IDs
+      };
+      return objResult;
+    }
 
-      public object TransactionalDeleteAndInsert2(IList<T> deleteEntityList, IList<T> insertEntityList)
+    public List<int> TransactionalDeleteAndInsert(IList<T> deleteEntityList, IList<T> insertEntityList)
+    {
+      using var transaction = this.RepositoryContext.Database.BeginTransaction();
+      int totalDeleted = this.BatchDelete(deleteEntityList);
+      this.RepositoryContext.SaveChanges();
+
+      int totalInserted = this.BatchInsert(insertEntityList);
+
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer ON");
+      this.RepositoryContext.SaveChanges();
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer OFF");
+
+      transaction.Commit();
+
+      List<int> result = new()
       {
-         using (var transaction = this.RepositoryContext.Database.BeginTransaction())
-         {
-            int totalDeleted = this.BatchDelete(deleteEntityList);
-            this.RepositoryContext.SaveChanges();
+        totalDeleted,
+        totalInserted
+      };
+      return result;
+    }
 
-            int totalInserted = this.BatchInsert(insertEntityList);
+    public int spDelete(IList<T> entityList)
+    {
+      throw new NotImplementedException();
+    }
 
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer ON");
-            this.RepositoryContext.SaveChanges();
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer OFF");
+    public int spInsert(IList<T> entityList)
+    {
+      throw new NotImplementedException();
+    }
 
-            transaction.Commit();
+    public List<int> spTransactionalDeleteAndInsert(IList<T> deleteEntityList, IList<T> insertEntityList)
+    {
+      throw new NotImplementedException();
+    }
 
-            var objResult = new
-            {
-               TotalDeleted = totalDeleted,
-               TotalInserted = totalInserted,
-               InsertedEntities = insertEntityList //the newly inserted entities have new record IDs
-            };
-            return objResult;
-         }
-      }
+    IQueryable<T> IRepositoryBase<T>.FindAll() =>
+       //return this.RepositoryContext.Set<T>().AsNoTracking();
+       RepositoryContext.Set<T>().AsQueryable<T>();
 
-      public List<int> TransactionalDeleteAndInsert(IList<T> deleteEntityList, IList<T> insertEntityList)
-      {
-         using (var transaction = this.RepositoryContext.Database.BeginTransaction())
-         {
-            int totalDeleted = this.BatchDelete(deleteEntityList);
-            this.RepositoryContext.SaveChanges();
+    IQueryable<T> IRepositoryBase<T>.FindByCondition(Expression<Func<T, bool>> expression)
+    {
+      var queryable = RepositoryContext.Set<T>().Where(expression).AsQueryable();
+      //return this.RepositoryContext.Set<T>().Where(expression).AsNoTracking();
+      return queryable;
+    }
 
-            int totalInserted = this.BatchInsert(insertEntityList);
+    public async Task<int> CreateAsync(T entity)
+    {
+      RepositoryContext.Set<T>().Add(entity);
+      return await RepositoryContext.SaveChangesAsync();
+    }
 
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer ON");
-            this.RepositoryContext.SaveChanges();
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer OFF");
+    public async Task<int> UpdateAsync(T entity)
+    {
+      RepositoryContext.Set<T>().Update(entity);
+      return await RepositoryContext.SaveChangesAsync();
+    }
 
-            transaction.Commit();
-
-            List<int> result = new List<int>();
-            result.Add(totalDeleted);
-            result.Add(totalInserted);
-            return result;
-         }
-      }
-
-      public int spDelete(IList<T> entityList)
-      {
-         throw new NotImplementedException();
-      }
-
-      public int spInsert(IList<T> entityList)
-      {
-         throw new NotImplementedException();
-      }
-
-      public List<int> spTransactionalDeleteAndInsert(IList<T> deleteEntityList, IList<T> insertEntityList)
-      {
-         throw new NotImplementedException();
-      }
-
-      IQueryable<T> IRepositoryBase<T>.FindAll() =>
-         //return this.RepositoryContext.Set<T>().AsNoTracking();
-         RepositoryContext.Set<T>().AsQueryable<T>();
-
-      IQueryable<T> IRepositoryBase<T>.FindByCondition(Expression<Func<T, bool>> expression)
-      {
-         var queryable = RepositoryContext.Set<T>().Where(expression).AsQueryable();
-         //return this.RepositoryContext.Set<T>().Where(expression).AsNoTracking();
-         return queryable;
-      }
-
-      public async Task<int> CreateAsync(T entity)
-      {
-         RepositoryContext.Set<T>().Add(entity);
-         return await RepositoryContext.SaveChangesAsync();
-      }
-
-      public async Task<int> UpdateAsync(T entity)
-      {
-         RepositoryContext.Set<T>().Update(entity);
-         return await RepositoryContext.SaveChangesAsync();
-      }
-
-      public async Task<int> DeleteAsync(T entity)
-      {
-         RepositoryContext.Set<T>().Remove(entity);
-         return await RepositoryContext.SaveChangesAsync();
-      }
-   }
+    public async Task<int> DeleteAsync(T entity)
+    {
+      RepositoryContext.Set<T>().Remove(entity);
+      return await RepositoryContext.SaveChangesAsync();
+    }
+  }
 }

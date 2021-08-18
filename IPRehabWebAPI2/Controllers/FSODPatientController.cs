@@ -90,7 +90,7 @@ namespace IPRehabWebAPI2.Controllers
             foreach (var p in patients)
             {
              var  theseEpisodes = await _episodeOfCareRepository.FindByCondition(episode =>
-                episode.PatientIcnfk == p.PTFSSN).ToListAsync();
+                episode.PatientICNFK == p.PTFSSN).ToListAsync();
               if (theseEpisodes.Any()) { 
                 p.CareEpisodes = theseEpisodes.Select(e => HydrateDTO.HydrateEpisodeOfCare(e));
               }
@@ -119,7 +119,7 @@ namespace IPRehabWebAPI2.Controllers
       else
       {
         var episodes = await _episodeOfCareRepository.FindByCondition(p =>
-          p.PatientIcnfkNavigation.Icn == p.PatientIcnfk).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+          p.PatientICNFKNavigation.ICN == p.PatientICNFK).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
          patient.CareEpisodes = episodes;
 
       }

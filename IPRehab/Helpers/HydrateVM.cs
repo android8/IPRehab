@@ -12,20 +12,22 @@ namespace IPRehab.Helpers
   {
     public static QuestionWithSelectItems Hydrate(QuestionDTO dto)
     {
-      QuestionWithSelectItems qws = new QuestionWithSelectItems();
-      qws.Form = dto.Form;
-      qws.Section = GetSectionKey(dto);
-      qws.Required = dto.Required;
-      qws.QuestionID = dto.QuestionID;
-      qws.QuestionKey = dto.QuestionKey;
-      qws.QuestionTitle = dto.QuestionTitle;
-      qws.Question = dto.Question;
-      qws.GroupTitle = string.IsNullOrEmpty(dto.GroupTitle) ? string.Empty: 
-        Regex.IsMatch(dto.GroupTitle, @"^\d")? dto.GroupTitle.Remove(0,2): dto.GroupTitle;
-      qws.AnswerCodeSetID = dto.AnswerCodeSetID;
-      qws.AnswerCodeCategory = dto.AnswerCodeCategory;
-      qws.ChoiceList = SetSelectedChoice(dto.ChoiceList, dto.Answers, dto.AnswerCodeCategory);
-      qws.Instructions = dto.QuestionInsructions;
+      QuestionWithSelectItems qws = new()
+      {
+        Form = dto.Form,
+        Section = GetSectionKey(dto),
+        Required = dto.Required,
+        QuestionID = dto.QuestionID,
+        QuestionKey = dto.QuestionKey,
+        QuestionTitle = dto.QuestionSection,
+        Question = dto.Question,
+        GroupTitle = string.IsNullOrEmpty(dto.GroupTitle) ? string.Empty :
+        Regex.IsMatch(dto.GroupTitle, @"^\d") ? dto.GroupTitle.Remove(0, 2) : dto.GroupTitle,
+        AnswerCodeSetID = dto.AnswerCodeSetID,
+        AnswerCodeCategory = dto.AnswerCodeCategory,
+        ChoiceList = SetSelectedChoice(dto.ChoiceList, dto.Answers, dto.AnswerCodeCategory),
+        Instructions = dto.QuestionInsructions
+      };
       return qws;
     }
 
@@ -41,13 +43,12 @@ namespace IPRehab.Helpers
 
     private static string GetLastKeyWord(string sectionKey) {
       string[] keys = sectionKey.Split(' ');
-      string key = keys[keys.Length - 1];
+      string key = keys[^1]; //new C# 8 member access operator last index
       return key;
     }
 
     private static string GetSectionKey(QuestionDTO question)
     {
-      string sectionKey = string.Empty;
       if (question.QuestionKey.StartsWith("Q"))
         return "(Q)";
       if (question.QuestionKey == "AssessmentCompleted")
@@ -64,7 +65,7 @@ namespace IPRehab.Helpers
 
     private static List<SelectListItem> SetSelectedChoice(List<CodeSetDTO> validChoices, List<AnswerDTO> answers, string answerCodeCategory)
     {
-      List<SelectListItem> selectedChoices = new List<SelectListItem>();
+      List<SelectListItem> selectedChoices = new();
       string text = string.Empty;
 
       if (!validChoices.Any() && answers.Any())
@@ -80,7 +81,8 @@ namespace IPRehab.Helpers
           text = thisAnswer.Description;
         }
 
-        SelectListItem thisChiceItem = new SelectListItem { 
+        SelectListItem thisChiceItem = new()
+        { 
           Text = text, 
           Value = thisAnswer.AnswerCodeSet.CodeSetID.ToString(), 
           Selected = true };
@@ -101,7 +103,7 @@ namespace IPRehab.Helpers
             text = c.CodeDescription;
           }
           var isThisChoice = answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
-          SelectListItem thisChiceItem = new SelectListItem { 
+          SelectListItem thisChiceItem = new () { 
             Text = text, 
             Value = c.CodeSetID.ToString(), 
             Selected = isThisChoice 
@@ -123,8 +125,7 @@ namespace IPRehab.Helpers
         if (i < 2)
           text += "/";
       }
-      DateTime aDate;
-      if(DateTime.TryParse(text, out aDate))
+      if(DateTime.TryParse(text, out DateTime aDate))
       {
         text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
       }

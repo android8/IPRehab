@@ -15,23 +15,19 @@ namespace IPRehab.Controllers
 {
   public class EpisodeController : BaseController
   {
-    ILogger<EpisodeController> _logger;
-    public EpisodeController(ILogger<EpisodeController> logger, IConfiguration configuration) : base(configuration)
+    public EpisodeController(IConfiguration configuration) : base(configuration)
     {
-      _logger = logger;
     }
     // GET: EpisodeController
     public async Task<ActionResult> Index()
     {
       ViewBag.Title = "Episode";
-      List<EpisodeOfCareDTO> episodes = new List<EpisodeOfCareDTO>();
+      List<EpisodeOfCareDTO> episodes = new();
       HttpResponseMessage Res;
-
-      string url = string.Empty;
       try
       {
         //Sending request to find web api REST service resource Episode using HttpClient in the APIAgent
-        url = $"{_apiBaseUrl}/api/Episode";
+        string url = $"{_apiBaseUrl}/api/Episode";
         Res = await APIAgent.GetDataAsync(new Uri(url));
       }
       catch (Exception ex)
@@ -41,7 +37,6 @@ namespace IPRehab.Controllers
       }
 
       string httpMsgContentReadMethod = "ReadAsStreamAsync";
-      System.IO.Stream contentStream = null;
       if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
       {
         try
@@ -60,7 +55,7 @@ namespace IPRehab.Controllers
 
             //use .Net 5 built-in deserializer
             case "ReadAsStreamAsync":
-              contentStream = await Res.Content.ReadAsStreamAsync();
+              System.IO.Stream contentStream = await Res.Content.ReadAsStreamAsync();
               episodes = await JsonSerializer.DeserializeAsync<List<EpisodeOfCareDTO>>(contentStream, _options);
               break;
           }
@@ -79,7 +74,6 @@ namespace IPRehab.Controllers
       }
       else
       {
-        var ex = new Exception();
         return PartialView("_ErrorPartial", new ErrorViewModelHelper()
         .Create("Web API content is not an object or mededia type is not applicaiton/json", string.Empty, string.Empty));
       }

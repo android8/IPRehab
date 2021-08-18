@@ -23,8 +23,8 @@ Use the `UserManager` of CORE Identity to manage the ASPNET tables in the PCC_FI
  
 - add the POCO and Configuration to the PCCFIT_Context.cs
 
-      public virtual DbSet<TblStaffFacilityRelation> TblStaffFacilityRelation { get; set; }
-      modelBuilder.ApplyConfiguration(new TblGrantFundingConfiguration());
+      public virtual DbSet<tblStaffFacilityRelation> tblStaffFacilityRelation { get; set; }
+      modelBuilder.ApplyConfiguration(new tblGrantFundingConfiguration());
 - in the Solution Explorer, reduce startup project to only 1 project before migration.  Otherwise, the migration would fail
 
 - in the Package Manager Console 

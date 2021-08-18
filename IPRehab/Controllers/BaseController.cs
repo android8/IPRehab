@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -24,6 +25,7 @@ namespace IPRehab.Controllers
     protected readonly JsonSerializerOptions _options;
     protected readonly string sessionKey = "UserAccessLevels";
     protected List<MastUserDTO> userAccessLevels;
+    readonly ILogger<EpisodeController> _logger;
 
     protected BaseController(IConfiguration configuration)
     {
@@ -56,7 +58,7 @@ namespace IPRehab.Controllers
     {
       try
       {
-        CancellationToken cancellationToken = new CancellationToken();
+        CancellationToken cancellationToken = new();
         await HttpContext.Session.LoadAsync(cancellationToken);
 
         //get userAccessLevels from session
@@ -69,7 +71,7 @@ namespace IPRehab.Controllers
       catch(Exception ex)
       {
         //WebAPIExceptionHander(ex);
-        RedirectToAction("Error", "Home", new { Message=ex.Message});
+        RedirectToAction("Error", "Home", new { ex.Message });
       }
       return userAccessLevels;
     }
@@ -104,7 +106,7 @@ namespace IPRehab.Controllers
       }
       catch(Exception ex)
       {
-        RedirectToAction("Error", "Home", new { Message = ex.Message });
+        RedirectToAction("Error", "Home", new { ex.Message });
       }
       return accessLevelsFromWebAPI;
     }

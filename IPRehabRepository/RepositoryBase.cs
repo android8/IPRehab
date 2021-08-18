@@ -82,50 +82,48 @@ namespace IPRehabRepository
 
       public object TransactionalDeleteAndInsert2(IList<T> deleteEntityList, IList<T> insertEntityList)
       {
-         using (var transaction = this.RepositoryContext.Database.BeginTransaction())
-         {
-            int totalDeleted = this.BatchDelete(deleteEntityList);
-            this.RepositoryContext.SaveChanges();
+      using var transaction = this.RepositoryContext.Database.BeginTransaction();
+      int totalDeleted = this.BatchDelete(deleteEntityList);
+      this.RepositoryContext.SaveChanges();
 
-            int totalInserted = this.BatchInsert(insertEntityList);
+      int totalInserted = this.BatchInsert(insertEntityList);
 
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer ON");
-            this.RepositoryContext.SaveChanges();
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer OFF");
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer ON");
+      this.RepositoryContext.SaveChanges();
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer OFF");
 
-            transaction.Commit();
+      transaction.Commit();
 
-            var objResult = new
-            {
-               TotalDeleted = totalDeleted,
-               TotalInserted = totalInserted,
-               InsertedEntities = insertEntityList //the newly inserted entities have new record IDs
-            };
-            return objResult;
-         }
-      }
+      var objResult = new
+      {
+        TotalDeleted = totalDeleted,
+        TotalInserted = totalInserted,
+        InsertedEntities = insertEntityList //the newly inserted entities have new record IDs
+      };
+      return objResult;
+    }
 
       public List<int> TransactionalDeleteAndInsert(IList<T> deleteEntityList, IList<T> insertEntityList)
       {
-         using (var transaction = this.RepositoryContext.Database.BeginTransaction())
-         {
-            int totalDeleted = this.BatchDelete(deleteEntityList);
-            this.RepositoryContext.SaveChanges();
+      using var transaction = this.RepositoryContext.Database.BeginTransaction();
+      int totalDeleted = this.BatchDelete(deleteEntityList);
+      this.RepositoryContext.SaveChanges();
 
-            int totalInserted = this.BatchInsert(insertEntityList);
+      int totalInserted = this.BatchInsert(insertEntityList);
 
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer ON");
-            this.RepositoryContext.SaveChanges();
-            //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.TblUserAnswer OFF");
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer ON");
+      this.RepositoryContext.SaveChanges();
+      //this.RepositoryContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT app.tblUserAnswer OFF");
 
-            transaction.Commit();
+      transaction.Commit();
 
-            List<int> result = new List<int>();
-            result.Add(totalDeleted);
-            result.Add(totalInserted);
-            return result;
-         }
-      }
+      List<int> result = new()
+      {
+        totalDeleted,
+        totalInserted
+      };
+      return result;
+    }
 
       public int spDelete(IList<T> entityList)
       {
