@@ -74,12 +74,15 @@ namespace IPRehabWebAPI2.Helpers
     private static string GetGroupTitle(tblQuestion q, string questionStage)
     {
       var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID && 
-          (x.StageFKNavigation.CodeValue == questionStage || x.StageFKNavigation.CodeDescription == questionStage));
+          (x.StageFKNavigation.CodeValue.ToUpper() == questionStage));
       if (!alternateTitle.Any())
         return q.GroupTitle;
       else
       {
-        return alternateTitle.First().StageGroupTitle;
+        if (!string.IsNullOrEmpty(alternateTitle.First().StageGroupTitle))
+          return alternateTitle.First().StageGroupTitle;
+        else
+          return q.GroupTitle;
       }
     }
 

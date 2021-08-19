@@ -7,313 +7,314 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace IPRehabModel
 {
-    public partial class IPRehabContext : DbContext
+  public partial class IPRehabContext : DbContext
+  {
+    public IPRehabContext()
     {
-        public IPRehabContext()
-        {
-        }
-
-        public IPRehabContext(DbContextOptions<IPRehabContext> options)
-            : base(options)
-        {
-        }
-
-        public virtual DbSet<tblAnswer> tblAnswer { get; set; }
-        public virtual DbSet<tblCodeSet> tblCodeSet { get; set; }
-        public virtual DbSet<tblEpisodeOfCare> tblEpisodeOfCare { get; set; }
-        public virtual DbSet<tblPatient> tblPatient { get; set; }
-        public virtual DbSet<tblQuestion> tblQuestion { get; set; }
-        public virtual DbSet<tblQuestionInstruction> tblQuestionInstruction { get; set; }
-        public virtual DbSet<tblQuestionStage> tblQuestionStage { get; set; }
-        public virtual DbSet<tblSignature> tblSignature { get; set; }
-        public virtual DbSet<tblUser> tblUser { get; set; }
-        public virtual DbSet<vCodeSetHierarchy> vCodeSetHierarchy { get; set; }
-        public virtual DbSet<vQuestionStandardChoices> vQuestionStandardChoices { get; set; }
-        public virtual DbSet<vQuestionStandardChoices_Condensed> vQuestionStandardChoices_Condensed { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.HasDefaultSchema("VHA20\\VHAPORSUNC")
-                .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
-            modelBuilder.Entity<tblAnswer>(entity =>
-            {
-                entity.Property(e => e.AnswerByUserID).IsUnicode(false);
-
-                entity.Property(e => e.Description).IsUnicode(false);
-
-                entity.HasOne(d => d.AnswerCodeSetFKNavigation)
-                    .WithMany(p => p.tblAnswerAnswerCodeSetFKNavigation)
-                    .HasForeignKey(d => d.AnswerCodeSetFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblAnswer_tblCodeSet_AnswerCodeSet");
-
-                entity.HasOne(d => d.EpsideOfCareIDFKNavigation)
-                    .WithMany(p => p.tblAnswer)
-                    .HasForeignKey(d => d.EpsideOfCareIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
-
-                entity.HasOne(d => d.QuestionIDFKNavigation)
-                    .WithMany(p => p.tblAnswer)
-                    .HasForeignKey(d => d.QuestionIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblAnswer_tblQuestion");
-
-                entity.HasOne(d => d.StageIDFKNavigation)
-                    .WithMany(p => p.tblAnswerStageIDFKNavigation)
-                    .HasForeignKey(d => d.StageIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblAnswer_tblCodeSet_StageCodeSet");
-            });
-
-            modelBuilder.Entity<tblCodeSet>(entity =>
-            {
-                entity.Property(e => e.CodeDescription).IsUnicode(false);
-
-                entity.Property(e => e.CodeValue).IsUnicode(false);
-
-                entity.Property(e => e.Comment).IsUnicode(false);
-
-                entity.HasOne(d => d.CodeSetParentNavigation)
-                    .WithMany(p => p.InverseCodeSetParentNavigation)
-                    .HasForeignKey(d => d.CodeSetParent)
-                    .HasConstraintName("FK_tblCodeSet_tblCodeSet");
-            });
-
-            modelBuilder.Entity<tblEpisodeOfCare>(entity =>
-            {
-                entity.HasKey(e => e.EpisodeOfCareID)
-                    .HasName("PK_app.tblEpisodeOfCare");
-
-                entity.Property(e => e.PatientICNFK).IsUnicode(false);
-
-                entity.HasOne(d => d.PatientICNFKNavigation)
-                    .WithMany(p => p.tblEpisodeOfCare)
-                    .HasForeignKey(d => d.PatientICNFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblEpisodeOfCare_tblPatient");
-            });
-
-            modelBuilder.Entity<tblPatient>(entity =>
-            {
-                entity.Property(e => e.ICN).IsUnicode(false);
-
-                entity.Property(e => e.FirstName).IsUnicode(false);
-
-                entity.Property(e => e.IEN).IsUnicode(false);
-
-                entity.Property(e => e.Last4SSN)
-                    .IsUnicode(false)
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.LastName).IsUnicode(false);
-
-                entity.Property(e => e.MiddleName).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<tblQuestion>(entity =>
-            {
-                entity.HasKey(e => e.QuestionID)
-                    .HasName("PK_app.tblQuestion");
-
-                entity.Property(e => e.GroupTitle).IsUnicode(false);
-
-                entity.Property(e => e.Question).IsUnicode(false);
-
-                entity.Property(e => e.QuestionKey).IsUnicode(false);
-
-                entity.Property(e => e.QuestionSection).IsUnicode(false);
-
-                entity.HasOne(d => d.AnswerCodeSetFKNavigation)
-                    .WithMany(p => p.tblQuestion)
-                    .HasForeignKey(d => d.AnswerCodeSetFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblQuestion_tblCodeSet");
-            });
-
-            modelBuilder.Entity<tblQuestionInstruction>(entity =>
-            {
-                entity.HasKey(e => e.InstructionID)
-                    .HasName("PK_tblInstruction");
-
-                entity.Property(e => e.DisplayLocation).IsFixedLength(true);
-
-                entity.Property(e => e.Instruction).IsUnicode(false);
-
-                entity.HasOne(d => d.QuestionIDFKNavigation)
-                    .WithMany(p => p.tblQuestionInstruction)
-                    .HasForeignKey(d => d.QuestionIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblQuestionInstruction_tblQuestion");
-
-                entity.HasOne(d => d.StageCodeSetIDFKNavigation)
-                    .WithMany(p => p.tblQuestionInstruction)
-                    .HasForeignKey(d => d.StageCodeSetIDFK)
-                    .HasConstraintName("FK_tblQuestionInstruction_tblCodeSet");
-            });
-
-            modelBuilder.Entity<tblQuestionStage>(entity =>
-            {
-                entity.Property(e => e.Required).HasDefaultValueSql("(CONVERT([bit],(0)))");
-
-                entity.Property(e => e.StageGroupTitle).IsUnicode(false);
-
-                entity.HasOne(d => d.QuestionIDFKNavigation)
-                    .WithMany(p => p.tblQuestionStage)
-                    .HasForeignKey(d => d.QuestionIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblQuestionStage_tblQuestion");
-
-                entity.HasOne(d => d.StageFKNavigation)
-                    .WithMany(p => p.tblQuestionStage)
-                    .HasForeignKey(d => d.StageFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblQuestionStage_tblCodeSet");
-            });
-
-            modelBuilder.Entity<tblSignature>(entity =>
-            {
-                entity.Property(e => e.EpisodeCareIDFK).ValueGeneratedNever();
-
-                entity.Property(e => e.Signature).IsFixedLength(true);
-
-                entity.Property(e => e.Title).IsUnicode(false);
-
-                entity.HasOne(d => d.EpisodeCareIDFKNavigation)
-                    .WithOne(p => p.tblSignature)
-                    .HasForeignKey<tblSignature>(d => d.EpisodeCareIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblSignature_tblEpisodeOfCare");
-            });
-
-            modelBuilder.Entity<tblUser>(entity =>
-            {
-                entity.Property(e => e.FirstName).IsUnicode(false);
-
-                entity.Property(e => e.LastName).IsUnicode(false);
-
-                entity.Property(e => e.NetworkName).IsFixedLength(true);
-            });
-
-            modelBuilder.Entity<vCodeSetHierarchy>(entity =>
-            {
-                entity.ToView("vCodeSetHierarchy", "app");
-
-                entity.Property(e => e.ANCESTER_comment).IsUnicode(false);
-
-                entity.Property(e => e.ANCESTOR_description).IsUnicode(false);
-
-                entity.Property(e => e.ANCESTOR_value).IsUnicode(false);
-
-                entity.Property(e => e.ANTIQUITY_comment).IsUnicode(false);
-
-                entity.Property(e => e.ANTIQUITY_description).IsUnicode(false);
-
-                entity.Property(e => e.ANTIQUITY_value).IsUnicode(false);
-
-                entity.Property(e => e.CHILD_comment).IsUnicode(false);
-
-                entity.Property(e => e.CHILD_description).IsUnicode(false);
-
-                entity.Property(e => e.CHILD_value).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_comment).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_description).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_value).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_comment).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_description).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_value).IsUnicode(false);
-
-                entity.Property(e => e.Hierarchy).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_comment).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_description).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_value).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<vQuestionStandardChoices>(entity =>
-            {
-                entity.ToView("vQuestionStandardChoices", "app");
-
-                entity.Property(e => e.ANCESTOR_description).IsUnicode(false);
-
-                entity.Property(e => e.ANCESTOR_value).IsUnicode(false);
-
-                entity.Property(e => e.ANTIQUITY_description).IsUnicode(false);
-
-                entity.Property(e => e.ANTIQUITY_value).IsUnicode(false);
-
-                entity.Property(e => e.CHILD_description).IsUnicode(false);
-
-                entity.Property(e => e.CHILD_value).IsUnicode(false);
-
-                entity.Property(e => e.Form).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_description).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_value).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_description).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_value).IsUnicode(false);
-
-                entity.Property(e => e.GroupTitle).IsUnicode(false);
-
-                entity.Property(e => e.Hierarchy).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_comment).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_description).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_value).IsUnicode(false);
-
-                entity.Property(e => e.Question).IsUnicode(false);
-
-                entity.Property(e => e.QuestionKey).IsUnicode(false);
-
-                entity.Property(e => e.QuestionTitle).IsUnicode(false);
-
-                entity.Property(e => e.Section).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<vQuestionStandardChoices_Condensed>(entity =>
-            {
-                entity.ToView("vQuestionStandardChoices_Condensed", "app");
-
-                entity.Property(e => e.ANTIQUITY_Comment).IsUnicode(false);
-
-                entity.Property(e => e.Choice_Code).IsUnicode(false);
-
-                entity.Property(e => e.Code_Value_Comment).IsUnicode(false);
-
-                entity.Property(e => e.Form).IsUnicode(false);
-
-                entity.Property(e => e.GRAND_comment).IsUnicode(false);
-
-                entity.Property(e => e.GREAT_comment).IsUnicode(false);
-
-                entity.Property(e => e.PARENT_comment).IsUnicode(false);
-
-                entity.Property(e => e.Question).IsUnicode(false);
-
-                entity.Property(e => e.QuestionKey).IsUnicode(false);
-
-                entity.Property(e => e.Section).IsUnicode(false);
-
-                entity.Property(e => e.Valid_Choice).IsUnicode(false);
-            });
-
-            OnModelCreatingPartial(modelBuilder);
-        }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
+
+    public IPRehabContext(DbContextOptions<IPRehabContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<tblAnswer> tblAnswer { get; set; }
+    public virtual DbSet<tblCodeSet> tblCodeSet { get; set; }
+    public virtual DbSet<tblEpisodeOfCare> tblEpisodeOfCare { get; set; }
+    public virtual DbSet<tblPatient> tblPatient { get; set; }
+    public virtual DbSet<tblQuestion> tblQuestion { get; set; }
+    public virtual DbSet<tblQuestionInstruction> tblQuestionInstruction { get; set; }
+    public virtual DbSet<tblQuestionStage> tblQuestionStage { get; set; }
+    public virtual DbSet<tblSignature> tblSignature { get; set; }
+    public virtual DbSet<tblUser> tblUser { get; set; }
+    public virtual DbSet<vCodeSetHierarchy> vCodeSetHierarchy { get; set; }
+    public virtual DbSet<vQuestionStandardChoices> vQuestionStandardChoices { get; set; }
+    public virtual DbSet<vQuestionStandardChoices_Condensed> vQuestionStandardChoices_Condensed { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.HasDefaultSchema("VHA20\\VHAPORSUNC")
+          .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+      modelBuilder.Entity<tblAnswer>(entity =>
+      {
+        entity.Property(e => e.AnswerByUserID).IsUnicode(false);
+
+        entity.Property(e => e.Description).IsUnicode(false);
+
+        entity.HasOne(d => d.AnswerCodeSetFKNavigation)
+                  .WithMany(p => p.tblAnswerAnswerCodeSetFKNavigation)
+                  .HasForeignKey(d => d.AnswerCodeSetFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblCodeSet_AnswerCodeSet");
+
+        entity.HasOne(d => d.EpsideOfCareIDFKNavigation)
+                  .WithMany(p => p.tblAnswer)
+                  .HasForeignKey(d => d.EpsideOfCareIDFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
+
+        entity.HasOne(d => d.QuestionIDFKNavigation)
+                  .WithMany(p => p.tblAnswer)
+                  .HasForeignKey(d => d.QuestionIDFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblQuestion");
+
+        entity.HasOne(d => d.StageIDFKNavigation)
+                  .WithMany(p => p.tblAnswerStageIDFKNavigation)
+                  .HasForeignKey(d => d.StageIDFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblAnswer_tblCodeSet_StageCodeSet");
+      });
+
+      modelBuilder.Entity<tblCodeSet>(entity =>
+      {
+        entity.Property(e => e.CodeDescription).IsUnicode(false);
+
+        entity.Property(e => e.CodeValue).IsUnicode(false);
+
+        entity.Property(e => e.Comment).IsUnicode(false);
+
+        entity.HasOne(d => d.CodeSetParentNavigation)
+                  .WithMany(p => p.InverseCodeSetParentNavigation)
+                  .HasForeignKey(d => d.CodeSetParent)
+                  .HasConstraintName("FK_tblCodeSet_tblCodeSet");
+      });
+
+      modelBuilder.Entity<tblEpisodeOfCare>(entity =>
+      {
+        entity.HasKey(e => e.EpisodeOfCareID)
+                  .HasName("PK_app.tblEpisodeOfCare");
+
+        entity.Property(e => e.PatientICNFK).IsUnicode(false);
+
+        entity.HasOne(d => d.PatientICNFKNavigation)
+                  .WithMany(p => p.tblEpisodeOfCare)
+                  .HasForeignKey(d => d.PatientICNFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblEpisodeOfCare_tblPatient");
+      });
+
+      modelBuilder.Entity<tblPatient>(entity =>
+      {
+        entity.Property(e => e.ICN).IsUnicode(false);
+
+        entity.Property(e => e.FirstName).IsUnicode(false);
+
+        entity.Property(e => e.IEN).IsUnicode(false);
+
+        entity.Property(e => e.Last4SSN)
+                  .IsUnicode(false)
+                  .IsFixedLength(true);
+
+        entity.Property(e => e.LastName).IsUnicode(false);
+
+        entity.Property(e => e.MiddleName).IsUnicode(false);
+      });
+
+      modelBuilder.Entity<tblQuestion>(entity =>
+      {
+        entity.HasKey(e => e.QuestionID)
+                  .HasName("PK_app.tblQuestion");
+
+        entity.Property(e => e.GroupTitle).IsUnicode(false);
+
+        entity.Property(e => e.Question).IsUnicode(false);
+
+        entity.Property(e => e.QuestionKey).IsUnicode(false);
+
+        entity.Property(e => e.QuestionSection).IsUnicode(false);
+
+        entity.HasOne(d => d.AnswerCodeSetFKNavigation)
+                  .WithMany(p => p.tblQuestion)
+                  .HasForeignKey(d => d.AnswerCodeSetFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblQuestion_tblCodeSet");
+      });
+
+      modelBuilder.Entity<tblQuestionInstruction>(entity =>
+      {
+        entity.HasKey(e => e.InstructionID)
+                  .HasName("PK_tblInstruction");
+
+        entity.Property(e => e.DisplayLocation).IsFixedLength(true);
+
+        entity.Property(e => e.Instruction).IsUnicode(false);
+
+        entity.HasOne(d => d.QuestionIDFKNavigation)
+                  .WithMany(p => p.tblQuestionInstruction)
+                  .HasForeignKey(d => d.QuestionIDFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblQuestionInstruction_tblQuestion");
+
+        entity.HasOne(d => d.StageCodeSetIDFKNavigation)
+                  .WithMany(p => p.tblQuestionInstruction)
+                  .HasForeignKey(d => d.StageCodeSetIDFK)
+                  .HasConstraintName("FK_tblQuestionInstruction_tblCodeSet");
+      });
+
+      modelBuilder.Entity<tblQuestionStage>(entity =>
+      {
+        entity.Property(e => e.Required).HasDefaultValueSql("(CONVERT([bit],(0)))");
+
+        entity.Property(e => e.StageGroupTitle).IsUnicode(false);
+        entity.Property(e => e.Comment).IsUnicode(false);
+
+        entity.HasOne(d => d.QuestionIDFKNavigation)
+              .WithMany(p => p.tblQuestionStage)
+              .HasForeignKey(d => d.QuestionIDFK)
+              .OnDelete(DeleteBehavior.ClientSetNull)
+              .HasConstraintName("FK_tblQuestionStage_tblQuestion");
+
+        entity.HasOne(d => d.StageFKNavigation)
+                  .WithMany(p => p.tblQuestionStage)
+                  .HasForeignKey(d => d.StageFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblQuestionStage_tblCodeSet");
+      });
+
+      modelBuilder.Entity<tblSignature>(entity =>
+      {
+        entity.Property(e => e.EpisodeCareIDFK).ValueGeneratedNever();
+
+        entity.Property(e => e.Signature).IsFixedLength(true);
+
+        entity.Property(e => e.Title).IsUnicode(false);
+
+        entity.HasOne(d => d.EpisodeCareIDFKNavigation)
+                  .WithOne(p => p.tblSignature)
+                  .HasForeignKey<tblSignature>(d => d.EpisodeCareIDFK)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_tblSignature_tblEpisodeOfCare");
+      });
+
+      modelBuilder.Entity<tblUser>(entity =>
+      {
+        entity.Property(e => e.FirstName).IsUnicode(false);
+
+        entity.Property(e => e.LastName).IsUnicode(false);
+
+        entity.Property(e => e.NetworkName).IsFixedLength(true);
+      });
+
+      modelBuilder.Entity<vCodeSetHierarchy>(entity =>
+      {
+        entity.ToView("vCodeSetHierarchy", "app");
+
+        entity.Property(e => e.ANCESTER_comment).IsUnicode(false);
+
+        entity.Property(e => e.ANCESTOR_description).IsUnicode(false);
+
+        entity.Property(e => e.ANCESTOR_value).IsUnicode(false);
+
+        entity.Property(e => e.ANTIQUITY_comment).IsUnicode(false);
+
+        entity.Property(e => e.ANTIQUITY_description).IsUnicode(false);
+
+        entity.Property(e => e.ANTIQUITY_value).IsUnicode(false);
+
+        entity.Property(e => e.CHILD_comment).IsUnicode(false);
+
+        entity.Property(e => e.CHILD_description).IsUnicode(false);
+
+        entity.Property(e => e.CHILD_value).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_comment).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_description).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_value).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_comment).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_description).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_value).IsUnicode(false);
+
+        entity.Property(e => e.Hierarchy).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_comment).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_description).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_value).IsUnicode(false);
+      });
+
+      modelBuilder.Entity<vQuestionStandardChoices>(entity =>
+      {
+        entity.ToView("vQuestionStandardChoices", "app");
+
+        entity.Property(e => e.ANCESTOR_description).IsUnicode(false);
+
+        entity.Property(e => e.ANCESTOR_value).IsUnicode(false);
+
+        entity.Property(e => e.ANTIQUITY_description).IsUnicode(false);
+
+        entity.Property(e => e.ANTIQUITY_value).IsUnicode(false);
+
+        entity.Property(e => e.CHILD_description).IsUnicode(false);
+
+        entity.Property(e => e.CHILD_value).IsUnicode(false);
+
+        entity.Property(e => e.Form).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_description).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_value).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_description).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_value).IsUnicode(false);
+
+        entity.Property(e => e.GroupTitle).IsUnicode(false);
+
+        entity.Property(e => e.Hierarchy).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_comment).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_description).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_value).IsUnicode(false);
+
+        entity.Property(e => e.Question).IsUnicode(false);
+
+        entity.Property(e => e.QuestionKey).IsUnicode(false);
+
+        entity.Property(e => e.QuestionTitle).IsUnicode(false);
+
+        entity.Property(e => e.Section).IsUnicode(false);
+      });
+
+      modelBuilder.Entity<vQuestionStandardChoices_Condensed>(entity =>
+      {
+        entity.ToView("vQuestionStandardChoices_Condensed", "app");
+
+        entity.Property(e => e.ANTIQUITY_Comment).IsUnicode(false);
+
+        entity.Property(e => e.Choice_Code).IsUnicode(false);
+
+        entity.Property(e => e.Code_Value_Comment).IsUnicode(false);
+
+        entity.Property(e => e.Form).IsUnicode(false);
+
+        entity.Property(e => e.GRAND_comment).IsUnicode(false);
+
+        entity.Property(e => e.GREAT_comment).IsUnicode(false);
+
+        entity.Property(e => e.PARENT_comment).IsUnicode(false);
+
+        entity.Property(e => e.Question).IsUnicode(false);
+
+        entity.Property(e => e.QuestionKey).IsUnicode(false);
+
+        entity.Property(e => e.Section).IsUnicode(false);
+
+        entity.Property(e => e.Valid_Choice).IsUnicode(false);
+      });
+
+      OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+  }
 }

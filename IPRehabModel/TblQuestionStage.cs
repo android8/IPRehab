@@ -23,6 +23,8 @@ namespace IPRehabModel
         public bool? Required { get; set; }
         [StringLength(50)]
         public string StageGroupTitle { get; set; }
+        [StringLength(500)]
+        public string Comment { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
