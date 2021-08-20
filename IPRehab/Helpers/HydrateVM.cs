@@ -19,10 +19,10 @@ namespace IPRehab.Helpers
         Required = dto.Required,
         QuestionID = dto.QuestionID,
         QuestionKey = dto.QuestionKey,
-        QuestionTitle = dto.QuestionSection,
+        SectionTitle = dto.QuestionSection,
         Question = dto.Question,
-        GroupTitle = string.IsNullOrEmpty(dto.GroupTitle) ? string.Empty :
-        Regex.IsMatch(dto.GroupTitle, @"^\d") ? dto.GroupTitle.Remove(0, 2) : dto.GroupTitle,
+        StageTitle = string.IsNullOrEmpty(dto.GroupTitle) ? string.Empty :
+        Regex.IsMatch(dto.GroupTitle, @"^\d") ? dto.GroupTitle.Remove(0, 3) : dto.GroupTitle,
         AnswerCodeSetID = dto.AnswerCodeSetID,
         AnswerCodeCategory = dto.AnswerCodeCategory,
         ChoiceList = SetSelectedChoice(dto.ChoiceList, dto.Answers, dto.AnswerCodeCategory),
@@ -33,7 +33,7 @@ namespace IPRehab.Helpers
 
     public static List<SectionInfo> GetDistinctSections(List<QuestionWithSelectItems> questions)
     {
-      var sections = questions.Select(x => $"{x.QuestionTitle} {x.Section}").AsParallel().Distinct()
+      var sections = questions.Select(x => $"{x.SectionTitle} {x.Section}").AsParallel().Distinct()
         .Select(x => new SectionInfo {
           SectionName = x,
           SectionKey = GetLastKeyWord(x),

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<QuestionWithSelectItems>
 
 @{
-  ViewData["Title"] = $"{ViewBag.Rediect}{ViewBag.Title}";
+  ViewData["Title"] = $"{ViewBag.Rediect}{ViewBag.StageTitle}";
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -14,7 +14,7 @@
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
     <div class="flex-container-evenly-justified">
-      <h1>@ViewBag.Title</h1>
+      <h1>@ViewBag.StageTitle</h1>
       <span class="badge @ViewBag.ModeColor">@ViewBag.action</span>
     </div>
     <div class="flex-container-evenly-justified">
@@ -41,12 +41,8 @@
     </thead>
     <tbody>
       @{
-        string currentForm = "";
-        string currentSection = "";
-        string currentQuestion = "";
+        string currentForm = string.Empty, currentSection = string.Empty, currentQuestion = string.Empty;
         string cssClass = "borderBottom";
-        string fullSectionInstruction = string.Empty;
-        string fullQuestionInstruction = string.Empty;
         int row = 0;
 
         foreach (var q in Model)
@@ -54,12 +50,16 @@
           if (row != 0)
           {
             cssClass = "borderTop";
+            if (currentQuestion == q.Question)
+            {
+              cssClass = string.Empty;
+            }
           }
 
           row++;
 
           /* form tile row */
-          if (currentForm != q.Form && ViewBag.Title == "IRF-PAI Form")
+          if (currentForm != q.Form && ViewBag.StageTitle == "IRF-PAI Form")
           {
             currentForm = q.Form;
             <tr id="nonPaddinRow">
@@ -69,43 +69,33 @@
             </tr>
           }
 
-          if (q.Instructions != null)
-          {
-            foreach (var ins in q.Instructions)
-            {
-              if (ins.DisplayLocation != null)
-              {
-                switch (ins.DisplayLocation.Trim())
-                {
-                  case "SectionHeader":
-                    fullSectionInstruction += string.Format("{0} ", ins.Instruction);
-                    break;
-                  case "SectionFooter":
-                    fullQuestionInstruction += string.Format("{0} ", ins.Instruction);
-                    break;
-                }
-              }
-            }
-          }
-
-          /* section header row */
           if (currentSection != q.Section)
           {
             currentSection = q.Section;
+
+            string headerInstruction = string.Empty;
+            if (q.Instructions != null)
+            {
+              var headerInstructionList = q.Instructions.Where(h => h.DisplayLocation == "Header Section");
+              foreach (var ins in headerInstructionList)
+              {
+                headerInstruction += string.Format("{0} ", ins.Instruction);
+              }
+            }
+            /* section header row */
             <tr>
               <td class="questionSection" colspan="4">
-                <a name="@q.Section"></a>
-                @Html.DisplayFor(m => q.QuestionTitle)
 
-                @if (fullSectionInstruction != string.Empty)
+                <a name="@q.Section"></a>
+                @Html.DisplayFor(m => q.SectionTitle)
+
+                @if (!string.IsNullOrEmpty(headerInstruction))
                 {
+                  /* show instruction icon */
                   <br /><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
                     <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
                   </svg>
-                  @if (!string.IsNullOrEmpty(fullSectionInstruction))
-                  {
-                    <span class="questionInstruction">@fullSectionInstruction</span>
-                  }
+                  <span class="questionInstruction">@headerInstruction</span>
                 }
               </td>
             </tr>
@@ -125,10 +115,13 @@
                 }
                 else
                 {
-                  /* show star icon*/
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                  </svg>
+                  @if (currentQuestion != q.Question)
+                  {
+                    /* show star icon*/
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                    </svg>
+                  }
                 }
               }
 
@@ -138,28 +131,30 @@
 
                 @Html.DisplayFor(m => q.Question)
 
-                @if (q.Instructions != null)
+                string questionInstruction = string.Empty;
+                if (q.Instructions != null)
                 {
-                  if (fullQuestionInstruction != string.Empty)
+                  var questionInstructionList = q.Instructions.Where(h => h.DisplayLocation == null);
+                  foreach (var ins in questionInstructionList)
                   {
-                    //show instruction icon
-                    <br /><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
-                      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                    </svg>
-
-                    @if (!string.IsNullOrEmpty(fullQuestionInstruction))
-                    {
-                      <span class="questionInstruction">@fullQuestionInstruction</span>
-                    }
+                    questionInstruction += string.Format("{0} ", ins.Instruction);
                   }
+                }
+                @if (!string.IsNullOrEmpty(questionInstruction))
+                {
+                  //show instruction icon
+                  <br /><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                  </svg>
+                  <span class="questionInstruction">@questionInstruction</span>
                 }
               }
             </td>
-            <td class="questionKeyAndTitle">
+            <td class="questionKeyAndStageTitle">
               @($"{q.QuestionKey}")
-              @if (!string.IsNullOrEmpty(q.GroupTitle))
+              @if (!string.IsNullOrEmpty(q.StageTitle))
               {
-                @($" - {q.GroupTitle}")
+                @($" - {q.StageTitle}")
               }
             </td>
             <td class="answer">
@@ -171,8 +166,8 @@
                 {
                   case int n when n > 3:
                     {
-                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.GroupTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
-                      <label for="@($"{q.QuestionKey}{q.GroupTitle}")" aria-label="dropdown null label"></label>
+                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.StageTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
+                      <label for="@($"{q.QuestionKey}{q.StageTitle}")" aria-label="dropdown null label"></label>
                     }
                     break;
 
@@ -247,26 +242,41 @@
           </tr>
 
           /*aggregate row*/
-          if (q.QuestionKey == "GG0170H")
+          if (q.QuestionKey == "GG0130H" && (
+              (
+                (q.Form.ToUpper() == "BASE" && q.StageTitle == "Discharge Performance") ||
+                (q.Form.ToUpper() == "DISCHARGE" && q.StageTitle == "Discharge Performance") ||
+                (q.Form.ToUpper() == "INITIAL" && q.StageTitle == "Discharge Goal") ||
+                (q.Form.ToUpper() == "FOLLOWUP" || q.Form?.ToUpper() == "INTERIM")
+              )
+          ))
           {
             QuestionInstructionDTO selfCareAggregateCcore = q.Instructions.LastOrDefault(i => i.QuestionIDFK == q.QuestionID);
             if (selfCareAggregateCcore != null)
             {
               <tr>
-                <td colspan="3"><div class="flex-row-reverse green text-lg-right" id="SelfCareScore">@selfCareAggregateCcore.Instruction</div></td>
+                <td colspan="3">
+                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="SelfCareScore">
+                    <span class="font-weight-bold">Self Care Aggregate Score: </span>@selfCareAggregateCcore.Instruction
+                  </div>
+                </td>
               </tr>
             }
+          }
 
-            if (q.QuestionKey == "GG0170SS")
+          if (q.QuestionKey == "GG0170SS")
+          {
+            QuestionInstructionDTO mobilityAggregateScore = q.Instructions.LastOrDefault(i => i.QuestionIDFK == q.QuestionID);
+
+            if (mobilityAggregateScore != null)
             {
-              QuestionInstructionDTO mobilityAggregateScore = q.Instructions.LastOrDefault(i => i.QuestionIDFK == q.QuestionID);
-
-              if (mobilityAggregateScore != null)
-              {
-                <tr>
-                  <td colspan="3"><div class="flex-row-reverse green text-xl-right" id="MobilityScore">@mobilityAggregateScore.Instruction</div></td>
-                </tr>
-              }
+              <tr>
+                <td colspan="3">
+                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="MobilityScore">
+                    <span class="font-weight-bold">Mobility Aggregate Score: </span>@mobilityAggregateScore.Instruction
+                  </div>
+                </td>
+              </tr>
             }
           }
         }

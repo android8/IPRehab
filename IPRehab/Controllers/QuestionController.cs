@@ -65,8 +65,7 @@ namespace IPRehab.Controllers
     {
       string badgeBackgroundColor = string.Empty;
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
-      string title = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : (stage == "Followup" ? "Follow Up" : $"{stage}");
-      ViewBag.Title = $"{title}";
+      ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       ViewBag.Action = $"{action} Mode";
 
       List<QuestionDTO> questions = new List<QuestionDTO>();

@@ -11,9 +11,9 @@ namespace IPRehab.Models
     public int QuestionID { get; set; }
     public bool? Required { get; set; }
     public string QuestionKey { get; set; }
-    public string QuestionTitle { get; set; }
+    public string SectionTitle { get; set; }
     public string Question { get; set; }
-    public string GroupTitle { get; set; }
+    public string StageTitle { get; set; }
     public int AnswerCodeSetParentID { get; set; }
     public int AnswerCodeSetID { get; set; }
     public int DisplayLocation { get; set; }
