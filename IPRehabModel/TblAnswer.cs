@@ -22,7 +22,7 @@ namespace IPRehabModel
         public int QuestionIDFK { get; set; }
         public int StageIDFK { get; set; }
         public int AnswerCodeSetFK { get; set; }
-        public int? AnswerSequenceNumber { get; set; }
+        public int AnswerSequenceNumber { get; set; }
         public string Description { get; set; }
         [Required]
         [StringLength(50)]

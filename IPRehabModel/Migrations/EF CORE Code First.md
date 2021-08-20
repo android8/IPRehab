@@ -1,12 +1,12 @@
 # Entity Framework Code First with CORE Identity
 
-Use the `PCC_FIT_Model_CORELibrary` and the `PPC_FIT_Repository_CORELibrary` to manage the data. To jump-start EF CORE, use the _`EF CORE Power Tools`_ to generate the codebase.  After that, do not use the Power Tools again.  Otherwise, it will erase all previously generated and modified code. 
+Use the `IPRehabModel`, `PatientModel`, and `UserModel` libraries to manage the data. To jump-start EF CORE, use the _`EF CORE Power Tools`_ to generate the codebase.  After that, do not use the Power Tools again.  Otherwise, it will erase all previously generated and modified code. 
 
 ### PCC_FIT_Model_CORELibrary
 
-Use the `UserManager` of CORE Identity to manage the ASPNET tables in the PCC_FIT_Model_CORELibrary.
+Use the `UserManager` of CORE Identity to manage the ASPNET tables in the IPRehabModel library.
 
-- remove or comment out the following from PCC_FITcontext.cs if found
+- remove or comment out the following from IPRehabContext.cs if found
 
       public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
       public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
@@ -16,15 +16,11 @@ Use the `UserManager` of CORE Identity to manage the ASPNET tables in the PCC_FI
       public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
       public virtual DbSet<AspNetUsers> AspNetUsers { get; set; } 
 
-- modify the C# classes first in the PCC_FIT_Model_CORE_Library project until satisfied
+- modify the C# classes first in the IPRehabModel project until satisfied
 
   - modify POCO class in the target tblxxx.cs
   - modify the column attributes, key, foreign key, relationship, etc in the target xxxConfiguration.cs
  
-- add the POCO and Configuration to the PCCFIT_Context.cs
-
-      public virtual DbSet<tblStaffFacilityRelation> tblStaffFacilityRelation { get; set; }
-      modelBuilder.ApplyConfiguration(new tblGrantFundingConfiguration());
 - in the Solution Explorer, reduce startup project to only 1 project before migration.  Otherwise, the migration would fail
 
 - in the Package Manager Console 

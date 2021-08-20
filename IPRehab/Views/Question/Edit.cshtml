@@ -166,7 +166,7 @@
                 {
                   case int n when n > 3:
                     {
-                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}{q.StageTitle}", @class = "select2 wrapLongOption", @readonly = "readonly" })
+                      @Html.DropDownList(q.QuestionKey, q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "select2 wrapLongOption persistable", @readonly = "readonly" })
                       <label for="@($"{q.QuestionKey}{q.StageTitle}")" aria-label="dropdown null label"></label>
                     }
                     break;
@@ -177,7 +177,7 @@
                       foreach (var c in q.ChoiceList)
                       {
                         <div>
-                          @Html.RadioButton(q.QuestionKey, q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}{c.Value}" })
+                          @Html.RadioButton(q.QuestionKey, q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}_{c.Value}", @class= "persistable" })
                           <label for="@($"{q.QuestionKey}{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
                         </div>
                       }
@@ -198,7 +198,7 @@
                               isChecked = true;
                             }
 
-                            @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}", @class = "optionStyle" /*, @readonly = "readonly"*/ } });
+                            @Html.CheckBox(q.QuestionKey, isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "optionStyle persistable" /*, @readonly = "readonly"*/ } });
                             <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
                           }
                           break;
@@ -208,14 +208,13 @@
                             <label for="@($"{q.QuestionKey}")" aria-label="date null label"></label>
                             if (q.ChoiceList.Any())
                             {
-                              <input type="date" id="@($"{q.QuestionKey}")" name="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                     placeholder="MM/dd/yyyy"
-                                     value="@($"{q.ChoiceList.First()?.Text}")" />
+                              <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                     placeholder="MM/dd/yyyy" value="@($"{q.ChoiceList.First()?.Text}")" class="persistable"/>
                             }
                             else
                             {
-                              <input type="date" id="@($"{q.QuestionKey}")" name="@($"{q.QuestionKey}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                     placeholder="MM/dd/yyyy" />
+                              <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                     placeholder="MM/dd/yyyy" class="persistable"/>
                             }
                           }
                           break;
@@ -223,14 +222,14 @@
                         case "ICD":
                           {
                             <label for="@q.QuestionKey" aria-label="textbox label"></label>
-                            @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                            @Html.TextBox(q.QuestionKey, "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey +'_'+ q.StageTitle, @class = "textBoxStyle persistable" /*, @readonly = "readonly"*/ } });
                           }
                           break;
 
                         case "FreeText":
                           {
                             <label for="@q.QuestionKey" aria-label="free text label"></label>
-                            @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey, @class = "textBoxStyle" /*, @readonly = "readonly"*/ } });
+                            @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey + '_' + q.StageTitle, @class = "textBoxStyle persistable" /*, @readonly = "readonly"*/ } });
                             break;
                           }
                       }
@@ -255,11 +254,12 @@
             if (selfCareAggregateCcore != null)
             {
               <tr>
-                <td colspan="3">
-                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="SelfCareScore">
+                <td colspan="2">
+                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="SelfCare">
                     <span class="font-weight-bold">Self Care Aggregate Score: </span>@selfCareAggregateCcore.Instruction
                   </div>
                 </td>
+                <td id="SelfCareScore">TBD</td>
               </tr>
             }
           }
@@ -271,11 +271,12 @@
             if (mobilityAggregateScore != null)
             {
               <tr>
-                <td colspan="3">
-                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="MobilityScore">
+                <td colspan="2">
+                  <div class="flex-row-reverse bg-success text-xl-right white-text" id="Mobility">
                     <span class="font-weight-bold">Mobility Aggregate Score: </span>@mobilityAggregateScore.Instruction
                   </div>
                 </td>
+                <td id="MobilityScore">TBD</td>
               </tr>
             }
           }
