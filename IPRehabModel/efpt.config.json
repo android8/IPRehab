@@ -48,18 +48,6 @@
       {
          "Name": "[app].[tblUser]",
          "ObjectType": 0
-      },
-      {
-         "Name": "[app].[vCodeSetHierarchy]",
-         "ObjectType": 3
-      },
-      {
-         "Name": "[app].[vQuestionStandardChoices]",
-         "ObjectType": 3
-      },
-      {
-         "Name": "[app].[vQuestionStandardChoices_Condensed]",
-         "ObjectType": 3
       }
    ],
    "UiHint": "VHAAUSDB9.RehabAssessmentCareTool",

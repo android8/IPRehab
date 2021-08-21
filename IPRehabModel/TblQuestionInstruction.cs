@@ -18,18 +18,20 @@ namespace IPRehabModel
         public int QuestionIDFK { get; set; }
         public int? StageCodeSetIDFK { get; set; }
         public int? Order { get; set; }
-        [StringLength(50)]
-        public string DisplayLocation { get; set; }
+        public int DisplayLocationFK { get; set; }
         [Required]
         public string Instruction { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
+        [ForeignKey(nameof(DisplayLocationFK))]
+        [InverseProperty(nameof(tblCodeSet.tblQuestionInstructionDisplayLocationFKNavigation))]
+        public virtual tblCodeSet DisplayLocationFKNavigation { get; set; }
         [ForeignKey(nameof(QuestionIDFK))]
         [InverseProperty(nameof(tblQuestion.tblQuestionInstruction))]
         public virtual tblQuestion QuestionIDFKNavigation { get; set; }
         [ForeignKey(nameof(StageCodeSetIDFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestionInstruction))]
+        [InverseProperty(nameof(tblCodeSet.tblQuestionInstructionStageCodeSetIDFKNavigation))]
         public virtual tblCodeSet StageCodeSetIDFKNavigation { get; set; }
     }
 }

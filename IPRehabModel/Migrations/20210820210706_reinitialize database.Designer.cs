@@ -4,14 +4,16 @@ using IPRehabModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IPRehab.Data.Migrations
 {
     [DbContext(typeof(IPRehabContext))]
-    partial class IPRehabContextModelSnapshot : ModelSnapshot
+    [Migration("20210820210706_reinitialize database")]
+    partial class reinitializedatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -19,7 +19,8 @@ namespace IPRehabModel
             tblAnswerAnswerCodeSetFKNavigation = new HashSet<tblAnswer>();
             tblAnswerStageIDFKNavigation = new HashSet<tblAnswer>();
             tblQuestion = new HashSet<tblQuestion>();
-            tblQuestionInstruction = new HashSet<tblQuestionInstruction>();
+            tblQuestionInstructionDisplayLocationFKNavigation = new HashSet<tblQuestionInstruction>();
+            tblQuestionInstructionStageCodeSetIDFKNavigation = new HashSet<tblQuestionInstruction>();
             tblQuestionStage = new HashSet<tblQuestionStage>();
         }
 
@@ -52,8 +53,10 @@ namespace IPRehabModel
         public virtual ICollection<tblAnswer> tblAnswerStageIDFKNavigation { get; set; }
         [InverseProperty("AnswerCodeSetFKNavigation")]
         public virtual ICollection<tblQuestion> tblQuestion { get; set; }
-        [InverseProperty("StageCodeSetIDFKNavigation")]
-        public virtual ICollection<tblQuestionInstruction> tblQuestionInstruction { get; set; }
+        [InverseProperty(nameof(tblQuestionInstruction.DisplayLocationFKNavigation))]
+        public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionDisplayLocationFKNavigation { get; set; }
+        [InverseProperty(nameof(tblQuestionInstruction.StageCodeSetIDFKNavigation))]
+        public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionStageCodeSetIDFKNavigation { get; set; }
         [InverseProperty("StageFKNavigation")]
         public virtual ICollection<tblQuestionStage> tblQuestionStage { get; set; }
     }

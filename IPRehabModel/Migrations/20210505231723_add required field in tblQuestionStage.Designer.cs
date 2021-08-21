@@ -94,7 +94,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblAnswer", b =>
+            modelBuilder.Entity("IPRehabModel.tblAnswer", b =>
                 {
                     b.Property<int>("EpsideOfCareIdfk")
                         .HasColumnType("int")
@@ -128,9 +128,9 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblAnswer", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblCodeSet", b =>
+            modelBuilder.Entity("IPRehabModel.tblCodeSet", b =>
                 {
-                    b.Property<int>("CodeSetId")
+                    b.Property<int>("CodeSetID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("CodeSetID")
@@ -168,7 +168,7 @@ namespace IPRehab.Data.Migrations
                     b.Property<int?>("SortOrder")
                         .HasColumnType("int");
 
-                    b.HasKey("CodeSetId");
+                    b.HasKey("CodeSetID");
 
                     b.HasIndex(new[] { "CodeSetParent", "CodeValue" }, "IX_tblCodeSet")
                         .IsUnique()
@@ -177,7 +177,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblCodeSet", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblEpisodeOfCare", b =>
+            modelBuilder.Entity("IPRehabModel.tblEpisodeOfCare", b =>
                 {
                     b.Property<int>("EpisodeOfCareId")
                         .ValueGeneratedOnAdd()
@@ -206,7 +206,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblEpisodeOfCare", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblPatient", b =>
+            modelBuilder.Entity("IPRehabModel.tblPatient", b =>
                 {
                     b.Property<string>("Icn")
                         .HasMaxLength(10)
@@ -258,7 +258,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblPatient", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestion", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestion", b =>
                 {
                     b.Property<int>("QuestionId")
                         .ValueGeneratedOnAdd()
@@ -323,7 +323,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblQuestion", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestionInstruction", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestionInstruction", b =>
                 {
                     b.Property<int>("InstructionId")
                         .ValueGeneratedOnAdd()
@@ -353,7 +353,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblQuestionInstruction", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestionStage", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestionStage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -383,7 +383,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblQuestionStage", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblSignature", b =>
+            modelBuilder.Entity("IPRehabModel.tblSignature", b =>
                 {
                     b.Property<int>("EpisodeCareIdfk")
                         .HasColumnType("int")
@@ -415,7 +415,7 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("tblSignature", "app");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblUser", b =>
+            modelBuilder.Entity("IPRehabModel.tblUser", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int")
@@ -885,22 +885,22 @@ namespace IPRehab.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblAnswer", b =>
+            modelBuilder.Entity("IPRehabModel.tblAnswer", b =>
                 {
-                    b.HasOne("IPRehabModel.TblCodeSet", "AnswerCodeSetFkNavigation")
-                        .WithMany("TblAnswer")
+                    b.HasOne("IPRehabModel.tblCodeSet", "AnswerCodeSetFkNavigation")
+                        .WithMany("tblAnswer")
                         .HasForeignKey("AnswerCodeSetFk")
                         .HasConstraintName("FK_tblAnswer_tblCodeSet")
                         .IsRequired();
 
-                    b.HasOne("IPRehabModel.TblEpisodeOfCare", "EpsideOfCareIdfkNavigation")
-                        .WithOne("TblAnswer")
-                        .HasForeignKey("IPRehabModel.TblAnswer", "EpsideOfCareIdfk")
+                    b.HasOne("IPRehabModel.tblEpisodeOfCare", "EpsideOfCareIdfkNavigation")
+                        .WithOne("tblAnswer")
+                        .HasForeignKey("IPRehabModel.tblAnswer", "EpsideOfCareIdfk")
                         .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare")
                         .IsRequired();
 
-                    b.HasOne("IPRehabModel.TblQuestion", "QuestionIdfkNavigation")
-                        .WithMany("TblAnswer")
+                    b.HasOne("IPRehabModel.tblQuestion", "QuestionIdfkNavigation")
+                        .WithMany("tblAnswer")
                         .HasForeignKey("QuestionIdfk")
                         .HasConstraintName("FK_tblAnswer_tblQuestion")
                         .IsRequired();
@@ -912,9 +912,9 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("QuestionIdfkNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblCodeSet", b =>
+            modelBuilder.Entity("IPRehabModel.tblCodeSet", b =>
                 {
-                    b.HasOne("IPRehabModel.TblCodeSet", "CodeSetParentNavigation")
+                    b.HasOne("IPRehabModel.tblCodeSet", "CodeSetParentNavigation")
                         .WithMany("InverseCodeSetParentNavigation")
                         .HasForeignKey("CodeSetParent")
                         .HasConstraintName("FK_tblCodeSet_tblCodeSet");
@@ -922,10 +922,10 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("CodeSetParentNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblEpisodeOfCare", b =>
+            modelBuilder.Entity("IPRehabModel.tblEpisodeOfCare", b =>
                 {
-                    b.HasOne("IPRehabModel.TblPatient", "PatientIcnfkNavigation")
-                        .WithMany("TblEpisodeOfCare")
+                    b.HasOne("IPRehabModel.tblPatient", "PatientIcnfkNavigation")
+                        .WithMany("tblEpisodeOfCare")
                         .HasForeignKey("PatientIcnfk")
                         .HasConstraintName("FK_app.tblEpisodeOfCare_app.tblPatient")
                         .IsRequired();
@@ -933,22 +933,22 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("PatientIcnfkNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestion", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestion", b =>
                 {
-                    b.HasOne("IPRehabModel.TblCodeSet", "AnswerCodeSetFkNavigation")
-                        .WithMany("TblQuestionAnswerCodeSetFkNavigation")
+                    b.HasOne("IPRehabModel.tblCodeSet", "AnswerCodeSetFkNavigation")
+                        .WithMany("tblQuestionAnswerCodeSetFkNavigation")
                         .HasForeignKey("AnswerCodeSetFk")
                         .HasConstraintName("FK_Answer_CodeSet")
                         .IsRequired();
 
-                    b.HasOne("IPRehabModel.TblCodeSet", "FormFkNavigation")
-                        .WithMany("TblQuestionFormFkNavigation")
+                    b.HasOne("IPRehabModel.tblCodeSet", "FormFkNavigation")
+                        .WithMany("tblQuestionFormFkNavigation")
                         .HasForeignKey("FormFk")
                         .HasConstraintName("FK_Form_CodeSet")
                         .IsRequired();
 
-                    b.HasOne("IPRehabModel.TblCodeSet", "FormSectionFkNavigation")
-                        .WithMany("TblQuestionFormSectionFkNavigation")
+                    b.HasOne("IPRehabModel.tblCodeSet", "FormSectionFkNavigation")
+                        .WithMany("tblQuestionFormSectionFkNavigation")
                         .HasForeignKey("FormSectionFk")
                         .HasConstraintName("FK_Section_CodeSet");
 
@@ -959,10 +959,10 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("FormSectionFkNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestionInstruction", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestionInstruction", b =>
                 {
-                    b.HasOne("IPRehabModel.TblQuestion", "QuestionIdfkNavigation")
-                        .WithMany("TblQuestionInstruction")
+                    b.HasOne("IPRehabModel.tblQuestion", "QuestionIdfkNavigation")
+                        .WithMany("tblQuestionInstruction")
                         .HasForeignKey("QuestionIdfk")
                         .HasConstraintName("FK_tblInstruction_tblQuestion")
                         .IsRequired();
@@ -970,16 +970,16 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("QuestionIdfkNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestionStage", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestionStage", b =>
                 {
-                    b.HasOne("IPRehabModel.TblQuestion", "QuestionIdFkNavigation")
-                        .WithMany("TblQuestionStage")
+                    b.HasOne("IPRehabModel.tblQuestion", "QuestionIdFkNavigation")
+                        .WithMany("tblQuestionStage")
                         .HasForeignKey("QuestionIdFk")
                         .HasConstraintName("FK_tblQuestionStage_tblQuestion")
                         .IsRequired();
 
-                    b.HasOne("IPRehabModel.TblCodeSet", "StageFkNavigation")
-                        .WithMany("TblQuestionStage")
+                    b.HasOne("IPRehabModel.tblCodeSet", "StageFkNavigation")
+                        .WithMany("tblQuestionStage")
                         .HasForeignKey("StageFk")
                         .HasConstraintName("FK_tblQuestionStage_tblCodeSet")
                         .IsRequired();
@@ -989,11 +989,11 @@ namespace IPRehab.Data.Migrations
                     b.Navigation("StageFkNavigation");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblSignature", b =>
+            modelBuilder.Entity("IPRehabModel.tblSignature", b =>
                 {
-                    b.HasOne("IPRehabModel.TblEpisodeOfCare", "EpisodeCareIdfkNavigation")
-                        .WithOne("TblSignature")
-                        .HasForeignKey("IPRehabModel.TblSignature", "EpisodeCareIdfk")
+                    b.HasOne("IPRehabModel.tblEpisodeOfCare", "EpisodeCareIdfkNavigation")
+                        .WithOne("tblSignature")
+                        .HasForeignKey("IPRehabModel.tblSignature", "EpisodeCareIdfk")
                         .HasConstraintName("FK_tblSignature_tblEpisodeOfCare")
                         .IsRequired();
 
@@ -1051,40 +1051,40 @@ namespace IPRehab.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblCodeSet", b =>
+            modelBuilder.Entity("IPRehabModel.tblCodeSet", b =>
                 {
                     b.Navigation("InverseCodeSetParentNavigation");
 
-                    b.Navigation("TblAnswer");
+                    b.Navigation("tblAnswer");
 
-                    b.Navigation("TblQuestionAnswerCodeSetFkNavigation");
+                    b.Navigation("tblQuestionAnswerCodeSetFkNavigation");
 
-                    b.Navigation("TblQuestionFormFkNavigation");
+                    b.Navigation("tblQuestionFormFkNavigation");
 
-                    b.Navigation("TblQuestionFormSectionFkNavigation");
+                    b.Navigation("tblQuestionFormSectionFkNavigation");
 
-                    b.Navigation("TblQuestionStage");
+                    b.Navigation("tblQuestionStage");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblEpisodeOfCare", b =>
+            modelBuilder.Entity("IPRehabModel.tblEpisodeOfCare", b =>
                 {
-                    b.Navigation("TblAnswer");
+                    b.Navigation("tblAnswer");
 
-                    b.Navigation("TblSignature");
+                    b.Navigation("tblSignature");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblPatient", b =>
+            modelBuilder.Entity("IPRehabModel.tblPatient", b =>
                 {
-                    b.Navigation("TblEpisodeOfCare");
+                    b.Navigation("tblEpisodeOfCare");
                 });
 
-            modelBuilder.Entity("IPRehabModel.TblQuestion", b =>
+            modelBuilder.Entity("IPRehabModel.tblQuestion", b =>
                 {
-                    b.Navigation("TblAnswer");
+                    b.Navigation("tblAnswer");
 
-                    b.Navigation("TblQuestionInstruction");
+                    b.Navigation("tblQuestionInstruction");
 
-                    b.Navigation("TblQuestionStage");
+                    b.Navigation("tblQuestionStage");
                 });
 #pragma warning restore 612, 618
         }

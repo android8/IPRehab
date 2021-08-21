@@ -76,7 +76,7 @@
             string headerInstruction = string.Empty;
             if (q.Instructions != null)
             {
-              var headerInstructionList = q.Instructions.Where(h => h.DisplayLocation == "Header Section");
+              var headerInstructionList = q.Instructions.Where(i => i.DisplayLocation == "SectionHeader");
               foreach (var ins in headerInstructionList)
               {
                 headerInstruction += string.Format("{0} ", ins.Instruction);
@@ -134,7 +134,7 @@
                 string questionInstruction = string.Empty;
                 if (q.Instructions != null)
                 {
-                  var questionInstructionList = q.Instructions.Where(h => h.DisplayLocation == null);
+                  var questionInstructionList = q.Instructions.Where(h => h.DisplayLocation == "QuestionBody");
                   foreach (var ins in questionInstructionList)
                   {
                     questionInstruction += string.Format("{0} ", ins.Instruction);
@@ -250,33 +250,29 @@
               )
           ))
           {
-            QuestionInstructionDTO selfCareAggregateCcore = q.Instructions.LastOrDefault(i => i.QuestionIDFK == q.QuestionID);
+            QuestionInstructionDTO selfCareAggregateCcore = q.Instructions.LastOrDefault(i => i.DisplayLocation == "SectionFooter");
             if (selfCareAggregateCcore != null)
             {
-              <tr>
+              <tr class="bg-warning">
                 <td colspan="2">
-                  <div class="bg-warning text-xl-right white-text" id="SelfCare">
-                    <span class="font-weight-bold">Self Care Aggregate Score: </span>@selfCareAggregateCcore.Instruction
-                  </div>
+                  <span class="font-weight-bold">Self Care Aggregate Score: </span>@selfCareAggregateCcore.Instruction
                 </td>
-                <td id="SelfCareScore">TBD</td>
+                <td id="SelfCareScore" class="display-4">100 (TBD)</td>
               </tr>
             }
           }
 
           if (q.QuestionKey == "GG0170SS")
           {
-            QuestionInstructionDTO mobilityAggregateScore = q.Instructions.LastOrDefault(i => i.QuestionIDFK == q.QuestionID);
+            QuestionInstructionDTO mobilityAggregateScore = q.Instructions.LastOrDefault(i => i.DisplayLocation == "SectionFooter");
 
             if (mobilityAggregateScore != null)
             {
-              <tr>
+              <tr class="bg-warning">
                 <td colspan="2">
-                  <div class="bg-warning text-xl-right white-text" id="Mobility">
-                    <span class="font-weight-bold">Mobility Aggregate Score: </span>@mobilityAggregateScore.Instruction
-                  </div>
+                  <span class="font-weight-bold">Mobility Aggregate Score: </span>@mobilityAggregateScore.Instruction
                 </td>
-                <td id="MobilityScore">TBD</td>
+                <td id="MobilityScore" class="display-4">100 (TBD)</td>
               </tr>
             }
           }

@@ -201,7 +201,7 @@ namespace IPRehabWebAPI2.Helpers
             InstructionId = i.InstructionID,
             QuestionIDFK = q.QuestionID,
             Instruction =i.Instruction,
-            DisplayLocation = i.DisplayLocation
+            DisplayLocation = i.DisplayLocationFKNavigation.CodeValue
         }).ToList();
       }
       else

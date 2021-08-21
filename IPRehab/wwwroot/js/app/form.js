@@ -37,7 +37,7 @@ function pageLoad() {
 /* scroll to an anchor */
 function scrollToAnchor(aid) {
     let aTag = $('a[name="' + aid + '"]');
-    $('html,body').animate({ scrollTop: aTag.offset().top }, 'fast');
+    $('html,body').animate({ scrollTop: aTag.offset().top - 10 }, 'fast');
 }
 function setRehabBtns(targetScope) {
     let currentIdx = 0;
