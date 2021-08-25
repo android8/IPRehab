@@ -10,5 +10,7 @@ namespace IPRehab.Models
     public int EpisodeID { get; set; }
     public string PatientID { get; set; }
     public string PatientName { get; set; }
+    public Dictionary<string, string> StageSettings { get; set; }
+    public Dictionary<string,string> ButtonSettings { get; set; }
   }
 }

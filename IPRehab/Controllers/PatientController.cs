@@ -88,8 +88,25 @@ namespace IPRehab.Controllers
           if (patients?.Count == 0)
             return View("_NoDataPartial");
 
+          List<PatientViewModel> vm = new();
+          foreach(var pat in patients)
+          {
+            PatientViewModel thisPatVM = new();
+            thisPatVM.Patient = pat;
+            foreach(var episode in pat.CareEpisodes)
+            {
+              RehabActionViewModel episodeCommandBtn = new();
+              episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+              episodeCommandBtn.PatientID = episode.PatientIcnFK;
+              episodeCommandBtn.PatientName = pat.Name;
+              episodeCommandBtn.StageSettings = StageColorManger.stageType;
+              episodeCommandBtn.ButtonSettings = StageColorManger.actionBtnColor;
+              thisPatVM.ActionButtonVM = episodeCommandBtn;
+            }
+          }
+
           //returning the question list to view  
-          return View(patients);
+          return View(vm);
         }
         catch (Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
         {

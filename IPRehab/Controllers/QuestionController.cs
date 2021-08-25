@@ -22,38 +22,6 @@ namespace IPRehab.Controllers
       _logger = logger;
     }
 
-    // GET: QuestionController
-    public ActionResult Index()
-    {
-      return View();
-    }
-
-    // GET: QuestionController/Details/5
-    public ActionResult Details(int id)
-    {
-      return View();
-    }
-
-    // GET: QuestionController/Create
-    public ActionResult Create(string stage)
-    {
-      return RedirectToAction(nameof(Edit), new { stage = stage, redirectFrom = "Create" });
-    }
-
-    // POST: QuestionController/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Create(IFormCollection collection)
-    {
-      try
-      {
-        return RedirectToAction(nameof(Index));
-      }
-      catch
-      {
-        return View();
-      }
-    }
     
     /// <summary>
     /// https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
@@ -63,11 +31,13 @@ namespace IPRehab.Controllers
     // GET: QuestionController/Edit/5
     public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string redirectFrom)
     {
-      string badgeBackgroundColor = string.Empty;
       string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
       ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       ViewBag.Action = $"{action} Mode";
-
+      ViewBag.PatientID = patientID;
+      ViewBag.PatientName = patientName;
+      ViewBag.EpisodeID = episodeID;
+      
       List<QuestionDTO> questions = new List<QuestionDTO>();
       bool includeAnswer = (action == "Edit");
 
@@ -75,34 +45,25 @@ namespace IPRehab.Controllers
       actionButtonVM.EpisodeID = episodeID;
       actionButtonVM.PatientID = patientID;
       actionButtonVM.PatientName = patientName;
+      actionButtonVM.StageSettings = StageColorManger.stageType;
+      actionButtonVM.ButtonSettings = StageColorManger.actionBtnColor;
       ViewBag.ActionBtnVM = actionButtonVM;
-
       try
       {
         //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
         HttpResponseMessage Res;
-        string apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
+        string apiEndpoint;
+        string badgeBackgroundColor;
         switch (stage)
         {
           case null:
           case "":
             apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-            badgeBackgroundColor = (action == "Edit") ? "badge-primary" : "createActionAll";
+            badgeBackgroundColor = StageColorManger.actionBtnColor[stage];
             break;
-          case "Base":
-            badgeBackgroundColor = (action == "Edit") ? "badge-dark" : "createActionBase";
-            break;
-          case "Initial":
-            badgeBackgroundColor = (action == "Edit") ? "badge-info" : "createActionInitial";
-            break;
-          case "Interim":
-            badgeBackgroundColor = (action == "Edit") ? "badge-secondary" : "createActionInterim";
-            break;
-          case "Discharge":
-            badgeBackgroundColor = (action == "Edit") ? "badge-success" : "createActionDischarge";
-            break;
-          case "Followup":
-            badgeBackgroundColor = (action == "Edit") ? "badge-warning" : "createActionFollowup";
+          default:
+            apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
+            badgeBackgroundColor = StageColorManger.actionBtnColor[stage];
             break;
         }
         Res = await APIAgent.GetDataAsync(new Uri($"{apiEndpoint}"));
@@ -143,7 +104,6 @@ namespace IPRehab.Controllers
             var distinctSections = HydrateVM.GetDistinctSections(vm);
             ViewBag.QuestionSections = distinctSections;
 
-
             //returning the question list to view  
             return View(vm);
           }
@@ -170,15 +130,22 @@ namespace IPRehab.Controllers
     // POST: QuestionController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, IFormCollection collection)
+    public ActionResult Edit(int id, IFormCollection form)
     {
       try
       {
-        return RedirectToAction(nameof(Index));
+        string stage = form["Stage"];
+        string patientID = form["PatientID"];
+        string patientName = form["PatientName"];
+        string episodeID = form["EpisodeID"];
+     
+        return RedirectToAction(nameof(Edit), new { stage = stage, patientID = patientID, patientName = patientName, episodeID = episodeID, redirectFrom = "Edit"});
       }
-      catch
+      
+      catch (Exception ex)
       {
-        return View();
+        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
+          .Create("WebAPI call failure.", ex.Message, ex.InnerException?.Message));
       }
     }
 
@@ -195,7 +162,7 @@ namespace IPRehab.Controllers
     {
       try
       {
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Edit));
       }
       catch
       {

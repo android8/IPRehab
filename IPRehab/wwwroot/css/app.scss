@@ -94,8 +94,7 @@ body {
 }
 
 .splashSpinnerContainer{
-  margin-right:0;
-  margin-bottom:0;
+  margin:0;
 }
 
 .fixedTop {
@@ -209,6 +208,11 @@ td {
   font-weight:normal;
 }
 
+.muted {
+  color: #929fab;
+}
+
+
 .patientRow {
   background-color: #0e2640;
   color: white;
@@ -262,7 +266,11 @@ td {
 }
 
 .rotate {
+  width:35px;
+  top:100px;
+  left:20px;
   transform: rotate(-90deg);
+  position:fixed;
   /* Legacy vendor prefixes that you probably don't need... */
   /* Safari */
   -webkit-transform: rotate(-90deg);
@@ -434,30 +442,30 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-self: flex-end;
 }
 
-.createActionAll {
+.actionBtnFull {
   background-color: #c22bdb;
   color:white;
 }
 
-.createActionBase {
+.actionBtnBase {
   background-color: #ff6a00;
   color:white;
 }
 
-.createActionInitial {
+.actionBtnInitial {
   background-color: #00ffff;
 }
 
-.createActionInterim {
+.actionBtnInterim {
   background-color: #6640ec;
-  color:white;
+  color: white;
 }
 
-.createActionDischarge {
+.actionBtnDischarge {
   background-color: #ff006e;
-  color:white;
+  color: white;
 }
 
-.createActionFollowup {
+.actionBtnFollowup {
   background-color: #4cff00;
 }

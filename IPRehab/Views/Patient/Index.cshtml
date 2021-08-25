@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IPRehabWebAPI2.Models.PatientDTO>
+﻿@model IEnumerable<PatientViewModel>
 
 @{
   ViewData["Title"] = "Index";
@@ -24,87 +24,80 @@
         <tr>
           <th></th>
           <th>
-            @Html.DisplayNameFor(model => model.VISN)
+            @Html.DisplayNameFor(model => model.Patient.VISN)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Facility)
+            @Html.DisplayNameFor(model => model.Patient.Facility)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.District)
+            @Html.DisplayNameFor(model => model.Patient.District)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Division)
+            @Html.DisplayNameFor(model => model.Patient.Division)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Sta6aKey)
+            @Html.DisplayNameFor(model => model.Patient.Sta6aKey)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Bedsecn)
+            @Html.DisplayNameFor(model => model.Patient.Bedsecn)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Patient.Name)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.PTFSSN)
+            @Html.DisplayNameFor(model => model.Patient.PTFSSN)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.FiscalPeriod)
+            @Html.DisplayNameFor(model => model.Patient.FiscalPeriod)
           </th>
         </tr>
       </thead>
       <tbody>
         @{
           int row = 0;
-          foreach (var patient in Model)
+          foreach (var patVM in Model)
           {
             <!--Patient row-->
             <tr class="patientRow">
               <td><div class="nav-pills">@(++row)</div></td>
               <td>
-                @Html.DisplayFor(modelItem => patient.VISN)
+                @Html.DisplayFor(modelItem => patVM.Patient.VISN)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.Facility)
+                @Html.DisplayFor(modelItem => patVM.Patient.Facility)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.District)
+                @Html.DisplayFor(modelItem => patVM.Patient.District)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.Division)
+                @Html.DisplayFor(modelItem => patVM.Patient.Division)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.Sta6aKey)
+                @Html.DisplayFor(modelItem => patVM.Patient.Sta6aKey)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.Bedsecn)
+                @Html.DisplayFor(modelItem => patVM.Patient.Bedsecn)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.Name)
+                @Html.DisplayFor(modelItem => patVM.Patient.Name)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.PTFSSN)
+                @Html.DisplayFor(modelItem => patVM.Patient.PTFSSN)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patient.FiscalPeriod)
+                @Html.DisplayFor(modelItem => patVM.Patient.FiscalPeriod)
               </td>
             </tr>
 
             <!--Episode of Care row-->
-            @if (!patient.CareEpisodes.Any())
+            @if (!patVM.Patient.CareEpisodes.Any())
             {
               <tr>
                 <td colspan="10" class="text-danger">
                   <div class="flex-start-row-nowrap">
                     <div>No episode of care&nbsp;</div>
                     <div>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns",
-                                              new RehabActionViewModel()
-                                              {
-                                                EpisodeID = -1,
-                                                PatientID = patient.PTFSSN,
-                                                PatientName = patient.Name
-                                              });
-                      }
+                      @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}
                     </div>
                   </div>
                 </td>
@@ -119,32 +112,26 @@
                       <tr>
                         <th></th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().EpisodeOfCareID)
+                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().EpisodeOfCareID)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().AdmissionDate)
+                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().AdmissionDate)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().OnsetDate)
+                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().OnsetDate)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patient.CareEpisodes.First().PatientIcnFK)
+                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().PatientIcnFK)
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      @foreach (var episode in patient.CareEpisodes)
+
+                      @foreach (var episode in patVM.Patient.CareEpisodes)
                       {
                         <tr>
                           <td>
-                            @{await Html.RenderPartialAsync("_RehabActionBtns",
-                                      new RehabActionViewModel()
-                                      {
-                                        EpisodeID = episode.EpisodeOfCareID,
-                                        PatientID = episode.PatientIcnFK,
-                                        PatientName = patient.Name
-                                      }); ;
-                            }
+                            @{await Html.RenderPartialAsync("_RehabActionBtns",patVM.ActionButtonVM);}
                           </td>
                           <td>
                             @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)

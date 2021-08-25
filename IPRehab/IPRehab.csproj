@@ -85,6 +85,7 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
+    <None Include="wwwroot\Default.html" />
     <None Include="wwwroot\js\app\animateBanner.js" />
     <None Include="wwwroot\js\app\animateBanner.js.map" />
     <None Include="wwwroot\js\app\form.js" />

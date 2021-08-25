@@ -21,18 +21,14 @@
   <script type="text/javascript">
     $(function () {
       setTimeout(function () {
-        var isLocalHost = window.location.host.indexOf('localhost') !== -1;
+        //var isLocalHost = window.location.host.indexOf('localhost') !== -1;
         var lastChar = window.location.href.slice(-1);
-        if (isLocalHost)
+        if (lastChar === '/') {
+          //var chleanUrl = window.location.href.replace(/\/$/, "")
           window.location = window.location + 'patient/index';
+        }
         else {
-          if (lastChar === '/') {
-            //var chleanUrl = window.location.href.replace(/\/$/, "")
-            window.location = window.location + 'patient/index';
-          }
-          else {
-            window.location = window.location + '/patient/index';
-          }
+          window.location = window.location + '/patient/index';
         }
       }, 2000);
     });

@@ -51,6 +51,12 @@ namespace IPRehab
       services.AddRazorPages();
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
       services.AddSingleton<IEmailSender, EmailSender>();
+
+      services.AddAntiforgery(options =>
+      {
+        options.Cookie.Name = "X-CSRF-TOKEN-IPREHAB"; //should be more sophisticated
+        options.FormFieldName = "CSRF-TOKEN-IPREHAB"; //should be more sophisticated
+      });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

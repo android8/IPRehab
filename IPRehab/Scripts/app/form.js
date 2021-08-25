@@ -12,6 +12,7 @@ function pageLoad() {
             setRehabBtns($this.parent());
         }
     });
+    $('.persistable').change(function () { $('#submit').removeAttr('disabled'); });
     //handle rehab action checkbox
     $('input[type="checkbox"]').click(function () {
         let $this = $(this);
@@ -23,15 +24,21 @@ function pageLoad() {
             resetRehabBtns(targetScope);
         }
     });
+    /* jump to section anchor */
     $('.gotoSection').click(function () {
         let $this = $(this);
         let anchorId = $this.data("anchorid");
         scrollToAnchor(anchorId);
     });
+    /* slide section nav */
     $("#questionTab").hover(function () {
         $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
     }, function () {
         $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
+    });
+    /* collect all persistable input values */
+    $('#submit').click(function () {
+        alert('collecting answers');
     });
 }
 /* scroll to an anchor */

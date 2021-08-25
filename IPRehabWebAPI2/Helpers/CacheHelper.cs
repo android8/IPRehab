@@ -20,30 +20,36 @@ namespace IPRehabWebAPI2.Helpers
     /// <returns></returns>
     public async Task<List<MastUserDTO>> GetUserAccessLevels(MasterreportsContext context, string networkID)
     {
-      string userName = CleanUserName(networkID); //use network ID without domain
-      List<MastUserDTO> userAccessLevels = new List<MastUserDTO>();
-
-      SqlParameter[] paramNetworkID = new SqlParameter[]
+      try
       {
+        string userName = CleanUserName(networkID); //use network ID without domain
+        List<MastUserDTO> userAccessLevels = new List<MastUserDTO>();
+
+        SqlParameter[] paramNetworkID = new SqlParameter[]
+        {
           new SqlParameter(){
             ParameterName = "@UserName",
             SqlDbType = System.Data.SqlDbType.VarChar,
             Direction = System.Data.ParameterDirection.Input,
             Value = userName
           }
-      };
+        };
 
-      //use dbContext extension method
-      var userPermission = await context.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
-        $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
+        //use dbContext extension method
+        var userPermission = await context.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
+          $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
 
-      foreach (var item in userPermission)
-      {
-        var userDTO = HydrateDTO.HydrateUser(item);
-        userAccessLevels.Add(userDTO);
+        foreach (var item in userPermission)
+        {
+          var userDTO = HydrateDTO.HydrateUser(item);
+          userAccessLevels.Add(userDTO);
+        }
+        return userAccessLevels;
       }
-
-      return userAccessLevels;
+      catch(Exception ex){
+        Console.WriteLine(ex.Message);
+        return null;
+      }
     }
 
     /// <summary>
