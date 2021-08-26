@@ -3,8 +3,8 @@
 <div>
   @{
     string action = "Edit";
-    var stageType = Model.StageSettings;
-    var actionBtnCssClass = Model.ButtonSettings;
+    var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
+    var actionBtnCssClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
   }
 
   @foreach (var entry in stageType)
@@ -12,7 +12,7 @@
     string textNode = string.Empty;
     string stage = entry.Key, title = entry.Value;
     string aspRouteParamStage = string.Empty;
-    string actionBtnClass = string.Empty;
+    string actionBtnClass = actionBtnCssClass[stage];
 
     if (stageType[stage] == "Full")
     {
@@ -29,10 +29,12 @@
         textNode = "Follow Up";
       }
     }
-    actionBtnClass = actionBtnCssClass[stage];
-   
+    @if (Model.EpisodeID != -1)
+    {
+      title = title.Replace("Create", "Edit");
+    }
 
-    <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" asp-route-redirectFrom="@action" class="disabled badge @actionBtnClass rehabAction" title="@title">@textNode</a>
+    <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="disabled badge @actionBtnClass rehabAction" title="@title">@textNode</a>
   }
 </div>
 

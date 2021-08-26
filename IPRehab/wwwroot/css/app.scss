@@ -107,9 +107,10 @@ body {
 
 .fixedBottom {
   position: fixed !important;
-  bottom: 0;
+  bottom: 0px;
+  margin-bottom : 0;
   width: 100%;
-  background-color: white;
+  background-color: #ffc801;
 }
 
 .main {
@@ -214,7 +215,7 @@ td {
 
 
 .patientRow {
-  background-color: #0e2640;
+  background-color: #2f3161;
   color: white;
   margin: 20px !important;
   padding: 20px !important;
@@ -443,29 +444,31 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 .actionBtnFull {
-  background-color: #c22bdb;
-  color:white;
+  background-color: #9a24ad;
+  color: white;
 }
 
 .actionBtnBase {
-  background-color: #ff6a00;
-  color:white;
+  background-color:#be5205;
+  color: white;
 }
 
 .actionBtnInitial {
-  background-color: #00ffff;
+  background-color: #3800ff;
+  color: white;
 }
 
 .actionBtnInterim {
-  background-color: #6640ec;
+  background-color: #0325ab;
   color: white;
 }
 
 .actionBtnDischarge {
-  background-color: #ff006e;
+  background-color: #ad1255;
   color: white;
 }
 
 .actionBtnFollowup {
-  background-color: #4cff00;
+  background-color: #3eca03;
+  color: white;
 }

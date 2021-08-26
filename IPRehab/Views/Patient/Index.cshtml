@@ -97,7 +97,7 @@
                   <div class="flex-start-row-nowrap">
                     <div>No episode of care&nbsp;</div>
                     <div>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}
+                      @{await Html.RenderPartialAsync("_RehabActionBtns", patVM.ActionButtonVM);}
                     </div>
                   </div>
                 </td>
@@ -131,7 +131,7 @@
                       {
                         <tr>
                           <td>
-                            @{await Html.RenderPartialAsync("_RehabActionBtns",patVM.ActionButtonVM);}
+                            @{await Html.RenderPartialAsync("_RehabActionBtns", patVM.ActionButtonVM);}
                           </td>
                           <td>
                             @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)

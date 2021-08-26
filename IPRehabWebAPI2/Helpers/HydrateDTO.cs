@@ -17,7 +17,7 @@ namespace IPRehabWebAPI2.Helpers
     public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage)
     {
       QuestionDTO questionDTO = new();
-      questionDTO.Form = questionStage;
+      questionDTO.FormName = questionStage;
       questionDTO.QuestionID = q.QuestionID;
       questionDTO.Required = q.tblQuestionStage.Where(x =>
           x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;

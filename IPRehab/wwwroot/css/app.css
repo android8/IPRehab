@@ -1,4 +1,4 @@
-.splashscreen {
+﻿.splashscreen {
   /*  position: absolute;
   top: 0;
   left: 0;*/
@@ -14,8 +14,7 @@
   background-repeat: no-repeat;
   /* Scale the background image to be as large as possible */
   background-size: auto;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
 .splashscreen #flashText {
   display: flex;
@@ -26,46 +25,38 @@
   /*position:fixed;*/
   background-image: -webkit-linear-gradient(#fff, #a6bad0, #433181);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+  -webkit-text-fill-color: transparent; }
 
 .splashscreen #waitMessage {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-}
+  color: white; }
 
 body {
-  scrollbar-width: 5px;
-}
+  scrollbar-width: 5px; }
 
 /*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
   background-color: white;
-  /*  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/
-}
+  /*  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/ }
 
 .banner {
   background-color: #0e2640 !important;
   color: white;
-  z-index: 500;
-}
+  z-index: 500; }
 
 .banner .nav-link {
-  color: white !important;
-}
+  color: white !important; }
 
 .banner .navbar-brand {
-  color: white !important;
-}
+  color: white !important; }
 
 .pulldown {
   top: -4px !important;
   position: fixed;
   z-index: 100;
-  color: #0e2640;
-}
+  color: #0e2640; }
 
 .sectionNavHeader {
   position: fixed;
@@ -73,49 +64,42 @@ body {
   color: gold;
   background-color: #0e2640;
   text-align: center;
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 .disabled {
-  pointer-events: none;
-}
+  pointer-events: none; }
 
 .acceptConsent {
   background-color: black !important;
-  color: white !important;
-}
+  color: white !important; }
 
 .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
   width: 100%;
   padding-right: 0;
   padding-left: 0;
   margin-right: auto;
-  margin-left: auto;
-}
+  margin-left: auto; }
 
 .splashSpinnerContainer {
-  margin: 0;
-}
+  margin: 0; }
 
 .fixedTop {
   position: fixed !important;
   top: 0;
   width: 100%;
   background-color: white;
-  /*padding-top:10px*/
-}
+  /*padding-top:10px*/ }
 
 .fixedBottom {
   position: fixed !important;
-  bottom: 0;
+  bottom: 0px;
+  margin-bottom: 0;
   width: 100%;
-  background-color: white;
-}
+  background-color: #ffc801; }
 
 .main {
   /*  margin-top: 20px !important;
-  */
-}
+*/ }
 
 .footer {
   position: fixed;
@@ -123,19 +107,16 @@ body {
   width: 100%;
   white-space: nowrap;
   line-height: 20px !important;
-  background-color: #0e2640;
-}
+  background-color: #0e2640; }
 
 .patientName {
   font-weight: bold;
-  font-size: large;
-}
+  font-size: large; }
 
 alert-info {
   color: #ff6a00;
   background-color: #becff4;
-  /*border-color: #bee5eb;*/
-}
+  /*border-color: #bee5eb;*/ }
 
 .noData {
   display: flex;
@@ -144,31 +125,25 @@ alert-info {
   justify-content: space-between;
   padding: 50px;
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
 
 th {
   padding: 0 5px;
   /*  text-align: center !important;
-  */
-}
+*/ }
 
 td {
   padding: 0 5px;
-  text-align: left;
-}
+  text-align: left; }
 
 .commandBtn {
-  margin: 10px 0;
-}
+  margin: 10px 0; }
 
 #questionnaire {
-  padding: 0 15px;
-}
+  padding: 0 15px; }
 
 #questionnaire tbody tr td {
-  padding: 5px;
-}
+  padding: 5px; }
 
 .formName {
   background-color: gold;
@@ -178,90 +153,74 @@ td {
   border-top: 1px solid black;
   border-right: 1px solid black;
   border-left: 1px solid black;
-  border-radius: 5px 5px 0 0;
-}
+  border-radius: 5px 5px 0 0; }
 
 .keyQuestion {
-  color: red;
-}
+  color: red; }
 
 .questionSection {
   background-color: #040534;
   color: gold;
   height: 2px;
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 .questionText {
   font-weight: bold;
-  text-align: left;
-}
+  text-align: left; }
 
 .instructionIcon {
   width: 12px;
-  height: 12px;
-}
+  height: 12px; }
 
 .questionInstruction {
   font-size: smaller;
-  font-weight: normal;
-}
+  font-weight: normal; }
 
 .muted {
-  color: #929fab;
-}
+  color: #929fab; }
 
 .patientRow {
-  background-color: #0e2640;
+  background-color: #2f3161;
   color: white;
   margin: 20px !important;
-  padding: 20px !important;
-}
+  padding: 20px !important; }
 
 .wrapLongOption {
   display: flex;
   width: 250px !important;
   word-wrap: break-word !important;
   text-overflow: inherit !important;
-  white-space: normal !important;
-}
+  white-space: normal !important; }
 
 .radioLabel {
-  display: inline !important;
-}
+  display: inline !important; }
 
 .select2-results__options {
   background-color: black;
   color: gold;
-  padding: 0 20px;
-}
+  padding: 0 20px; }
 
 .select2-selection--single {
-  height: 100% !important;
-}
+  height: 100% !important; }
 
 .select2-selection__rendered {
   color: mediumblue !important;
   word-wrap: break-word !important;
   text-overflow: inherit !important;
-  white-space: normal !important;
-}
+  white-space: normal !important; }
 
 .paddingTop {
-  padding-top: 60px;
-}
+  padding-top: 60px; }
 
 .borderTop {
   border-top: 2px solid black;
   border-left: 1ps solid black;
-  border-right: 1ps solid black;
-}
+  border-right: 1ps solid black; }
 
 .borderBottom {
   border-left: 1ps solid black;
   border-right: 1ps solid black;
-  border-bottom: 2px solid black;
-}
+  border-bottom: 2px solid black; }
 
 .rotate {
   width: 35px;
@@ -280,12 +239,10 @@ td {
   /* Opera */
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-}
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); }
 
 .roate2 {
-  transform: rotate(-90deg) translate(0px, -40px);
-}
+  transform: rotate(-90deg) translate(0px, -40px); }
 
 .flex-start-row-nowrap {
   display: flex;
@@ -293,8 +250,7 @@ td {
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
-  align-content: center;
-}
+  align-content: center; }
 
 .flex-start-row-wrap {
   display: flex;
@@ -302,16 +258,14 @@ td {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-end;
-  padding: 0 !important;
-}
+  padding: 0 !important; }
 
 .flex-start-row-wrap-textInput {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-end;
-}
+  align-items: flex-end; }
 
 .flex-start-row-wrap-my-mdc-card-container {
   display: flex;
@@ -319,68 +273,59 @@ td {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-end;
-  width: 100%;
-}
+  width: 100%; }
 
 .flex-start-column-wrap {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: flex-start;
-  /*align-items: center;*/
-}
+  /*align-items: center;*/ }
 
 .flex-start-column-nowrap {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  /*align-items: center;*/
-}
+  /*align-items: center;*/ }
 
 .flex-end-row-nowrap {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: center;
-}
+  justify-content: center; }
 
 tr#nonPaddinRow, tr#nonPaddinRow td {
   padding: 0px !important;
-  background-color: white;
-}
+  background-color: white; }
 
 .flex-center {
   display: flex;
   flex-direction: row;
   justify-content: center;
   /*horizontally*/
-  padding: 0 5px;
-}
+  padding: 0 5px; }
 
 .flex-item {
   flex: 0 1 calc(100% / 4);
   overflow: hidden;
   padding: 4px;
   /*  
-    margin: 0 8px 5px 0;  
-    border: 1px solid #ced4da;
-    width:150px;
-  */
-}
+  margin: 0 8px 5px 0;  
+  border: 1px solid #ced4da;
+  width:150px;
+*/ }
 
 .flex-item:nth-child(5n) {
   flex-basis: 100%;
   /*flex-grow: 4;*/
-  /*width: 500px;*/
-}
+  /*width: 500px;*/ }
 
 /* Inserting this collapsed row between two flex items will make 
  * the flex item that comes after it break to a new row */
 .break {
   flex-basis: 100%;
-  height: 0;
-}
+  height: 0; }
 
 #questionTab {
   display: flex;
@@ -403,8 +348,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   -moz-transition-duration: 1s;
   -o-transition-duration: 1s;
   transition-duration: 1s;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); }
 
 #questionTab .nav-item {
   flex: 1 1 auto;
@@ -412,17 +356,14 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   border: solid 1px black !important;
   padding: 1px 2px;
   text-decoration-color: white !important;
-  /*font-size: smaller;*/
-}
+  /*font-size: smaller;*/ }
 
 #questionTab > .nav-item:nth-child(2) {
-  margin-top: 20px;
-}
+  margin-top: 20px; }
 
 #questionTab .nav-item:hover {
   cursor: pointer;
-  background: gold;
-}
+  background: gold; }
 
 .flex-container-evenly-justified {
   display: flex;
@@ -430,41 +371,34 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*vertical alignment*/
   align-items: center;
   /*horizontal aligment evenly*/
-  justify-content: space-between;
-}
+  justify-content: space-between; }
 
 .flex-item-left-justify {
-  align-self: flex-start;
-}
+  align-self: flex-start; }
 
 .flex-item-right-justify {
-  align-self: flex-end;
-}
+  align-self: flex-end; }
 
 .actionBtnFull {
-  background-color: #c22bdb;
-  color: white;
-}
+  background-color: #9a24ad;
+  color: white; }
 
 .actionBtnBase {
-  background-color: #ff6a00;
-  color: white;
-}
+  background-color: #be5205;
+  color: white; }
 
 .actionBtnInitial {
-  background-color: #00ffff;
-}
+  background-color: #3800ff;
+  color: white; }
 
 .actionBtnInterim {
-  background-color: #6640ec;
-  color: white;
-}
+  background-color: #0325ab;
+  color: white; }
 
 .actionBtnDischarge {
-  background-color: #ff006e;
-  color: white;
-}
+  background-color: #ad1255;
+  color: white; }
 
 .actionBtnFollowup {
-  background-color: #4cff00;
-}
+  background-color: #3eca03;
+  color: white; }

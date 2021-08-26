@@ -14,7 +14,7 @@ namespace IPRehab.Helpers
     {
       QuestionWithSelectItems qws = new()
       {
-        Form = dto.Form,
+        Form = dto.FormName,
         Section = GetSectionKey(dto),
         Required = dto.Required,
         QuestionID = dto.QuestionID,
@@ -70,8 +70,8 @@ namespace IPRehab.Helpers
 
       if (!validChoices.Any() && answers.Any())
       {
-        /* questions with Y/N, check, or free text answer types will have empty validChoices parameter */
-        AnswerDTO thisAnswer = answers.First(); /* so just make the the SelectListItem out of the answer if any */
+        /* an empty validChoices parameter only possible for questions with Y/N, check, or free text answer */
+        AnswerDTO thisAnswer = answers.First(); /* so use the text in the answer to populate the selectedChoices with single SelectListItem */
         if (answerCodeCategory == "Date")
         {
           text = ParseString(thisAnswer.Description); 

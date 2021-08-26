@@ -89,12 +89,14 @@ namespace IPRehabWebAPI2.Controllers
             var thisEpisode = await _episodeRepository.FindByCondition(episode =>
               episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
 
-            var thisQuestionAnswers = thisEpisode.tblAnswer.Where(a => a.QuestionIDFK == q.QuestionID)
+            var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
               .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
-
-            if (thisQuestionAnswers.Any())
+            if (thisQuestionAnswers != null)
             {
-              q.Answers = thisQuestionAnswers;
+              if (thisQuestionAnswers.Any())
+              {
+                q.Answers = thisQuestionAnswers;
+              }
             }
           }
         }

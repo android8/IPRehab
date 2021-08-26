@@ -41,8 +41,8 @@ namespace IPRehabWebAPI2.Controllers
       //internally retrieve windows identity from User.Claims
       string networkName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
 
-      //ToDo: remove hard coded network name
-      networkName = "VHALEBBIDELD";
+      //ToDo: remove this hard coded network name
+      //networkName = "VHALEBBIDELD";
 
       if (string.IsNullOrEmpty(networkName))
       {
@@ -59,6 +59,9 @@ namespace IPRehabWebAPI2.Controllers
       else
       {
         List<string> userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
+        
+        //ToDo: remove this hard coded facility
+        //userFacilities = new List<string>() { "648" };
 
         int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
         var currentQuarterNumber = quarters[DateTime.Today.Month - 1];

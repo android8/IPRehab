@@ -29,14 +29,11 @@ namespace IPRehab.Controllers
     /// <param name="id"></param>
     /// <returns></returns> 
     // GET: QuestionController/Edit/5
-    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string redirectFrom)
+    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID)
     {
-      string action = string.IsNullOrEmpty(redirectFrom) ? "Edit" : $"{redirectFrom} ";
-      ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "IRF-PAI Form" : (stage == "Followup" ? "Follow Up" : $"{stage}");
+      string action = "Edit";
+      ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       ViewBag.Action = $"{action} Mode";
-      ViewBag.PatientID = patientID;
-      ViewBag.PatientName = patientName;
-      ViewBag.EpisodeID = episodeID;
       
       List<QuestionDTO> questions = new List<QuestionDTO>();
       bool includeAnswer = (action == "Edit");
@@ -45,8 +42,6 @@ namespace IPRehab.Controllers
       actionButtonVM.EpisodeID = episodeID;
       actionButtonVM.PatientID = patientID;
       actionButtonVM.PatientName = patientName;
-      actionButtonVM.StageSettings = StageColorManger.stageType;
-      actionButtonVM.ButtonSettings = StageColorManger.actionBtnColor;
       ViewBag.ActionBtnVM = actionButtonVM;
       try
       {
@@ -58,12 +53,13 @@ namespace IPRehab.Controllers
         {
           case null:
           case "":
+          case "Full":
             apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-            badgeBackgroundColor = StageColorManger.actionBtnColor[stage];
+            badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
             break;
           default:
             apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
-            badgeBackgroundColor = StageColorManger.actionBtnColor[stage];
+            badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
             break;
         }
         Res = await APIAgent.GetDataAsync(new Uri($"{apiEndpoint}"));

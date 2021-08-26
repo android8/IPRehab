@@ -93,16 +93,24 @@ namespace IPRehab.Controllers
           {
             PatientViewModel thisPatVM = new();
             thisPatVM.Patient = pat;
+
             foreach(var episode in pat.CareEpisodes)
             {
               RehabActionViewModel episodeCommandBtn = new();
               episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
               episodeCommandBtn.PatientID = episode.PatientIcnFK;
               episodeCommandBtn.PatientName = pat.Name;
-              episodeCommandBtn.StageSettings = StageColorManger.stageType;
-              episodeCommandBtn.ButtonSettings = StageColorManger.actionBtnColor;
               thisPatVM.ActionButtonVM = episodeCommandBtn;
             }
+            if (thisPatVM.ActionButtonVM == null)
+            {
+              RehabActionViewModel episodeCommandBtn = new();
+              episodeCommandBtn.EpisodeID = -1;
+              episodeCommandBtn.PatientID = pat.PTFSSN;
+              episodeCommandBtn.PatientName = pat.Name;
+              thisPatVM.ActionButtonVM = episodeCommandBtn;
+            }
+            vm.Add(thisPatVM);
           }
 
           //returning the question list to view  

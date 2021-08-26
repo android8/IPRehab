@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IPRehab.Helpers
 {
-  public static class StageColorManger
+  public static class EpisodeCommandButtonSettings
   {
     public static Dictionary<string, string> stageType = new Dictionary<string, string>() {
       { "Full", "Create new episode with Full IRF-PAI form"},
