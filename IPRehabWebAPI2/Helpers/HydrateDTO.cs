@@ -42,7 +42,8 @@ namespace IPRehabWebAPI2.Helpers
       return questionDTO;
     }
 
-    public static AnswerDTO HydrateAnswer(tblAnswer a) {
+    public static AnswerDTO HydrateAnswer(tblAnswer a)
+    {
       EpisodeOfCareDTO episode = new()
       {
         EpisodeOfCareID = a.EpsideOfCareIDFK,
@@ -59,7 +60,8 @@ namespace IPRehabWebAPI2.Helpers
         Comment = a.AnswerCodeSetFKNavigation.Comment
       };
 
-      AnswerDTO answerDTO = new() {
+      AnswerDTO answerDTO = new()
+      {
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
         CareStage = a.StageIDFKNavigation.CodeDescription,
@@ -73,7 +75,7 @@ namespace IPRehabWebAPI2.Helpers
 
     private static string GetGroupTitle(tblQuestion q, string questionStage)
     {
-      var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID && 
+      var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID &&
           (x.StageFKNavigation.CodeValue.ToUpper() == questionStage));
       if (!alternateTitle.Any())
         return q.GroupTitle;
@@ -119,15 +121,17 @@ namespace IPRehabWebAPI2.Helpers
 
     public static EpisodeOfCareDTO HydrateEpisodeOfCare(tblEpisodeOfCare e)
     {
-      /* always used Q12 and Q23 answers to determine episode dates */
       DateTime admissionDate = new(DateTime.MinValue.Ticks);
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
-      IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a => 
+
+      /* check if Q12 and Q23 have answers and, it yes, trump the episode dates */
+      IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
         a.EpsideOfCareIDFK == e.EpisodeOfCareID && (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
-        .OrderBy(a=>a.QuestionIDFKNavigation.Order).ThenBy(a=>a.QuestionIDFKNavigation.QuestionKey);
+        .OrderBy(a => a.QuestionIDFKNavigation.Order).ThenBy(a => a.QuestionIDFKNavigation.QuestionKey);
       if (keyDates.Any())
       {
-        if (DateTime.TryParse(ParseString(keyDates.First().Description), out admissionDate))
+        /* there is only one admission date and one onset date, so first must be Q12 admission date*/
+        if (DateTime.TryParse(ParseDateString(keyDates.First().Description), out admissionDate))
         {
           if (admissionDate.Ticks == DateTime.MinValue.Ticks)
           {
@@ -135,7 +139,8 @@ namespace IPRehabWebAPI2.Helpers
           }
         }
 
-        if (DateTime.TryParse(ParseString(keyDates.Last().Description), out onsetDate))
+        /* the Last() must be onset date */
+        if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))
         {
           if (onsetDate.Ticks == DateTime.MinValue.Ticks)
           {
@@ -148,7 +153,7 @@ namespace IPRehabWebAPI2.Helpers
       {
         EpisodeOfCareID = e.EpisodeOfCareID,
         AdmissionDate = admissionDate,
-        OnsetDate =  onsetDate,
+        OnsetDate = onsetDate,
         PatientIcnFK = e.PatientICNFK
       };
     }
@@ -173,7 +178,7 @@ namespace IPRehabWebAPI2.Helpers
       return user;
     }
 
-    private static string ParseString(string thisString)
+    private static string ParseDateString(string thisString)
     {
       string text = string.Empty;
       char[] parsers = { '/', ' ', '-' };
@@ -196,13 +201,14 @@ namespace IPRehabWebAPI2.Helpers
       if (q.tblQuestionInstruction.Any(i => i.QuestionIDFK == q.QuestionID))
       {
         return q.tblQuestionInstruction.Where(i => i.QuestionIDFK == q.QuestionID)
-          .OrderBy(i=>i.Order)
-          .Select(i=> new QuestionInstructionDTO {
+          .OrderBy(i => i.Order)
+          .Select(i => new QuestionInstructionDTO
+          {
             InstructionId = i.InstructionID,
             QuestionIDFK = q.QuestionID,
-            Instruction =i.Instruction,
+            Instruction = i.Instruction,
             DisplayLocation = i.DisplayLocationFKNavigation.CodeValue
-        }).ToList();
+          }).ToList();
       }
       else
       {

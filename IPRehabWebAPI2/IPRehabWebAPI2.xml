@@ -4,13 +4,14 @@
         <name>IPRehabWebAPI2</name>
     </assembly>
     <members>
-        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.Boolean)">
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.Boolean,System.String)">
             <summary>
             get patient matching the criteria and limit to user facility level
             do not across facility boundary unless the user has access level beyond facility level
             </summary>
             <param name="criteria"></param>
             <param name="withEpisode"></param>
+            /// <param name="currentUser"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
@@ -40,6 +41,12 @@
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">
             <summary>
             Hydrate the DTO with selected domain properties
+            </summary>
+        </member>
+        <member name="P:IPRehabWebAPI2.Models.QuestionDTO.Enabled">
+            <summary>
+            set the Enabled property to false, if this question is dependent on another question's answers and if other question(s) determines to false 
+            set it to true, if this question is not dependent on another question's answers 
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.QuestionDTO.Answers">

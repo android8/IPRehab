@@ -79,11 +79,12 @@ namespace IPRehabWebAPI2.Controllers
         Console.WriteLine($"Unable to get questions in the specified stage. {ex.Message}");
         throw;
       }
-      if (includeAnswer)
+
+      if (episodeID != -1 && includeAnswer)
       {
         try
         {
-          //populate answers
+          //the answer keys are contained in the episode then use episodeID to find all the answers to each question
           foreach (var q in questions)
           {
             var thisEpisode = await _episodeRepository.FindByCondition(episode =>
@@ -91,8 +92,17 @@ namespace IPRehabWebAPI2.Controllers
 
             var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
               .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
-            if (thisQuestionAnswers != null)
+
+            if (thisQuestionAnswers == null)
             {
+              //ToDo: create app.tblQuestionDependency
+              //find the question dependencies
+              //if determining question has enabling answers then set the q.Enabled = true, otherwise, false
+              q.Enabled = false;
+            }
+            else
+            {
+              q.Enabled = true;
               if (thisQuestionAnswers.Any())
               {
                 q.Answers = thisQuestionAnswers;

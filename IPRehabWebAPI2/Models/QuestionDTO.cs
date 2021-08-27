@@ -18,6 +18,11 @@ namespace IPRehabWebAPI2.Models
     public int AnswerCodeSetID { get; set; }
     public string AnswerCodeCategory { get; set; }
     public int? DisplayOrder { get; set; }
+    /// <summary>
+    /// set the Enabled property to false, if this question is dependent on another question's answers and if other question(s) determines to false 
+    /// set it to true, if this question is not dependent on another question's answers 
+    /// </summary>
+    public bool Enabled { get; set; }
     public List<CodeSetDTO> ChoiceList { get; set; }
     public List<QuestionInstructionDTO> QuestionInsructions { get; set; }
 

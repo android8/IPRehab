@@ -63,40 +63,43 @@ namespace IPRehab.Helpers
       }
     }
 
-    private static List<SelectListItem> SetSelectedChoice(List<CodeSetDTO> validChoices, List<AnswerDTO> answers, string answerCodeCategory)
+    private static List<SelectListItem> SetSelectedChoice(List<CodeSetDTO> choices, List<AnswerDTO> answers, string answerCodeCategory)
     {
       List<SelectListItem> selectedChoices = new();
       string text = string.Empty;
 
-      if (!validChoices.Any() && answers.Any())
+      if (!choices.Any() && answers.Any())
       {
-        /* an empty validChoices parameter only possible for questions with Y/N, check, or free text answer */
-        AnswerDTO thisAnswer = answers.First(); /* so use the text in the answer to populate the selectedChoices with single SelectListItem */
-        if (answerCodeCategory == "Date")
+        foreach (var thisAnswer in answers)
         {
-          text = ParseString(thisAnswer.Description); 
-        }
-        else
-        {
-          text = thisAnswer.Description;
-        }
+          /* an empty validChoices parameter only possible for questions with Y/N, check, or free text answer 
+           so use the text in the answer to populate the selectedChoices with single SelectListItem */
+          if (answerCodeCategory == "Date")
+          {
+            text = ParseDateString(thisAnswer.Description);
+          }
+          else
+          {
+            text = thisAnswer.Description;
+          }
 
-        SelectListItem thisChiceItem = new()
-        { 
-          Text = text, 
-          Value = thisAnswer.AnswerCodeSet.CodeSetID.ToString(), 
-          Selected = true };
-        selectedChoices.Add(thisChiceItem);
-
+          SelectListItem thisChiceItem = new()
+          {
+            Text = text,
+            Value = thisAnswer.AnswerCodeSet.CodeSetID.ToString(),
+            Selected = true
+          };
+          selectedChoices.Add(thisChiceItem);
+        }
         return selectedChoices;
       }
       else
       {
-        foreach (var c in validChoices)
+        foreach (var c in choices)
         {
           if (answerCodeCategory == "Date")
           {
-            text = ParseString(c.CodeDescription);
+            text = ParseDateString(c.CodeDescription);
           }
           else
           {
@@ -114,11 +117,11 @@ namespace IPRehab.Helpers
       }
     }
 
-    private static string ParseString(string thisString)
+    private static string ParseDateString(string originalString)
     {
       string text = string.Empty;
-      char[] parsers = { '/', ' ', '-' };
-      string[] dateParts = thisString.Split(parsers);
+      char[] delimiter = { '/', ' ', '-' };
+      string[] dateParts = originalString.Split(delimiter);
       for (int i = 0; i < 3; i++)
       {
         text += $"{dateParts[i]}";
@@ -128,6 +131,10 @@ namespace IPRehab.Helpers
       if(DateTime.TryParse(text, out DateTime aDate))
       {
         text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
+      }
+      else
+      {
+        text = originalString;
       }
       return text;
     }

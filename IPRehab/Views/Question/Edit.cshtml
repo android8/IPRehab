@@ -102,7 +102,7 @@
                     @if (!string.IsNullOrEmpty(headerInstruction))
                     {
                       /* show instruction icon */
-                      <div class="questionInstruction muted">
+                      <div class="sectionInstruction">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
                           <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
                           <title>Section Instruction</title>
@@ -158,7 +158,7 @@
                     @if (!string.IsNullOrEmpty(questionInstruction))
                     {
                       //show instruction icon
-                      <div class="questionInstruction muted">
+                      <div class="questionInstruction">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
                           <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
                           <title>Instruction</title>
@@ -226,13 +226,29 @@
                                 <label for="@($"{q.QuestionKey}_{q.StageTitle}")" aria-label="date null label"></label>
                                 if (q.ChoiceList.Any())
                                 {
-                                  <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                         placeholder="MM/dd/yyyy" value="@($"{q.ChoiceList.First()?.Text}")" class="persistable" />
+                                  foreach (var c in q.ChoiceList)
+                                  {
+                                    <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                           placeholder="MM/dd/yyyy" value="@($"{q.ChoiceList.First()?.Text}")"
+                                           class="persistable" />
+                                  }
                                 }
                                 else
                                 {
                                   <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
                                          placeholder="MM/dd/yyyy" class="persistable" />
+                                }
+                                if (q.QuestionKey == "Q43")
+                                {
+                                  <span>
+                                    <button class="mdc-button">
+                                      <span class="mdc-button__ripple"></span>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add ICD code</title>
+                                      </svg>
+                                    </button>
+                                  </span>
                                 }
                               }
                               break;
@@ -241,6 +257,18 @@
                               {
                                 <label for="@($"{q.QuestionKey}_{q.StageTitle}")" aria-label="textbox label"></label>
                                 @Html.TextBox($"{q.QuestionKey}_{q.StageTitle}", "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey + '_' + q.StageTitle, @class = "textBoxStyle persistable" /*, @readonly = "readonly"*/ } });
+                                if (q.QuestionKey == "Q24" || q.QuestionKey == "Q22")
+                                {
+                                  <span>
+                                    <button class="mdc-button">
+                                      <span class="mdc-button__ripple"></span>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add ICD code</title>
+                                      </svg>
+                                    </button>
+                                  </span>
+                                }
                               }
                               break;
 
@@ -274,7 +302,7 @@
                   <tr class="bg-warning">
                     <td colspan="2">
                       <div class="font-weight-bold">Self Care Aggregate Score: </div>
-                      <div class="questionInstruction muted">
+                      <div class="footerInstruction">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
                           <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
                           <title>Instruction</title>
@@ -296,7 +324,7 @@
                   <tr class="bg-warning">
                     <td colspan="2">
                       <div class="font-weight-bold">Mobility Aggregate Score:  </div>
-                      <div class="questionInstruction muted">
+                      <div class="footerInstruction">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill instructionIcon" viewBox="0 0 16 16">
                           <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
                           <title>Instruction</title>

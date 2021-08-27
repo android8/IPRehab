@@ -33,35 +33,43 @@ namespace IPRehabWebAPI2.Controllers
     /// </summary>
     /// <param name="criteria"></param>
     /// <param name="withEpisode"></param>
-    /// /// <param name="currentUser"></param>
+    /// <param name="currentUser"></param>
     /// <returns></returns>
     // GET: api/Patients
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatient(string criteria, bool withEpisode, string currentUser)
+    public async Task<ActionResult<IEnumerable<PatientDTO>>> Get(string criteria, bool withEpisode, string currentUser)
     {
-      //internally retrieve windows identity from User.Claims
-      string networkName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
+      string theUser = currentUser;
 
-      networkName = currentUser;
-      //ToDo: remove this hard coded network name
-      //networkName = "VHALEBBIDELD";
-
-      if (string.IsNullOrEmpty(networkName))
+      if (string.IsNullOrEmpty(theUser))
       {
-        return NotFound("Windows Identity is null.  Make sure the service allows Windows Authentication");
+        //replace with windows identity from User.Claims
+        string claimName = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value;
+
+        theUser = claimName;
+
+        //ToDo: remove this hard coded network name
+        theUser = "VHALEBBIDELD";
+
+        if (string.IsNullOrEmpty(theUser))
+        {
+          return BadRequest("User.claims or Windows Identity is null.  Make sure the service allows Windows Authentication");
+        }
       }
 
-      var cacheHelper = new CacheHelper(); 
-      List<MastUserDTO> userAccessLevels = await cacheHelper.GetUserAccessLevels(_masterReportsContext, networkName);
+      var cacheHelper = new CacheHelper();
+      List<MastUserDTO> userAccessLevels = await cacheHelper.GetUserAccessLevels(_masterReportsContext, theUser);
 
-      if (!userAccessLevels.Any())
+      if (userAccessLevels == null)
       {
-        return BadRequest("You are not permitted to view any facility's patients");
+        return NotFound("You do not have asccess to any facility data");
       }
       else
       {
-        List<string> userFacilities = userAccessLevels.Select(x => x.Facility).Distinct().ToList();
-        
+        List<string> userFacilities = userAccessLevels.Where(x=>!string.IsNullOrEmpty(x.Facility)).Select(x => x.Facility).Distinct().ToList();
+        if (userFacilities == null)
+          return NotFound("None of the items in your access level matches any valid facility");
+
         //ToDo: remove this hard coded facility
         //userFacilities = new List<string>() { "648" };
 
@@ -74,29 +82,40 @@ namespace IPRehabWebAPI2.Controllers
         try
         {
           patients = await cacheHelper.GetPatients(_patientRepository, defaultQuarter, criteria);
-          
-          var patientFacilities = patients.Select(x => x.Facility).Distinct().ToList();
-          
-          patients = patients.Where(p=> userFacilities.Any(uf=>p.Facility.Contains(uf))).ToList();
 
-          if (patients != null && withEpisode)
+          //var patientFacilities = patients.Select(x => x.Facility).Distinct().ToList();
+
+          if (patients == null)
+            return NotFound("Patient data is not ready.  Make sure the data for the current quarter is loaded");
+          else
           {
-            foreach (var p in patients)
+            if (withEpisode)
             {
-             var  theseEpisodes = await _episodeOfCareRepository.FindByCondition(episode =>
-                episode.PatientICNFK == p.PTFSSN).ToListAsync();
-              if (theseEpisodes.Any()) { 
-                p.CareEpisodes = theseEpisodes.Select(e => HydrateDTO.HydrateEpisodeOfCare(e));
+              patients = patients.Where(p => userFacilities.Any(uf => p.Facility.Contains(uf)));
+
+              if (patients == null)
+                return NotFound("There are no viewable patients in the facility with your access level.  Make sure the data for the current quarter is available");
+              else
+                patients.ToList();
+
+              foreach (var p in patients)
+              {
+                var theseEpisodes = await _episodeOfCareRepository.FindByCondition(episode =>
+                  episode.PatientICNFK == p.PTFSSN).ToListAsync();
+                if (theseEpisodes.Any())
+                {
+                  p.CareEpisodes = theseEpisodes.Select(e => HydrateDTO.HydrateEpisodeOfCare(e));
+                }
               }
             }
           }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
           Console.WriteLine(ex.Message);
           throw;
         }
-      return Ok(patients);
+        return Ok(patients);
       }
     }
 
@@ -114,7 +133,7 @@ namespace IPRehabWebAPI2.Controllers
       {
         var episodes = await _episodeOfCareRepository.FindByCondition(p =>
           p.PatientICNFKNavigation.ICN == p.PatientICNFK).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
-         patient.CareEpisodes = episodes;
+        patient.CareEpisodes = episodes;
 
       }
       return Ok(patient);

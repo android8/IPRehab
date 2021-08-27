@@ -27,6 +27,7 @@ namespace IPRehab.Controllers
     // GET: PatientController
     public async Task<ActionResult> Index(string criteria)
     {
+      criteria = System.Web.HttpUtility.UrlEncode(criteria);
       ViewBag.Title = "Patient";
       List<PatientDTO> patients = new List<PatientDTO>();
 
@@ -46,12 +47,17 @@ namespace IPRehab.Controllers
       ViewBag.PreviousCriteria = criteria;
 
       HttpResponseMessage Res;
-
-      string url = string.Empty;
+      string url;
       try
       {
         //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
+        if (!string.IsNullOrEmpty(_currentUser))
+        {
+          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&currentUser={_currentUser}";
+        }
+        else
           url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true";
+
           Res = await APIAgent.GetDataAsync(new Uri(url));
       }
       catch (Exception ex)
@@ -124,7 +130,6 @@ namespace IPRehab.Controllers
       }
       else
       {
-        var ex = new Exception();
         return PartialView("_ErrorPartial", new ErrorViewModelHelper()
         .Create("Web API content is not an object or mededia type is not applicaiton/json", string.Empty, string.Empty));
       }
@@ -160,6 +165,7 @@ namespace IPRehab.Controllers
     // GET: PatientController/Edit/5
     public async Task<ActionResult> EditAsync(RehabStageEnum stage, string ssn)
     {
+      ssn = System.Web.HttpUtility.UrlEncode(ssn);
       ViewBag.Title = "Patient";
       PatientDTO patient = new PatientDTO();
 

@@ -15,6 +15,7 @@ namespace IPRehabModel
     {
         public tblQuestion()
         {
+            InverseBranchToQuestion = new HashSet<tblQuestion>();
             tblAnswer = new HashSet<tblAnswer>();
             tblQuestionInstruction = new HashSet<tblQuestionInstruction>();
             tblQuestionStage = new HashSet<tblQuestionStage>();
@@ -35,6 +36,7 @@ namespace IPRehabModel
         public string GroupTitle { get; set; }
         public int AnswerCodeSetFK { get; set; }
         public bool? BranchingPoint { get; set; }
+        public int? BranchToQuestionID { get; set; }
         public bool? MultiChoice { get; set; }
         public bool? Active { get; set; }
         [Column(TypeName = "datetime")]
@@ -43,6 +45,11 @@ namespace IPRehabModel
         [ForeignKey(nameof(AnswerCodeSetFK))]
         [InverseProperty(nameof(tblCodeSet.tblQuestion))]
         public virtual tblCodeSet AnswerCodeSetFKNavigation { get; set; }
+        [ForeignKey(nameof(BranchToQuestionID))]
+        [InverseProperty(nameof(tblQuestion.InverseBranchToQuestion))]
+        public virtual tblQuestion BranchToQuestion { get; set; }
+        [InverseProperty(nameof(tblQuestion.BranchToQuestion))]
+        public virtual ICollection<tblQuestion> InverseBranchToQuestion { get; set; }
         [InverseProperty("QuestionIDFKNavigation")]
         public virtual ICollection<tblAnswer> tblAnswer { get; set; }
         [InverseProperty("QuestionIDFKNavigation")]

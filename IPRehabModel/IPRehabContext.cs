@@ -127,6 +127,11 @@ namespace IPRehabModel
                     .HasForeignKey(d => d.AnswerCodeSetFK)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblQuestion_tblCodeSet");
+
+                entity.HasOne(d => d.BranchToQuestion)
+                    .WithMany(p => p.InverseBranchToQuestion)
+                    .HasForeignKey(d => d.BranchToQuestionID)
+                    .HasConstraintName("FK_tblQuestion_tblQuestion_BranchTo");
             });
 
             modelBuilder.Entity<tblQuestionInstruction>(entity =>
