@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,13 +27,14 @@ namespace IPRehab
       services.Configure<CookiePolicyOptions>(options =>
       {
         //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
-        // This lambda determines whether user consent for non-essential 
-        // cookies is needed for a given request.
+
+        // This lambda determines whether user consent for non-essential cookies is needed for a given request.
         options.CheckConsentNeeded = context => true; // true if consent required
         // requires using Microsoft.AspNetCore.Http;
         options.MinimumSameSitePolicy = SameSiteMode.None;
         options.ConsentCookie.Expiration = TimeSpan.FromMinutes(20);
       });
+
       services.AddSession(options =>
       {
         options.IdleTimeout = TimeSpan.FromMinutes(20);
@@ -44,13 +46,19 @@ namespace IPRehab
       //services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
-           //preserve circular reference
-           o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; //preserve circular reference
       });
       services.AddResponseCaching();
       services.AddRazorPages();
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
       services.AddSingleton<IEmailSender, EmailSender>();
+
+      /* Implement ProblemDetailsFactory
+        MVC uses Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory to produce all instances of ProblemDetails and ValidationProblemDetails. This includes client error responses, validation failure error responses, and the ControllerBase.Problem and ControllerBase.ValidationProblem helper methods.
+       */
+      /* https://stevenmaglio.blogspot.com/2019/12/create-custom-problemdetailsfactory.html */
+
+      //services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
       services.AddAntiforgery(options =>
       {
@@ -74,10 +82,10 @@ namespace IPRehab
       }
       app.UseHttpsRedirection();
       app.UseStaticFiles();
-      
+
       //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
       app.UseCookiePolicy();
-      
+
       app.UseRouting();
       //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
       app.UseAuthentication();

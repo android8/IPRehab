@@ -31,6 +31,10 @@ namespace IPRehab.Controllers
     // GET: QuestionController/Edit/5
     public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID)
     {
+      stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
+      patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
+      patientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
+    
       string action = "Edit";
       ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       ViewBag.Action = $"{action} Mode";

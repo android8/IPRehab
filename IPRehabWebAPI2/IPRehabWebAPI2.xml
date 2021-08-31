@@ -4,14 +4,20 @@
         <name>IPRehabWebAPI2</name>
     </assembly>
     <members>
-        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.Boolean,System.String)">
+        <member name="T:IPRehabWebAPI2.Controllers.ErrorController">
             <summary>
-            get patient matching the criteria and limit to user facility level
-            do not across facility boundary unless the user has access level beyond facility level
+            https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-5.0
             </summary>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.Get(System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            get only meta data of an individual patient by id
+            </summary>
+            <param name="id"></param>
             <param name="criteria"></param>
-            <param name="withEpisode"></param>
-            /// <param name="currentUser"></param>
+            <param name="networkName"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
@@ -21,21 +27,23 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetUserAccessLevels(UserModel.MasterreportsContext,System.String)">
+        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetUserAccessLevels(System.String)">
             <summary>
             Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
             </summary>
-            <param name="context"></param>
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetPatients(IPRehabRepository.Contracts.IFSODPatientRepository,System.Int32,System.String)">
+        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.GetPatients(IPRehabRepository.Contracts.IFSODPatientRepository,System.String,System.String,System.Int32,System.Int32)">
             <summary>
             use generic IFODPatientRepository to get patient filtered by quarter and criteria
             </summary>
-            <param name="_patientRepository"></param>
             <param name="currentQuarter"></param>
+            <param name="_patientRepository"></param>
             <param name="criteria"></param>
+            <param name="networkName"></param>
+            <param name="pageNumber"></param>
+            <param name="PageSize"></param>
             <returns></returns>
         </member>
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">

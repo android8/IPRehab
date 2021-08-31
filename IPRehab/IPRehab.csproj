@@ -49,6 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\cascadeDropdown\cascadeDropdown.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Scripts\TypeScriptSupport.md" />
   </ItemGroup>
 
@@ -110,6 +114,10 @@
 
   <ItemGroup>
     <Folder Include="logs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\cascadeDropdown\cascadeDropdown.js" />
   </ItemGroup>
 
 </Project>

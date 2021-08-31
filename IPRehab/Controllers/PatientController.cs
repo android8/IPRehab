@@ -27,7 +27,7 @@ namespace IPRehab.Controllers
     // GET: PatientController
     public async Task<ActionResult> Index(string criteria)
     {
-      criteria = System.Web.HttpUtility.UrlEncode(criteria);
+      criteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(criteria));
       ViewBag.Title = "Patient";
       List<PatientDTO> patients = new List<PatientDTO>();
 
@@ -51,9 +51,9 @@ namespace IPRehab.Controllers
       try
       {
         //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
-        if (!string.IsNullOrEmpty(_currentUser))
+        if (!string.IsNullOrEmpty(_impersonatedUser))
         {
-          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&currentUser={_currentUser}";
+          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&impersonatedUser={_impersonatedUser}";
         }
         else
           url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true";

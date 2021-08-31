@@ -28,14 +28,14 @@ namespace IPRehab.Controllers
     protected readonly string sessionKey = "UserAccessLevels";
     protected List<MastUserDTO> userAccessLevels;
     readonly ILogger<EpisodeController> _logger;
-    protected string _currentUser;
+    protected string _impersonatedUser;
 
     protected BaseController(IConfiguration configuration)
     {
       _configuration = configuration;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
-      _currentUser = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
+      _impersonatedUser = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
       _options = new JsonSerializerOptions()
       {
         ReferenceHandler = ReferenceHandler.Preserve,
@@ -47,17 +47,20 @@ namespace IPRehab.Controllers
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-      if (string.IsNullOrEmpty(_currentUser))
-      {
-        //no impersonation so get identity from User.Claims
-        _currentUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; //HttpContext.User.Identity.Name;
-      }
-      _currentUser = System.Web.HttpUtility.UrlEncode(_currentUser);
+      string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
+
+      //no impersonation so get identity from User.Claims
+      string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; //HttpContext.User.Identity.Name;
+      trueUser = System.Web.HttpUtility.UrlEncode(trueUser);
+
+      _impersonatedUser = System.Web.HttpUtility.UrlEncode(_impersonatedUser);
 
       ViewBag.CurrentUser = "Unknown";
 
-      var accessLevels = await SerializationGeneric<MastUserDTO>.SerializeAsync($"{_apiBaseUrl}/api/MasterReportsUser/{_currentUser}", _options);
-      //List<MastUserDTO> accessLevels = await UserPermissionFromWebAPIAsync(_currentUser);
+      var accessLevels = await SerializationGeneric<MastUserDTO>.SerializeAsync(
+        string.IsNullOrEmpty(_impersonatedUser) ?
+        /*not impersonated*/ $"{apiUrlBase}/{trueUser}" : 
+        /*impersonated*/ $"{apiUrlBase}/{_impersonatedUser}", _options);
 
       if (accessLevels != null && accessLevels.Any())
       {

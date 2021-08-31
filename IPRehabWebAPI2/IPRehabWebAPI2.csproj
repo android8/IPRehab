@@ -24,6 +24,9 @@
     <Compile Remove="Controllers\TodoItemsController.cs" />
     <Compile Remove="Controllers\WeatherForecastController.cs" />
     <Compile Remove="Models\PatientSearchCriteria.cs" />
+    <Compile Remove="Startup - new.cs" />
+    <Compile Remove="Startup.old.cs" />
+    <Compile Remove="StartupXYZ - new.cs" />
     <Compile Remove="WeatherForecast.cs" />
   </ItemGroup>
 

@@ -230,12 +230,15 @@ td {
   color: #606161;
 }
 
-
 .patientRow {
   background-color: #2f3161;
   color: white;
-  margin: 20px !important;
   padding: 20px !important;
+}
+
+td.spacer {
+  padding-bottom:5px !important;
+  background-color:white;
 }
 
 .wrapLongOption {
