@@ -1,13 +1,23 @@
-﻿@model int
+﻿@model PatientListViewModel
 
 <div class="flex-container-evenly-justified">
   <h1 class="fixedTop">
     Patients
     <span>
       <input id="searchCriteria" type="text" placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64" value="@ViewBag.PreviousCriteria" />
-      <a id="search" asp-action="Index" asp-route-criteria="@ViewBag.PreviousCriteria"  class="btn-sm btn-info">Search</a>&nbsp;
+      <a id="search" asp-action="Index" asp-route-criteria="@ViewBag.PreviousCriteria" class="btn-sm btn-info">Search</a>&nbsp;
       <span id="previousCriteria"></span>&nbsp;
-      <span id="recordCount">@Model records</span>
+
+      @*the Model.Patients.Count() is total matched records that are Viewable in the current pager. 
+        The Model.TotalPatients is total matched records in the repository*@
+      @if (Model.Patients.Any())
+      {
+        <span id="recordCount">@($"{Model.Patients.Count()} of {Model.TotalPatients} records")</span>
+      }
+      else
+      {
+        <span id="recordCount">0 records</span>
+      }
     </span>
   </h1>
 </div>

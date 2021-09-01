@@ -54,10 +54,12 @@ namespace IPRehabWebAPI2.Helpers
     /// <param name="_patientRepository"></param>
     /// <param name="networkName"></param>
     /// <param name="criteria"></param>
+    /// <param name="orderBy"></param>
     /// <param name="pageNumber"></param>
     /// <param name="PageSize"></param>
+
     /// <returns></returns>
-    public async Task<IEnumerable<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria,  int pageNumber, int PageSize)
+    public async Task<PatientSearchResultMeta> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria,  string orderBy, int pageNumber, int PageSize)
     {
       //get user access level from external stored proc
       var distinctUserFacilities = await GetUserAccessLevels(networkName);
@@ -73,7 +75,7 @@ namespace IPRehabWebAPI2.Helpers
         int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
         var currentQuarterNumber = quarters[DateTime.Today.Month - 1];
 
-        int defaultQuarter = int.Parse($"{DateTime.Today.Year}{currentQuarterNumber}"); //result like 20213, 20221
+        int defaultQuarter = DateTime.Today.Year * 10 + currentQuarterNumber; //result like 20213, 20221
         List<int> theseQuarters = new List<int>() { defaultQuarter, defaultQuarter - 1, defaultQuarter - 2 };
 
         string cacheKey = criteria;
@@ -81,7 +83,7 @@ namespace IPRehabWebAPI2.Helpers
           cacheKey = "No Criteria";
 
         IEnumerable<PatientDTO> patients = null;
-
+        int totalViewablePatientCount = 0;
         //no criteria
         if (string.IsNullOrEmpty(criteria))
         {
@@ -89,19 +91,29 @@ namespace IPRehabWebAPI2.Helpers
           {
             patients = await _patientRepository.FindByCondition(p => thisQuarter == p.FiscalPeriodInt).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
 
-            //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
-            patients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf))).Skip((pageNumber - 1) * PageSize).Take(PageSize);
-
             if (patients.Any())
-              break;
+            {
+              var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+              totalViewablePatientCount = viewablePatients.Count();
+              //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
+              if (pageNumber == 0)
+              {
+                patients = viewablePatients.Take(PageSize);
+              }
+              else
+              {
+                patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+              }
+
+              break; //break out foreach since .Any() is true
+            }
           }
         }
         //with criteria
         else
         {
-          int numericCriteria;
           //numeri criteria
-          if (int.TryParse(criteria, out numericCriteria))
+          if (int.TryParse(criteria, out int numericCriteria))
           {
             foreach (int thisQuarter in theseQuarters)
             {
@@ -114,11 +126,14 @@ namespace IPRehabWebAPI2.Helpers
               )
               .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
 
-              //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
-              patients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf))).Skip((pageNumber - 1) * PageSize).Take(PageSize);
-
               if (patients.Any())
+              {
+                var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                totalViewablePatientCount = viewablePatients.Count();
+                //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
+                patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
                 break;
+              }
             }
           }
           //non-numeric criteria
@@ -135,15 +150,21 @@ namespace IPRehabWebAPI2.Helpers
               )
               .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
 
-              //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
-              patients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf))).Skip((pageNumber - 1) * PageSize).Take(PageSize);
-
               if (patients.Any())
+              {
+                var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                totalViewablePatientCount = viewablePatients.Count();
+                //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
+                patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+
                 break;
+              }
             }
           }
         }
-        return patients;
+
+        PatientSearchResultMeta meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
+        return (meta);
       }
     }
     private string CleanUserName(string networkID)

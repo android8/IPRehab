@@ -2,7 +2,7 @@
   Layout = "_Layout";
 }
 
-@{await Html.RenderPartialAsync("_SearchPartial", 0);}
+@{await Html.RenderPartialAsync("_SearchPartial", new PatientListViewModel());}
 
 <div class="flex-md-column paddingTop text-danger">
   <div class="font-weight-bold">No data for at least one of the following reasons:</div>

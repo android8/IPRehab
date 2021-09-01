@@ -15,10 +15,8 @@ namespace IPRehab.Controllers
 {
   public class TestColorController : BaseController
   {
-    ILogger<TestColorController> _logger;
-    public TestColorController(ILogger<TestColorController> logger, IConfiguration configuration) : base(configuration)
+    public TestColorController(ILogger<TestColorController> logger, IConfiguration configuration) : base(configuration, logger)
     {
-      _logger = logger;
     }
 
     public async Task<ActionResult> IndexAsync()

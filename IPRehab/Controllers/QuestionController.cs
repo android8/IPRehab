@@ -16,10 +16,8 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class QuestionController : BaseController
   {
-    ILogger<QuestionController> _logger;
-    public QuestionController(ILogger<QuestionController> logger, IConfiguration configuration) : base(configuration)
+    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger) : base(configuration, logger)
     {
-      _logger = logger;
     }
 
     

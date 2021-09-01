@@ -27,15 +27,19 @@ namespace IPRehab.Controllers
     protected readonly JsonSerializerOptions _options;
     protected readonly string sessionKey = "UserAccessLevels";
     protected List<MastUserDTO> userAccessLevels;
-    readonly ILogger<EpisodeController> _logger;
-    protected string _impersonatedUser;
+    protected readonly ILogger _logger;
+    protected readonly string _impersonatedUser;
+    protected readonly int _pageSize;
 
-    protected BaseController(IConfiguration configuration)
+    protected BaseController(IConfiguration configuration, ILogger logger)
     {
       _configuration = configuration;
+      _logger = logger;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
-      _impersonatedUser = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
+      _impersonatedUser = System.Web.HttpUtility.UrlEncode(_configuration.GetSection("AppSettings").GetValue<string>("Impersonate"));
+      _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
+
       _options = new JsonSerializerOptions()
       {
         ReferenceHandler = ReferenceHandler.Preserve,
@@ -52,8 +56,6 @@ namespace IPRehab.Controllers
       //no impersonation so get identity from User.Claims
       string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; //HttpContext.User.Identity.Name;
       trueUser = System.Web.HttpUtility.UrlEncode(trueUser);
-
-      _impersonatedUser = System.Web.HttpUtility.UrlEncode(_impersonatedUser);
 
       ViewBag.CurrentUser = "Unknown";
 

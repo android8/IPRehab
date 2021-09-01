@@ -15,7 +15,7 @@ namespace IPRehab.Controllers
 {
   public class EpisodeController : BaseController
   {
-    public EpisodeController(IConfiguration configuration) : base(configuration)
+    public EpisodeController(IConfiguration configuration, ILogger<EpisodeController> logger) : base(configuration, logger)
     {
     }
     // GET: EpisodeController

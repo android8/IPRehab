@@ -18,18 +18,17 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class PatientController : BaseController
   {
-    ILogger<PatientController> _logger;
-    public PatientController(ILogger<PatientController> logger, IConfiguration configuration) : base(configuration)
+    public PatientController(ILogger<PatientController> logger, IConfiguration configuration) : base(configuration, logger)
     {
-      _logger = logger;
     }
 
     // GET: PatientController
-    public async Task<ActionResult> Index(string criteria)
+    public async Task<ActionResult> Index(string criteria, int pageNumber, string orderBy)
     {
       criteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(criteria));
       ViewBag.Title = "Patient";
-      List<PatientDTO> patients = new List<PatientDTO>();
+      PatientSearchResultMeta patientsMeta = new();
+      List<PatientDTO> patients = new();
 
       string sessionCriteria;
       string sessionKey = "SearchCriteria";
@@ -48,85 +47,72 @@ namespace IPRehab.Controllers
 
       HttpResponseMessage Res;
       string url;
-      try
-      {
-        //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
-        if (!string.IsNullOrEmpty(_impersonatedUser))
-        {
-          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&impersonatedUser={_impersonatedUser}";
-        }
-        else
-          url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true";
 
-          Res = await APIAgent.GetDataAsync(new Uri(url));
-      }
-      catch (Exception ex)
+      //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
+      if (!string.IsNullOrEmpty(_impersonatedUser))
       {
-        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-          .Create("Fail to call Web API", ex.Message, ex.InnerException?.Message));
+        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&impersonatedUser={_impersonatedUser}&pageNumber={pageNumber}&pageSize={_pageSize}&&orderBy={orderBy}";
       }
+      else
+        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
+
+      Res = await APIAgent.GetDataAsync(new Uri(url));
+
 
       string httpMsgContentReadMethod = "ReadAsStreamAsync";
       System.IO.Stream contentStream = null;
       if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
       {
-        try
+        switch (httpMsgContentReadMethod)
         {
-          switch (httpMsgContentReadMethod)
-          {
-            //use Newtonsoft json deserializer
-            //case "ReadAsStringAsync":
-            //  string patientsString = await Res.Content.ReadAsStringAsync();
-            //  patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
-            //  break;
+          //use Newtonsoft json deserializer
+          //case "ReadAsStringAsync":
+          //  string patientsString = await Res.Content.ReadAsStringAsync();
+          //  patients = JsonConvert.DeserializeObject<List<PatientDTO>>(patientsString);
+          //  break;
 
-            case "ReadAsAsync":
-              patients = await Res.Content.ReadAsAsync<List<PatientDTO>>();
-              break;
+          case "ReadAsAsync":
+            patientsMeta = await Res.Content.ReadAsAsync<PatientSearchResultMeta>();
+            break;
 
-            //use .Net 5 built-in deserializer
-            case "ReadAsStreamAsync":
-              contentStream = await Res.Content.ReadAsStreamAsync();
-              patients = await JsonSerializer.DeserializeAsync<List<PatientDTO>>(contentStream, _options);
-              break;
-          }
-
-          if (patients?.Count == 0)
-            return View("_NoDataPartial");
-
-          List<PatientViewModel> vm = new();
-          foreach(var pat in patients)
-          {
-            PatientViewModel thisPatVM = new();
-            thisPatVM.Patient = pat;
-
-            foreach(var episode in pat.CareEpisodes)
-            {
-              RehabActionViewModel episodeCommandBtn = new();
-              episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
-              episodeCommandBtn.PatientID = episode.PatientIcnFK;
-              episodeCommandBtn.PatientName = pat.Name;
-              thisPatVM.ActionButtonVM = episodeCommandBtn;
-            }
-            if (thisPatVM.ActionButtonVM == null)
-            {
-              RehabActionViewModel episodeCommandBtn = new();
-              episodeCommandBtn.EpisodeID = -1;
-              episodeCommandBtn.PatientID = pat.PTFSSN;
-              episodeCommandBtn.PatientName = pat.Name;
-              thisPatVM.ActionButtonVM = episodeCommandBtn;
-            }
-            vm.Add(thisPatVM);
-          }
-
-          //returning the question list to view  
-          return View(vm);
+          //use .Net 5 built-in deserializer
+          case "ReadAsStreamAsync":
+            contentStream = await Res.Content.ReadAsStreamAsync();
+            patientsMeta = await JsonSerializer.DeserializeAsync<PatientSearchResultMeta>(contentStream, _options);
+            break;
         }
-        catch (Exception ex)// Could be ArgumentNullException or UnsupportedMediaTypeException
+
+        if (patientsMeta.Patients.Count == 0)
+          return View("_NoDataPartial");
+
+        PatientListViewModel patientListVM = new();
+        foreach (var pat in patientsMeta.Patients)
         {
-          return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-            .Create("Json deserialization error", ex.Message, ex.InnerException?.Message));
+          PatientViewModel thisPatVM = new();
+          thisPatVM.Patient = pat;
+
+          foreach (var episode in pat.CareEpisodes)
+          {
+            RehabActionViewModel episodeCommandBtn = new();
+            episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+            episodeCommandBtn.PatientID = episode.PatientIcnFK;
+            episodeCommandBtn.PatientName = pat.Name;
+            thisPatVM.ActionButtonVM = episodeCommandBtn;
+          }
+          if (thisPatVM.ActionButtonVM == null)
+          {
+            RehabActionViewModel episodeCommandBtn = new();
+            episodeCommandBtn.EpisodeID = -1;
+            episodeCommandBtn.PatientID = pat.PTFSSN;
+            episodeCommandBtn.PatientName = pat.Name;
+            thisPatVM.ActionButtonVM = episodeCommandBtn;
+          }
+          patientListVM.Patients.Add(thisPatVM);
+          patientListVM.TotalPatients = patientsMeta.TotalCount;
         }
+
+        //returning the question list to view  
+        return View(patientListVM);
       }
       else
       {
@@ -152,14 +138,7 @@ namespace IPRehab.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult Create(IFormCollection collection)
     {
-      try
-      {
-        return RedirectToAction(nameof(Index));
-      }
-      catch
-      {
-        return View();
-      }
+      return View();
     }
 
     // GET: PatientController/Edit/5
@@ -170,56 +149,41 @@ namespace IPRehab.Controllers
       PatientDTO patient = new PatientDTO();
 
       HttpResponseMessage Res = new HttpResponseMessage();
-      try
+      if (stage != RehabStageEnum.Undefined && !string.IsNullOrEmpty(ssn))
       {
-        if (stage != RehabStageEnum.Undefined && !string.IsNullOrEmpty(ssn))
-        {
-          //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-          Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient/{ssn}"));
-        }
-        string httpMsgContentReadMethod = "ReadAsStringAsync";
-        if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
-        {
-          try
-          {
-            switch (httpMsgContentReadMethod)
-            {
-              //use Newtonsoft json deserializer
-              //case "ReadAsStringAsync":
-              //  string patientsString = await Res.Content.ReadAsStringAsync();
-              //  patient = JsonConvert.DeserializeObject<PatientDTO>(patientsString);
-              //  break;
-
-              case "ReadAsAsync":
-                patient = await Res.Content.ReadAsAsync<PatientDTO>();
-                break;
-
-              //use .Net 5 built-in deserializer
-              case "ReadAsStreamAsync":
-                var contentStream = await Res.Content.ReadAsStreamAsync();
-                patient = await JsonSerializer.DeserializeAsync<PatientDTO>(contentStream, _options);
-                break;
-            }
-
-            //returning the question list to view  
-            return View(patient);
-          }
-          catch (Exception ex) // Could be ArgumentNullException or UnsupportedMediaTypeException
-          {
-            return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-              .Create("Json deserialization error", ex.Message, ex.InnerException?.Message));
-          }
-        }
-        else
-        {
-          return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-            .Create("JSOn content is not an object or not in application/json medial type.", string.Empty, string.Empty));
-        }
+        //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
+        Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/FSODPatient/{ssn}"));
       }
-      catch (Exception ex)
+      string httpMsgContentReadMethod = "ReadAsStringAsync";
+      if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+      {
+        switch (httpMsgContentReadMethod)
+        {
+          //use Newtonsoft json deserializer
+          //case "ReadAsStringAsync":
+          //  string patientsString = await Res.Content.ReadAsStringAsync();
+          //  patient = JsonConvert.DeserializeObject<PatientDTO>(patientsString);
+          //  break;
+
+          case "ReadAsAsync":
+            patient = await Res.Content.ReadAsAsync<PatientDTO>();
+            break;
+
+          //use .Net 5 built-in deserializer
+          case "ReadAsStreamAsync":
+            var contentStream = await Res.Content.ReadAsStreamAsync();
+            patient = await JsonSerializer.DeserializeAsync<PatientDTO>(contentStream, _options);
+            break;
+        }
+
+        //returning the question list to view  
+        return View(patient);
+
+      }
+      else
       {
         return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-          .Create("Web API call failure", ex.Message, ex.InnerException?.Message));
+          .Create("JSOn content is not an object or not in application/json medial type.", string.Empty, string.Empty));
       }
     }
 
@@ -228,14 +192,7 @@ namespace IPRehab.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult Edit(int id, IFormCollection collection)
     {
-      try
-      {
-        return RedirectToAction(nameof(Index));
-      }
-      catch
-      {
-        return View();
-      }
+      return View();
     }
 
     // GET: PatientController/Delete/5
@@ -249,14 +206,7 @@ namespace IPRehab.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult Delete(int id, IFormCollection collection)
     {
-      try
-      {
-        return RedirectToAction(nameof(Index));
-      }
-      catch
-      {
-        return View();
-      }
+      return View();
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PatientViewModel>
+﻿@model PatientListViewModel
 
 @{
   ViewData["Title"] = "Index";
@@ -17,87 +17,87 @@
 }
 
 <div class="flex-column">
-  @{await Html.RenderPartialAsync("_SearchPartial", Model.Count());}
+  @{await Html.RenderPartialAsync("_SearchPartial", Model);}
   <div>
     <table class="table-responsive-md table-bordered">
       <thead>
         <tr>
           <th></th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.VISN)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.VISN)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.Facility)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.Facility)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.District)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.District)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.Division)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.Division)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.Sta6aKey)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.Bedsecn)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.Name)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.PTFSSN)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
           </th>
           <th>
-            @Html.DisplayNameFor(model => model.Patient.FiscalPeriod)
+            @Html.DisplayNameFor(model => model.Patients.First().Patient.FiscalPeriod)
           </th>
         </tr>
       </thead>
       <tbody>
         @{
           int row = 0;
-          foreach (var patVM in Model)
+          foreach (var pat in Model.Patients)
           {
             <!--Patient row-->
             <tr class="patientRow">
               <td>@(++row)</td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.VISN)
+                @Html.DisplayFor(modelItem => pat.Patient.VISN)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.Facility)
+                @Html.DisplayFor(modelItem => pat.Patient.Facility)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.District)
+                @Html.DisplayFor(modelItem => pat.Patient.District)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.Division)
+                @Html.DisplayFor(modelItem => pat.Patient.Division)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.Sta6aKey)
+                @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.Bedsecn)
+                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.Name)
+                @Html.DisplayFor(modelItem => pat.Patient.Name)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.PTFSSN)
+                @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => patVM.Patient.FiscalPeriod)
+                @Html.DisplayFor(modelItem => pat.Patient.FiscalPeriod)
               </td>
             </tr>
 
             <!--Episode of Care row-->
-            @if (!patVM.Patient.CareEpisodes.Any())
+            @if (!pat.Patient.CareEpisodes.Any())
             {
               <tr>
                 <td colspan="10" class="text-danger">
                   <div class="flex-start-row-nowrap">
                     <div>No episode of care&nbsp;</div>
                     <div>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns", patVM.ActionButtonVM);}
+                      @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
                     </div>
                   </div>
                 </td>
@@ -112,26 +112,26 @@
                       <tr>
                         <th></th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().EpisodeOfCareID)
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().AdmissionDate)
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().OnsetDate)
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
                         </th>
                         <th>
-                          @Html.DisplayNameFor(modelItem => patVM.Patient.CareEpisodes.First().PatientIcnFK)
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
                         </th>
                       </tr>
                     </thead>
                     <tbody>
 
-                      @foreach (var episode in patVM.Patient.CareEpisodes)
+                      @foreach (var episode in pat.Patient.CareEpisodes)
                       {
                         <tr>
                           <td>
-                            @{await Html.RenderPartialAsync("_RehabActionBtns", patVM.ActionButtonVM);}
+                            @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
                           </td>
                           <td>
                             @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)

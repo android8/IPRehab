@@ -118,8 +118,8 @@ namespace IPRehabWebAPI2
     {
       if (env.IsDevelopment() /* || env.IsProduction()*/)
       {
-        //app.UseDeveloperExceptionPage();
-        app.UseExceptionHandler("/error-local-development");
+        app.UseDeveloperExceptionPage();
+        //app.UseExceptionHandler("/error-local-development");
 
         app.UseSwagger(); // Enable middleware to serve generated Swagger as a JSON endpoint.
         app.UseSwaggerUI(c =>
