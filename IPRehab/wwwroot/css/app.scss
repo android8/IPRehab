@@ -176,10 +176,6 @@ td {
   padding: 0 15px;
 }
 
-#questionnaire tbody tr td {
-  padding: 5px;
-}
-
 .formName {
   background-color: gold;
   font-size: 1.5em;
@@ -236,9 +232,37 @@ td {
   padding: 20px !important;
 }
 
-td.spacer {
-  padding-bottom:5px !important;
-  background-color:white;
+td.answer{
+  max-width:500px;
+}
+
+td.answer .dropdown {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-end;
+}
+
+td.answer .checkbox {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-start;
+}
+
+td.answer .radio {
+  text-align: left;
+/*  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: flex-start;*/
+}
+
+.spacer {
+  padding-bottom: 5px !important;
+  background-color: white;
 }
 
 .wrapLongOption {
@@ -264,10 +288,12 @@ td.spacer {
 }
 
 .select2-selection__rendered {
-  color: mediumblue !important;
+  color: black !important;
   word-wrap: break-word !important;
   text-overflow: inherit !important;
   white-space: normal !important;
+  padding-left: 5px;
+  display: inline-block;
 }
 
 .paddingTop {

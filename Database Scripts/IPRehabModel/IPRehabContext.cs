@@ -19,6 +19,7 @@ namespace IPRehabModel
         }
 
         public virtual DbSet<tblAnswer> tblAnswer { get; set; }
+        public virtual DbSet<tblBranching> tblBranching { get; set; }
         public virtual DbSet<tblCodeSet> tblCodeSet { get; set; }
         public virtual DbSet<tblEpisodeOfCare> tblEpisodeOfCare { get; set; }
         public virtual DbSet<tblPatient> tblPatient { get; set; }
@@ -62,6 +63,23 @@ namespace IPRehabModel
                     .HasForeignKey(d => d.StageIDFK)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblAnswer_tblCodeSet_StageCodeSet");
+            });
+
+            modelBuilder.Entity<tblBranching>(entity =>
+            {
+                entity.Property(e => e.Condition).IsUnicode(false);
+
+                entity.HasOne(d => d.FromQuestion)
+                    .WithMany(p => p.tblBranchingFromQuestion)
+                    .HasForeignKey(d => d.FromQuestionID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_tblBranching_tblQuestion_From");
+
+                entity.HasOne(d => d.ToQuestion)
+                    .WithMany(p => p.tblBranchingToQuestion)
+                    .HasForeignKey(d => d.ToQuestionID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_tblBranching_tblQuestion_To");
             });
 
             modelBuilder.Entity<tblCodeSet>(entity =>
@@ -127,11 +145,6 @@ namespace IPRehabModel
                     .HasForeignKey(d => d.AnswerCodeSetFK)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblQuestion_tblCodeSet");
-
-                entity.HasOne(d => d.BranchToQuestion)
-                    .WithMany(p => p.InverseBranchToQuestion)
-                    .HasForeignKey(d => d.BranchToQuestionID)
-                    .HasConstraintName("FK_tblQuestion_tblQuestion_BranchTo");
             });
 
             modelBuilder.Entity<tblQuestionInstruction>(entity =>

@@ -184,7 +184,7 @@
                     {
                       case int n when n > 3:
                         {
-                          @Html.DropDownList($"{q.QuestionKey}_{q.StageTitle}", q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "select2 wrapLongOption persistable", @readonly = "readonly" })
+                          @Html.DropDownList($"{q.QuestionKey}_{q.StageTitle}", q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "select2 dropdown persistable", @readonly = "readonly" })
                           <label for="@($"{q.QuestionKey}{q.StageTitle}")" aria-label="dropdown null label"></label>
                         }
                         break;
@@ -195,7 +195,7 @@
                           foreach (var c in q.ChoiceList)
                           {
                             <div>
-                              @Html.RadioButton($"{q.QuestionKey}_{q.StageTitle}", q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}_{c.Value}", @class = "persistable" })
+                              @Html.RadioButton($"{q.QuestionKey}_{q.StageTitle}", q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}_{c.Value}", @class = "radio persistable" })
                               <label for="@($"{q.QuestionKey}{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
                             </div>
                           }
@@ -216,7 +216,7 @@
                                   isChecked = true;
                                 }
 
-                                @Html.CheckBox($"{q.QuestionKey}_{q.StageTitle}", isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "optionStyle persistable" /*, @readonly = "readonly"*/ } });
+                                @Html.CheckBox($"{q.QuestionKey}_{q.StageTitle}", isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "optionStyle checkbox persistable" /*, @readonly = "readonly"*/ } });
                                 <label for="@($"{q.QuestionKey}")" aria-label="Checkbox null label"></label>
                               }
                               break;
@@ -238,7 +238,7 @@
                                   <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
                                          placeholder="MM/dd/yyyy" class="persistable" />
                                 }
-                                if (q.QuestionKey == "Q43")
+                                if (q.QuestionKey == "Q43" || q.QuestionKey == "Q47")
                                 {
                                   <span>
                                     <button class="mdc-button">
