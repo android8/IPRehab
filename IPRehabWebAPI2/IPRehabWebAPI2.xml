@@ -40,6 +40,13 @@
             <param name="PageSize"></param>
             <returns></returns>
         </member>
+        <member name="M:IPRehabWebAPI2.Helpers.CacheHelper.CleanUserName(System.String)">
+            <summary>
+            this should be in a utility library
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
         <member name="T:IPRehabWebAPI2.Helpers.HydrateDTO">
             <summary>
             Hydrate the DTO with selected domain properties

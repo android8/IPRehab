@@ -40,6 +40,11 @@ body {
   scrollbar-width: 5px;
 }
 
+.pageTitle {
+  font-size: 2em;
+  font-weight: bold;
+}
+
 /*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
   background-color: white;
@@ -187,19 +192,22 @@ td {
   border-radius: 5px 5px 0 0;
 }
 
+svg {
+  color: #6c757d;
+}
+
 .keyQuestion {
   color: red;
 }
 
 .questionSection {
-  background-color: #040534;
-  color: gold;
+  background-color: lightgray;
+  color: #000000;
   height: 2px;
   font-weight: bold;
 }
 
 .questionText {
-  font-weight: bold;
   text-align: left;
 }
 
@@ -217,19 +225,24 @@ td {
 .sectionInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #adadad;
+  color: #000;
 }
 
 .footerInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #606161;
+  color: #3a3c3c;
 }
 
 .patientRow {
   background-color: #2f3161;
   color: white;
   padding: 20px !important;
+}
+
+.patientRow:hover {
+  background-color: lightblue;
+  color: black;
 }
 
 td.answer {
@@ -242,6 +255,7 @@ td.answer .dropdown {
   flex-direction: row;
   align-content: center;
   justify-content: flex-end;
+  max-width: 300px;
 }
 
 td.answer .checkbox {
@@ -255,9 +269,9 @@ td.answer .checkbox {
 td.answer .radio {
   text-align: left;
   /*  display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: flex-start;*/
+  flex-direction: column;
+  align-content: center;
+  justify-content: flex-start;*/
 }
 
 .spacer {
@@ -301,15 +315,16 @@ td.answer .radio {
 }
 
 .borderTop {
-  border-top: 2px solid black;
-  border-left: 1ps solid black;
-  border-right: 1ps solid black;
+  border-top: 2px solid #cfcfcf;
 }
 
 .borderBottom {
-  border-left: 1ps solid black;
-  border-right: 1ps solid black;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid #cfcfcf;
+}
+
+tr.questionRow :hover {
+  background-color: lightgray;
+  color: black;
 }
 
 .rotate {
@@ -470,7 +485,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 
 #questionTab .nav-item:hover {
   cursor: pointer;
-  background: gold;
+  background-color: lightgray;
 }
 
 .flex-container-evenly-justified {

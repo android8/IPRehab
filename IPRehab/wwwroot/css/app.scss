@@ -14,7 +14,7 @@
   background-repeat: no-repeat;
   /* Scale the background image to be as large as possible */
   background-size: auto;
-  overflow:hidden;
+  overflow: hidden;
 }
 
 .splashscreen #flashText {
@@ -38,6 +38,11 @@
 
 body {
   scrollbar-width: 5px;
+}
+
+.pageTitle {
+  font-size: 2em;
+  font-weight: bold;
 }
 
 /*sandwitch button*/
@@ -81,12 +86,13 @@ body {
 }
 
 .alert-dismissible .close {
-  position:relative;
+  position: relative;
   top: 0;
   right: 0;
   padding: .75rem 1.25rem;
   color: inherit;
 }
+
 .acceptConsent {
   background-color: black !important;
   color: white !important;
@@ -100,8 +106,8 @@ body {
   margin-left: auto;
 }
 
-.splashSpinnerContainer{
-  margin:0;
+.splashSpinnerContainer {
+  margin: 0;
 }
 
 .fixedTop {
@@ -135,9 +141,9 @@ body {
   background-color: #0e2640;
 }
 
-.patientName{
-  font-weight:bold;
-  font-size:large;
+.patientName {
+  font-weight: bold;
+  font-size: large;
 }
 
 alert-info {
@@ -187,25 +193,28 @@ td {
   border-radius: 5px 5px 0 0;
 }
 
-.keyQuestion{
-  color:red;
+svg {
+  color: #6c757d;
+}
+
+.keyQuestion {
+  color: red;
 }
 
 .questionSection {
-  background-color: #040534;
-  color: gold;
+  background-color: lightgray;
+  color: #000000;
   height: 2px;
-  font-weight:bold;
+  font-weight: bold;
 }
 
 .questionText {
-  font-weight: bold;
-  text-align:left;
+  text-align: left;
 }
 
 .instructionIcon {
-  width:12px;
-  height:12px;
+  width: 12px;
+  height: 12px;
 }
 
 .questionInstruction {
@@ -217,13 +226,13 @@ td {
 .sectionInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #adadad;
+  color: #000;
 }
 
 .footerInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #606161;
+  color: #3a3c3c;
 }
 
 .patientRow {
@@ -232,8 +241,13 @@ td {
   padding: 20px !important;
 }
 
-td.answer{
-  max-width:500px;
+.patientRow:hover {
+  background-color: lightblue;
+  color: black;
+}
+
+td.answer {
+  max-width: 500px;
 }
 
 td.answer .dropdown {
@@ -242,6 +256,7 @@ td.answer .dropdown {
   flex-direction: row;
   align-content: center;
   justify-content: flex-end;
+  max-width: 300px;
 }
 
 td.answer .checkbox {
@@ -254,7 +269,7 @@ td.answer .checkbox {
 
 td.answer .radio {
   text-align: left;
-/*  display: flex;
+  /*  display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: flex-start;*/
@@ -301,23 +316,24 @@ td.answer .radio {
 }
 
 .borderTop {
-  border-top: 2px solid black;
-  border-left: 1ps solid black;
-  border-right: 1ps solid black;
+  border-top: 2px solid #cfcfcf;
 }
 
 .borderBottom {
-  border-left: 1ps solid black;
-  border-right: 1ps solid black;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid #cfcfcf
+}
+
+tr.questionRow :hover {
+  background-color: lightgray;
+  color: black
 }
 
 .rotate {
-  width:35px;
-  top:100px;
-  left:20px;
+  width: 35px;
+  top: 100px;
+  left: 20px;
   transform: rotate(-90deg);
-  position:fixed;
+  position: fixed;
   /* Legacy vendor prefixes that you probably don't need... */
   /* Safari */
   -webkit-transform: rotate(-90deg);
@@ -422,7 +438,6 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*flex-grow: 4;*/
   /*width: 500px;*/
 }
-
 /* Inserting this collapsed row between two flex items will make 
  * the flex item that comes after it break to a new row */
 .break {
@@ -469,7 +484,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 
 #questionTab .nav-item:hover {
   cursor: pointer;
-  background: gold;
+  background-color: lightgray;
 }
 
 .flex-container-evenly-justified {
@@ -495,7 +510,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 .actionBtnBase {
-  background-color:#be5205;
+  background-color: #be5205;
   color: white;
 }
 

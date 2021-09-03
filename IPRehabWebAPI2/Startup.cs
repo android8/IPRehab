@@ -52,9 +52,10 @@ namespace IPRehabWebAPI2
       services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
 
       /* https://docs.microsoft.com/en-us/samples/dotnet/aspnetcore.docs/getstarted-swashbuckle-aspnetcore/?tabs=visual-studio */
-
-      /* set "launchUrl": "api/FSODPatient" in properties\launchSettimgs.json to start with FSODPatient page "launchUrl": "swagger" to start with Swagger interface*/
-      // Register the Swagger generator, defining 1 or more Swagger documents
+      
+      /* set "launchUrl": "api/FSODPatient" in properties\launchSettimgs.json to start with FSODPatient page
+             "launchUrl": "swagger" to start with Swagger interface
+      */
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v3", new OpenApiInfo
@@ -104,7 +105,6 @@ namespace IPRehabWebAPI2
           return result;
         };
       })
-
       .AddJsonOptions(o =>
         {
           //   //preserve circular reference
@@ -116,32 +116,30 @@ namespace IPRehabWebAPI2
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-      if (env.IsDevelopment() /* || env.IsProduction()*/)
+      if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
-        //app.UseExceptionHandler("/error-local-development");
-
-        app.UseSwagger(); // Enable middleware to serve generated Swagger as a JSON endpoint.
-        app.UseSwaggerUI(c =>
-        {
-#if DEBUG
-          // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-          // specifying the Swagger JSON endpoint.
-
-          // For Debug in Kestrel
-          c.SwaggerEndpoint("/swagger/v3/swagger.json", "Web API V3");
-#else
-          // To deploy on IIS
-          c.SwaggerEndpoint("/iprehabmetricswebapi/swagger/v3/swagger.json", "Web API V3");
-#endif
-          //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string:
-          //c.RoutePrefix = string.Empty;
-        });
       }
       else
       {
         app.UseExceptionHandler("/error");
       }
+
+      app.UseSwagger();
+      app.UseSwaggerUI(c =>
+      {
+#if DEBUG
+          // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+          // specifying the Swagger JSON endpoint.
+          // For Debug in Kestrel
+          c.SwaggerEndpoint("/swagger/v3/swagger.json", "Web API V3");
+#else
+            // To deploy on IIS
+            c.SwaggerEndpoint("/iprehabmetricswebapi/swagger/v3/swagger.json", "Web API V3");
+#endif
+          //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string:
+          //c.RoutePrefix = string.Empty;
+        });
 
       app.UseHttpsRedirection();
 

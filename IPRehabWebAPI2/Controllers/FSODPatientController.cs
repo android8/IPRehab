@@ -63,7 +63,7 @@ namespace IPRehabWebAPI2.Controllers
       //get all patient with criteria and quarter filter
       PatientSearchResultMeta metaPatients = await cacheHelper.GetPatients(_patientRepository, networkName, criteria, orderBy, pageNumber, pageSize);
 
-      if (metaPatients.Patients == null)
+      if (metaPatients == null || metaPatients.Patients == null)
       {
         return NotFound("No patient is in rehab for the quarter with spcified criteria and visible with your access level.  First, check if patient data is avaialbe for the specified quarter. Second, remove or widen the search criteria, Third, check your level of facility access");
       }

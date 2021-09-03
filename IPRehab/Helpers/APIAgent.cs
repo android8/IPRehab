@@ -14,11 +14,7 @@ namespace IPRehab.Helpers
   {
     public static async Task<HttpResponseMessage> GetDataAsync(Uri uri)
     {
-      HttpClientHandler handler = new();
-
-      handler.UseDefaultCredentials = true;
-
-      using var client = new HttpClient(handler);
+      using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
       client.DefaultRequestHeaders.Clear();
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -30,7 +26,7 @@ namespace IPRehab.Helpers
 
     public static async Task<IEnumerable<tblQuestion>> ReadAsAsyncWithSystemTextJson(Uri uri, JsonSerializerOptions options, string contentReadMethod)
     {
-      using var client = new HttpClient();
+      using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
       client.DefaultRequestHeaders.Clear();
       //Define request data format  
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -38,20 +34,13 @@ namespace IPRehab.Helpers
 
       httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
 
-      try
+      switch (contentReadMethod)
       {
-        switch (contentReadMethod)
-        {
-          case "ReadAsAsync":
-            return await httpResponse.Content.ReadAsAsync<IEnumerable<tblQuestion>>();
-          case "ReadAsStreamAsync":
-            var contentStream = await httpResponse.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
-        }
-      }
-      catch // Could be ArgumentNullException or UnsupportedMediaTypeException
-      {
-        Console.WriteLine("HTTP Response was invalid or could not be deserialised.");
+        case "ReadAsAsync":
+          return await httpResponse.Content.ReadAsAsync<IEnumerable<tblQuestion>>();
+        case "ReadAsStreamAsync":
+          var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+          return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
       }
 
       return null;
@@ -59,7 +48,7 @@ namespace IPRehab.Helpers
 
     public static async Task<IEnumerable<tblQuestion>> StreamWithSystemTextJson(Uri uri, JsonSerializerOptions options)
     {
-      using var client = new HttpClient();
+      using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
       client.DefaultRequestHeaders.Clear();
       //Define request data format  
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -70,15 +59,7 @@ namespace IPRehab.Helpers
       if (httpResponse.Content is object && httpResponse.Content.Headers.ContentType.MediaType == "application/json")
       {
         var contentStream = await httpResponse.Content.ReadAsStreamAsync();
-        try
-        {
-          return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
-        }
-        catch (JsonException ex) // Invalid JSON
-        {
-          Console.WriteLine("Invalid JSON.");
-          Console.WriteLine(ex.Message);
-        }
+        return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
       }
       else
       {
