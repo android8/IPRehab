@@ -24,10 +24,10 @@ namespace IPRehabWebAPI2.Models
     [DisplayName("ADM Parent Key")]
     public int? ADMParent_Key { get; set; }
 
-    [DisplayName("Sta6 Key")]
+    [DisplayName("Sta6")]
     public int Sta6aKey { get; set; }
 
-    [DisplayName("Bed Sec")]
+    [DisplayName("Bed Section")]
     public int? Bedsecn { get; set; }
 
     [DisplayName("Name")]

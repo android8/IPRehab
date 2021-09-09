@@ -49,7 +49,7 @@
   <main role="main" class="pb-3 main">
     <div class="container">
       <aside>
-        <div class="spinner">
+        <div class="spinnerContainer">
           <img id="chiropractor" src="/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
           @*<div class="cube">
               <div class="sides">
@@ -80,13 +80,11 @@
   <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
   <script type="text/javascript" asp-append-version="true">
     $(function () {
-      $('.spinner').hide();
-      $('#chiropractor').hide();
+      $('.spinnerContainer').hide();
     })
 
     $('A').on('click', function () {
-      $('.spinner').show();
-      $('#chiropractor').show();
+      $('.spinnerContainer').show();
     })
   </script>
   @await RenderSectionAsync("Scripts", required: false)
