@@ -89,7 +89,8 @@ namespace IPRehabWebAPI2.Helpers
         {
           foreach (int thisQuarter in theseQuarters)
           {
-            patients = await _patientRepository.FindByCondition(p => thisQuarter == p.FiscalPeriodInt).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
+            patients = await _patientRepository.FindByCondition(p => thisQuarter == p.FiscalPeriodInt)
+              .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
 
             if (patients.Any())
             {
@@ -167,6 +168,12 @@ namespace IPRehabWebAPI2.Helpers
         return (meta);
       }
     }
+
+    /// <summary>
+    /// this should be in a utility library
+    /// </summary>
+    /// <param name="networkID"></param>
+    /// <returns></returns>
     private string CleanUserName(string networkID)
     {
       string networkName = networkID;

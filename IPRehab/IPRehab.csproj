@@ -19,27 +19,18 @@
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
-    <Compile Remove="ViewComponents\**" />
-    <Compile Remove="Views\Shared\Components\**" />
     <Content Remove="Data\**" />
     <Content Remove="Scripts\typings\**" />
-    <Content Remove="ViewComponents\**" />
-    <Content Remove="Views\Shared\Components\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Scripts\typings\**" />
-    <EmbeddedResource Remove="ViewComponents\**" />
-    <EmbeddedResource Remove="Views\Shared\Components\**" />
     <None Remove="Data\**" />
     <None Remove="Scripts\typings\**" />
-    <None Remove="ViewComponents\**" />
-    <None Remove="Views\Shared\Components\**" />
     <TypeScriptCompile Remove="node_modules\**" />
     <TypeScriptCompile Remove="Scripts\typings\**" />
-    <TypeScriptCompile Remove="ViewComponents\**" />
-    <TypeScriptCompile Remove="Views\Shared\Components\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\HydrateHierarchically1.cs" />
     <Compile Remove="Helpers\StateManager.cs" />
   </ItemGroup>
 
@@ -89,6 +80,14 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialChkboxFlexDirectionRow.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\DropDownDefault2.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialInputText.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialInputDate.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialInputTNumber.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialTextArea.cshtml" />
+    <None Include="Views\Shared\Components\SubmitButton\MDSubmitButton.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\RadioFlexDirectionColumnLongText2.cshtml" />
     <None Include="wwwroot\js\app\animateBanner.js" />
     <None Include="wwwroot\js\app\animateBanner.js.map" />
     <None Include="wwwroot\js\app\form.js" />

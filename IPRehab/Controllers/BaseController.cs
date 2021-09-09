@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -25,11 +26,11 @@ namespace IPRehab.Controllers
     protected readonly string _apiBaseUrl;
     protected readonly string _appVersion;
     protected readonly JsonSerializerOptions _options;
-    protected readonly string sessionKey = "UserAccessLevels";
     protected List<MastUserDTO> userAccessLevels;
     protected readonly ILogger _logger;
-    protected readonly string _impersonatedUser;
+    protected readonly string _impersonatedUserName;
     protected readonly int _pageSize;
+    protected readonly string _office;
 
     protected BaseController(IConfiguration configuration, ILogger logger)
     {
@@ -37,9 +38,9 @@ namespace IPRehab.Controllers
       _logger = logger;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
-      _impersonatedUser = System.Web.HttpUtility.UrlEncode(_configuration.GetSection("AppSettings").GetValue<string>("Impersonate"));
+      _impersonatedUserName = System.Web.HttpUtility.UrlEncode(_configuration.GetSection("AppSettings").GetValue<string>("Impersonate"));
       _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
-
+      _office = _configuration.GetSection("AppSettings").GetValue<string>("Office");
       _options = new JsonSerializerOptions()
       {
         ReferenceHandler = ReferenceHandler.Preserve,
@@ -55,83 +56,69 @@ namespace IPRehab.Controllers
 
       //no impersonation so get identity from User.Claims
       string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; //HttpContext.User.Identity.Name;
-      trueUser = System.Web.HttpUtility.UrlEncode(trueUser);
+      string encodedTrueUser = System.Web.HttpUtility.UrlEncode(trueUser);
+      List<MastUserDTO> accessLevels = new();
 
-      ViewBag.CurrentUser = "Unknown";
+      ViewBag.Office = _office;
+      ViewBag.CurrentUser = trueUser;
+      ViewBag.CurrentNetworkID = HttpContext.User.Identity.Name;
+      CancellationToken cancellationToken = new();
+      await HttpContext.Session.LoadAsync(cancellationToken);
 
-      var accessLevels = await SerializationGeneric<MastUserDTO>.SerializeAsync(
-        string.IsNullOrEmpty(_impersonatedUser) ?
-        /*not impersonated*/ $"{apiUrlBase}/{trueUser}" : 
-        /*impersonated*/ $"{apiUrlBase}/{_impersonatedUser}", _options);
+      string userAccessLevelSessionKey = "UserAccessLevel";
 
-      if (accessLevels != null && accessLevels.Any())
+      //get userAccessLevels from session
+      string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
+      bool callWebAPI = true;
+      //if (!string.IsNullOrEmpty(jsonStringFromSession))
+      //{
+      //  //the impersonation can be manually changed in appSettings.json during a session
+      //  //retrieve serialized object from session and check if it is the same log in user 
+      //  accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
+
+      //  string userInSession = accessLevels.First().NTUserName;
+      //  if (!string.IsNullOrEmpty(_impersonatedUserName) && userInSession == _impersonatedUserName)
+      //  {
+      //    callWebAPI = false;
+      //  }
+      //  else
+      //  {
+      //    if (userInSession == ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(encodedtrueUser)))
+      //      callWebAPI = false;
+      //  }
+      //}
+
+      if (callWebAPI)
       {
-        MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-        if (thisUser != null)
+        if (string.IsNullOrEmpty(_impersonatedUserName))
         {
-          ViewBag.CurrentUser = $"{thisUser.LName}, {thisUser.FName}";
+          /* use current log in user network name */
+          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{encodedTrueUser}", _options);
         }
-      }
-
-      ViewBag.AppVersion = $"Version {_appVersion}";
-      await next();
-    }
-
-    protected async Task<List<MastUserDTO>> UserPermissionFromSessionAsync()
-    {
-      try
-      {
-        CancellationToken cancellationToken = new();
-        await HttpContext.Session.LoadAsync(cancellationToken);
-
-        //get userAccessLevels from session
-        string jsonStringFromSession = HttpContext.Session.GetString(sessionKey);
-        if (!string.IsNullOrEmpty(jsonStringFromSession))
+        else
         {
-          userAccessLevels = JsonSerializer.Deserialize<List<MastUserDTO>>(jsonStringFromSession, _options);
+          /* use impersonated network name */
+          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_impersonatedUserName}", _options);
         }
-      }
-      catch (Exception ex)
-      {
-        //WebAPIExceptionHander(ex);
-        RedirectToAction("Error", "Home", new { ex.Message });
-      }
-      return userAccessLevels;
-    }
 
-    private async Task<List<MastUserDTO>> UserPermissionFromWebAPIAsync(string thisName)
-    {
-      List<MastUserDTO> accessLevelsFromWebAPI = null;
 
-      try
-      {
-        HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/MasterReportsUser/{thisName}"));
-
-        string httpMsgContentReadMethod = "ReadAsStreamAsync";
-        if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+        if (accessLevels != null && accessLevels.Any())
         {
           //update session key UserAccessLevels value
-          HttpContext.Session.SetString(sessionKey, Res.Content.ReadAsStringAsync().Result);
-
-          switch (httpMsgContentReadMethod)
-          {
-            case "ReadAsAsync":
-              accessLevelsFromWebAPI = await Res.Content.ReadAsAsync<List<MastUserDTO>>();
-              break;
-
-            //use .Net 5 built-in deserializer
-            case "ReadAsStreamAsync":
-              var contentStream = await Res.Content.ReadAsStreamAsync();
-              accessLevelsFromWebAPI = await JsonSerializer.DeserializeAsync<List<MastUserDTO>>(contentStream, _options);
-              break;
-          }
+          string serializedString = JsonSerializer.Serialize(accessLevels);
+          HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
         }
       }
-      catch (Exception ex)
+
+      MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
+      if (thisUser != null)
       {
-        RedirectToAction("Error", "Home", new { ex.Message });
+        ViewBag.CurrentUser = $"{thisUser.LName}, {thisUser.FName}";
+        ViewBag.CurrentNetworkID = thisUser.NTUserName;
       }
-      return accessLevelsFromWebAPI;
+      
+      ViewBag.AppVersion = $"Version {_appVersion}";
+      await next();
     }
   }
 }

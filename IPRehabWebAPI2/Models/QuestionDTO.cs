@@ -23,11 +23,12 @@ namespace IPRehabWebAPI2.Models
     /// set it to true, if this question is not dependent on another question's answers 
     /// </summary>
     public bool Enabled { get; set; }
+    public bool? MultipleChoices { get; set; }
     public List<CodeSetDTO> ChoiceList { get; set; }
     public List<QuestionInstructionDTO> QuestionInsructions { get; set; }
 
     /// <summary>
-    /// Each question hAs primarily a single answer but can be multiple
+    /// Each question has primarily a single answer but can be multiple such as ICD, Interrupt Dates
     /// </summary>
     public List<AnswerDTO> Answers { get; set; }
 

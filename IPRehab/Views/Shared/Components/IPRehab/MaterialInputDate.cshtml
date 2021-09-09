@@ -1,0 +1,53 @@
+﻿@model List<ChoiceAndAnswer>
+@{
+  var thisItem = Model.FirstOrDefault().SelectListItem;
+  var originalAnswer = Model.FirstOrDefault().Answer;
+}
+
+<div class="flex-start-row-wrap">
+    <div class="mdc-text-field-helper-line">
+      <p class="my-mdc-text-field-helper-text mdc-text-field-helper-text
+         mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
+         id="text-field-outlined-helper-text">
+      </p>
+    </div>
+
+    @*Material Design Filled Datetime Input*@
+  <div class="inputContainer">
+    <label for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")">
+      @* set label blank since the question text is the actual text *@
+    </label>
+    <input type="date"
+           class="my-mdc-textbox mdc-text-field__input persistable"
+           name="@ViewData["QuestionKey"]"
+           id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
+           max="@DateTime.Today.ToString("yyyy-MM-dd")"
+           value="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+           title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
+           aria-label="enter a date in month day year format"
+           placeholder="MM/dd/yyyy"
+           data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+           data-codesetid="@(thisItem.Value)"
+           data-questionid="@ViewData["QuestionID"]"
+           data-questionkey="@ViewData["QuestionKey"]"
+           data-userid="@ViewData["UserID"]"
+           data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+           data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+           data-toggle="tooltip"
+           data-placement="left" />
+  </div>
+
+  @* add more button *@
+  @if (((bool?)ViewData["MultipleAnswers"]).HasValue)
+  {
+    <span>
+      <button class="mdc-button">
+        <span class="mdc-button__ripple"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+          <title>Add More</title>
+        </svg>
+      </button>
+    </span>
+  }
+</div>

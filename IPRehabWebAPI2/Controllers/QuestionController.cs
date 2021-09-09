@@ -34,7 +34,7 @@ namespace IPRehabWebAPI2.Controllers
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Route("GetAll")]
     [HttpGet()]
-    public ActionResult GetAll(bool includeAnswer)
+    public async Task<IActionResult> GetAll(bool includeAnswer, int episodeID)
     {
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
         .OrderBy(x => x.Order).ThenBy(x => x.QuestionKey).ThenBy(x => x.QuestionKey)
@@ -42,7 +42,32 @@ namespace IPRehabWebAPI2.Controllers
       ).ToList();
       if (includeAnswer)
       {
-        //populate answers
+        //the answer keys are contained in the episode then use episodeID to find all the answers to each question
+        foreach (var q in questions)
+        {
+          var thisEpisode = await _episodeRepository.FindByCondition(episode =>
+            episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
+
+          var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
+            .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
+
+          if (thisQuestionAnswers == null)
+          {
+            //ToDo: create app.tblQuestionDependency
+            //find the question dependencies
+            //if determining question has enabling answers then set the q.Enabled = true, otherwise, false
+            q.Enabled = false;
+          }
+          else
+          {
+            q.Enabled = true;
+            if (thisQuestionAnswers.Any())
+            {
+              q.Answers = thisQuestionAnswers;
+            }
+          }
+        }
+
       }
       return Ok(questions);
     }

@@ -15,7 +15,8 @@ namespace IPRehab.Controllers
 {
   public class TestColorController : BaseController
   {
-    public TestColorController(ILogger<TestColorController> logger, IConfiguration configuration) : base(configuration, logger)
+    public TestColorController(ILogger<TestColorController> logger, IConfiguration configuration) 
+      : base(configuration, logger)
     {
     }
 

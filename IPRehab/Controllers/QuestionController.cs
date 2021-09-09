@@ -16,10 +16,10 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class QuestionController : BaseController
   {
-    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger) : base(configuration, logger)
+    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger) 
+      : base(configuration, logger)
     {
     }
-
 
     /// <summary>
     /// https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
@@ -27,11 +27,11 @@ namespace IPRehab.Controllers
     /// <param name="id"></param>
     /// <returns></returns> 
     // GET: QuestionController/Edit/5
-    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID)
+    public async Task<ActionResult> Edit1(string stage, string patientID, string patientName, int episodeID)
     {
       stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
       patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
-      patientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
+      string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
 
       string action = "Edit";
       ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
@@ -40,14 +40,14 @@ namespace IPRehab.Controllers
       List<QuestionDTO> questions = new List<QuestionDTO>();
       bool includeAnswer = (action == "Edit");
 
-      RehabActionViewModel actionButtonVM = new RehabActionViewModel();
-      actionButtonVM.EpisodeID = episodeID;
-      actionButtonVM.PatientID = patientID;
-      actionButtonVM.PatientName = patientName;
+      RehabActionViewModel actionButtonVM = new() { 
+        EpisodeID = episodeID,
+        PatientID = patientID,
+        PatientName = encodedPatientName
+      };
+
       ViewBag.ActionBtnVM = actionButtonVM;
 
-      //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-      HttpResponseMessage Res;
       string apiEndpoint;
       string badgeBackgroundColor;
       switch (stage)
@@ -63,16 +63,13 @@ namespace IPRehab.Controllers
           badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
           break;
       }
+      ViewBag.ModeColor = badgeBackgroundColor;
 
       questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", _options);
-
-      ViewBag.ModeColor = badgeBackgroundColor;
 
       List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
       foreach (var dto in questions)
       {
-        /* convert IEnumerable<QuestionDTO> to IEnumerable<QuestionWithSelectItems>
-         * where the ChoiceList property is a list of SelectListItem */
         QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
         vm.Add(qws);
       }
@@ -83,6 +80,56 @@ namespace IPRehab.Controllers
 
       //returning the question list to view  
       return View(vm);
+    }
+
+    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID)
+    {
+      stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
+      patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
+      string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
+      
+      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
+      string action = nameof(Edit);
+      bool includeAnswer = (action == "Edit");
+      
+      RehabActionViewModel actionButtonVM = new()
+      {
+        EpisodeID = episodeID,
+        PatientID = patientID,
+        PatientName = encodedPatientName
+      };
+
+      List<QuestionDTO> questions = new ();
+
+      string apiEndpoint;
+      string actionBtnColor;
+      switch (stage)
+      {
+        case null:
+        case "":
+        case "Full":
+          apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
+          actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+          break;
+        default:
+          apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
+          actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+          break;
+      }
+
+      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", _options);
+
+      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stageTitle);
+      qh.ReadOnly = false;
+      qh.StageTitle = stageTitle;
+      qh.PatientName = patientName;
+      qh.ActionButtons = actionButtonVM;
+      qh.CurrentAction = $"{action} Mode";
+      qh.ModeColorCssClass = actionBtnColor;
+      //model for section navigator side bar
+
+      //returning the question list to view  
+      return View(qh);
     }
 
     // POST: QuestionController/Edit/5

@@ -9,13 +9,15 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class HomeController : BaseController
   {
-    public HomeController(ILogger<HomeController> logger, IConfiguration configuration) : base(configuration, logger)
+    public HomeController(ILogger<HomeController> logger, IConfiguration configuration) 
+      : base(configuration, logger)
     {
     }
 
     public IActionResult Splash()
     {
-      return View();
+      string vm = _office;
+      return View("splash", vm);
     }
 
     public IActionResult Index()
@@ -27,11 +29,5 @@ namespace IPRehab.Controllers
     {
       return View();
     }
-
-    //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    //public IActionResult Error()
-    //{
-    //  return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    //}
   }
 }

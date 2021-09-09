@@ -36,6 +36,18 @@
   color: white;
 }
 
+/*override the spinnerContainer in cube.css*/
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 15% auto;
+  width: 100%;
+  position: fixed;
+  z-index: 999;
+}
+
 body {
   scrollbar-width: 5px;
 }
@@ -106,10 +118,6 @@ body {
   margin-left: auto;
 }
 
-.splashSpinnerContainer {
-  margin: 0;
-}
-
 .fixedTop {
   position: fixed !important;
   top: 0;
@@ -162,6 +170,10 @@ alert-info {
   height: 100%;
 }
 
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgb(0 0 0 / 13%);
+}
+
 th {
   padding: 0 5px;
   /*  text-align: center !important;
@@ -202,7 +214,7 @@ svg {
 }
 
 .questionSection {
-  background-color: lightgray;
+  background-image: linear-gradient(gray, lightgray);
   color: #000000;
   height: 2px;
   font-weight: bold;
@@ -210,6 +222,11 @@ svg {
 
 .questionText {
   text-align: left;
+  max-width:30%;
+}
+
+.questionKey {
+  max-width:2%;
 }
 
 .instructionIcon {
@@ -220,19 +237,16 @@ svg {
 .questionInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #01299d
 }
 
 .sectionInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #000;
 }
 
 .footerInstruction {
   font-size: smaller;
   font-weight: normal;
-  color: #3a3c3c;
 }
 
 .patientRow {
@@ -247,37 +261,74 @@ svg {
 }
 
 td.answer {
-  max-width: 500px;
-}
-
-td.answer .dropdown {
-  text-align: left;
   display: flex;
   flex-direction: row;
-  align-content: center;
-  justify-content: flex-end;
-  max-width: 300px;
-}
-
-td.answer .checkbox {
-  text-align: left;
-  display: flex;
-  flex-direction: row;
-  align-content: center;
+  align-content: flex-start;
   justify-content: flex-start;
 }
 
-td.answer .radio {
-  text-align: left;
-  /*  display: flex;
+div.answer {
+  padding-right: 5px !important;
+}
+
+div.answer input[type="checkbox"], input[type="radio"] {
+  display: flex;
   flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+}
+
+div.answer {
+  width:100%;
+}
+
+div.answer .radioContainer, div.answer .dropdown {
+  width: 100%;
+}
+
+div.answer .dropdownStageHeader{
+  width:100%;
+  height:30px;
+  text-align:center;
+  background-color:darkgray;
+  color:black;
+}
+div.answer .dropdown option .textWhiteOnWhite {
+  color:white;
+  background-color:white;
+}
+
+.radioLabel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
   align-content: center;
-  justify-content: flex-start;*/
+}
+
+.radio-with-long-text {
+  padding-bottom: 1rem;
 }
 
 .spacer {
   padding-bottom: 5px !important;
   background-color: white;
+}
+
+
+#SelfCareScore, #MobilityScore {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.scoreSection {
+  padding: 0 5px;
+  background-image: linear-gradient(#99851c, #ffc107);
+  color: #000000 !important;
+  border-bottom: double;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .wrapLongOption {
@@ -286,10 +337,6 @@ td.answer .radio {
   word-wrap: break-word !important;
   text-overflow: inherit !important;
   white-space: normal !important;
-}
-
-.radioLabel {
-  display: inline !important;
 }
 
 .select2-results__options {
@@ -307,7 +354,7 @@ td.answer .radio {
   word-wrap: break-word !important;
   text-overflow: inherit !important;
   white-space: normal !important;
-  padding-left: 5px;
+  padding-left: 13px;
   display: inline-block;
 }
 
@@ -359,6 +406,16 @@ tr.questionRow :hover {
   align-items: center;
   align-content: center;
 }
+
+.flex-start-row-nowrap input[type="radio"] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
 
 .flex-start-row-wrap {
   display: flex;
@@ -540,4 +597,8 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 
 .invisible {
   display: none;
+}
+
+input[type="datetime"], input[type="text"]{
+  border:solid 1px black;
 }

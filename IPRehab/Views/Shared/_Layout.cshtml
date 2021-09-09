@@ -42,24 +42,25 @@
         </div>
       </div>
     </nav>
-    <div class="flex-center">
-      <div class="pulldown"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
-    </div>
+    @*<div class="flex-center">
+        <div class="pulldown"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
+      </div>*@
   </header>
   <main role="main" class="pb-3 main">
     <div class="container">
       <aside>
-        <div class="spinnerContainer">
-          <div class="cube">
-            <div class="sides">
-              <div class="top"></div>
-              <div class="right"></div>
-              <div class="bottom"></div>
-              <div class="left"></div>
-              <div class="front"></div>
-              <div class="back"></div>
-            </div>
-          </div>
+        <div class="spinner">
+          <img id="chiropractor" src="/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
+          @*<div class="cube">
+              <div class="sides">
+                <div class="top"></div>
+                <div class="right"></div>
+                <div class="bottom"></div>
+                <div class="left"></div>
+                <div class="front"></div>
+                <div class="back"></div>
+              </div>
+            </div>*@
         </div>
       </aside>
       @RenderBody()
@@ -68,8 +69,9 @@
   </main>
 
   <footer class="border-top footer text-muted hoverFooter">
-    <div class="container">
-      <span class="text-white">&copy; 2021 - IPRehab (@ViewBag.AppVersion) <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></span>
+    <div class="flex-container-evenly-justified">
+      <div class="text-white">&copy; 2021 - IPRehab @ViewBag.AppVersion <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></div>
+      <div class="text-white">@ViewBag.Office</div>
     </div>
   </footer>
   <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -78,11 +80,13 @@
   <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
   <script type="text/javascript" asp-append-version="true">
     $(function () {
-      $('.spinnerContainer').hide();
+      $('.spinner').hide();
+      $('#chiropractor').hide();
     })
 
     $('A').on('click', function () {
-      $('.spinnerContainer').show();
+      $('.spinner').show();
+      $('#chiropractor').show();
     })
   </script>
   @await RenderSectionAsync("Scripts", required: false)

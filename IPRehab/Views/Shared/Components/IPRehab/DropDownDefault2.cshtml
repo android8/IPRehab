@@ -1,0 +1,52 @@
+﻿@model List<ChoiceAndAnswer>
+
+@{
+  AnswerDTO originalAnswer = null;
+  var thisChoiceAndAnswer = Model.FirstOrDefault(x => x.Answer != null);
+  if (thisChoiceAndAnswer != null)
+  {
+    if (thisChoiceAndAnswer.Answer != null)
+    {
+      originalAnswer = thisChoiceAndAnswer.Answer;
+    }
+  }
+}
+
+
+<div class="flex-start-column-nowrap">
+  @if ((bool)ViewData["DisplayStageHeader"])
+  {
+    @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
+    <div class="dropdownStageHeader">@($"{ViewData["StageTitle"]}")</div>
+  }
+
+  @*the labe is required by HTML5 specification*@
+  <label for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="label for dropdown left blank use the question text"></label>
+
+  <select class="browser-default custom-select select2 dropdown persistable"
+          name="@ViewData["QuestionKey"]"
+          id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
+          data-questionid="@ViewData["QuestionID"]"
+          data-questionkey="@ViewData["QuestionKey"]"
+          data-userid="@ViewData["UserID"]"
+          data-useranswerid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+          data-oldvalue="@(originalAnswer == null ? "" : originalAnswer.AnswerCodeSet.CodeValue)"
+          data-answersetid="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+          data-toggle="tooltip"
+          data-placement="left"
+          title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")">
+
+    @*text white on wite background to reduce clutter but is required*@
+    <option class="textWhiteOnWhite">@($"select 1 of {Model.Count}")</option>
+
+    @foreach (var item in Model)
+    {
+      /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
+      <option value="@item.SelectListItem.Value"
+              selected="@item.SelectListItem.Selected">
+        @item.SelectListItem.Text
+      </option>
+    }
+  </select>
+
+</div>

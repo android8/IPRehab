@@ -34,7 +34,7 @@
       title = title.Replace("Create", "Edit");
     }
 
-    <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="disabled badge @actionBtnClass rehabAction" title="@title">@textNode</a>
+    <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="badge @actionBtnClass rehabAction" title="@title">@textNode</a>
   }
 </div>
 

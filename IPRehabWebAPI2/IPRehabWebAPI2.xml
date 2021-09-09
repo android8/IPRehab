@@ -60,7 +60,7 @@
         </member>
         <member name="P:IPRehabWebAPI2.Models.QuestionDTO.Answers">
             <summary>
-            Each question hAs primarily a single answer but can be multiple
+            Each question has primarily a single answer but can be multiple such as ICD, Interrupt Dates
             </summary>
         </member>
     </members>

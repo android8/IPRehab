@@ -1,0 +1,384 @@
+﻿@model IEnumerable<QuestionWithSelectItems>
+
+@{
+  ViewData["Title"] = $"{ViewBag.StageTitle}";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<nav>
+  @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
+    { "sectionInfo", ((List<SectionInfo>)ViewBag.QuestionSections) }
+  })
+</nav>
+
+<article class="paddingTop">
+  <div class="flex-container-evenly-justified fixedTop">
+    <div class="flex-container-evenly-justified">
+      <div class="pageTitle">@ViewBag.StageTitle</div>
+      <span class="badge @ViewBag.ModeColor">@ViewBag.action</span>
+    </div>
+    <div class="flex-container-evenly-justified">
+      @{await Html.RenderPartialAsync("_RehabActionBtns", (RehabActionViewModel)ViewBag.ActionBtnVM);}
+      &nbsp;
+      <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients List</a>
+    </div>
+    <span class="text-center patientName">@(((RehabActionViewModel)ViewBag.ActionBtnVM).PatientName)</span>
+    <div style="width:30px"></div>
+  </div>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+    <title>Anser is required</title>
+  </svg> Answer is required
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+    <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+    <title>Key question</title>
+  </svg> Key question
+  <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswersForm" name="userAnswersForm">
+    <input type="hidden" value="@ViewBag.StageTitle" />
+    <input type="hidden" value="" />
+
+    <div class="flex-container-evenly-justified">
+      <div class="rotate">
+        <input type="submit" id="submit" clsss="btn btn-primary" value="Submit" disabled />
+      </div>
+      <table class="table-striped" id="questionnaire">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+            string currentForm = string.Empty, currentSection = string.Empty, currentQuestion = string.Empty;
+            string cssClass = "borderBottom";
+            int row = 0;
+
+            foreach (var q in Model)
+            {
+              if (row != 0)
+              {
+                cssClass = "borderTop";
+                if (currentQuestion == q.Question)
+                {
+                  cssClass = string.Empty;
+                }
+              }
+
+              row++;
+
+              /* form tile row */
+              if (currentForm != q.Form && ViewBag.StageTitle == "IRF-PAI Form")
+              {
+                currentForm = q.Form;
+                <tr id="nonPaddinRow">
+                  <td></td>
+                  <td></td>
+                  <td><div class="flex-end-row-nowrap formName">@currentForm</div></td>
+                </tr>
+              }
+
+              if (currentSection != q.Section)
+              {
+                currentSection = q.Section;
+
+                string headerInstruction = string.Empty;
+                if (q.Instructions != null)
+                {
+                  var headerInstructionList = q.Instructions.Where(i => i.DisplayLocation == "SectionHeader");
+                  foreach (var ins in headerInstructionList)
+                  {
+                    headerInstruction += string.Format("{0} ", ins.Instruction);
+                  }
+                }
+                /* section header row */
+                <tr>
+                  <td class="questionSection" colspan="3">
+
+                    <a name="@q.Section"></a>
+                    @Html.DisplayFor(m => q.SectionTitle)
+
+                    @if (!string.IsNullOrEmpty(headerInstruction))
+                    {
+                      /* show instruction icon */
+                  <div class="sectionInstruction">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                      <title>Section Instruction</title>
+                    </svg>
+                    @headerInstruction
+                  </div>
+                    }
+                  </td>
+                </tr>
+              }
+
+              /*question row*/
+              <tr class="questionRow @cssClass">
+                <td class="questionText">
+                  <div class="flex-start-column-nowrap">
+
+                    @if (currentQuestion != q.Question)
+                    {
+                      currentQuestion = q.Question;
+
+                      <div>
+                        @if ((q.Required.HasValue && q.Required.Value == true))
+                        {
+                          @if (q.QuestionKey == "Q12" || q.QuestionKey == "Q23")
+                          {
+                            /* show key icon*/
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+                              <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                              <title>Record key</title>
+                            </svg>
+                          }
+                          else
+                          {
+                            /* show star icon*/
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                              <title>Answer is required</title>
+                            </svg>
+                          }
+                        }
+
+                        @Html.DisplayFor(m => q.Question)
+                      </div>
+
+                      string questionInstruction = string.Empty;
+                      if (q.Instructions != null)
+                      {
+                        var questionInstructionList = q.Instructions.Where(h => h.DisplayLocation == "QuestionBody");
+                        foreach (var ins in questionInstructionList)
+                        {
+                          questionInstruction += string.Format("{0} ", ins.Instruction);
+                        }
+                      }
+                      @if (!string.IsNullOrEmpty(questionInstruction))
+                      {
+                        //show instruction icon
+                        <div class="questionInstruction">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            <title>Instruction</title>
+                          </svg>
+                          @questionInstruction
+                        </div>
+                      }
+                    }
+                  </div>
+                </td>
+                <td class="questionKeyAndStageTitle">
+                  @($"{q.QuestionKey}")
+                  @if (!string.IsNullOrEmpty(q.StageTitle))
+                  {
+                    @($" - {q.StageTitle}")
+                  }
+                </td>
+                <td class="answer">
+                  @{
+                    int choiceCount = q.ChoiceList.Count();
+                    string choicePrompt = $"select 1 of {choiceCount} choices";
+
+                    switch (choiceCount)
+                    {
+                      case int n when n > 3:
+                        {
+                          @Html.DropDownList($"{q.QuestionKey}_{q.StageTitle}", q.ChoiceList, choicePrompt, new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "select2 dropdown persistable", @readonly = "readonly" })
+                          <label for="@($"{q.QuestionKey}{q.StageTitle}")" aria-label="dropdown null label"></label>
+                        }
+                        break;
+
+                      case 2:
+                      case 3:
+                        {
+                          foreach (var c in q.ChoiceList)
+                          {
+                          <div>
+                            @Html.RadioButton($"{q.QuestionKey}_{c.Value}", q.ChoiceList, c.Selected ? true : false, new { @id = $"{q.QuestionKey}_{c.Value}", @class = "radio persistable" })
+                            <label for="@($"{q.QuestionKey}_{c.Value}")" class="radioLabel" aria-label="Radio button label">@c.Text</label>
+                          </div>
+                          }
+                        }
+                        break;
+
+                      case 1:
+                      case 0:
+                        {
+                          switch (q.AnswerCodeCategory)
+                          {
+                            case "YN":
+                            case "Checked": /* each checkbox binds to on or off state so the ChoiceList has only one item */
+                              {
+                                bool isChecked = false;
+                                if (q.ChoiceList.Any())
+                                {
+                                  isChecked = true;
+                                }
+
+                                @Html.CheckBox($"{q.QuestionKey}_{q.StageTitle}", isChecked, new { htmlAttributes = new { @id = $"{q.QuestionKey}_{q.StageTitle}", @class = "optionStyle checkbox persistable" /*, @readonly = "readonly"*/ } });
+                                <label for="@($"{q.QuestionKey}_{q.StageTitle}")" aria-label="Checkbox null label"></label>
+                              }
+                              break;
+
+                            case "Date":
+                              {
+                                if (q.ChoiceList.Any())
+                                {
+                                  foreach (var c in q.ChoiceList)
+                                  {
+                                    <label for="@($"{q.QuestionKey}_{q.StageTitle}_{c.Value}")" aria-label="date null label"></label>
+                                    <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}_{c.Value}")" name="@($"{q.QuestionKey}_{q.StageTitle}_{c.Value}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                           placeholder="MM/dd/yyyy" value="@($"{q.ChoiceList.First()?.Text}")"
+                                           class="persistable" />
+                                  }
+                                }
+                                else
+                                {
+                                  <input type="date" id="@($"{q.QuestionKey}_{q.StageTitle}")" name="@($"{q.QuestionKey}_{q.StageTitle}")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                         placeholder="MM/dd/yyyy" class="persistable" />
+                                }
+
+                                /* add more button */
+                                if (q.QuestionKey == "Q43" || q.QuestionKey == "Q47")
+                                {
+                                  <span>
+                                    <button class="mdc-button">
+                                      <span class="mdc-button__ripple"></span>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add ICD code</title>
+                                      </svg>
+                                    </button>
+                                  </span>
+                                }
+                              }
+                              break;
+
+                            case "ICD":
+                              {
+                                <label for="@($"{q.QuestionKey}_{q.StageTitle}")" aria-label="textbox label"></label>
+                                @Html.TextBox($"{q.QuestionKey}_{q.StageTitle}", "Enter an ICD code here", new { htmlAttributes = new { @id = q.QuestionKey + '_' + q.StageTitle, @class = "textBoxStyle persistable" /*, @readonly = "readonly"*/} });
+
+                                if (q.QuestionKey == "Q24" || q.QuestionKey == "Q22")
+                                {
+                                  <span>
+                                    <button class="mdc-button">
+                                      <span class="mdc-button__ripple"></span>
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add ICD code</title>
+                                      </svg>
+                                    </button>
+                                  </span>
+                                }
+                              }
+                              break;
+
+                            case "FreeText":
+                              {
+                                <label for="@($"{q.QuestionKey}_{q.StageTitle}")" aria-label="free text label"></label>
+                                @Html.TextBox(q.QuestionKey, "Enter text here", new { htmlAttributes = new { @id = q.QuestionKey + '_' + q.StageTitle, @class = "textBoxStyle persistable" /*, @readonly = "readonly"*/ } });
+                                break;
+                              }
+                          }
+                        }
+                        break;
+                    }
+                  }
+                </td>
+              </tr>
+
+              /*aggregate row*/
+              if (q.QuestionKey == "GG0130H" && (
+                  (
+                    (q.Form.ToUpper() == "BASE" && q.StageTitle == "Discharge Performance") ||
+                    (q.Form.ToUpper() == "DISCHARGE" && q.StageTitle == "Discharge Performance") ||
+                    (q.Form.ToUpper() == "INITIAL" && q.StageTitle == "Discharge Goal") ||
+                    (q.Form.ToUpper() == "FOLLOWUP" || q.Form?.ToUpper() == "INTERIM")
+                  )
+              ))
+              {
+                QuestionInstructionDTO selfCareAggregateCcore = q.Instructions.LastOrDefault(i => i.DisplayLocation == "SectionFooter");
+                if (selfCareAggregateCcore != null)
+                {
+                  <tr>
+                    <td colspan="3">
+                      <div class="scoreSection flex-container-evenly-justified">
+                        <div class="font-weight-bold">Self Care Aggregate Score: </div>
+                        <div class="footerInstruction">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            <title>Instruction</title>
+                          </svg>
+                          @selfCareAggregateCcore.Instruction
+                        </div>
+                        <div id="SelfCareScore" class="display-4">100 (TBD)</div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr><td colspan="3" class="spacer">&nbsp;</td></tr>
+                }
+              }
+
+              if (q.QuestionKey == "GG0170SS")
+              {
+                QuestionInstructionDTO mobilityAggregateScore = q.Instructions.LastOrDefault(i => i.DisplayLocation == "SectionFooter");
+
+                if (mobilityAggregateScore != null)
+                {
+                  <tr>
+                    <td colspan="3">
+                      <div class="scoreSection flex-container-evenly-justified">
+                        <div class="font-weight-bold">Mobility Aggregate Score:  </div>
+                        <div class="footerInstruction">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                            <title>Instruction</title>
+                          </svg>
+                          @mobilityAggregateScore.Instruction
+                        </div>
+                        <div id="MobilityScore" class="display-4">100 (TBD)</div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr><td colspan="3" class="spacer">&nbsp;</td></tr>
+                }
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </form>
+</article>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  <script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true"></script>
+  <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
+  <script>
+    $(function () {
+      $(".disabled").removeClass("disabled"); //delay enabling command buttons under render is completed
+
+      var $select2 = $('.select2').select2();
+
+      //Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
+      //You can change the length according to your needs.
+      $('.select2 option').each(function () {
+        var myStr = $(this).text();
+        var newStr = myStr;
+        if (myStr.length > 50) {
+          newStr = myStr.match(/.{1,50}/g).join(' ');
+        }
+        $(this).text(newStr);
+      });
+    })
+  </script>
+}

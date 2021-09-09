@@ -10,16 +10,19 @@ namespace IPRehab.Models
     public string Section { get; set; }
     public int QuestionID { get; set; }
     public bool? Required { get; set; }
+    public bool? KeyQuestion { get; set; }
     public string QuestionKey { get; set; }
     public string SectionTitle { get; set; }
     public string Question { get; set; }
     public string StageTitle { get; set; }
+    public bool? MultipleChoices { get; set; }
     public int AnswerCodeSetParentID { get; set; }
     public int AnswerCodeSetID { get; set; }
     public int DisplayLocation { get; set; }
     public int? DisplayOrder { get; set; }
     public List<QuestionInstructionDTO> Instructions { get; set; }
     public List<SelectListItem> ChoiceList { get; set; }
+    public List<ChoiceAndAnswer> ChoicesAnswers { get; set; }
     public string AnswerCodeCategory { get; set; }
 
     public QuestionWithSelectItems() {

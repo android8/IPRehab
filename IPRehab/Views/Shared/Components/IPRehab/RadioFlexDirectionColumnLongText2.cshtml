@@ -1,0 +1,55 @@
+﻿@model List<ChoiceAndAnswer>
+@{
+  AnswerDTO originalAnswer = null;
+  var thisChoiceAndAnswer = Model.FirstOrDefault(x => x.Answer != null);
+  if (thisChoiceAndAnswer != null)
+  {
+    if (thisChoiceAndAnswer.Answer != null)
+    {
+      originalAnswer = thisChoiceAndAnswer.Answer;
+    }
+  }
+}
+
+<div class="flex-start-column-nowrap radioContainer">
+  @foreach (var item in Model)
+  {
+    <div class="flex-start-row-nowrap">
+      @if (item.SelectListItem.Selected)
+      {
+        <input type="radio" class="radio persistable"
+               name="@ViewData["QuestionKey"]"
+               id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
+               value="@item.SelectListItem.Value"
+               checked @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
+               data-questionid="@ViewData["QuestionID"]"
+               data-questionkey="@ViewData["QuestionKey"]"
+               data-userid="@ViewData["UserID"]"
+               data-useranswerid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer.AnswerCodeSet.CodeValue)"
+               data-answersetid="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+               data-toggle="tooltip"
+               data-placement="left"
+               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")" />
+      }
+      else
+      {
+        <input type="radio" class="radio persistable"
+               name="@ViewData["QuestionKey"]"
+               id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
+               value="@item.SelectListItem.Value"
+               data-questionid="@ViewData["QuestionID"]"
+               data-questionkey="@ViewData["QuestionKey"]"
+               data-userid="@ViewData["UserID"]"
+               data-useranswerid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer.AnswerCodeSet.CodeValue)"
+               data-answersetid="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+               data-toggle="tooltip"
+               data-placement="left"
+               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")" />
+      }
+
+      <label class="radioLabel" for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="dropdown null label">@item.SelectListItem.Text</label>
+    </div>
+  }
+</div>
