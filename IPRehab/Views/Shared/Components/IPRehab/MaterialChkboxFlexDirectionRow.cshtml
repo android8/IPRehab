@@ -5,7 +5,7 @@
   @if ((bool)ViewData["DisplayStageHeader"])
   {
     @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
-    <div class="dropdownStageHeader">@($"{ViewData["StageTitle"]}")</div>
+    <div class="stageHeader">@($"{ViewData["StageTitle"]}")</div>
   }
 
   @foreach (var item in Model)

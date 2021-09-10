@@ -94,11 +94,19 @@
               bool hasRequiredQuestions = thisGroup.Questions.Any(q => q.Required.Value);
               bool aggregateAfterThis = false;
               string aggregateType = string.Empty;
+              bool addBlankStageHeaderCell = false;
+              var firstQuestionInThisGroup = thisGroup.Questions.First();
+              if (firstQuestionInThisGroup.QuestionKey.Contains("GG0130A") || firstQuestionInThisGroup.QuestionKey.Contains("GG0170A"))
+                addBlankStageHeaderCell = true;
 
               @*question row*@
               <tr>
                 @* cell for question text *@
                 <td class="questionText">
+                  @if (addBlankStageHeaderCell)
+                  {
+                    <div class="stageHeader">&nbsp;</div>
+                  }
                   <div class="flex-start-column-nowrap">
                     @if (hasKeyQuestions)
                     {
@@ -148,6 +156,10 @@
 
                 @*cell for question key *@
                 <td class="questionKey">
+                  @if (addBlankStageHeaderCell)
+                  {
+                    <div class="stageHeader">&nbsp;</div>
+                  }
                   @thisGroup.SharedQuestionKey
                 </td>
 

@@ -29,7 +29,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-.splashscreen #waitMessage {
+.splashscreen .waitMessage {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,7 +185,6 @@ td {
   text-align: left;
 }
 
-
 .commandBtn {
   margin: 10px 0;
 }
@@ -286,7 +285,7 @@ div.answer .radioContainer, div.answer .dropdown {
   width: 100%;
 }
 
-div.answer .dropdownStageHeader {
+.stageHeader {
   display: flex;
   flex-direction: row;
   align-content: center;
@@ -299,6 +298,11 @@ div.answer .dropdownStageHeader {
   color: black;
   font:bold;
 }
+
+td.questionText .stageHeader, td.questionKey .stageHeader {
+  opacity: 0;
+}
+
 div.answer .dropdown option .textWhiteOnWhite {
   color:white;
   background-color:white;
