@@ -7,7 +7,8 @@
 
 <nav>
   @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
-    { "sectionInfo", Model.Sections}
+    { "sectionInfo", Model.Sections },
+    { "readOnly", Model.ReadOnly }
   })
 </nav>
 
@@ -41,21 +42,6 @@
     <input type="hidden" value="" />
 
     <div class="flex-container-evenly-justified">
-      @if (!Model.ReadOnly)
-      {
-        <aside>
-          <div class="mdc-touch-target-wrapper">
-            <div class="flex-start-row-nowrap">
-              <button class="mdc-button mdc-button--raised mdc-button--touch rotate click2spin" id="submit" disabled>
-                <div class="mdc-button__ripple"></div>
-                <span class="mdc-button__label">Save</span>
-                <div class="mdc-button__touch"></div>
-              </button>
-            </div>
-          </div>
-        </aside>
-      }
-
       <table class="table-striped" id="questionnaire">
         <thead>
           <tr>
@@ -171,13 +157,6 @@
                     aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
 
                     @* cell for question key and stage group*@
-
-                    @*<div>
-                      @if (!string.IsNullOrEmpty(q.StageTitle))
-                      {
-                        @(q.StageTitle)
-                      }
-                    </div>*@
                     <div class="answer">
                       @*view component goes here*@
                       @{ string viewComponentName = typeof(IPRehab.ViewComponents.IPRehabViewComponent).Name.Replace("ViewComponent", string.Empty);}

@@ -3,8 +3,18 @@
   @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
   {
     <div role="listitem" class="nav-item gotoSection" data-anchorid="@sectionInfo.SectionKey">
-      @($"{sectionInfo.SectionTitle} {sectionInfo.SectionKey}") 
+      @($"{sectionInfo.SectionTitle} {sectionInfo.SectionKey}")
       <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+    </div>
+  }
+  @if (!(bool)ViewData["readOnly"])
+  {
+    <div class="mdc-touch-target-wrapper">
+      <button class="mdc-button mdc-button--raised mdc-button--touch rotate click2spin" id="submit" disabled>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Save</span>
+        <div class="mdc-button__touch"></div>
+      </button>
     </div>
   }
 </div>
