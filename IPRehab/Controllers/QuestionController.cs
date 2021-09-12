@@ -121,6 +121,7 @@ namespace IPRehab.Controllers
 
       QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stageTitle);
       qh.ReadOnly = false;
+      qh.EpisodeID = episodeID;
       qh.StageTitle = stageTitle;
       qh.PatientName = patientName;
       qh.ActionButtons = actionButtonVM;

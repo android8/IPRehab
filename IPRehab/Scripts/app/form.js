@@ -13,6 +13,10 @@ function pageLoad() {
         }
     });
     $('.persistable').change(function () { $('#submit').removeAttr('disabled'); });
+    $('select').change(function () {
+        let $this = $(this);
+        breakLongSentence($this);
+    });
     //handle rehab action checkbox
     $('input[type="checkbox"]').click(function () {
         let $this = $(this);
@@ -36,11 +40,12 @@ function pageLoad() {
     }, function () {
         $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
     });
-    checkRules();
     /* collect all persistable input values */
     $('#submit').click(function () {
+        $('.spinnerContainer').show();
         alert('collecting answers');
     });
+    checkRules();
 }
 /* scroll to an anchor */
 function scrollToAnchor(aid) {
@@ -102,6 +107,54 @@ function checkRules() {
         $('#Q43_').attr('disabled', 'false');
         $('#Q43_').focus();
     }
+}
+function breakLongSentence1() {
+    //var $select2 = $('.select2').select2();
+    ////Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
+    ////You can change the length according to your needs.
+    //$('.select2 option').each(function () {
+    //  var myStr = $(this).text();
+    //  var newStr = myStr;
+    //  if (myStr.length > 50) {
+    //    newStr = myStr.match(/.{1,50}/g).join(' ');
+    //  }
+    //  $(this).text(newStr);
+    //  if (myStr.indexOf('4.') != -1) {
+    //    console.log('original ->', myStr);
+    //    console.log('new -> ', newStr)
+    //  }
+    //});
+}
+function breakLongSentence(thisSelectElement) {
+    console.log('thisSelectElement', thisSelectElement);
+    let maxLength = 50;
+    let nextElement = thisSelectElement.next();
+    let thisSelectWidth = thisSelectElement[0].clientWidth;
+    let thisScope = thisSelectElement;
+    $.each($('option:selected', thisScope), function () {
+        let $thisOption = $(this);
+        let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
+        let oldText = $thisOption.text();
+        let font = $thisOption.css('font');
+        let oldTextInPixel = getTextPixels(oldText, font);
+        console.log('oldTextInPixel', oldTextInPixel);
+        console.log('thisSelectWidth', thisSelectWidth);
+        nextElement.text('');
+        if (oldTextInPixel > thisSelectWidth) {
+            let newStr = oldText.replace(regX, "$1\n");
+            console.log('old ->', oldText);
+            console.log('new ->', newStr);
+            nextElement.text(newStr);
+            nextElement.next().removeClass("invisible");
+        }
+    });
+}
+function getTextPixels(someText, font) {
+    let canvas = document.createElement('canvas');
+    let context = canvas.getContext("2d");
+    context.font = font;
+    let width = context.measureText(someText).width;
+    return Math.ceil(width);
 }
 export {};
 //# sourceMappingURL=form.js.map

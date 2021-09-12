@@ -5,27 +5,27 @@
 }
 
 <div class="flex-start-row-wrap">
-    <div class="mdc-text-field-helper-line">
-      <p class="my-mdc-text-field-helper-text mdc-text-field-helper-text
+  <div class="mdc-text-field-helper-line">
+    <p class="my-mdc-text-field-helper-text mdc-text-field-helper-text
          mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
-         id="text-field-outlined-helper-text">
-      </p>
-    </div>
+       id="text-field-outlined-helper-text">
+    </p>
+  </div>
 
-    @*Material Design Filled Datetime Input*@
+  @*Material Design Filled Datetime Input*@
   <div class="inputContainer">
     <label for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")">
       @* set label blank since the question text is the actual text *@
     </label>
     <input type="date"
-           class="my-mdc-textbox mdc-text-field__input persistable"
+           class="mdc-text-field__input persistable"
            name="@ViewData["QuestionKey"]"
            id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
            max="@DateTime.Today.ToString("yyyy-MM-dd")"
            value="@(originalAnswer == null ? "" : originalAnswer?.Description)"
            title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
            aria-label="enter a date in month day year format"
-           placeholder="MM/dd/yyyy"
+           placeholder="enter a date in MM/dd/yyyy format"
            data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
            data-codesetid="@(thisItem.Value)"
            data-questionid="@ViewData["QuestionID"]"

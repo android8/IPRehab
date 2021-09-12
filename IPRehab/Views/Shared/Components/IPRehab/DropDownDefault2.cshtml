@@ -12,16 +12,13 @@
   }
 }
 
-
 <div class="flex-start-column-nowrap">
-  @if ((bool)ViewData["DisplayStageHeader"])
-  {
-    @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
-    <div class="stageHeader">@($"{ViewData["StageTitle"]}")</div>
-  }
 
   @*the labe is required by HTML5 specification*@
-  <label for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="label for dropdown left blank use the question text"></label>
+  <label class="nullLabel" for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="label for dropdown left blank use the question text"></label>
+
+  @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
+  <div class="stageHeader">@($"{ViewData["StageTitle"]}")</div>
 
   <select class="browser-default custom-select select2 dropdown persistable"
           name="@ViewData["QuestionKey"]"
@@ -48,5 +45,5 @@
       </option>
     }
   </select>
-
+  <div class="longTextOption"><div class="invisible">&nbsp;</div></div>
 </div>

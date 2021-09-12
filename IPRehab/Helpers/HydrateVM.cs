@@ -20,8 +20,13 @@ namespace IPRehab.Helpers
 
         Required = questionDTO.Required,
         QuestionID = questionDTO.QuestionID,
+
+        /* turn on key question */
         KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
-        QuestionKey = questionDTO.QuestionKey,
+
+        /* do not show key for AssessmentCompleted */
+        QuestionKey = questionDTO.QuestionKey == "AssessmentCompleted" ? string.Empty : questionDTO.QuestionKey,
+
         SectionTitle = questionDTO.QuestionSection,
         Question = questionDTO.Question,
 
@@ -78,7 +83,7 @@ namespace IPRehab.Helpers
         {
           foreach (var ins in questionWithAggregateInstruction.Instructions)
           {
-            thisSection.AggregateInstruction += ins;
+            thisSection.AggregateInstruction += ins.Instruction;
           }
 
           thisSection.AggregateAfterQuestionKey = questionWithAggregateInstruction.QuestionKey;
@@ -94,26 +99,83 @@ namespace IPRehab.Helpers
         }
 
         /* Question Groups */
+        /* GG0170SS is sub question of GG0170S */
+        var qGG0170SS = qwsList.Where(q => q.QuestionKey == "GG0170SS");
+
         List<string> distinctQuestions = questionInTheSection.Select(x => x.Question).Distinct().ToList();
         foreach (string thisQuestionText in distinctQuestions)
         {
           QuestionGroup questionGroup = new();
+          List<QuestionWithSelectItems> questionInTheGroup = new();
           questionGroup.SharedQuestionText = thisQuestionText;
 
-          var questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText).OrderBy(q=>q.QuestionKey).ToList();
+          switch(thisQuestionText)
+          {
+            case "Indicate the type of wheelchair or scooter used.":
+              if (qGG0170SS != null)
+              {
+                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
+                  .Except(qGG0170SS)
+                  .OrderBy(q => q.QuestionKey).ToList();
+              }
+              else
+              {
+                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
+                  .OrderBy(q => q.QuestionKey).ToList();
+              }
+              break;
+            default:
+              questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
+                .OrderBy(q=>q.QuestionKey).ToList();     
+              break;
+          }
+         
           var groupKey = questionInTheGroup.First().QuestionKey;
           questionGroup.SharedQuestionKey = groupKey;
 
           var groupInstruction = questionInTheGroup.Where(q=>q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
           if (groupInstruction != null)
           {
-            foreach (var ins in groupInstruction)
-              questionGroup.SharedQuestionInstruction += ins.Instructions;
+            foreach (var q in groupInstruction)
+            {
+              foreach(var ins in q.Instructions)
+              {
+                questionGroup.SharedQuestionInstruction += ins.Instruction;
+              }
+            }
           }
 
           questionGroup.Questions = questionInTheGroup;
 
-          thisSection.QuestionGroups.Add(questionGroup); 
+          thisSection.QuestionGroups.Add(questionGroup);
+          
+          /* add GG0170SS to the bottom of the section following GG0170S */
+          if (thisSection.SectionTitle == "Mobility (3-day assessment period)" && questionGroup.SharedQuestionKey == "GG0170S" )
+          {
+            QuestionGroup GG0170SSBreakoutGroup = new();
+            GG0170SSBreakoutGroup.SharedQuestionText = qGG0170SS.FirstOrDefault().Question;
+            GG0170SSBreakoutGroup.SharedQuestionKey = qGG0170SS.FirstOrDefault().QuestionKey;
+            List<QuestionWithSelectItems> questionInBreakoutGroup = new();
+            foreach (var item in qGG0170SS)
+            {
+              questionInBreakoutGroup.Add(item);
+            }
+            GG0170SSBreakoutGroup.Questions = questionInBreakoutGroup;
+
+            groupInstruction = questionInBreakoutGroup.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
+            if (groupInstruction != null)
+            {
+              foreach (var q in groupInstruction)
+              {
+                foreach (var ins in q.Instructions)
+                {
+                  GG0170SSBreakoutGroup.SharedQuestionInstruction += ins.Instruction;
+                }
+              }
+            }
+
+            thisSection.QuestionGroups.Add(GG0170SSBreakoutGroup);
+          }
         }
 
         qh.Sections.Add(thisSection);

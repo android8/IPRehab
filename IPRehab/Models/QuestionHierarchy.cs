@@ -9,6 +9,7 @@ namespace IPRehab.Models
   public class QuestionHierarchy
   {
     public bool ReadOnly { get; set; }
+    public int EpisodeID { get; set; }
     public string PatientName { get; set;}
     public RehabActionViewModel ActionButtons { get; set; }
     public string StageTitle { get; set; }

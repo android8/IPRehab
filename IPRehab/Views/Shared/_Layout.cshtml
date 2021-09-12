@@ -50,7 +50,7 @@
     <div class="container">
       <aside>
         <div class="spinnerContainer">
-          <img id="chiropractor" src="/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
+          <img id="chiropractor" src="~/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
           @*<div class="cube">
               <div class="sides">
                 <div class="top"></div>
@@ -79,6 +79,10 @@
   <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
   <script type="text/javascript" asp-append-version="true">
+    //$(window).on('load', function () {
+    //  $('.spinnerContainer').show();
+    //})
+
     $(function () {
       $('.spinnerContainer').hide();
     })
