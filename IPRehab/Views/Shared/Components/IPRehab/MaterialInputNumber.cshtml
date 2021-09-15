@@ -2,21 +2,20 @@
 @{
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = (bool)Model.ViewComponentViewModel.DisplayStageHeader;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
-
-<div class="flex-start-row-nowrap">
-  <div class="flex-start-column-nowrap">
-    @if (displayStageHeader)
-    {
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
-    }
-
-    @*Material Design Filled Datetime Input*@
+<div class="@ContainerCssClass">
+  @if (displayStageHeader)
+  {
+    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+  }
+  @*Material Design Filled Text Input*@
+  @if (int.TryParse(originalAnswer.Description, out int numericDescriptor))
+  {
     <label class="mdc-text-field mdc-text-field--outlined"
            for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")" 
-           aria-label="enter a date in MM/dd/yyyy format">
+           aria-label="enter a number">
       <span class="mdc-notched-outline">
         <span class="mdc-notched-outline__leading"></span>
         <span class="mdc-notched-outline__notch">
@@ -24,16 +23,15 @@
         </span>
         <span class="mdc-notched-outline__trailing"></span>
       </span>
-
-      <input type="date"
-             class="mdc-text-field__input persistable" aria-labelledby="my-label-id"
-             name="@Model.ViewComponentViewModel.QuestionKey"
+      <input type="number"
+             class="mdc-text-field__input numeric-text inputContainer persistable"
+             name="@(Model.ViewComponentViewModel.QuestionKey)"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
-             max="@(DateTime.Today.ToString(" yyyy-MM-dd"))"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
-             aria-label="enter a date in month day year format"
-             data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
+             title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+             aria-label="some number" maxlength="3" min="0" max="100"
+             placeholder="enter a number"
+             data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
@@ -43,19 +41,18 @@
              data-toggle="tooltip"
              data-placement="left" />
     </label>
-  </div>
-
-  @* add more button *@
-  @if ((Model.ViewComponentViewModel.MultipleAnswers).HasValue)
-  {
-    <span>
-      <button class="mdc-button">
-        <span class="mdc-button__ripple"></span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-          <title>Add More</title>
-        </svg>
-      </button>
-    </span>
+    /* add morebutton */
+    if ((Model.ViewComponentViewModel.MultipleAnswers).HasValue)
+    {
+      <span>
+        <button class="mdc-button">
+          <span class="mdc-button__ripple"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+            <title>Add More</title>
+          </svg>
+        </button>
+      </span>
+    }
   }
 </div>

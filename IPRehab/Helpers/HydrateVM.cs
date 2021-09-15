@@ -23,9 +23,8 @@ namespace IPRehab.Helpers
 
         /* turn on key question */
         KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
-
         /* do not show key for AssessmentCompleted */
-        QuestionKey = questionDTO.QuestionKey == "AssessmentCompleted" ? string.Empty : questionDTO.QuestionKey,
+        QuestionKey = questionDTO.QuestionKey,
 
         SectionTitle = questionDTO.QuestionSection,
         Question = questionDTO.Question,
@@ -201,7 +200,7 @@ namespace IPRehab.Helpers
         { 
           SectionTitle = x.SectionTitle,
           SectionKey = x.Section,
-        }).OrderBy(x=>x.SectionTitle).ToList();
+        }).OrderBy(x=>x.SectionKey.StartsWith("Q") ? x.SectionKey.Substring(0,1) : x.SectionKey).ToList();
 
       var caseDetail = sections.Where(s => s.SectionTitle == "Case Detail");
       var complete = sections.Where(s => s.SectionTitle == "Complete");

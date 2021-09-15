@@ -1,7 +1,7 @@
-﻿@model List<ChoiceAndAnswer>
+﻿@model ViewComponentTemplateModel
 @{
   AnswerDTO originalAnswer = null;
-  var thisChoiceAndAnswer = Model.FirstOrDefault(x => x.Answer != null);
+  var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
   if (thisChoiceAndAnswer != null)
   {
     if (thisChoiceAndAnswer.Answer != null)
@@ -9,47 +9,77 @@
       originalAnswer = thisChoiceAndAnswer.Answer;
     }
   }
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
-<div class="flex-start-column-nowrap radioContainer">
-  @foreach (var item in Model)
+@if (displayStageHeader)
+{
+  <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+}
+
+<div class="@(ContainerCssClass) @(displayStageHeader? "radioContainer": string.Empty)">
+  @foreach (var item in Model.ChoiceAndAnswerList)
   {
     <div class="flex-start-row-nowrap">
-      @if (item.SelectListItem.Selected)
-      {
-        <input type="radio" class="radio persistable"
-               name="@ViewData["QuestionKey"]"
-               id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
-               value="@item.SelectListItem.Value"
-               checked @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
-               data-questionid="@ViewData["QuestionID"]"
-               data-questionkey="@ViewData["QuestionKey"]"
-               data-userid="@ViewData["UserID"]"
-               data-useranswerid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer.AnswerCodeSet.CodeValue)"
-               data-answersetid="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
-               data-toggle="tooltip"
-               data-placement="left"
-               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")" />
-      }
-      else
-      {
-        <input type="radio" class="radio persistable"
-               name="@ViewData["QuestionKey"]"
-               id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
-               value="@item.SelectListItem.Value"
-               data-questionid="@ViewData["QuestionID"]"
-               data-questionkey="@ViewData["QuestionKey"]"
-               data-userid="@ViewData["UserID"]"
-               data-useranswerid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer.AnswerCodeSet.CodeValue)"
-               data-answersetid="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
-               data-toggle="tooltip"
-               data-placement="left"
-               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")" />
-      }
+      <div class="mdc-touch-target-wrapper">
+        <div class="mdc-radio mdc-radio--touch">
+          @if (item.SelectListItem.Selected)
+          {
+            <input type="radio" class="mdc-radio__native-control persistable"
+                   name="@(Model.ViewComponentViewModel.QuestionKey)"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                   value="@(item.SelectListItem.Value)"
+                   @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
+                   checked
+                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                   data-userid="@(Model.ViewComponentViewModel.UserID)"
+                   data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                   data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-toggle="tooltip"
+                   data-placement="left"
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" />
+          }
+          else
+          {
+            <input type="radio" class="mdc-radio__native-control persistable"
+                   name="@(Model.ViewComponentViewModel.QuestionKey)"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                   value="@(item.SelectListItem.Value)"
+                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                   data-userid="@(Model.ViewComponentViewModel.UserID)"
+                   data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                   data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-toggle="tooltip"
+                   data-placement="left"
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" />
+          }
+          <div class="mdc-radio__background">
+            <div class="mdc-radio__outer-circle"></div>
+            <div class="mdc-radio__inner-circle"></div>
+          </div>
+          <div class="mdc-radio__ripple"></div>
+        </div>
+      </div>
 
-      <label class="radioLabel" for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="dropdown null label">@item.SelectListItem.Text</label>
+      <label class="radioLabel"
+             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             aria-label="@(item.SelectListItem.Text)">
+        
+        @*strip the code value *@
+        @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
+        { 
+          @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".")+1))
+        }
+        else
+        {
+          @(item.SelectListItem.Text)
+        }
+      </label>
     </div>
   }
 </div>

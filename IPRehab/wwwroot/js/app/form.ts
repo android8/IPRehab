@@ -21,8 +21,12 @@ function pageLoad(): void {
   $('.persistable').change(function () { $('#submit').removeAttr('disabled') });
   $('select').change(
     function () {
-      let $this = $(this);
-      breakLongSentence($this);
+      breakLongSentence($(this));
+    });
+
+  $('select.physical-therapy').change(
+    function () {
+      addPhysicalTherapyHours($(this));
     });
 
   //handle rehab action checkbox
@@ -156,7 +160,7 @@ function breakLongSentence1 () {
 function breakLongSentence(thisSelectElement) {
   console.log('thisSelectElement', thisSelectElement);
   let maxLength: number = 50;
-  let nextElement = thisSelectElement.next();
+  let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
   let thisSelectWidth = thisSelectElement[0].clientWidth;
   let thisScope : any = thisSelectElement;
   $.each($('option:selected', thisScope), function () {
@@ -169,15 +173,20 @@ function breakLongSentence(thisSelectElement) {
 
     console.log('oldTextInPixel', oldTextInPixel);
     console.log('thisSelectWidth', thisSelectWidth);
-    nextElement.text('');
+    longTextOptionDIV.text('');
     if (oldTextInPixel > thisSelectWidth) {
       let newStr = oldText.replace(regX, "$1\n");
       console.log('old ->', oldText);
       console.log('new ->', newStr);
-      nextElement.text(newStr);
-      nextElement.next().removeClass("invisible");
+      longTextOptionDIV.text(newStr);
+      longTextOptionDIV.removeClass("invisible");
     }
   });
+}
+
+function addPhysicalTherapyHours(thisSelectElement) {
+  let physicalTherapySPAN = thisSelectElement.next('span.invisible');
+  physicalTherapySPAN.show();
 }
 
 function getTextPixels(someText: string, font: any) {

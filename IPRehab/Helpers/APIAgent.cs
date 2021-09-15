@@ -17,6 +17,7 @@ namespace IPRehab.Helpers
       using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
       client.DefaultRequestHeaders.Clear();
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+      client.Timeout = TimeSpan.FromMinutes(5);
 
       var httpResponseMsg = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
 

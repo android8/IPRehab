@@ -1,53 +1,58 @@
-﻿@model List<ChoiceAndAnswer>
+﻿@model ViewComponentTemplateModel
 @{
-  var thisItem = Model.FirstOrDefault().SelectListItem;
-  var originalAnswer = Model.FirstOrDefault().Answer;
+  var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+  var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
-<div class="flex-start-row-wrap-textInput">
-  <div class="flex-item">
-    <div class="mdc-text-field-helper-line">
-      <p class="my-mdc-text-field-helper-text mdc-text-field-helper-text mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg"
-         id="text-field-outlined-helper-text">
-      </p>
-    </div>
+<div class="@ContainerCssClass">
+  @if (displayStageHeader)
+  {
+    <div class="stageHeaderNoRightBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+  }
 
-    @*Material Design Filled Text Input*@
-    <div class="inputContainer">
-      <label for="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")" aria-label="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")">
-        @* set label blank since the question text is the actual text *@
-      </label>
-      <input type="text"
-             class="my-mdc-textbox mdc-text-field__input persistable"
-             name="@ViewData["QuestionKey"]"
-             id="@($"{ViewData["QuestionKey"]}_{ViewData["StageTitle"]}")"
-             value="@(originalAnswer == null ? "" : originalAnswer?.Description)"
-             title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             aria-label="some text"
-             placeholder="enter some text"
-             data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
-             data-codesetid="@(thisItem.Value)"
-             data-questionid="@ViewData["QuestionID"]"
-             data-questionkey="@ViewData["QuestionKey"]"
-             data-userid="@ViewData["UserID"]"
-             data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-             data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
-             data-toggle="tooltip"
-             data-placement="left" />
-    </div>
-
-    @* add more button *@
-    @if (((bool?)ViewData["MultipleAnswers"]).HasValue)
-    {
-      <span>
-        <button class="mdc-button">
-          <span class="mdc-button__ripple"></span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-            <title>Add More</title>
-          </svg>
-        </button>
+  @*Material Design outlined text *@
+  <label class="mdc-text-field mdc-text-field--outlined"
+         for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")" 
+         aria-label="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")">
+    <span class="mdc-notched-outline">
+      <span class="mdc-notched-outline__leading"></span>
+      <span class="mdc-notched-outline__notch">
+        <span class="mdc-floating-label" id="my-label-id"></span>
       </span>
-    }
-  </div>
+      <span class="mdc-notched-outline__trailing"></span>
+    </span>
+    <input type="text"
+           class="mdc-text-field__input persistable"
+           name="@Model.ViewComponentViewModel.QuestionKey"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+           value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+           title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+           aria-label="some text"
+           placeholder="enter some text"
+           data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+           data-codesetid="@(thisItem.Value)"
+           data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+           data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+           data-userid="@(Model.ViewComponentViewModel.UserID)"
+           data-episodeid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+           data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+           data-toggle="tooltip"
+           data-placement="left" />
+  </label>
+
+  @* add more button *@
+  @if ((Model.ViewComponentViewModel.MultipleAnswers).HasValue)
+  {
+    <span>
+      <button class="mdc-button">
+        <span class="mdc-button__ripple"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+          <title>Add More</title>
+        </svg>
+      </button>
+    </span>
+  }
 </div>

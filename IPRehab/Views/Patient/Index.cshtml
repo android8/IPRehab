@@ -11,7 +11,7 @@
   <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
   <script type="text/javascript">
     $(function () {
-      $(".disabled").removeClass("disabled"); //delay enabling command buttons under render is completed 
+      $(".disabled").removeClass("disabled"); //delay enabling command buttons under render is completed
     });
   </script>
 }
@@ -94,8 +94,8 @@
             {
               <tr>
                 <td colspan="10" class="text-danger">
-                  <div class="flex-start-row-nowrap">
-                    <div>No episode of care&nbsp;</div>
+                  <div class="flex-start-row-nowrap episode">
+                    <div><span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>No episode of care&nbsp;</div>
                     <div>
                       @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
                     </div>
@@ -107,48 +107,51 @@
             {
               <tr>
                 <td colspan="10">
-                  <table class="table-striped table-responsive-md table-bordered">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-
-                      @foreach (var episode in pat.Patient.CareEpisodes)
-                      {
-                        <tr>
-                          <td>
-                            @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => episode.AdmissionDate)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => episode.OnsetDate)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => episode.PatientIcnFK)
-                          </td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
+                  <div class="episode">
+                    <div>
+                      <table class="table-striped table-responsive-md table-bordered">
+                        <thead>
+                          <tr>
+                            <th><span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></th>
+                            <th>
+                              @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
+                            </th>
+                            <th>
+                              @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
+                            </th>
+                            <th>
+                              @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
+                            </th>
+                            <th>
+                              @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach (var episode in pat.Patient.CareEpisodes)
+                          {
+                            <tr>
+                              <td>
+                                @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
+                              </td>
+                              <td>
+                                @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
+                              </td>
+                              <td>
+                                @Html.DisplayFor(modelItem => episode.AdmissionDate)
+                              </td>
+                              <td>
+                                @Html.DisplayFor(modelItem => episode.OnsetDate)
+                              </td>
+                              <td>
+                                @Html.DisplayFor(modelItem => episode.PatientIcnFK)
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </td>
               </tr>
             }

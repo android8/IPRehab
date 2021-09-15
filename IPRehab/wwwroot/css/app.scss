@@ -84,6 +84,12 @@ body {
   color: #0e2640;
 }
 
+.section-spacer{
+  background-color:white;
+  height: 5em;
+  border:none !important;
+}
+
 .sectionNavHeader {
   position: fixed;
   width: 250px;
@@ -170,23 +176,33 @@ alert-info {
   height: 100%;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
+/*.table-striped tbody tr:nth-of-type(odd) {
   background-color: rgb(0 0 0 / 13%);
 }
-
+*/
 th {
   padding: 0 5px;
-  /*  text-align: center !important;
-*/
 }
 
 td {
-  padding: 0 5px;
   text-align: left;
 }
 
 #saveButtonContainer {
   left: -10px;
+}
+
+.episode{
+  padding-left:15px;
+  padding-bottom:30px;
+}
+
+.episode-node-symbol{
+  position:relative;
+  top:-10px;
+  border-left:1px solid darkgray;
+  border-bottom:1px solid darkgray;
+  border-bottom-left-radius:10px;
 }
 
 .commandBtn {
@@ -221,10 +237,12 @@ svg {
   color: #000000;
   height: 2px;
   font-weight: bold;
+  padding:0 10px;
 }
 
 .questionText {
   max-width:30% !important;
+  padding-left: 10px;
 }
 
 .questionKey {
@@ -270,8 +288,16 @@ td.answer {
   justify-content: center;
 }
 
+td.answer-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  padding: 5px 0 5px 0;
+}
+
 div.answer {
-  padding-right: 5px !important;
+  padding-right: 10px !important;
 }
 
 div.answer input[type="checkbox"], input[type="radio"] {
@@ -285,35 +311,70 @@ div.answer {
   width: 100%;
 }
 
-div.answer .radioContainer, div.answer .dropdown {
+div.answer .dropdown {
   width: 100%;
 }
 
-.stageHeader {
-  z-index:5;
-  position:relative;
-  top:2px;
-  margin-top:10px;
-  padding: 0  0 5px 13px;
+div .radioContainer {
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius:  0 0 5px 5px;
+}
+
+.stageHeaderNoBottomBorder {
+  z-index: 5;
+  position: relative;
+  top: 2px;
+  margin-top: 10px;
+  padding: 0 0 5px 13px;
   text-align: left;
   color: black;
   font-weight: bold;
-  width: 30%;
+  width: 100%;
   font-size: x-small;
-  border-top: 1px solid #ced4da;
-  border-right: 1px solid #ced4da;
-  border-left: 1px solid #ced4da;
-  border-bottom:0;
+  border: 1px solid #ced4da;
+  border-bottom: none;
   border-radius: 5px 5px 0 0;
 }
 
-td.questionText .stageHeader,
-td.questionKey .stageHeader,
+.stageHeaderNoRightBorder {
+  z-index: 5;
+  position: relative;
+  top: 0px;
+  margin-top: 0px;
+  padding: none;
+  text-align: left;
+  color: black;
+  font-weight: bold;
+  font-size: x-small;
+  border: 1px solid #ced4da;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+}
+
+.stageHeaderNoLeftBorder {
+  z-index: 5;
+  position: relative;
+  top: 0px;
+  margin-top: 0px;
+  padding: none;
+  text-align: left;
+  color: black;
+  font-weight: bold;
+  font-size: x-small;
+  border: 1px solid #ced4da;
+  border-left: none;
+  border-radius: 5px 0 0 5px;
+}
+
+td.questionText .stageHeaderNoBottomBorder,
+td.questionKey .stageHeaderNoBottomBorder,
 div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }
 
-td.answer label.nullLabel {
+div.answer label.nullLabel {
   display:none;
 }
 
@@ -437,7 +498,7 @@ tr.questionRow :hover {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: flex-start;
+  justify-content: start;
   align-items: center;
   align-content: center;
 }
@@ -483,7 +544,7 @@ tr.questionRow :hover {
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: flex-start;
-  /*align-items: center;*/
+  align-items: start;
 }
 
 .flex-start-column-nowrap {
@@ -530,6 +591,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*flex-grow: 4;*/
   /*width: 500px;*/
 }
+
 /* Inserting this collapsed row between two flex items will make 
  * the flex item that comes after it break to a new row */
 .break {

@@ -1,0 +1,78 @@
+﻿@model ViewComponentTemplateModel
+@* create multiple checkboxes and set checked if any *@
+@{
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
+}
+
+<div class="@ContainerCssClass">
+
+  @if (displayStageHeader)
+  {
+    @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
+    <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
+      @($"{Model.ViewComponentViewModel.StageTitle}")
+    </div>
+  }
+
+  @foreach (var item in Model.ChoiceAndAnswerList)
+  {
+    /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
+    var originalAnswer = item.Answer;
+    var isChecked = item.SelectListItem.Selected;
+
+    <div class="mdc-form-field">
+      <div class="mdc-checkbox">
+        @if (originalAnswer != null)
+        {
+          <input type="checkbox" class="mdc-checkbox__native-control persistable"
+                 name="@(Model.ViewComponentViewModel.QuestionKey)"
+                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                 value="@(item.SelectListItem.Value)"
+                 checked @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
+                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                 data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                 data-userid="@(Model.ViewComponentViewModel.UserID)"
+                 data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                 data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                 data-toggle="tooltip"
+                 data-placement="left"
+                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
+        }
+        else
+        {
+          <input type="checkbox" class="mdc-checkbox__native-control persistable"
+                 name="@(Model.ViewComponentViewModel.QuestionKey)"
+                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                 value="@(item.SelectListItem.Value)"
+                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                 data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                 data-userid="@(Model.ViewComponentViewModel.UserID)"
+                 data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                 data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                 data-toggle="tooltip"
+                 data-placement="left"
+                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
+        }
+        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"></span>
+
+        <div class="mdc-checkbox__background">
+          <svg class="mdc-checkbox__checkmark"
+               viewBox="0 0 24 24">
+            <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+            <title>Mateial icon</title>
+          </svg>
+          <div class="mdc-checkbox__mixedmark"></div>
+        </div>
+        <div class="mdc-checkbox__ripple"></div>
+      </div>
+
+      @*the labe is required by HTML5 specification*@
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             class="nullLabel" 
+             aria-label="label for dropdown left blank use the question text"></label>
+    </div>
+  }
+</div>

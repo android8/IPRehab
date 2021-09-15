@@ -32,15 +32,27 @@
   <ItemGroup>
     <Compile Remove="Helpers\HydrateHierarchically1.cs" />
     <Compile Remove="Helpers\StateManager.cs" />
+    <Compile Remove="ViewComponents\Checkbox2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\Dropdown2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\InputViewComponent.cs" />
+    <Compile Remove="ViewComponents\RadioButton2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\SubmitButtonViewComponent.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="Views\Question\Edit - Copy.cshtml" />
+    <Content Remove="Views\Question\Edit1.cshtml" />
+    <Content Remove="Views\Question\Edit2.cshtml" />
     <Content Remove="wwwroot\js\file.ts" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Scripts\cascadeDropdown\cascadeDropdown.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\app.min.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,11 +92,10 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
-    <None Include="Views\Shared\Components\IPRehab\MaterialChkboxFlexDirectionRow.cshtml" />
-    <None Include="Views\Shared\Components\IPRehab\DropDownDefault2.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\DropDown.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialInputText.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialInputDate.cshtml" />
-    <None Include="Views\Shared\Components\IPRehab\MaterialInputTNumber.cshtml" />
+    <None Include="Views\Shared\Components\IPRehab\MaterialInputNumber.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialTextArea.cshtml" />
     <None Include="Views\Shared\Components\SubmitButton\MDSubmitButton.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\RadioFlexDirectionColumnLongText2.cshtml" />
