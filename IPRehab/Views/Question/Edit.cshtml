@@ -34,7 +34,10 @@
     <div class="flex-container-evenly-justified">
       @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}
       &nbsp;
-      <a asp-controller="Patient" asp-action="Index" class="btn-sm btn-secondary">Paients List</a>
+      <a asp-controller="Patient" asp-action="Index" class="mdc-button actionBtnPatientList rehabAction">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">Paients List</span>
+      </a>
     </div>
     <span class="text-center patientName">@Model.PatientName</span>
     <div style="width:30px"></div>

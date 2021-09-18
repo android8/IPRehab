@@ -723,34 +723,45 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-self: flex-end;
 }
 
+.paddingTop .ActionBtnContainer, .actionBtnPatientList {
+  position: relative;
+}
+
+.rehabAction {
+  text-decoration: none !important;
+  color: white !important;
+}
+
+a.rehabAction {
+  height: 2%;
+}
+
 .actionBtnFull {
   background-color: #9a24ad;
-  color: white;
 }
 
 .actionBtnBase {
   background-color: #be5205;
-  color: white;
 }
 
 .actionBtnInitial {
   background-color: #3800ff;
-  color: white;
 }
 
 .actionBtnInterim {
   background-color: #0325ab;
-  color: white;
 }
 
 .actionBtnDischarge {
   background-color: #ad1255;
-  color: white;
 }
 
 .actionBtnFollowup {
   background-color: #3eca03;
-  color: white;
+}
+
+.actionBtnPatientList {
+  background-color: darkslategray;
 }
 
 .visible {

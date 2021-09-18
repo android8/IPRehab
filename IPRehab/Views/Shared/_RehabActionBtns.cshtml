@@ -1,18 +1,18 @@
 ﻿@model RehabActionViewModel
 
-<div>
+<div class="ActionBtnContainer">
   @{
     string action = "Edit";
     var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
-    var actionBtnCssClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
+    var actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
+    string textNode = string.Empty;
+    string aspRouteParamStage = string.Empty;
   }
 
   @foreach (var entry in stageType)
   {
-    string textNode = string.Empty;
     string stage = entry.Key, title = entry.Value;
-    string aspRouteParamStage = string.Empty;
-    string actionBtnClass = actionBtnCssClass[stage];
+    string actionBtnCssClass = actionBtnClass[stage];
 
     if (stageType[stage] == "Full")
     {
@@ -34,7 +34,10 @@
       title = title.Replace("Create", "Edit");
     }
 
-    <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="badge @actionBtnClass rehabAction" title="@title">@textNode</a>
+  <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="mdc-button @(actionBtnCssClass) rehabAction" title="@title">
+    <span class="mdc-button__ripple"></span>
+    <span class="mdc-button__label">@textNode</span>
+  </a>
   }
 </div>
 
