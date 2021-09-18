@@ -55,7 +55,8 @@ namespace IPRehab.Controllers
       string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
 
       //no impersonation so get identity from User.Claims
-      string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; //HttpContext.User.Identity.Name;
+      //string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; 
+      string trueUser = HttpContext.User.Identity.Name;
       string encodedTrueUser = System.Web.HttpUtility.UrlEncode(trueUser);
       List<MastUserDTO> accessLevels = new();
 

@@ -59,6 +59,10 @@ namespace IPRehab.Helpers
         qwsList.Add(qws);
       }
 
+      /* ToDo: find questionDTO.QuestionID in ToQuestionID of branching point list 
+        then check if the FromQuestionID conatins any value. If no value, disable this questionDTO
+       */
+
       var distinctSections = GetDistinctSections2(qwsList);
 
       /* Sections */

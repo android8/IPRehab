@@ -136,7 +136,7 @@ namespace IPRehab.Controllers
     // POST: QuestionController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, IFormCollection form)
+    public ActionResult Edit(IFormCollection form)
     {
       string stage = form["Stage"];
       string patientID = form["PatientID"];

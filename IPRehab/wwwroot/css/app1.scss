@@ -1,10 +1,4 @@
-﻿@media (min-width: 768px) {
-  .paddingTop {
-    padding-top: 60px;
-    margin-right: 20px;
-  }
-}
-.splashscreen {
+﻿.splashscreen {
   /*  position: absolute;
   top: 0;
   left: 0;*/
@@ -45,22 +39,13 @@
 /*override the spinnerContainer in cube.css*/
 .spinnerContainer {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin: 0 40%;
-  height:100%;
+  margin: 15% auto;
+  width: 100%;
   position: fixed;
   z-index: 999;
-}
-
-/*override Material Design style*/
-.mdc-text-field--outlined {
- height: 30px;
-}
-
-.mdc-radio {
-  padding: 5px 0 0 10px;
 }
 
 body {
@@ -112,7 +97,6 @@ body {
   background-color: #0e2640;
   text-align: center;
   font-weight: bold;
-  padding-top:10px;
 }
 
 .disabled {
@@ -146,7 +130,6 @@ body {
   width: 100%;
   background-color: white;
   /*padding-top:10px*/
-  z-index: 10;
 }
 
 .fixedBottom {
@@ -193,9 +176,6 @@ alert-info {
   height: 100%;
 }
 
-input{
-  transition: all 0.5s ease-out;
-}
 /*.table-striped tbody tr:nth-of-type(odd) {
   background-color: rgb(0 0 0 / 13%);
 }
@@ -220,10 +200,8 @@ td {
 .episode-node-symbol{
   position:relative;
   top:-10px;
-  font-size:smaller;
-  height:5px;
   border-left:1px solid darkgray;
-  border-bottom:2px solid darkgray;
+  border-bottom:1px solid darkgray;
   border-bottom-left-radius:10px;
 }
 
@@ -255,28 +233,21 @@ svg {
 }
 
 .questionSection {
-/*  background-image: linear-gradient( lightgray,gray);*/  
-padding:0 0 3em 0;
+  background-image: linear-gradient(gray, lightgray);
+  color: #000000;
+  height: 2px;
+  font-weight: bold;
+  padding:0 10px;
 }
 
-.section-title {
-  background-color: black;
-  color: gold;
-  font-weight: bolder;
-  font-size: large;
-  width: 100%;
-  padding: 0 10px;
-  border: 1px solid #c8cab7;
-  border-radius: 10px 10px 0 0;
-}
 .questionText {
   max-width:30% !important;
   padding-left: 10px;
 }
 
 .questionKey {
-  max-width: 10%;
-  padding:0 2% 0 1%;
+  max-width: 100px;
+  font-weight:bold;
 }
 
 .instructionIcon {
@@ -351,48 +322,16 @@ div .radioContainer {
   border-radius:  0 0 5px 5px;
 }
 
-.arrow-up {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #dfdede;
-}
-
-.arrow-down {
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-top: 20px solid #dfdede;
-}
-
-.arrow-right {
-  width: 0;
-  height: 0;
-  border-top: 60px solid transparent;
-  border-bottom: 60px solid transparent;
-  border-left: 60px solid #dfdede;
-}
-
-.arrow-left {
-  width: 0;
-  height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 10px solid #dfdede;
-}
 .stageHeaderNoBottomBorder {
   z-index: 5;
-  display: inline-block;
   position: relative;
-  top: 1px;
+  top: 2px;
   margin-top: 10px;
-  padding: 0 13px 5px 13px;
+  padding: 0 0 5px 13px;
   text-align: left;
-  color: #555555;
-  background-color: #dfdede;
+  color: black;
   font-weight: bold;
+  width: 100%;
   font-size: x-small;
   border: 1px solid #ced4da;
   border-bottom: none;
@@ -400,13 +339,13 @@ div .radioContainer {
 }
 
 .stageHeaderNoRightBorder {
+  z-index: 5;
   position: relative;
   top: 0px;
   margin-top: 0px;
-  padding: 0 5px;
+  padding: none;
   text-align: left;
-  color: #555555;
-  background-color: #dfdede;
+  color: black;
   font-weight: bold;
   font-size: x-small;
   border: 1px solid #ced4da;
@@ -415,18 +354,18 @@ div .radioContainer {
 }
 
 .stageHeaderNoLeftBorder {
+  z-index: 5;
   position: relative;
   top: 0px;
   margin-top: 0px;
-  padding: 0 5px;
+  padding: none;
   text-align: left;
-  color: #555555;
-  background-color: #dfdede;
+  color: black;
   font-weight: bold;
   font-size: x-small;
   border: 1px solid #ced4da;
   border-left: none;
-  border-radius: 0 5px 5px 0;
+  border-radius: 5px 0 0 5px;
 }
 
 td.questionText .stageHeaderNoBottomBorder,
@@ -435,8 +374,8 @@ div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }
 
-div.answer .nullLabel {
-  display:none #important;
+div.answer label.nullLabel {
+  display:none;
 }
 
 .longTextOption {
@@ -516,7 +455,6 @@ div.answer .nullLabel {
 
 .paddingTop {
   padding-top: 60px;
-  margin-right: 20px;
 }
 
 .borderTop {
@@ -527,9 +465,9 @@ div.answer .nullLabel {
   border-bottom: 2px solid #cfcfcf
 }
 
-div.questionRow {
-  padding: 0 10px;
-  border: 1px solid #c8cab7;
+tr.questionRow :hover {
+  background-color: lightgray;
+  color: black
 }
 
 .rotate {
@@ -538,7 +476,7 @@ div.questionRow {
   left: 0px;
   transform: rotate(-90deg);
   position: fixed;
-  z-index: 5;
+  z-index: 900;
   /* Legacy vendor prefixes that you probably don't need... */
   /* Safari */
   -webkit-transform: rotate(-90deg);
@@ -550,7 +488,6 @@ div.questionRow {
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .roate2 {
@@ -676,7 +613,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   width: 250px;
   height: 100%;
   overflow-y: auto;
-  z-index: 20;
+  z-index: 999;
   border: none;
   opacity: 1;
   -webkit-transition-duration: 1s;

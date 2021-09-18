@@ -1,9 +1,5 @@
 ﻿using IPRehab.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IPRehab.ViewComponents
@@ -22,8 +18,8 @@ namespace IPRehab.ViewComponents
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
       thisVCVM.StageTitle = QWS.StageTitle;
-      thisVCVM.MultipleAnswers = QWS.MultipleChoices;
-
+      thisVCVM.MultipleChoices = QWS.MultipleChoices;
+      thisVCVM.Required = QWS.Required.HasValue;
       thisVCVM.DisplayStageHeader = false;
       thisVCVM.DisplayStageHeader = QWS.QuestionKey.Contains("Q43") ||
                                     QWS.QuestionKey.Contains("D0150") ||
@@ -42,7 +38,7 @@ namespace IPRehab.ViewComponents
       {
         case int n when n > 3:
           viewName = "DropDown";
-          if (QWS.QuestionKey.Contains("O0401"))
+          if (QWS.QuestionKey.Contains("O0401") || QWS.QuestionKey.Contains("O0402"))
           {
             /* week1 and week2 therapy with total hours*/
             viewName = "DropDownPT";
@@ -101,9 +97,6 @@ namespace IPRehab.ViewComponents
               viewName = "MaterialTextArea";
               break;
             case "ICD":
-              viewName = "MaterialInputText";
-              thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-              break;
             case "FreeText":
               viewName = "MaterialInputText";
               break;

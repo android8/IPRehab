@@ -1,7 +1,7 @@
 ﻿@model ViewComponentTemplateModel
 @* create multiple checkboxes and set checked if any *@
 @{
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
@@ -9,9 +9,13 @@
 
   @if (displayStageHeader)
   {
+    <div class="arrow-right"></div>
     @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
-    <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
-      @($"{Model.ViewComponentViewModel.StageTitle}")
+    @*prevent the next inner div to be flexed*@
+    <div>
+      <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
+        @($"{Model.ViewComponentViewModel.StageTitle}")
+      </div>
     </div>
   }
 
@@ -27,7 +31,8 @@
         {
           <input type="checkbox" class="mdc-checkbox__native-control persistable"
                  name="@(Model.ViewComponentViewModel.QuestionKey)"
-                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+                 required="@(Model.ViewComponentViewModel.Required)"
                  value="@(item.SelectListItem.Value)"
                  checked @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
                  data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
@@ -44,8 +49,9 @@
         {
           <input type="checkbox" class="mdc-checkbox__native-control persistable"
                  name="@(Model.ViewComponentViewModel.QuestionKey)"
-                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
                  value="@(item.SelectListItem.Value)"
+                 required="@(Model.ViewComponentViewModel.Required)"
                  data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                  data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                  data-userid="@(Model.ViewComponentViewModel.UserID)"
@@ -56,7 +62,7 @@
                  data-placement="left"
                  title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
         }
-        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"></span>
+        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"></span>
 
         <div class="mdc-checkbox__background">
           <svg class="mdc-checkbox__checkmark"
@@ -70,8 +76,8 @@
       </div>
 
       @*the labe is required by HTML5 specification*@
-      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
-             class="nullLabel" 
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+             class="nullLabel"
              aria-label="label for dropdown left blank use the question text"></label>
     </div>
   }

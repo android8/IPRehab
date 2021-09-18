@@ -17,7 +17,7 @@ function pageLoad() {
         breakLongSentence($(this));
     });
     $('select.physical-therapy').change(function () {
-        addPhysicalTherapyHours($(this));
+        breakLongSentence($(this));
     });
     //handle rehab action checkbox
     $('input[type="checkbox"]').click(function () {
@@ -46,6 +46,7 @@ function pageLoad() {
     $('#submit').click(function () {
         $('.spinnerContainer').show();
         alert('collecting answers');
+        $('#userAnswerForm').validate();
     });
     checkRules();
 }
@@ -131,6 +132,7 @@ function breakLongSentence(thisSelectElement) {
     console.log('thisSelectElement', thisSelectElement);
     let maxLength = 50;
     let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
+    console.log('longTextOptionDIV', longTextOptionDIV);
     let thisSelectWidth = thisSelectElement[0].clientWidth;
     let thisScope = thisSelectElement;
     $.each($('option:selected', thisScope), function () {
@@ -150,10 +152,6 @@ function breakLongSentence(thisSelectElement) {
             longTextOptionDIV.removeClass("invisible");
         }
     });
-}
-function addPhysicalTherapyHours(thisSelectElement) {
-    let physicalTherapySPAN = thisSelectElement.next('span.invisible');
-    physicalTherapySPAN.show();
 }
 function getTextPixels(someText, font) {
     let canvas = document.createElement('canvas');

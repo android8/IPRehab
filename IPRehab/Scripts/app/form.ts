@@ -26,7 +26,7 @@ function pageLoad(): void {
 
   $('select.physical-therapy').change(
     function () {
-      addPhysicalTherapyHours($(this));
+      breakLongSentence($(this));
     });
 
   //handle rehab action checkbox
@@ -64,6 +64,7 @@ function pageLoad(): void {
   $('#submit').click(function () {
     $('.spinnerContainer').show();
     alert('collecting answers');
+    $('#userAnswerForm').validate();
   });
 
   checkRules();
@@ -72,7 +73,7 @@ function pageLoad(): void {
 /* scroll to an anchor */
 function scrollToAnchor(aid) {
   let aTag: any = $('a[name="' + aid + '"]');
-  $('html,body').animate({ scrollTop: aTag.offset().top-15 }, 'fast');
+  $('html,body').animate({ scrollTop: aTag.offset().top - 15 }, 'fast');
 }
 
 function setRehabBtns(targetScope: any) {
@@ -90,7 +91,7 @@ function setRehabBtns(targetScope: any) {
 }
 
 function resetRehabBtns(targetScope: any) {
-  let cmdBtns: string[] = ['primary', 'info', 'secondary', 'success','warning'];
+  let cmdBtns: string[] = ['primary', 'info', 'secondary', 'success', 'warning'];
   let currentIdx: number = 0;
   $.each($('.rehabAction', targetScope), function () {
     let $this = $(this);
@@ -116,13 +117,11 @@ function checkRules() {
     $('#Q44D_').attr('disabled', 'true');
     $('#Q45_').attr('disabled', 'true');
   }
-  if (q44c_is_1 && q44d_is_1)
-  {
+  if (q44c_is_1 && q44d_is_1) {
     /*Q44C = 1 and Q44D = 1*/
     $('#Q45_').attr('disabled', 'false');
   }
-  else
-  {
+  else {
     if (q44c_is_0) {
       $('#Q44D_').attr('disabled', 'false');
       $('#Q46_').focus();
@@ -131,14 +130,14 @@ function checkRules() {
 
   /* interrupted */
   let q42_is_interrupted: boolean = $('#Q42-INTRRUPT_86').prop('checked');
-  
+
   if (q42_is_interrupted) {
     $('#Q43_').attr('disabled', 'false');
     $('#Q43_').focus();
   }
 }
 
-function breakLongSentence1 () {
+function breakLongSentence1() {
   //var $select2 = $('.select2').select2();
 
   ////Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
@@ -161,8 +160,9 @@ function breakLongSentence(thisSelectElement) {
   console.log('thisSelectElement', thisSelectElement);
   let maxLength: number = 50;
   let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
+  console.log('longTextOptionDIV', longTextOptionDIV);
   let thisSelectWidth = thisSelectElement[0].clientWidth;
-  let thisScope : any = thisSelectElement;
+  let thisScope: any = thisSelectElement;
   $.each($('option:selected', thisScope), function () {
     let $thisOption = $(this);
 
@@ -182,11 +182,6 @@ function breakLongSentence(thisSelectElement) {
       longTextOptionDIV.removeClass("invisible");
     }
   });
-}
-
-function addPhysicalTherapyHours(thisSelectElement) {
-  let physicalTherapySPAN = thisSelectElement.next('span.invisible');
-  physicalTherapySPAN.show();
 }
 
 function getTextPixels(someText: string, font: any) {

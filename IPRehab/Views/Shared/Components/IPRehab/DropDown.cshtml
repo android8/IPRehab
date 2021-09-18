@@ -11,24 +11,28 @@
       originalAnswer = thisChoiceAndAnswer.Answer;
     }
   }
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
 }
 
 <div class="flex-start-column-nowrap">
 
   @*the labe is required by HTML5 specification*@
   <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
-         class="nullLabel" 
+         class="nullLabel"
          aria-label="label for dropdown left blank use the question text"></label>
 
   @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
   @if (displayStageHeader)
   {
-    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    @*prevent the next inner div to be flexed*@
+    <div>
+      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    </div>
   }
   <select class="browser-default custom-select select2 dropdown persistable"
           name="@(Model.ViewComponentViewModel.QuestionKey)"
           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+          required="@(Model.ViewComponentViewModel.Required)"
           data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
           data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
           data-userid="@(Model.ViewComponentViewModel.UserID)"

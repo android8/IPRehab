@@ -9,13 +9,16 @@
       originalAnswer = thisChoiceAndAnswer.Answer;
     }
   }
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
 @if (displayStageHeader)
 {
-  <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+  @*prevent the next inner div to be flexed*@
+  <div>
+    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+  </div>
 }
 
 <div class="@(ContainerCssClass) @(displayStageHeader? "radioContainer": string.Empty)">
@@ -28,7 +31,8 @@
           {
             <input type="radio" class="mdc-radio__native-control persistable"
                    name="@(Model.ViewComponentViewModel.QuestionKey)"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+                   required="@(Model.ViewComponentViewModel.Required)"
                    value="@(item.SelectListItem.Value)"
                    @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
                    checked
@@ -46,7 +50,8 @@
           {
             <input type="radio" class="mdc-radio__native-control persistable"
                    name="@(Model.ViewComponentViewModel.QuestionKey)"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+                   required="@(Model.ViewComponentViewModel.Required)"
                    value="@(item.SelectListItem.Value)"
                    data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                    data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
@@ -67,12 +72,12 @@
       </div>
 
       <label class="radioLabel"
-             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
              aria-label="@(item.SelectListItem.Text)">
-        
+
         @*strip the code value *@
         @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
-        { 
+        {
           @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".")+1))
         }
         else

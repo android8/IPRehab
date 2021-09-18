@@ -1,0 +1,63 @@
+﻿@model ViewComponentTemplateModel
+@{
+  var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+  var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
+  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
+  bool isMultipleChoices = Model.ViewComponentViewModel.MultipleAnswers.HasValue;
+}
+
+<div class="flex-start-row-nowrap">
+  <div class="flex-start-column-nowrap">
+    @if (displayStageHeader)
+    {
+    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    }
+
+    @*Material Design Filled Datetime Input*@
+    <label class="mdc-text-field mdc-text-field--outlined"
+           for="@($" {Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+           aria-label="enter a date in MM/dd/yyyy format">
+      <span class="mdc-notched-outline">
+        <span class="mdc-notched-outline__leading"></span>
+        <span class="mdc-notched-outline__notch">
+          <span class="mdc-floating-label" id="my-label-id"></span>
+        </span>
+        <span class="mdc-notched-outline__trailing"></span>
+      </span>
+
+      <input type="date"
+             class="mdc-text-field__input persistable" aria-labelledby="my-label-id"
+             name="@Model.ViewComponentViewModel.QuestionKey"
+             id="@($" {Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             max="@(DateTime.Today.ToString(" yyyy-MM-dd"))"
+             value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
+             aria-label="enter a date in month day year format"
+             data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
+             data-codesetid="@(thisItem.Value)"
+             data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+             data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+             data-userid="@(Model.ViewComponentViewModel.UserID)"
+             data-episodeid="@(originalAnswer == null ? " " : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-answerSequence="@(originalAnswer == null ? " " : originalAnswer.AnswerSequenceNumber)"
+             data-toggle="tooltip"
+             data-placement="left" />
+    </label>
+  </div>
+
+  @* add morebutton *@
+  @if (isMultiplChoices)
+  {
+  <div class="mdc-touch-target-wrapper">
+    <button class="mdc-button mdc-button--touch">
+      <div class="mdc-button__ripple"></div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+        <title>Add More</title>
+      </svg>
+      <div class="mdc-button__touch"></div>
+    </button>
+  </div>
+  }
+</div>

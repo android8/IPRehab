@@ -6,11 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\IPRehab\.xml</DocumentationFile>
+    <DocumentationFile>$(MSBuildProjectDirectory)\.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants></DefineConstants>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -44,6 +45,9 @@
     <Content Remove="Views\Question\Edit - Copy.cshtml" />
     <Content Remove="Views\Question\Edit1.cshtml" />
     <Content Remove="Views\Question\Edit2.cshtml" />
+    <Content Remove="Views\Shared\Components\IPRehab\MaterialInputDate1.cshtml" />
+    <Content Remove="wwwroot\css\app1.css" />
+    <Content Remove="wwwroot\css\app1.scss" />
     <Content Remove="wwwroot\js\file.ts" />
   </ItemGroup>
 
@@ -61,18 +65,19 @@
 
   <ItemGroup>
     <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
+    <PackageReference Include="jquery.validation.TypeScript.DefinitelyTyped" Version="0.4.6" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.5">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -94,7 +99,6 @@
     <None Include="compilerconfig.json" />
     <None Include="Views\Shared\Components\IPRehab\DropDown.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialInputText.cshtml" />
-    <None Include="Views\Shared\Components\IPRehab\MaterialInputDate.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialInputNumber.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialTextArea.cshtml" />
     <None Include="Views\Shared\Components\SubmitButton\MDSubmitButton.cshtml" />
@@ -128,6 +132,18 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\cascadeDropdown\cascadeDropdown.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\css\app - Copy %282%29.min.css">
+      <DependentUpon>app.min.css</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\css\app - Copy - Copy.min.css">
+      <DependentUpon>app - Copy.min.css</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\css\app - Copy.min.css">
+      <DependentUpon>app.min.css</DependentUpon>
+    </Content>
   </ItemGroup>
 
 </Project>

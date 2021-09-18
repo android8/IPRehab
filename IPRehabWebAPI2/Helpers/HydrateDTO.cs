@@ -29,7 +29,7 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
-      questionDTO.MultipleChoices = q.MultiChoice;
+      questionDTO.MultipleChoices = q.MultiChoice.HasValue;
       questionDTO.ChoiceList = q.AnswerCodeSetFKNavigation.InverseCodeSetParentNavigation.OrderBy(x => x.SortOrder)
                         .Select(s => new CodeSetDTO
                         {

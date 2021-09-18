@@ -2,12 +2,16 @@
 @{
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
+  bool isMultipleChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 <div class="flex-start-row-nowrap">
   @if (displayStageHeader)
   {
-    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    @*prevent the next inner div to be flexed*@
+    <div>
+      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    </div>
   }
 
   <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label">
@@ -18,7 +22,8 @@
     <span class="mdc-text-field__resizer">
       <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40" aria-label="enter some text here"
                 name="@Model.ViewComponentViewModel.QuestionKey"
-                id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+                id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+                required="@(Model.ViewComponentViewModel.Required)"
                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                 placeholder="enter some text"
                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.Description)"
@@ -35,16 +40,17 @@
   </label>
 
   @* add more button *@
-  @if ((Model.ViewComponentViewModel.MultipleAnswers).HasValue)
+  @if (isMultipleChoices)
   {
-  <span>
-    <button class="mdc-button">
-      <span class="mdc-button__ripple"></span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-        <title>Add More</title>
-      </svg>
-    </button>
-  </span>
+    <div class="mdc-touch-target-wrapper">
+      <button class="mdc-button mdc-button--touch">
+        <div class="mdc-button__ripple"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+          <title>Add More</title>
+        </svg>
+        <div class="mdc-button__touch"></div>
+      </button>
+    </div>
   }
 </div>
