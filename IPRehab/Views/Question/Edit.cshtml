@@ -27,10 +27,7 @@
 
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
-    <div class="flex-container-evenly-justified">
-      <div class="pageTitle">@Model.StageTitle</div>
-      <span class="badge @Model.ModeColorCssClass">@Model.CurrentAction</span>
-    </div>
+    <div class="pageTitle">@Model.StageTitle</div>
     <div class="flex-container-evenly-justified">
       @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}
     </div>

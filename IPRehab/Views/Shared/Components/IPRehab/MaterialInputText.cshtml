@@ -19,16 +19,10 @@
 
   @*Material Design outlined text *@
   <div class="flex-start-row-nowrap">
-    <label class="mdc-text-field mdc-text-field--outlined"
+    <label class="mdc-text-field mdc-text-field--filled"
            for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")">
-      <span class="mdc-notched-outline">
-        <span class="mdc-notched-outline__leading"></span>
-        <span class="mdc-notched-outline__notch">
-          <span class="mdc-floating-label" id="my-label-id">"@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"</span>
-          <span class="mdc-line-ripple"></span>
-        </span>
-        <span class="mdc-notched-outline__trailing"></span>
-      </span>
+      <span class="mdc-line-ripple"></span>
+      <span class="mdc-floating-label" id="my-label-id">"@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"</span>
       <input type="text"
              class="mdc-text-field__input persistable"
              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"

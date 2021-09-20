@@ -269,6 +269,7 @@ padding:0 0 3em 0;
 }
 
 .questionKey {
+  width:100px;
   padding:0 2% 0 1%;
 }
 
@@ -301,7 +302,10 @@ padding:0 0 3em 0;
 .patientRow:hover {
   background-color: #778edb;
   color: black;
-  cursor:pointer;
+}
+
+td.bedSection {
+  text-align: center;
 }
 
 td.answer {
@@ -754,31 +758,31 @@ button.rehabAction{
 }
 
 .actionBtnFull {
-  background-color: #9a24ad;
+  background-color: #9a24ad !important;
 }
 
 .actionBtnBase {
-  background-color: #be5205;
+  background-color: #be5205 !important;
 }
 
 .actionBtnInitial {
-  background-color: #3800ff;
+  background-color: #3800ff !important;
 }
 
 .actionBtnInterim {
-  background-color: #0325ab;
+  background-color: #0325ab !important;
 }
 
 .actionBtnDischarge {
-  background-color: #ad1255;
+  background-color: #ad1255 !important;
 }
 
 .actionBtnFollowup {
-  background-color: #3eca03;
+  background-color: #3eca03 !important;
 }
 
-.actionBtnPatientList{
-  background-color:darkslategray;
+.actionBtnPatientList {
+  background-color: darkslategray !important;
 }
 .visible {
   display: inline;

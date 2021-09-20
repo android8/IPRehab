@@ -41,10 +41,10 @@ let patientListController = (function () {
     /* create href conditionally on localhost or not */
     let host: string = location.host;
     if (host.indexOf('localhost') != -1) {
-      thisHref = '/Patient/Index?criteria=' + searchCriteria;
+      thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
     }
     else {
-      thisHref = '/IPRehabMetrics/Patient/Index?criteria=' + searchCriteria;
+      thisHref = '/IPRehabMetrics/Patient/Index?searchCriteria=' + searchCriteria;
     }
 
     $('#recordCount').text('');

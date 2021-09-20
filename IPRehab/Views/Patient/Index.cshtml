@@ -13,7 +13,6 @@
 
 <div class="flex-start-column-nowrap paddingTop">
   <div class="flex-start-row-nowrap">
-    <h2>Patient List</h2>
     @{await Html.RenderPartialAsync("_SearchPartial", Model);}
   </div>
   <div>
@@ -74,7 +73,7 @@
                 @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
               </td>
               <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
+                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn, null, null, new { @class="bedSection"})
               </td>
               <td>
                 @Html.DisplayFor(modelItem => pat.Patient.Name)

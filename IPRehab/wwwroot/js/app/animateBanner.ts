@@ -68,9 +68,7 @@ function rehabPageLoad(): void {
 
 let sliderController = (function () {
 
-  /****************************************************************************
-   * private function slide()
-   ***************************************************************************/
+  /* private function */
   function slide() {
     /*hide header and footer after 2 seconds*/
     let topScrollY: string;
@@ -125,7 +123,7 @@ let sliderController = (function () {
   }
 
   /****************************************************************************
-   * public functions slide() expose to outside of the closure
+   * public function exposing slide() outside of the closure
   ****************************************************************************/
   return {
     'slide': slide
