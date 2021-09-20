@@ -9,6 +9,7 @@ namespace IPRehab.Models
   {
     public List<PatientViewModel> Patients { get; set; }
     public int TotalPatients { get; set; }
+    public string SearchCriteria { get; set; }
 
     public PatientListViewModel() {
       Patients = new();

@@ -43,8 +43,6 @@ namespace IPRehab.Controllers
           HttpContext.Session.SetString(sessionKey, criteria);
       }
 
-      ViewBag.PreviousCriteria = criteria;
-
       string url;
 
       //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
@@ -72,6 +70,8 @@ namespace IPRehab.Controllers
         return View("_NoDataPartial");
 
       PatientListViewModel patientListVM = new();
+      patientListVM.SearchCriteria = criteria;
+      patientListVM.TotalPatients = patientsMeta.Patients.Count;
       foreach (var pat in patientsMeta.Patients)
       {
         PatientViewModel thisPatVM = new();

@@ -3,7 +3,7 @@
   @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
   {
     <div role="listitem" class="nav-item gotoSection" data-anchorid="@sectionInfo.SectionKey">
-      @($"{sectionInfo.SectionTitle} {sectionInfo.SectionKey}")
+      @($"{sectionInfo.SectionKey} {sectionInfo.SectionTitle}")
       <i class="fa fa-bookmark-o" aria-hidden="true"></i>
     </div>
   }

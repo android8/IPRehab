@@ -1,6 +1,6 @@
 ﻿@model RehabActionViewModel
 
-<div class="ActionBtnContainer">
+<div class="flex-start-row-nowrap">
   @{
     string action = "Edit";
     var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
@@ -34,10 +34,35 @@
       title = title.Replace("Create", "Edit");
     }
 
-  <a asp-controller="question" asp-action="@action" asp-route-stage="@aspRouteParamStage" asp-route-patientID="@Model.PatientID" asp-route-PatientName="@Model.PatientName" asp-route-episodeID="@Model.EpisodeID" class="mdc-button @(actionBtnCssClass) rehabAction" title="@title">
-    <span class="mdc-button__ripple"></span>
-    <span class="mdc-button__label">@textNode</span>
-  </a>
+    @if (stage != "PatientList")
+    {
+      <div>
+        <button type="button" id="@($"{stage}_{Model.PatientID}")" 
+                class="mdc-button @(actionBtnCssClass) rehabAction"
+                data-stage="@(stage)"
+                asp-controller="question" asp-action="@(action)" asp-route-stage="@(aspRouteParamStage)" asp-route-patientID="@(Model.PatientID)"
+                asp-route-PatientName="@(Model.PatientName)" asp-route-episodeID="@(Model.EpisodeID)">
+          <span class="mdc-button__ripple"></span>
+          <span class="mdc-button__label">@textNode</span>
+        </button>
+      </div>
+    }
+    else
+    {
+      if (Model.HostContainer == "Question")
+      {
+        <div>
+          <button type="button" id="patient" 
+                  class="mdc-button @(actionBtnCssClass) rehabAction"
+                  data-stage="@(stage)"
+                  asp-controller="patient" asp-action="Index">
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__touch"></span>
+            <span class="mdc-button__label">@textNode</span>
+          </button>
+        </div>
+      }
+    }
   }
 </div>
 

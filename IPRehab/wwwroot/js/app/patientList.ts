@@ -6,33 +6,60 @@ import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 $(function () {
-  pageLoad();
+  $('#searchBtn').on('click', function () {
+    patientListController.search();
+  });
 });
 
-function pageLoad(): void {
-  const urlParams: any = new URLSearchParams(window.location.search.substring(1));
-  const previousCriteria: string = urlParams.get('criteria'); //get criteria in the querystring
-  const previousSearchInputValue: string = $("#searchCriteria").val().toString(); //get criteria from the input ellement
-  //$('#previousCriteria').text(previousCriteria);
+/****************************************************************************
+ * javaScript closure
+ ***************************************************************************/
 
-  if (previousSearchInputValue == '')
-    $('#searchCriteria').val(previousCriteria); //only set the val of the input when the input has no value set by the server
+let patientListController = (function () {
+  /****************************************************************************
+   * private function
+  ***************************************************************************/
+  function getSearchCriteriaFromUrl() {
+    const urlParams: any = new URLSearchParams(window.location.search.substring(1));
 
-  $('#search').on('click', function () {
-    let host: string = location.host;
+    //get queryparameter. this is not suitable if the querystring is encrypted
+    const previousCriteria: string = urlParams.get('criteria');
+
+    //get criteria from the input ellement
+    const previousSearchInputValue: string = $("#searchCriteria").val().toString();
+    //$('#previousCriteria').text(previousCriteria);
+
+    //only set the val of the input when the input has no value set by the server
+    if (previousSearchInputValue == '')
+      $('#searchCriteria').val(previousCriteria);
+  }
+
+  /****************************************************************************
+   * private function
+  ***************************************************************************/
+  function search() {
+    /* get criteria from input */
     let searchCriteria: string = $('#searchCriteria').val().toString();
-    let href: string = '';
-    let $this: any = $(this);
+    let thisHref: string = '';
+
+    /* create href conditionally on localhost or not */
+    let host: string = location.host;
     if (host.indexOf('localhost') != -1) {
-      href = '/Patient/Index?criteria=' + searchCriteria;
-      //alert('local searchCriteria: ' + href);
+      thisHref = '/Patient/Index?criteria=' + searchCriteria;
     }
     else {
-      href = '/IPRehabMetrics/Patient/Index?criteria=' + searchCriteria;
-      //alert('remote searchCriteria: ' + href);
+      thisHref = '/IPRehabMetrics/Patient/Index?criteria=' + searchCriteria;
     }
-    //$('#previousCriteria').text('');
+
     $('#recordCount').text('');
-    $this.attr('href', href);
-  });
-}
+    location.href = thisHref;
+  }
+
+  /****************************************************************************
+   * public function 
+  ***************************************************************************/
+  return {
+    'getSearchCriteriaFromUrl': getSearchCriteriaFromUrl,
+    'search': search
+  }
+})();

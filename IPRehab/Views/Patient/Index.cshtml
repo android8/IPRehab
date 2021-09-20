@@ -7,17 +7,15 @@
 
 @section Scripts {
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-  <script type="module" src="~/js/app/patientList.js" asp-append-version="true"></script>
-  <script type="module" src="~/js/app/form.js" asp-append-version="true"></script>
-  <script type="text/javascript">
-    $(function () {
-      $(".disabled").removeClass("disabled"); //delay enabling command buttons under render is completed
-    });
-  </script>
+  <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+  <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
 }
 
-<div class="flex-column paddingTop">
-  @{await Html.RenderPartialAsync("_SearchPartial", Model);}
+<div class="flex-start-column-nowrap paddingTop">
+  <div class="flex-start-row-nowrap">
+    <h2>Patient List</h2>
+    @{await Html.RenderPartialAsync("_SearchPartial", Model);}
+  </div>
   <div>
     <table class="table-responsive-md table-bordered">
       <thead>

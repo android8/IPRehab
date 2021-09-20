@@ -41,6 +41,7 @@ namespace IPRehab.Controllers
       bool includeAnswer = (action == "Edit");
 
       RehabActionViewModel actionButtonVM = new() { 
+        HostContainer = "Question",
         EpisodeID = episodeID,
         PatientID = patientID,
         PatientName = encodedPatientName
@@ -94,6 +95,7 @@ namespace IPRehab.Controllers
       
       RehabActionViewModel actionButtonVM = new()
       {
+        HostContainer = "Question",
         EpisodeID = episodeID,
         PatientID = patientID,
         PatientName = encodedPatientName
@@ -138,12 +140,11 @@ namespace IPRehab.Controllers
     [ValidateAntiForgeryToken]
     public ActionResult Edit(IFormCollection form)
     {
-      string stage = form["Stage"];
-      string patientID = form["PatientID"];
-      string patientName = form["PatientName"];
-      string episodeID = form["EpisodeID"];
+      string stage = form["stage"];
+      string patientName = form["patientName"];
+      string episodeID = form["episodeID"];
 
-      return RedirectToAction(nameof(Edit), new { stage = stage, patientID = patientID, patientName = patientName, episodeID = episodeID, redirectFrom = "Edit" });
+      return RedirectToAction(nameof(Edit), new { stage = stage, patientName = patientName, episodeID = episodeID, redirectFrom = "Edit" });
     }
 
     // GET: QuestionController/Delete/5

@@ -1,4 +1,6 @@
-﻿@media (min-width: 768px) {
+﻿@use "material-components-web/material-components-web";
+
+@media (min-width: 768px) {
   .paddingTop {
     padding-top: 60px;
     margin-right: 20px;
@@ -84,10 +86,7 @@ body {
   z-index: 500;
 }
 
-.banner .nav-link {
-  color: white !important;
-}
-
+.banner .nav-link,
 .banner .navbar-brand {
   color: white !important;
 }
@@ -97,12 +96,6 @@ body {
   position: fixed;
   z-index: 100;
   color: #0e2640;
-}
-
-.section-spacer{
-  background-color:white;
-  height: 5em;
-  border:none !important;
 }
 
 .sectionNavHeader {
@@ -196,6 +189,7 @@ alert-info {
 input{
   transition: all 0.5s ease-out;
 }
+
 /*.table-striped tbody tr:nth-of-type(odd) {
   background-color: rgb(0 0 0 / 13%);
 }
@@ -265,7 +259,7 @@ padding:0 0 3em 0;
   font-weight: bolder;
   font-size: large;
   width: 100%;
-  padding: 0 10px;
+  padding: 2px 10px 5px 10px;
   border: 1px solid #c8cab7;
   border-radius: 10px 10px 0 0;
 }
@@ -275,7 +269,6 @@ padding:0 0 3em 0;
 }
 
 .questionKey {
-  max-width: 10%;
   padding:0 2% 0 1%;
 }
 
@@ -306,8 +299,9 @@ padding:0 0 3em 0;
 }
 
 .patientRow:hover {
-  background-color: lightblue;
+  background-color: #778edb;
   color: black;
+  cursor:pointer;
 }
 
 td.answer {
@@ -344,11 +338,14 @@ div.answer .dropdown {
   width: 100%;
 }
 
+div.answer .physical-therapy{
+  max-width:90%;
+}
+
 div .radioContainer {
   width: 100%;
   border: 1px solid #ced4da;
-  border-top: none;
-  border-radius:  0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .arrow-up {
@@ -382,6 +379,7 @@ div .radioContainer {
   border-bottom: 10px solid transparent;
   border-right: 10px solid #dfdede;
 }
+
 .stageHeaderNoBottomBorder {
   z-index: 5;
   display: inline-block;
@@ -390,6 +388,22 @@ div .radioContainer {
   margin-top: 10px;
   padding: 0 13px 5px 13px;
   text-align: left;
+  color: #555555;
+  background-color: #dfdede;
+  font-weight: bold;
+  font-size: x-small;
+  border: 1px solid #ced4da;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+}
+
+.stageHeaderNoBottomBorder.number {
+  z-index: 5;
+  display: inline-block;
+  position: relative;
+  top: 1px;
+  margin-top: 10px;
+  text-align: center;
   color: #555555;
   background-color: #dfdede;
   font-weight: bold;
@@ -441,10 +455,9 @@ div.answer .nullLabel {
 
 .longTextOption {
   padding: 0 0 0 13px;
-  border-top: 0;
-  border-bottom: 1px solid #ced4da;
-  border-left: 1px solid #ced4da;
-  border-right: 1px solid #ced4da;
+  border: 1px solid #ced4da;
+  border-top:none;
+  border-radius: 0 0 5px 5px;
 }
 
 .radioLabel {
@@ -696,7 +709,11 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 #questionTab > .nav-item:nth-child(2) {
-  margin-top: 20px;
+  margin-top: 30px;
+}
+
+div.questionRow:last-child {
+  border-radius: 0 0 5px 5px;
 }
 
 #questionTab .nav-item:hover {
@@ -721,17 +738,19 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-self: flex-end;
 }
 
-.paddingTop .ActionBtnContainer, .actionBtnPatientList {
+.paddingTop {
   position: relative;
 }
 
 .rehabAction {
   text-decoration: none !important;
-  color: white !important
+  color: white !important ;
 }
 
-a.rehabAction{
-  height:2%;
+button.rehabAction{
+  height:20px;
+  font-size:x-small;
+  margin: 0 1px;
 }
 
 .actionBtnFull {

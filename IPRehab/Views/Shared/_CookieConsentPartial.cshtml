@@ -10,16 +10,16 @@
 
 @if (showBanner)
 {
-<div class="alert alert-info alert-dismissible fade show flex-container-evenly-justified cookieConsent fixedBottom container">
-  <div id="cookieConsent" role="alert">
-    This app uses cookies to improve user experience, and analyze website traffic. By clicking “Accept” you consent to store on your device all the technologies described in in the Cookie Policy.” <a asp-page="/Privacy">Learn More</a>.
+  <div class="alert alert-info alert-dismissible fade show flex-container-evenly-justified cookieConsent fixedBottom container">
+    <div id="cookieConsent" role="alert">
+      This app uses cookies to improve user experience, and analyze website traffic. By clicking “Accept” you consent to store on your device all the technologies described in in the Cookie Policy.” <a asp-page="/Privacy">Learn More</a>.
+    </div>
+    <div>
+      <button class="accept-policy close acceptConsent" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
+        <span aria-hidden="true">Accept</span>
+      </button>
+    </div>
   </div>
-  <div>
-    <button class="accept-policy close acceptConsent" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
-      <span aria-hidden="true">Accept</span>
-    </button>
-  </div>
-</div>
   <script>
     (function () {
       var button = document.querySelector(".cookieConsent button[data-cookie-string]");
