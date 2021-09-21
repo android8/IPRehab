@@ -27,18 +27,14 @@ $(function () {
  ***************************************************************************/
 
 let commandBtnController = (function () {
-  /****************************************************************************
-   * private functions addRipple()
-   ***************************************************************************/
+  /* private function */
   function addRipple(el) {
     /* addMaterial Design ripple effect to all .rehabAction buttons */
     //no need to retain a reference to the ripple instance, there's no need to assign it to a variable.
     //new MDCRipple(document.querySelector(el));
   }
 
-  /****************************************************************************
-  * private functio makeRequest()
-   ***************************************************************************/
+  /* private function */
   function makeRequest($this) {
     //get formaction attribute which is created by Tag Helper
     let thisUrl = $this.attr('formaction');
@@ -78,7 +74,7 @@ let commandBtnController = (function () {
   }
 
   /****************************************************************************
-   * public functions addRipple() and makeRequest() expose to outside of the closure
+   * public functions exposing addRipple() and makeRequest() to outside of the closure
   ****************************************************************************/
   return {
     'addRipple': addRipple,

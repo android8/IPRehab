@@ -83,7 +83,7 @@ namespace IPRehab.Controllers
       return View(vm);
     }
 
-    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID)
+    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string searchCriteria, int pageNumber, string orderBy)
     {
       stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
       patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
@@ -98,7 +98,9 @@ namespace IPRehab.Controllers
         HostContainer = "Question",
         EpisodeID = episodeID,
         PatientID = patientID,
-        PatientName = encodedPatientName
+        PatientName = encodedPatientName,
+        SearchCriteria = searchCriteria,
+        PageNumber = pageNumber
       };
 
       List<QuestionDTO> questions = new ();

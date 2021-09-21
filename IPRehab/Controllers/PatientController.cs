@@ -24,23 +24,22 @@ namespace IPRehab.Controllers
     }
 
     // GET: PatientController
-    public async Task<ActionResult> Index(string criteria, int pageNumber, string orderBy)
+    public async Task<ActionResult> Index(string searchCriteria, int pageNumber, string orderBy)
     {
-      criteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(criteria));
+      searchCriteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(searchCriteria));
       ViewBag.Title = "Patient";
-      List<PatientDTO> patients = new();
 
       string sessionCriteria;
       string sessionKey = "SearchCriteria";
       CancellationToken cancellationToken = new CancellationToken();
       await HttpContext.Session.LoadAsync(cancellationToken);
       sessionCriteria = HttpContext.Session.GetString(sessionKey);
-      if (criteria != sessionCriteria)
+      if (searchCriteria != sessionCriteria)
       {
-        if (string.IsNullOrEmpty(criteria))
+        if (string.IsNullOrEmpty(searchCriteria))
           HttpContext.Session.Remove(sessionKey);
         else
-          HttpContext.Session.SetString(sessionKey, criteria);
+          HttpContext.Session.SetString(sessionKey, searchCriteria);
       }
 
       string url;
@@ -48,11 +47,13 @@ namespace IPRehab.Controllers
       //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
       if (!string.IsNullOrEmpty(_impersonatedUserName))
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&impersonatedUserName={_impersonatedUserName}&pageNumber={pageNumber}&pageSize={_pageSize}&&orderBy={orderBy}";
+        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&impersonatedUserName={_impersonatedUserName}" +
+          $"&pageNumber={pageNumber}&pageSize={_pageSize}&&orderBy={orderBy}";
       }
       else
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={criteria}&withEpisode=true&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
+        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true" +
+          $"&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
       }
 
       PatientSearchResultMeta patientsMeta;
@@ -70,7 +71,8 @@ namespace IPRehab.Controllers
         return View("_NoDataPartial");
 
       PatientListViewModel patientListVM = new();
-      patientListVM.SearchCriteria = criteria;
+      patientListVM.SearchCriteria = searchCriteria;
+      patientListVM.PageNumber = pageNumber;
       patientListVM.TotalPatients = patientsMeta.Patients.Count;
       foreach (var pat in patientsMeta.Patients)
       {

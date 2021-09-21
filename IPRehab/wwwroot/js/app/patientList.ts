@@ -16,9 +16,7 @@ $(function () {
  ***************************************************************************/
 
 let patientListController = (function () {
-  /****************************************************************************
-   * private function
-  ***************************************************************************/
+  /* private function */
   function getSearchCriteriaFromUrl() {
     const urlParams: any = new URLSearchParams(window.location.search.substring(1));
 
@@ -34,9 +32,7 @@ let patientListController = (function () {
       $('#searchCriteria').val(previousCriteria);
   }
 
-  /****************************************************************************
-   * private function
-  ***************************************************************************/
+  /* private function */
   function search() {
     /* get criteria from input */
     let searchCriteria: string = $('#searchCriteria').val().toString();
@@ -45,10 +41,10 @@ let patientListController = (function () {
     /* create href conditionally on localhost or not */
     let host: string = location.host;
     if (host.indexOf('localhost') != -1) {
-      thisHref = '/Patient/Index?criteria=' + searchCriteria;
+      thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
     }
     else {
-      thisHref = '/IPRehabMetrics/Patient/Index?criteria=' + searchCriteria;
+      thisHref = '/IPRehabMetrics/Patient/Index?searchCriteria=' + searchCriteria;
     }
 
     $('#recordCount').text('');
@@ -56,7 +52,7 @@ let patientListController = (function () {
   }
 
   /****************************************************************************
-   * public function 
+   * public functions exposing getSearchCriteriaFromUrl() and search() to outside of the closure
   ***************************************************************************/
   return {
     'getSearchCriteriaFromUrl': getSearchCriteriaFromUrl,

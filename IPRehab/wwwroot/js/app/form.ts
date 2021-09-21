@@ -92,7 +92,7 @@ let formController = (function () {
     });
   }
 
-  /* private functin */
+  /* private function */
   function checkRules() {
     let q44c_is_1: boolean = $('#Q44C_86').prop("checked");
     let q44c_is_0: boolean = $('#Q44C_87').prop("checked");
@@ -124,7 +124,7 @@ let formController = (function () {
     }
   }
 
-  /* private functin */
+  /* private function */
   function breakLongSentence(thisSelectElement) {
     console.log('thisSelectElement', thisSelectElement);
     let maxLength: number = 50;
@@ -153,7 +153,7 @@ let formController = (function () {
     });
   }
 
-  /* private functin */
+  /* private function */
   function getTextPixels(someText: string, font: any) {
     let canvas = document.createElement('canvas');
     let context = canvas.getContext("2d");
@@ -162,6 +162,9 @@ let formController = (function () {
     return Math.ceil(width);
   }
 
+  /****************************************************************************
+   * public functions exposing the private functions to outside of the closure
+  ***************************************************************************/
   return {
     'scrollToAnchor': scrollToAnchor,
     'setRehabBtns': setRehabBtns,

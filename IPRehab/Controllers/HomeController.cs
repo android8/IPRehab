@@ -20,8 +20,12 @@ namespace IPRehab.Controllers
       return View("splash", vm);
     }
 
-    public IActionResult Index()
+    public IActionResult Index(string searchCriteria, int pageNumber, string orderBy)
     {
+      RehabActionViewModel vm = new();
+      vm.SearchCriteria = searchCriteria;
+      vm.PageNumber = pageNumber;
+      vm.OrderBy = orderBy;
       return View();
     }
 

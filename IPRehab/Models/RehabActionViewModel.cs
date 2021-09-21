@@ -11,5 +11,8 @@ namespace IPRehab.Models
     public int EpisodeID { get; set; }
     public string PatientID { get; set; }
     public string PatientName { get; set; }
+    public string SearchCriteria { get; set; }
+    public int PageNumber { get; set; }
+    public string OrderBy { get; set; }
   }
 }

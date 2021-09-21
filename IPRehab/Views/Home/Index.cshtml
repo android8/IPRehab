@@ -1,42 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model RehabActionViewModel
+
+@{
+  ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <div class="flex-row">
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="Initial">Initial Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="Interim">Interim Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="Discharge">Discharge Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="Followup">Followup Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Patient"
-           asp-action="Index" asp-route-criteria="">Paients</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Answer"
-           asp-action="Index" asp-route-criteria="">Answers</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="Question"
-           asp-action="Edit" asp-route-stage="">All Questions</a>
-      </div>
-      <div class="btn-sm btn-block btn-outline-dark">
-        <a asp-controller="TestColor"
-           asp-action="Index">Color Test</a>
-      </div>
+  <h1 class="display-4">Welcome</h1>
+  <div class="flex-row">
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Question"
+         asp-action="Edit" asp-route-stage="Initial">Initial Questions</a>
     </div>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Question"
+         asp-action="Edit" asp-route-stage="Interim">Interim Questions</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Question"
+         asp-action="Edit" asp-route-stage="Discharge">Discharge Questions</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Question"
+         asp-action="Edit" asp-route-stage="Followup">Followup Questions</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Patient"
+         asp-action="Index" asp-route-searchCriteria="@(Model.SearchCriteria)"
+         asp-route-pageNumber="@(Model.PageNumber)" asp-route-orderBy="@(Model.OrderBy)">Paients</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Answer"
+         asp-action="Index" asp-route-criteria="">Answers</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="Question"
+         asp-action="Edit" asp-route-stage="">All Questions</a>
+    </div>
+    <div class="btn-sm btn-block btn-outline-dark">
+      <a asp-controller="TestColor"
+         asp-action="Index">Color Test</a>
+    </div>
+  </div>
+  <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
