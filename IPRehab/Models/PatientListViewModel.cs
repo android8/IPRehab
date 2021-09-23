@@ -11,6 +11,8 @@ namespace IPRehab.Models
     public int TotalPatients { get; set; }
     public string SearchCriteria { get; set; }
     public int PageNumber { get; set; }
+    public string OrderBy { get; set; }
+    
     public PatientListViewModel() {
       Patients = new();
     }

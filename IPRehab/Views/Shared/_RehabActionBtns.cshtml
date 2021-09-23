@@ -4,73 +4,69 @@
   @{
     var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
     var actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
-    string textNode = string.Empty;
-    string aspRouteParamStage = string.Empty;
+    string textNode, stage, title, actionBtnCssClass;
+    string controllerName = "Question";
+    string actionName = "Edit";
   }
 
   @foreach (var entry in stageType)
   {
-    string stage = entry.Key, title = entry.Value;
-    string actionBtnCssClass = actionBtnClass[stage];
+    stage = entry.Key;
+    title = entry.Value;
+    actionBtnCssClass = actionBtnClass[stage];
+    textNode = stage;
+    bool showThisButton = true;
 
-    if (stageType[stage] == "Full")
-    {
-      aspRouteParamStage = string.Empty;
-    }
-    else
-    {
-      aspRouteParamStage = stage;
-      textNode = stage;
-
-      if (stageType[stage] == "Followup")
-      {
-        stage = "Follow Up";
-        textNode = "Follow Up";
-      }
-    }
-    @if (Model.EpisodeID != -1)
-    {
-      title = title.Replace("Create", "Edit");
-    }
-
-    @if (stage != "PatientList")
-    {
-      <div class="mdc-touch-target-wrapper">
-        <button id="@($"{stage}_{Model.PatientID}")"
-                class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction"
-                data-stage="@(stage)"
-                asp-controller="question" asp-action="Edit" 
-                asp-route-stage="@(aspRouteParamStage)" 
-                asp-route-patientID="@(Model.PatientID)" 
-                asp-route-patientName="@(Model.PatientName)" 
-                asp-route-episodeID="@(Model.EpisodeID)" 
-                asp-route-pageNumber="@(Model.PageNumber)" 
-                asp-route-searchCriteria="@(Model.SearchCriteria)"
-                asp-route-orderBy="@(Model.OrderBy)">
-          <span class="mdc-button__ripple"></span>
-          <span class="mdc-button__label">@textNode</span>
-          <div class="mdc-button__touch"></div>
-        </button>
-      </div>
-    }
-    else
+    if (stage == "Patient")
     {
       if (Model.HostContainer == "Question")
       {
-        <div class="mdc-touch-target-wrapper">
-          <button id="patient"
-                  class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction"
-                  data-stage="@(stage)"
-                  asp-controller="patient" asp-action="Index" 
-                  asp-route-pageNumber="@(Model.PageNumber)" 
-                  asp-route-searchCriteria="@(Model.SearchCriteria)"
-                  asp-route-orderBy="@(Model.OrderBy)">
-            <span class="mdc-button__ripple"></span>
-            <span class="mdc-button__label">Patients</span>
-            <span class="mdc-button__touch"></span>
-          </button>
-        </div>
+        showThisButton = true;
+        controllerName = "Patient";
+        actionName = "Index";
       }
+      else
+      {
+        showThisButton = false;
+      }
+    }
+
+    if (showThisButton)
+    {
+      @if (Model.EpisodeID != -1)
+      {
+        title.Replace("Create", "Edit");
+      }
+
+      switch (stage)
+      {
+        case "Followup":
+          textNode = "Follow Up";
+          break;
+        case "Patient":
+          textNode = "Patient List";
+          break;
+      }
+
+      <div class="mdc-touch-target-wrapper">
+        <button id="@($"{stage}_{Model.PatientID}")"
+                class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction"
+                title="@(title)"
+                data-stage="@(stage)"
+                asp-route-controller="@(controllerName)"
+                asp-route-action="@(actionName)"
+                asp-route-stage="@(stage)"
+                asp-route-patientid="@(Model.PatientID)"
+                asp-route-patientname="@(Model.PatientName)"
+                asp-route-episodeid="@(Model.EpisodeID)"
+                asp-route-searchcriteria="@(Model.SearchCriteria)"
+                asp-route-orderby="@(Model.OrderBy)"
+                asp-route-pagenumber="@(Model.PageNumber)">
+          <span class="mdc-button__ripple"></span>
+          <span class="mdc-button__label textNoWrap">@textNode</span>
+          <div class="mdc-button__touch"></div>
+        </button>
+      </div>
     }
   }
 </div>

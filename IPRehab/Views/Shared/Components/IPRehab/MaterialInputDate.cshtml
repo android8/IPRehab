@@ -19,13 +19,12 @@
   <div class="flex-start-row-nowrap">
     <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
            class="persistable"
-           aria-labelledby="my-label-id"
+           aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
            name="@Model.ViewComponentViewModel.QuestionKey"
            id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
            required="@(Model.ViewComponentViewModel.Required)"
            value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
            title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
-           aria-label="enter a date in month day year format"
            data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
            data-codesetid="@(thisItem.Value)"
            data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
@@ -35,6 +34,7 @@
            data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
            data-toggle="tooltip"
            data-placement="left" />
+    <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
     @* add morebutton *@
     @if (isMultiplChoices)
     {

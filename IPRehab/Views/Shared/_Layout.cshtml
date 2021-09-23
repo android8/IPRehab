@@ -91,11 +91,6 @@
   <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
   
   <script type="text/javascript" asp-append-version="true">
-
-    //$(window).on('load', function () {
-    //  $('.spinnerContainer').show();
-    //})
-
     $(function () {
       $('.spinnerContainer').hide();
     })
@@ -103,7 +98,6 @@
     $('.rehabAction').on('click', function () {
       $('.spinnerContainer').show();
     })
-
   </script>
 
   @await RenderSectionAsync("Scripts", required: false)

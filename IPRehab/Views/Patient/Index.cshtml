@@ -35,7 +35,7 @@
           <th>
             @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
           </th>
-          <th>
+          <th class="bedSection">
             @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
           </th>
           <th>
@@ -56,7 +56,7 @@
           {
             <!--Patient row-->
             <tr class="patientRow">
-              <td>@(++row)</td>
+              <td class="rowCounter">@(++row)</td>
               <td>
                 @Html.DisplayFor(modelItem => pat.Patient.VISN)
               </td>
@@ -72,8 +72,8 @@
               <td>
                 @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
               </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn, null, null, new { @class="bedSection"})
+              <td class="bedSection">
+                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
               </td>
               <td>
                 @Html.DisplayFor(modelItem => pat.Patient.Name)

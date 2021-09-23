@@ -7,9 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class PatientController : BaseController
   {
-    public PatientController(ILogger<PatientController> logger, IConfiguration configuration) 
+    public PatientController(ILogger<PatientController> logger, IConfiguration configuration)
       : base(configuration, logger)
     {
     }
@@ -56,51 +55,67 @@ namespace IPRehab.Controllers
           $"&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
       }
 
-      PatientSearchResultMeta patientsMeta;
+      PatientSearchResultDTO patientsMeta;
+      IEnumerable<PatientDTO> patients;
+      string resContent = string.Empty;
       try
       {
-        patientsMeta = await SerializationGeneric<PatientSearchResultMeta>.SerializeAsync(url, _options);
+        patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
+        var res = SerializationGeneric<IEnumerable<PatientDTO>>.Res;
+        resContent = res.Content.ToString();
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
-        return PartialView("_ErrorPartial", new ErrorViewModelHelper()
-          .Create("Serialization error", ex.Message, ex.InnerException.Message));
+        var vm = new ErrorViewModelHelper();
+        return PartialView("_ErrorPartial",
+          vm.Create("Serialization error", $"{ex?.Message} {Environment.NewLine} XXXX={resContent}", ex.InnerException?.Message)
+        );
       }
-
-      if (patientsMeta.Patients.Count == 0)
-        return View("_NoDataPartial");
 
       PatientListViewModel patientListVM = new();
       patientListVM.SearchCriteria = searchCriteria;
       patientListVM.PageNumber = pageNumber;
-      patientListVM.TotalPatients = patientsMeta.Patients.Count;
-      foreach (var pat in patientsMeta.Patients)
+      patientListVM.OrderBy = orderBy;
+
+      if (patients == null || patients.Count() == 0)
       {
-        PatientViewModel thisPatVM = new();
-        thisPatVM.Patient = pat;
-
-        foreach (var episode in pat.CareEpisodes)
-        {
-          RehabActionViewModel episodeCommandBtn = new();
-          episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
-          episodeCommandBtn.PatientID = episode.PatientIcnFK;
-          episodeCommandBtn.PatientName = pat.Name;
-          thisPatVM.ActionButtonVM = episodeCommandBtn;
-        }
-        if (thisPatVM.ActionButtonVM == null)
-        {
-          RehabActionViewModel episodeCommandBtn = new();
-          episodeCommandBtn.EpisodeID = -1;
-          episodeCommandBtn.PatientID = pat.PTFSSN;
-          episodeCommandBtn.PatientName = pat.Name;
-          thisPatVM.ActionButtonVM = episodeCommandBtn;
-        }
-        patientListVM.Patients.Add(thisPatVM);
-        patientListVM.TotalPatients = patientsMeta.TotalCount;
+        patientListVM.TotalPatients = 0;
+        return View("_NoDataPartial", patientListVM);
       }
+      else
+      {
+        foreach (var pat in patients)
+        {
+          PatientViewModel thisPatVM = new();
+          thisPatVM.Patient = pat;
 
-      //returning the question list to view  
-      return View(patientListVM);
+          RehabActionViewModel episodeCommandBtn = new();
+          foreach (var episode in pat.CareEpisodes)
+          {
+            episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+            episodeCommandBtn.PatientID = episode.PatientIcnFK;
+          }
+          if (thisPatVM.ActionButtonVM == null)
+          {
+            episodeCommandBtn.EpisodeID = -1;
+            episodeCommandBtn.PatientID = pat.PTFSSN;
+          }
+
+          episodeCommandBtn.PatientName = pat.Name;
+          episodeCommandBtn.SearchCriteria = searchCriteria;
+          episodeCommandBtn.PageNumber = pageNumber;
+          episodeCommandBtn.OrderBy = orderBy;
+          episodeCommandBtn.HostContainer = "Patient";
+
+          thisPatVM.ActionButtonVM = episodeCommandBtn;
+
+          patientListVM.Patients.Add(thisPatVM);
+          patientListVM.TotalPatients = patients.Count();
+        }
+
+        //returning the question list to view  
+        return View(patientListVM);
+      }
     }
 
     // POST: PatientController/Edit/5

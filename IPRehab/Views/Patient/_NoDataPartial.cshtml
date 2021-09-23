@@ -1,8 +1,15 @@
-﻿@{
+﻿@model PatientListViewModel
+
+@{
   Layout = "_Layout";
 }
 
-@{await Html.RenderPartialAsync("_SearchPartial", new PatientListViewModel());}
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+}
+
+@{await Html.RenderPartialAsync("_SearchPartial", Model);}
 
 <div class="flex-md-column paddingTop text-danger">
   <div class="font-weight-bold">No data for at least one of the following reasons:</div>

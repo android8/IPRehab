@@ -5,6 +5,14 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  @*<script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true" async></script>*@
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>
+  <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+  <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+}
+
 @* save button *@
 @if (!Model.ReadOnly)
 {
@@ -48,9 +56,9 @@
   </div>
 
   <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
-    <input type="hidden" name="stage" value="@(Model.StageTitle)" />
-    <input type="hidden" name="patientName" value="@(Model.PatientName)" />
-    <input type="hidden" name="episodeID" value="@Model.EpisodeID" />
+    <input type="hidden" id="stage" name="stage" value="@(Model.StageTitle)" />
+    <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
+    <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
 
     <div class="flex-start-column-nowrap">
       @if (Model.StageTitle == "Full" || Model.StageTitle == "All")
@@ -159,6 +167,8 @@
                 {
                   controlCounter++;
                   aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
+                  if (string.IsNullOrEmpty(q.StageTitle))
+                    q.StageTitle = Model.StageTitle;
 
                   @* cell for question key and stage group*@
                   <div>
@@ -201,9 +211,3 @@
   </form>
 </article>
 
-@section Scripts {
-  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-  @*<script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true" async></script>*@
-  <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-  <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
-}

@@ -7,7 +7,8 @@ import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
 
 $(function () {
   $('#searchBtn').on('click', function () {
-    patientListController.search();
+    let $this = $(this)
+    patientListController.search($this);
   });
 });
 
@@ -33,19 +34,26 @@ let patientListController = (function () {
   }
 
   /* private function */
-  function search() {
+  function search($this) {
     /* get criteria from input */
     let searchCriteria: string = $('#searchCriteria').val().toString();
-    let thisHref: string = '';
-
-    /* create href conditionally on localhost or not */
-    let host: string = location.host;
-    if (host.indexOf('localhost') != -1) {
-      thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
+    let formAction: string = $this.attr("formaction");
+    if (formAction.indexOf('&searchcriteria') == -1) {
+      formAction += '&searchcriteria=' + searchCriteria;
     }
     else {
-      thisHref = '/IPRehabMetrics/Patient/Index?searchCriteria=' + searchCriteria;
+      formAction.replace('&searchcriteria=', '&searchcriteria=' + searchCriteria);
     }
+    let thisHref: string = formAction;
+
+    /* create href conditionally on localhost or not */
+    //let host: string = location.host;
+    //if (host.indexOf('localhost') != -1) {
+    //  thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
+    //}
+    //else {
+    //  thisHref = '/IPRehabMetrics/Patient/Index?searchCriteria=' + searchCriteria;
+    //}
 
     $('#recordCount').text('');
     location.href = thisHref;

@@ -3,12 +3,17 @@
 <div class="flex-container-evenly-justified fixedTop">
   <div class="pageTitle">
     Patients
-    <input id="searchCriteria" type="text"
+    <input id="searchCriteria" type="search" name="searchCriteria"
            placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64"
-           value="@(Model.SearchCriteria)" />
+           value="@(Model.SearchCriteria)"/>
 
     <div class="mdc-touch-target-wrapper">
-      <button id="searchBtn" class="mdc-button mdc-button--raised mdc-button--touch">
+      <button id="searchBtn" name="searchBtn"
+              class="mdc-button mdc-button--raised mdc-button--touch" 
+              asp-controller="patient" 
+              asp-action="Index"
+              asp-route-pagenumber="@(Model.PageNumber)"
+              asp-route-orderby="@(Model.OrderBy)">
         <span class="mdc-button__ripple"></span>
         <span class="mdc-button__label">Search</span>
         <div class="mdc-button__touch"></div>

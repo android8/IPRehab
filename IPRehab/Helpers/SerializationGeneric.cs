@@ -10,12 +10,12 @@ namespace IPRehab.Helpers
 {
   public static class SerializationGeneric<T> where T : class
   {
+    public static HttpResponseMessage Res { get; set; }
+
     public static async Task<T> SerializeAsync(string url, JsonSerializerOptions _options)
     {
       string httpMsgContentReadMethod = "ReadAsStreamAsync";
-      System.IO.Stream contentStream = null;
       T theList = null;
-      HttpResponseMessage Res;
       Res = await APIAgent.GetDataAsync(new Uri(url));
 
       if (Res == null)
@@ -36,7 +36,7 @@ namespace IPRehab.Helpers
 
                   //use .Net 5 built-in deserializer
                   case "ReadAsStreamAsync":
-                    contentStream = await Res.Content.ReadAsStreamAsync();
+                    Stream contentStream = await Res.Content.ReadAsStreamAsync();
                     theList = await JsonSerializer.DeserializeAsync<T>(contentStream, _options);
                     break;
                 }

@@ -15,7 +15,7 @@ namespace IPRehab.Helpers
       { "Interim", "Create new episode with Interim questions"},
       { "Discharge", "Create new episode with Discharge questions"},
       { "Followup", "Create new episode with Follow up questions"},
-      { "PatientList", "Patient List"}
+      { "Patient", "Patient List"}
     };
 
     public static Dictionary<string, string> actionBtnColor = new Dictionary<string, string>()
@@ -26,7 +26,7 @@ namespace IPRehab.Helpers
       { "Interim", "actionBtnInterim"},
       { "Discharge", "actionBtnDischarge"},
       { "Followup", "actionBtnFollowup"},
-      { "PatientList", "actionBtnPatientList"},
+      { "Patient", "actionBtnPatientList"},
     };
   }
 }

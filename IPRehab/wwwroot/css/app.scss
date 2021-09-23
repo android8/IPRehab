@@ -6,6 +6,7 @@
     margin-right: 20px;
   }
 }
+
 .splashscreen {
   /*  position: absolute;
   top: 0;
@@ -47,11 +48,10 @@
 /*override the spinnerContainer in cube.css*/
 .spinnerContainer {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  flex-direction: column;
-  margin: 0 40%;
-  height:100%;
+  flex-direction: row;
+  margin: 20% 40%;
   position: fixed;
   z-index: 999;
 }
@@ -106,6 +106,10 @@ body {
   text-align: center;
   font-weight: bold;
   padding-top:10px;
+}
+
+.textNoWrap {
+  flex-wrap:nowrap !important;
 }
 
 .disabled {
@@ -194,6 +198,13 @@ input{
   background-color: rgb(0 0 0 / 13%);
 }
 */
+
+table {
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 th {
   padding: 0 5px;
 }
@@ -249,8 +260,8 @@ svg {
 }
 
 .questionSection {
-/*  background-image: linear-gradient( lightgray,gray);*/  
-padding:0 0 3em 0;
+  /*  background-image: linear-gradient( lightgray,gray);*/
+  padding: 0 0 3em 0;
 }
 
 .section-title {
@@ -304,7 +315,7 @@ padding:0 0 3em 0;
   color: black;
 }
 
-td.bedSection {
+.bedSection, .rowCounter {
   text-align: center;
 }
 
@@ -553,7 +564,6 @@ div.questionRow {
   width: 35px;
   top: 100px;
   left: 0px;
-  transform: rotate(-90deg);
   position: fixed;
   z-index: 5;
   /* Legacy vendor prefixes that you probably don't need... */
@@ -566,7 +576,10 @@ div.questionRow {
   /* Opera */
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
+  transform: rotate(-90deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -700,6 +713,9 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   -moz-transition-duration: 1s;
   -o-transition-duration: 1s;
   transition-duration: 1s;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -o-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 

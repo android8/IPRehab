@@ -59,7 +59,7 @@ namespace IPRehabWebAPI2.Helpers
     /// <param name="PageSize"></param>
 
     /// <returns></returns>
-    public async Task<PatientSearchResultMeta> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria,  string orderBy, int pageNumber, int PageSize)
+    public async Task<IEnumerable<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria,  string orderBy, int pageNumber, int PageSize)
     {
       //get user access level from external stored proc
       var distinctUserFacilities = await GetUserAccessLevels(networkName);
@@ -164,8 +164,10 @@ namespace IPRehabWebAPI2.Helpers
           }
         }
 
-        PatientSearchResultMeta meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
-        return (meta);
+        //PatientSearchResultDTO meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
+        //return (meta);
+
+        return patients;
       }
     }
 

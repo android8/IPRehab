@@ -14,10 +14,10 @@
     </div>
   }
 
-  <label class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
+  <label id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
     <span class="mdc-text-field__ripple"></span>
     <span class="mdc-text-field__resizer">
-      <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40" aria-label="enter some text here"
+      <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40" aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
                 name="@Model.ViewComponentViewModel.QuestionKey"
                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
                 required="@(Model.ViewComponentViewModel.Required)"

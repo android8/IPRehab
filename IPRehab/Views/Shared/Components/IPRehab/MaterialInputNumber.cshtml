@@ -20,7 +20,7 @@
   {
     <label class="mdc-text-field mdc-text-field--outlined"
            for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-           aria-label="enter a number">
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
       <span class="mdc-notched-outline">
         <span class="mdc-notched-outline__leading"></span>
         <span class="mdc-notched-outline__notch">
@@ -31,11 +31,11 @@
       <input type="number"
              class="mdc-text-field__input numeric-text inputContainer persistable"
              name="@(Model.ViewComponentViewModel.QuestionKey)"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             aria-label="some number" maxlength="3" min="0" max="100"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" maxlength="3" min="0" max="100"
              placeholder="enter a number"
              data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"

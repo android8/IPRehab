@@ -44,7 +44,8 @@
                    data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" />
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" 
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")"/>
           }
           else
           {
@@ -61,7 +62,8 @@
                    data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" />
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" 
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")"/>
           }
           <div class="mdc-radio__background">
             <div class="mdc-radio__outer-circle"></div>
@@ -73,7 +75,7 @@
 
       <label class="radioLabel"
              for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-             aria-label="@(item.SelectListItem.Text)">
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")">
 
         @*strip the code value *@
         @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)

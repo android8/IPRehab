@@ -43,6 +43,7 @@ $(function () {
   $('#submit').click(function () {
     $('.spinnerContainer').show();
     //$('#userAnswerForm').validate();
+    formController.validate();
     $('#userAnswerForm').submit();
   });
 
@@ -125,6 +126,15 @@ let formController = (function () {
   }
 
   /* private function */
+  function validate() {
+    $('form#userAnswerForm').validate({
+      rules: {
+
+      }
+    })
+  }
+
+  /* private function */
   function breakLongSentence(thisSelectElement) {
     console.log('thisSelectElement', thisSelectElement);
     let maxLength: number = 50;
@@ -171,6 +181,7 @@ let formController = (function () {
     'resetRehabBtns': resetRehabBtns,
     'checkRules': checkRules,
     'breakLongSentence': breakLongSentence,
-    'getTextPixels': getTextPixels
+    'getTextPixels': getTextPixels,
+    'validate': validate
   }
 })();

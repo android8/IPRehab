@@ -20,7 +20,8 @@
   @*Material Design outlined text *@
   <div class="flex-start-row-nowrap">
     <label class="mdc-text-field mdc-text-field--filled"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")">
+           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
       <span class="mdc-line-ripple"></span>
       <span class="mdc-floating-label" id="my-label-id">"@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"</span>
       <input type="text"
@@ -30,7 +31,7 @@
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             aria-labelledby="my-label-id"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
              placeholder="enter some text"
              data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"

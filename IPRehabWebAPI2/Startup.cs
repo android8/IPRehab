@@ -149,8 +149,11 @@ namespace IPRehabWebAPI2
 
       app.UseEndpoints(endpoints =>
       {
+        //enforce CORS for all controlers
         endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
-        //for most apps with controllers and views endpoints.MapDefaultControllerRoute();
+
+        //the following line is for most apps with controllers and views, since webapi doesn't have view so it is not needed
+        //endpoints.MapDefaultControllerRoute();
       });
     }
   }

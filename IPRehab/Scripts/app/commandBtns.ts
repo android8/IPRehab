@@ -15,9 +15,10 @@ $(function () {
     //call closure
     //commandBtnController.addRipple($this);
 
-   $this.click(function () {
+    $this.click(function () {
       //call closure
-      commandBtnController.makeRequest($this);
+      //commandBtnController.makeRequest($this);
+      commandBtnController.makeRequestUsingFormAction($this);
     })
   });
 });
@@ -37,23 +38,35 @@ let commandBtnController = (function () {
   /* private function */
   function makeRequest($this) {
     //get formaction attribute which is created by Tag Helper
-    let thisUrl = $this.attr('formaction');
-    console.log('thisUrl', thisUrl);
+    let formAction: string = $this.attr('formaction');
+    console.log('formAction', formAction);
 
-    //get data-stage attribute
-    let buttonStage = $this.data('stage');
-    if (buttonStage.indexOf('patientList') != -1) {
-      buttonStage = 'patient';
+    let thisUrl: string = formAction;
+
+    /* data-attribute are all in lower case by covention */
+    let controller: string = $this.data('controller');
+    let action: string = $this.data('action');
+    let stage: string = $this.data('stage');
+    let stageLowerCase: string = stage.toLowerCase()
+    let patientID: string = $this.data('patientid');
+    let patientName: string = $this.data('patientname');
+    let episodeID: string = $this.data('episodeid');
+    let searchCriteria: string = $this.data('searchcriteria');
+    let orderBy: string = $this.data('orderby')
+    let pageNumber: string = $this.data('pagenumber')
+
+    if (stageLowerCase.indexOf('patientlist') != -1) {
+      stageLowerCase = 'patient;'
     }
-    console.log('buttonStage', buttonStage);
 
+    console.log('stageLowerCase', stageLowerCase);
     //get queryparameter. this is not suitable if the querystring is encrypted
     //const urlParams = new URLSearchParams(window.location.search);
     //console.log('urlParams', urlParams);
     //const param_x = urlParams.get('stage');
     //console.log('param_x', param_x);
 
-    //if (param_x == buttonStage || (buttonStage == 'Full' && param_x == '')) {
+    //if (param_x == stageLowerCase || (stageLowerCase == 'Full' && param_x == '')) {
     //  alert('You are already in it');
     //  $('.spinnerContainer').hide();
     //}
@@ -61,14 +74,60 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    const pageTitle = $(document).attr('title').toLowerCase();
-    console.log('pageTitle', pageTitle);
+    const pageTitleLowerCase = $(document).attr('title').toLowerCase();
+    console.log('pageTitleLowerCase', pageTitleLowerCase);
 
-    if (pageTitle.indexOf(buttonStage) != -1) {
+    if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
       alert('You are already in it');
       $('.spinnerContainer').hide();
     }
     else {
+      thisUrl = location.protocol + '//' + location.host + '/' + controller + '/' + action + '?stage=' + stage + '&patientID=' + patientID + '&patientName=' + patientName + '&episodeID=' + episodeID + '&searchCriteria=' + searchCriteria + '&orderBy=' + orderBy + '&pageNumber=' + pageNumber;
+      console.log('thisUrl', thisUrl);
+      location.href = thisUrl;
+    }
+  }
+
+  function makeRequestUsingFormAction($this) {
+
+    let stage: string = $this.data('stage');
+    let stageLowerCase: string = stage.toLowerCase();
+    if (stageLowerCase.indexOf('patientlist') != -1) {
+      stageLowerCase = 'patient;'
+    }
+
+    console.log('stageLowerCase', stageLowerCase);
+    //get queryparameter. this is not suitable if the querystring is encrypted
+    //const urlParams = new URLSearchParams(window.location.search);
+    //console.log('urlParams', urlParams);
+    //const param_x = urlParams.get('stage');
+    //console.log('param_x', param_x);
+
+    //if (param_x == stageLowerCase || (stageLowerCase == 'Full' && param_x == '')) {
+    //  alert('You are already in it');
+    //  $('.spinnerContainer').hide();
+    //}
+    //else {
+    //  location.href = thisUrl;
+    //}
+
+    const pageTitleLowerCase = $(document).attr('title').toLowerCase();
+    console.log('pageTitleLowerCase', pageTitleLowerCase);
+
+    if (stageLowerCase.indexOf('followup') != -1)
+      stageLowerCase = 'follow up';
+
+    if (stageLowerCase == '')
+      stageLowerCase = 'full';
+
+    if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
+      alert('You are already in it');
+      $('.spinnerContainer').hide();
+    }
+    else {
+      //get formaction attribute which is created by Tag Helper
+      let thisUrl: string = $this.attr('formaction');
+      console.log('thisUrl', thisUrl);
       location.href = thisUrl;
     }
   }
@@ -78,7 +137,8 @@ let commandBtnController = (function () {
   ****************************************************************************/
   return {
     'addRipple': addRipple,
-    'makeRequest': makeRequest
+    'makeRequest': makeRequest,
+    'makeRequestUsingFormAction': makeRequestUsingFormAction
   }
 })();
 
