@@ -76,8 +76,9 @@ namespace IPRehab.Helpers
         {
           foreach (var ins in questionWithHeaderInstruction.Instructions)
           {
-            thisSection.SectionInstruction += ins.Instruction;
+            thisSection.SectionInstruction += $" {ins.Instruction}";
           }
+          thisSection.SectionInstruction = thisSection.SectionInstruction.Trim();
         }
 
         var questionWithAggregateInstruction = questionInTheSection.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "SectionFooter")).FirstOrDefault();
@@ -86,8 +87,9 @@ namespace IPRehab.Helpers
         {
           foreach (var ins in questionWithAggregateInstruction.Instructions)
           {
-            thisSection.AggregateInstruction += ins.Instruction;
+            thisSection.AggregateInstruction += $" {ins.Instruction}";
           }
+          thisSection.AggregateInstruction = thisSection.AggregateInstruction.Trim();
 
           thisSection.AggregateAfterQuestionKey = questionWithAggregateInstruction.QuestionKey;
           switch (thisSection.SectionTitle)
