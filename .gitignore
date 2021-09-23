@@ -32,3 +32,23 @@ _ReSharper*/
 *.dll
 
 node_modules/
+/IPRehab/Scripts/app/animateBanner.js
+/IPRehab/Scripts/app/animateBanner.js.map
+/IPRehab/Scripts/app/commandBtns.js
+/IPRehab/Scripts/app/commandBtns.js.map
+/IPRehab/Scripts/app/form.js
+/IPRehab/Scripts/app/form.js.map
+/IPRehab/Scripts/app/patientList - Copy.js.map
+/IPRehab/Scripts/app/patientList.js
+/IPRehab/Scripts/app/patientList.js.map
+/IPRehab/wwwroot/css/app.css
+/IPRehab/wwwroot/css/app.min.css
+/IPRehab/wwwroot/js/app/animateBanner.js
+/IPRehab/wwwroot/js/app/animateBanner.js.map
+/IPRehab/wwwroot/js/app/commandBtns.js
+/IPRehab/wwwroot/js/app/commandBtns.js.map
+/IPRehab/wwwroot/js/app/form.js
+/IPRehab/wwwroot/js/app/form.js.map
+/IPRehab/wwwroot/js/app/patientList - Copy.js.map
+/IPRehab/wwwroot/js/app/patientList.js
+/IPRehab/wwwroot/js/app/patientList.js.map
