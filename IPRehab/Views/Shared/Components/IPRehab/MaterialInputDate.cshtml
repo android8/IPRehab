@@ -2,52 +2,42 @@
 @{
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
   string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
   bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 
+@* flex row for multi dates *@
 <div class="@ContainerCssClass">
-  @if (displayStageHeader)
-  {
-    @*prevent the next inner div to be flexed*@
-    <div>
-      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
-    </div>
-  }
-  <div class="flex-start-row-nowrap">
-    <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
-           class="persistable"
-           aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-           name="@Model.ViewComponentViewModel.QuestionKey"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-           required="@(Model.ViewComponentViewModel.Required)"
-           value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-           title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
-           data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
-           data-codesetid="@(thisItem.Value)"
-           data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-           data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-           data-userid="@(Model.ViewComponentViewModel.UserID)"
-           data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-           data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
-           data-toggle="tooltip"
-           data-placement="left" />
-    <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
-    @* add morebutton *@
-    @if (isMultiplChoices)
+  @* flex column for each date header and date input pair *@
+  <div class="flex-start-column-nowrap">
+    @if (displayStageHeader)
     {
-      <div class="mdc-touch-target-wrapper">
-        <button class="mdc-button mdc-button--touch">
-          <div class="mdc-button__ripple"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-            <title>Add More</title>
-          </svg>
-          <div class="mdc-button__touch"></div>
-        </button>
+      @*prevent the next inner div to be flexed*@
+      <div>
+        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
       </div>
     }
+    <div class="flex-start-row-nowrap">
+      <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
+             class="persistable"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+             name="@Model.ViewComponentViewModel.QuestionKey"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             required="@(Model.ViewComponentViewModel.Required)"
+             value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
+             data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
+             data-codesetid="@(thisItem.Value)"
+             data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+             data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+             data-userid="@(Model.ViewComponentViewModel.UserID)"
+             data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+             data-toggle="tooltip"
+             data-placement="left" />
+      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
+    </div>
   </div>
 </div>

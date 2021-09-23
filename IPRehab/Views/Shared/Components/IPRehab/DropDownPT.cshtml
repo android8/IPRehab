@@ -17,9 +17,9 @@
 <div class="flex-start-column-nowrap">
   <div class="flex-start-row-nowrap">
     @*the labe is required by HTML5 specification*@
-    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
-           class="nullLabel"
-           aria-label="label for dropdown left blank use the question text"></label>
+    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+           class="nullLabel"></label>
 
     @if (displayStageHeader)
     {
@@ -31,8 +31,8 @@
 
     <div>
       <select class="browser-default custom-select select2 dropdown persistable physical-therapy"
-              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
-              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
               required="@(Model.ViewComponentViewModel.Required)"
               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
@@ -42,7 +42,8 @@
               data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
               data-toggle="tooltip"
               data-placement="left"
-              title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")">
+              title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
+              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
         <option>@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
@@ -69,11 +70,12 @@
       }
     </div>
 
-
+    @* Hours of Therapy *@
     <div class="flex-start-column-nowrap">
       <div class="stageHeaderNoBottomBorder number">Hours</div>
       <label class="mdc-text-field mdc-text-field--outlined"
-             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_HRlabel")"
              aria-label="enter a number">
         <span class="mdc-notched-outline">
           <span class="mdc-notched-outline__leading"></span>
@@ -85,10 +87,10 @@
         <input type="number"
                class="mdc-text-field__input numeric-text inputContainer persistable"
                name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")" )"
                value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-               aria-label="some number" maxlength="3" min="0" max="100"
+               maxlength="3" min="0" max="100"
                placeholder="enter a number"
                data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
@@ -97,18 +99,9 @@
                data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
                data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
-               data-placement="left" />
+               data-placement="left"
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_HRlabel")" />
       </label>
-    </div>
-    <div class="mdc-touch-target-wrapper">
-      <button class="mdc-button mdc-button--touch">
-        <div class="mdc-button__ripple"></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-          <title>Add More</title>
-        </svg>
-        <div class="mdc-button__touch"></div>
-      </button>
     </div>
   </div>
 </div>
