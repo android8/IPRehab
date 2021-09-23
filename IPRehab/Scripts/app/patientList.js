@@ -2,32 +2,57 @@
 /// <reference path="../appModels/IUseranswer.ts" />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
-    pageLoad();
-});
-function pageLoad() {
-    const urlParams = new URLSearchParams(window.location.search.substring(1));
-    const previousCriteria = urlParams.get('criteria'); //get criteria in the querystring
-    const previousSearchInputValue = $("#searchCriteria").val().toString(); //get criteria from the input ellement
-    //$('#previousCriteria').text(previousCriteria);
-    if (previousSearchInputValue == '')
-        $('#searchCriteria').val(previousCriteria); //only set the val of the input when the input has no value set by the server
-    $('#search').on('click', function () {
-        let host = location.host;
-        let searchCriteria = $('#searchCriteria').val().toString();
-        let href = '';
+    $('#searchBtn').on('click', function () {
         let $this = $(this);
-        if (host.indexOf('localhost') != -1) {
-            href = '/Patient/Index?criteria=' + searchCriteria;
-            //alert('local searchCriteria: ' + href);
+        patientListController.search($this);
+    });
+});
+/****************************************************************************
+ * javaScript closure
+ ***************************************************************************/
+let patientListController = (function () {
+    /* private function */
+    function getSearchCriteriaFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search.substring(1));
+        //get queryparameter. this is not suitable if the querystring is encrypted
+        const previousCriteria = urlParams.get('criteria');
+        //get criteria from the input ellement
+        const previousSearchInputValue = $("#searchCriteria").val().toString();
+        //$('#previousCriteria').text(previousCriteria);
+        //only set the val of the input when the input has no value set by the server
+        if (previousSearchInputValue == '')
+            $('#searchCriteria').val(previousCriteria);
+    }
+    /* private function */
+    function search($this) {
+        /* get criteria from input */
+        let searchCriteria = $('#searchCriteria').val().toString();
+        let formAction = $this.attr("formaction");
+        if (formAction.indexOf('&searchcriteria') == -1) {
+            formAction += '&searchcriteria=' + searchCriteria;
         }
         else {
-            href = '/IPRehabMetrics/Patient/Index?criteria=' + searchCriteria;
-            //alert('remote searchCriteria: ' + href);
+            formAction.replace('&searchcriteria=', '&searchcriteria=' + searchCriteria);
         }
-        //$('#previousCriteria').text('');
+        let thisHref = formAction;
+        /* create href conditionally on localhost or not */
+        //let host: string = location.host;
+        //if (host.indexOf('localhost') != -1) {
+        //  thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
+        //}
+        //else {
+        //  thisHref = '/IPRehabMetrics/Patient/Index?searchCriteria=' + searchCriteria;
+        //}
         $('#recordCount').text('');
-        $this.attr('href', href);
-    });
-}
+        location.href = thisHref;
+    }
+    /****************************************************************************
+     * public functions exposing getSearchCriteriaFromUrl() and search() to outside of the closure
+    ***************************************************************************/
+    return {
+        'getSearchCriteriaFromUrl': getSearchCriteriaFromUrl,
+        'search': search
+    };
+})();
 export {};
 //# sourceMappingURL=patientList.js.map

@@ -1,164 +1,160 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../appModels/IUseranswer.ts" />
+//import { MDCRipple } from "../../node_modules/@material/ripple/index";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
-    pageLoad();
-});
-function pageLoad() {
-    let commandBtnScope = $('.commandBtn');
-    $.each($('input[type="checkbox"]', commandBtnScope), function () {
+    $('.persistable').change(function () {
+        $('#submit').removeAttr('disabled');
+    });
+    $('select').each(function () {
         let $this = $(this);
-        if ($this.prop("checked")) {
-            setRehabBtns($this.parent());
-        }
+        $this.change(function () {
+            formController.breakLongSentence($this);
+        });
     });
-    $('.persistable').change(function () { $('#submit').removeAttr('disabled'); });
-    $('select').change(function () {
-        breakLongSentence($(this));
-    });
-    $('select.physical-therapy').change(function () {
-        breakLongSentence($(this));
-    });
-    //handle rehab action checkbox
-    $('input[type="checkbox"]').click(function () {
-        let $this = $(this);
-        let targetScope = $this.parent();
-        if ($this.prop("checked")) {
-            setRehabBtns(targetScope);
-        }
-        else {
-            resetRehabBtns(targetScope);
-        }
-    });
-    /* jump to section anchor */
-    $('.gotoSection').click(function () {
-        let $this = $(this);
-        let anchorId = $this.data("anchorid");
-        scrollToAnchor(anchorId);
-    });
-    /* slide section nav */
-    $("#questionTab").hover(function () {
+    /* section nav */
+    $('#questionTab').hover(function () {
         $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
     }, function () {
         $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
     });
+    /* jump to section anchor */
+    $('.gotoSection').each(function () {
+        let $this = $(this);
+        $this.click(function () {
+            let anchorId = $this.data("anchorid");
+            formController.scrollToAnchor(anchorId);
+        });
+    });
     /* collect all persistable input values */
     $('#submit').click(function () {
         $('.spinnerContainer').show();
-        alert('collecting answers');
-        $('#userAnswerForm').validate();
+        //$('#userAnswerForm').validate();
+        formController.validate();
+        $('#userAnswerForm').submit();
     });
-    checkRules();
-}
-/* scroll to an anchor */
-function scrollToAnchor(aid) {
-    let aTag = $('a[name="' + aid + '"]');
-    $('html,body').animate({ scrollTop: aTag.offset().top - 15 }, 'fast');
-}
-function setRehabBtns(targetScope) {
-    let currentIdx = 0;
-    $.each($('.rehabAction', targetScope), function () {
-        let $this = $(this);
-        let newTitle = $this.attr('title').replace(/Edit/g, 'Create');
-        let newHref = $this.attr('href').replace(/Edit/g, 'Create');
-        $this.attr('title', newTitle);
-        $this.attr('href', newHref);
-        currentIdx++;
-        let newClass = $this.attr('class') + ' createActionCmd' + currentIdx.toString();
-        ;
-        $this.attr('class', newClass);
-    });
-}
-function resetRehabBtns(targetScope) {
-    let cmdBtns = ['primary', 'info', 'secondary', 'success', 'warning'];
-    let currentIdx = 0;
-    $.each($('.rehabAction', targetScope), function () {
-        let $this = $(this);
-        let newTitle = $this.attr('title').replace(/Create/g, 'Edit');
-        let newHref = $this.attr('href').replace(/Create/g, 'Edit');
-        $this.attr('title', newTitle);
-        $this.attr('href', newHref);
-        let resetClass = '';
-        resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
-        currentIdx++;
-        $this.attr('class', resetClass);
-    });
-}
-function checkRules() {
-    let q44c_is_1 = $('#Q44C_86').prop("checked");
-    let q44c_is_0 = $('#Q44C_87').prop("checked");
-    let q44d_is_1 = $('#Q44D_').val() == '1';
-    let q46 = $('#Q46_').val();
-    if (!q44c_is_1 && !q44c_is_0) {
-        /* Q44c is not answered */
-        $('#Q44D_').attr('disabled', 'true');
-        $('#Q45_').attr('disabled', 'true');
+    formController.checkRules();
+});
+/****************************************************************************
+ * javaScript closure
+ ***************************************************************************/
+let formController = (function () {
+    /* private function */
+    function scrollToAnchor(anchorId) {
+        let aTag = $('a[name="' + anchorId + '"]');
+        $('html,body').animate({ scrollTop: aTag.offset().top - 15 }, 'fast');
     }
-    if (q44c_is_1 && q44d_is_1) {
-        /*Q44C = 1 and Q44D = 1*/
-        $('#Q45_').attr('disabled', 'false');
+    /* private function */
+    function setRehabBtns(targetScope) {
+        let currentIdx = 0;
+        $.each($('.rehabAction', targetScope), function () {
+            let $this = $(this);
+            let newTitle = $this.attr('title').replace(/Edit/g, 'Create');
+            let newHref = $this.attr('href').replace(/Edit/g, 'Create');
+            $this.attr('title', newTitle);
+            $this.attr('href', newHref);
+            currentIdx++;
+            let newClass = $this.attr('class') + ' createActionCmd' + currentIdx.toString();
+            ;
+            $this.attr('class', newClass);
+        });
     }
-    else {
-        if (q44c_is_0) {
-            $('#Q44D_').attr('disabled', 'false');
-            $('#Q46_').focus();
+    /* private function */
+    function resetRehabBtns(targetScope) {
+        let cmdBtns = ['primary', 'info', 'secondary', 'success', 'warning'];
+        let currentIdx = 0;
+        $.each($('.rehabAction', targetScope), function () {
+            let $this = $(this);
+            let newTitle = $this.attr('title').replace(/Create/g, 'Edit');
+            let newHref = $this.attr('href').replace(/Create/g, 'Edit');
+            $this.attr('title', newTitle);
+            $this.attr('href', newHref);
+            let resetClass = '';
+            resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
+            currentIdx++;
+            $this.attr('class', resetClass);
+        });
+    }
+    /* private function */
+    function checkRules() {
+        let q44c_is_1 = $('#Q44C_86').prop("checked");
+        let q44c_is_0 = $('#Q44C_87').prop("checked");
+        let q44d_is_1 = $('#Q44D_').val() == '1';
+        let q46 = $('#Q46_').val();
+        if (!q44c_is_1 && !q44c_is_0) {
+            /* Q44c is not answered */
+            $('#Q44D_').attr('disabled', 'true');
+            $('#Q45_').attr('disabled', 'true');
+        }
+        if (q44c_is_1 && q44d_is_1) {
+            /*Q44C = 1 and Q44D = 1*/
+            $('#Q45_').attr('disabled', 'false');
+        }
+        else {
+            if (q44c_is_0) {
+                $('#Q44D_').attr('disabled', 'false');
+                $('#Q46_').focus();
+            }
+        }
+        /* interrupted */
+        let q42_is_interrupted = $('#Q42-INTRRUPT_86').prop('checked');
+        if (q42_is_interrupted) {
+            $('#Q43_').attr('disabled', 'false');
+            $('#Q43_').focus();
         }
     }
-    /* interrupted */
-    let q42_is_interrupted = $('#Q42-INTRRUPT_86').prop('checked');
-    if (q42_is_interrupted) {
-        $('#Q43_').attr('disabled', 'false');
-        $('#Q43_').focus();
+    /* private function */
+    function validate() {
+        $('form#userAnswerForm').validate({
+            rules: {}
+        });
     }
-}
-function breakLongSentence1() {
-    //var $select2 = $('.select2').select2();
-    ////Here, for long strings, space-separation is performed every 50 characters to ensure line breaks.
-    ////You can change the length according to your needs.
-    //$('.select2 option').each(function () {
-    //  var myStr = $(this).text();
-    //  var newStr = myStr;
-    //  if (myStr.length > 50) {
-    //    newStr = myStr.match(/.{1,50}/g).join(' ');
-    //  }
-    //  $(this).text(newStr);
-    //  if (myStr.indexOf('4.') != -1) {
-    //    console.log('original ->', myStr);
-    //    console.log('new -> ', newStr)
-    //  }
-    //});
-}
-function breakLongSentence(thisSelectElement) {
-    console.log('thisSelectElement', thisSelectElement);
-    let maxLength = 50;
-    let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
-    console.log('longTextOptionDIV', longTextOptionDIV);
-    let thisSelectWidth = thisSelectElement[0].clientWidth;
-    let thisScope = thisSelectElement;
-    $.each($('option:selected', thisScope), function () {
-        let $thisOption = $(this);
-        let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
-        let oldText = $thisOption.text();
-        let font = $thisOption.css('font');
-        let oldTextInPixel = getTextPixels(oldText, font);
-        console.log('oldTextInPixel', oldTextInPixel);
-        console.log('thisSelectWidth', thisSelectWidth);
-        longTextOptionDIV.text('');
-        if (oldTextInPixel > thisSelectWidth) {
-            let newStr = oldText.replace(regX, "$1\n");
-            console.log('old ->', oldText);
-            console.log('new ->', newStr);
-            longTextOptionDIV.text(newStr);
-            longTextOptionDIV.removeClass("invisible");
-        }
-    });
-}
-function getTextPixels(someText, font) {
-    let canvas = document.createElement('canvas');
-    let context = canvas.getContext("2d");
-    context.font = font;
-    let width = context.measureText(someText).width;
-    return Math.ceil(width);
-}
+    /* private function */
+    function breakLongSentence(thisSelectElement) {
+        console.log('thisSelectElement', thisSelectElement);
+        let maxLength = 50;
+        let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
+        console.log('longTextOptionDIV', longTextOptionDIV);
+        let thisSelectWidth = thisSelectElement[0].clientWidth;
+        let thisScope = thisSelectElement;
+        $.each($('option:selected', thisScope), function () {
+            let $thisOption = $(this);
+            let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
+            let oldText = $thisOption.text();
+            let font = $thisOption.css('font');
+            let oldTextInPixel = getTextPixels(oldText, font);
+            console.log('oldTextInPixel', oldTextInPixel);
+            console.log('thisSelectWidth', thisSelectWidth);
+            longTextOptionDIV.text('');
+            if (oldTextInPixel > thisSelectWidth) {
+                let newStr = oldText.replace(regX, "$1\n");
+                console.log('old ->', oldText);
+                console.log('new ->', newStr);
+                longTextOptionDIV.text(newStr);
+                longTextOptionDIV.removeClass("invisible");
+            }
+        });
+    }
+    /* private function */
+    function getTextPixels(someText, font) {
+        let canvas = document.createElement('canvas');
+        let context = canvas.getContext("2d");
+        context.font = font;
+        let width = context.measureText(someText).width;
+        return Math.ceil(width);
+    }
+    /****************************************************************************
+     * public functions exposing the private functions to outside of the closure
+    ***************************************************************************/
+    return {
+        'scrollToAnchor': scrollToAnchor,
+        'setRehabBtns': setRehabBtns,
+        'resetRehabBtns': resetRehabBtns,
+        'checkRules': checkRules,
+        'breakLongSentence': breakLongSentence,
+        'getTextPixels': getTextPixels,
+        'validate': validate
+    };
+})();
 export {};
 //# sourceMappingURL=form.js.map
