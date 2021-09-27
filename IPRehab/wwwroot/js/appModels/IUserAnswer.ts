@@ -1,19 +1,19 @@
 export interface IUserAnswer {
 
-  FacilityID: string;
-  FacilityRelationshipID: string;
-  FiscalYear: string;
-  UserID: string;
-  QuestionID: string;
-  QuestionKey: string;
-  UserAnswerID: string; /* record primary key */
-  AnswerCodeSetID: string;
-  OtherDescription: string;
-  AnswerSetID: string;
+  AnswerID: number;
+  EpisodeID: number;
+  QuestionID: number;
+  StageID: number;
+  AnswerCodeSetID: number;
+  AnswerSequenceNumber: number;
+  Description: string; //optional but required for text (date, ICD), number (therapy Hours), or text area type
+  AnswerByUserID: number;
+  LastUpdate: Date;
 }
 
 export interface AjaxPostbackModel {
   OldAnswers: Array<IUserAnswer>
+  UpdatedAnswers: Array<IUserAnswer>
   NewAnswers: Array<IUserAnswer>
 }
 

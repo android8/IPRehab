@@ -15,7 +15,7 @@ namespace IPRehab.Helpers
       QuestionWithSelectItems qws = new()
       {
         Form = questionDTO.FormName,
-        
+
         Section = GetSection(questionDTO),
 
         Required = questionDTO.Required,
@@ -23,12 +23,14 @@ namespace IPRehab.Helpers
 
         /* turn on key question */
         KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
+        
         /* do not show key for AssessmentCompleted */
         QuestionKey = questionDTO.QuestionKey,
 
         SectionTitle = questionDTO.QuestionSection,
         Question = questionDTO.Question,
 
+        StageID = questionDTO.StageID,
         StageTitle = string.IsNullOrEmpty(questionDTO.GroupTitle) ?
           string.Empty : Regex.IsMatch(questionDTO.GroupTitle, @"^\d") ? questionDTO.GroupTitle.Remove(0, 3) : questionDTO.GroupTitle,
 
@@ -41,7 +43,6 @@ namespace IPRehab.Helpers
         ChoicesAnswers = SetChoicesAnswers(questionDTO),
 
         Instructions = questionDTO.QuestionInsructions
-
       };
 
       return qws;

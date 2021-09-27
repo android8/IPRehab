@@ -1,8 +1,14 @@
+/* transition main target <main> in _layout*/
 main {
-  animation: transitionIn 0.75s;
-  animation-timing-function: ease-in-out;
+  /*use @keyfame transitionIn animation*/
+  /*  animation: transitionIn .75s;*/
+  /*use @keyframe slide-up animation */
+  animation: slide-up 1s ease-in-out;
 }
 
+/*table tr {
+  animation: text-crunching-slide-up 2s;
+}*/
 @keyframes transitionIn {
   from {
     opacity: 0;
@@ -25,5 +31,23 @@ main {
   }
   100% {
     background-color: white;
+  }
+}
+@keyframes slide-up {
+  0% {
+    transform: translateY(250px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes text-crunching-slide-up {
+  from {
+    line-height: 0.5em;
+    opacity: 0.3;
+  }
+  to {
+    line-height: normal;
+    opacity: 1;
   }
 }

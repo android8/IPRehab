@@ -56,7 +56,10 @@ namespace IPRehab.Controllers
 
       //no impersonation so get identity from User.Claims
       //string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; 
-      string trueUser = HttpContext.User.Identity.Name;
+
+      //drop the last zero if the admin ZERO account is used
+      string trueUser = HttpContext.User.Identity.Name.Replace("0","");
+
       string encodedTrueUser = System.Web.HttpUtility.UrlEncode(trueUser);
       List<MastUserDTO> accessLevels = new();
 

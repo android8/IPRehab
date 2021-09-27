@@ -10,7 +10,7 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", string.Empty)}")</div>
     </div>
   }
 
@@ -23,6 +23,7 @@
                 required="@(Model.ViewComponentViewModel.Required)"
                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                 placeholder="enter some text"
+                data-stageid="@(Model.ViewComponentViewModel.StageID)"
                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.Description)"
                 data-codesetid="@(thisItem.Value)"
                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"

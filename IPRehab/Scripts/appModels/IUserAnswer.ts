@@ -13,6 +13,7 @@
 
 export interface AjaxPostbackModel {
   OldAnswers: Array<IUserAnswer>
+  UpdatedAnswers: Array<IUserAnswer>
   NewAnswers: Array<IUserAnswer>
 }
 

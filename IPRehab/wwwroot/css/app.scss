@@ -1,4 +1,4 @@
-﻿@use "material-components-web/material-components-web";
+﻿//@use "node_modules/material-components-web/material-components-web";
 
 @media (min-width: 768px) {
   .paddingTop {
@@ -274,14 +274,23 @@ svg {
   border: 1px solid #c8cab7;
   border-radius: 10px 10px 0 0;
 }
+
+div.questionText2 {
+  width: 40%;
+}
+
+div.questionKey {
+  width: 15%;
+  padding:0 2% 0 1%;
+}
+
+div.answer2 {
+  width: 50%;
+}
+
 .questionText {
   max-width:30% !important;
   padding-left: 10px;
-}
-
-.questionKey {
-  width:150px;
-  padding:0 2% 0 1%;
 }
 
 .instructionIcon {
@@ -470,6 +479,7 @@ td.questionKey .stageHeaderNoBottomBorder,
 div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }
+
 
 div.answer .nullLabel {
   display:none #important;

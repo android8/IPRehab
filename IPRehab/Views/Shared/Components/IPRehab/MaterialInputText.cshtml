@@ -13,7 +13,7 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", string.Empty)}")</div>
     </div>
   }
 
@@ -33,7 +33,8 @@
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
              placeholder="enter some text"
-             data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+             data-stageid="@(Model.ViewComponentViewModel.StageID)"
+             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"

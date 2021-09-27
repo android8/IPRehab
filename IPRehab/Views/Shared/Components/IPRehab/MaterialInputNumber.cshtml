@@ -11,7 +11,7 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")</div>
     </div>
   }
 
@@ -37,13 +37,14 @@
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" maxlength="3" min="0" max="100"
              placeholder="enter a number"
-             data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+             data-stageid="@(Model.ViewComponentViewModel.StageID)"
+             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-             data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+             data-episodeid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
              data-placement="left" />
     </label>

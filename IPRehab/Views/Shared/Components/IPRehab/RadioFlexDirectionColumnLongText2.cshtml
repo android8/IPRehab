@@ -17,54 +17,36 @@
 {
   @*prevent the next inner div to be flexed*@
   <div>
-    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", string.Empty)}")</div>
   </div>
 }
 
 <div class="@(ContainerCssClass) @(displayStageHeader? "radioContainer": string.Empty)">
   @foreach (var item in Model.ChoiceAndAnswerList)
   {
+    var isChecked = item.SelectListItem.Selected;
+
     <div class="flex-start-row-nowrap">
       <div class="mdc-touch-target-wrapper">
         <div class="mdc-radio mdc-radio--touch">
-          @if (item.SelectListItem.Selected)
-          {
-            <input type="radio" class="mdc-radio__native-control persistable"
-                   name="@(Model.ViewComponentViewModel.QuestionKey)"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
-                   value="@(item.SelectListItem.Value)"
-                   @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
-                   checked
-                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                   data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-                   data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                   data-toggle="tooltip"
-                   data-placement="left"
-                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" 
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")"/>
-          }
-          else
-          {
-            <input type="radio" class="mdc-radio__native-control persistable"
-                   name="@(Model.ViewComponentViewModel.QuestionKey)"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
-                   value="@(item.SelectListItem.Value)"
-                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                   data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-                   data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                   data-toggle="tooltip"
-                   data-placement="left"
-                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")" 
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")"/>
-          }
+          <input type="radio" class="mdc-radio__native-control persistable"
+                 name="@(Model.ViewComponentViewModel.QuestionKey)"
+                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+                 required="@(Model.ViewComponentViewModel.Required)"
+                 value="@(item.SelectListItem.Value)"
+                 checked="@(isChecked)"
+                 data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                 data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                 data-userid="@(Model.ViewComponentViewModel.UserID)"
+                 data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                 data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                 data-toggle="tooltip"
+                 data-placement="left"
+                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                 aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_label")" />
+
           <div class="mdc-radio__background">
             <div class="mdc-radio__outer-circle"></div>
             <div class="mdc-radio__inner-circle"></div>

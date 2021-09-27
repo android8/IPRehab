@@ -42,7 +42,7 @@
     {
       @*prevent the next inner div to be flexed*@
       <div>
-        <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+        <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")</div>
       </div>
     }
 
@@ -51,19 +51,21 @@
               name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
               required="@(Model.ViewComponentViewModel.Required)"
+              data-stageid="@(Model.ViewComponentViewModel.StageID)"
               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
               data-userid="@(Model.ViewComponentViewModel.UserID)"
-              data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+              data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+              data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
               data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-              data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+              data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
               data-toggle="tooltip"
               data-placement="left"
               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
-        <option>@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
+        <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
 
         @foreach (var item in Model.ChoiceAndAnswerList)
         {

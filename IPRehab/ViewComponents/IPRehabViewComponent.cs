@@ -17,7 +17,8 @@ namespace IPRehab.ViewComponents
       thisVCVM.UserID = NetworkID;
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
-      thisVCVM.StageTitle = QWS.StageTitle;
+      thisVCVM.StageTitle = QWS.StageTitle.Replace(" ","_");
+      thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
       thisVCVM.DisplayStageHeader = false;

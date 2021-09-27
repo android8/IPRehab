@@ -31,7 +31,8 @@ _ReSharper*/
 
 *.dll
 
-node_modules/
+/node_modules/
+/IPrehab/node_modules/
 /IPRehab/Scripts/app/animateBanner.js
 /IPRehab/Scripts/app/animateBanner.js.map
 /IPRehab/Scripts/app/commandBtns.js

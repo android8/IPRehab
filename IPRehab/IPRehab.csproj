@@ -20,14 +20,19 @@
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
+    <Compile Remove="wwwroot\css\cube annimation\**" />
     <Content Remove="Data\**" />
     <Content Remove="Scripts\typings\**" />
+    <Content Remove="wwwroot\css\cube annimation\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Scripts\typings\**" />
+    <EmbeddedResource Remove="wwwroot\css\cube annimation\**" />
     <None Remove="Data\**" />
     <None Remove="Scripts\typings\**" />
+    <None Remove="wwwroot\css\cube annimation\**" />
     <TypeScriptCompile Remove="node_modules\**" />
     <TypeScriptCompile Remove="Scripts\typings\**" />
+    <TypeScriptCompile Remove="wwwroot\css\cube annimation\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -101,7 +106,6 @@
     <None Include="Views\Shared\Components\IPRehab\MaterialInputText.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialInputNumber.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\MaterialTextArea.cshtml" />
-    <None Include="Views\Shared\Components\SubmitButton\MDSubmitButton.cshtml" />
     <None Include="Views\Shared\Components\IPRehab\RadioFlexDirectionColumnLongText2.cshtml" />
     <None Include="wwwroot\js\app\animateBanner.js" />
     <None Include="wwwroot\js\app\animateBanner.js.map" />
@@ -118,12 +122,6 @@
     <None Include="wwwroot\materialize-css\Gruntfile.js" />
     <None Include="wwwroot\materialize-css\LICENSE" />
     <None Include="wwwroot\materialize-css\README.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Scripts\app\patientList - Copy.js.map">
-      <DependentUpon>patientList.js.map</DependentUpon>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

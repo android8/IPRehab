@@ -15,41 +15,24 @@
 
     <div class="mdc-form-field">
       <div class="mdc-checkbox">
-        @if (originalAnswer != null)
-        {
-          <input type="checkbox" class="mdc-checkbox__native-control persistable"
-                 name="@Model.ViewComponentViewModel.QuestionKey"
-                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-                 required="@(Model.ViewComponentViewModel.Required)"
-                 value="@item.SelectListItem.Value"
-                 checked @* the only difference here. HTML5 checked vs XHTML checked="checked" *@
-                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                 data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                 data-userid="@(Model.ViewComponentViewModel.UserID)"
-                 data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-                 data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                 data-toggle="tooltip"
-                 data-placement="left"
-                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
-        }
-        else
-        {
-          <input type="checkbox" class="mdc-checkbox__native-control persistable"
-                 name="@Model.ViewComponentViewModel.QuestionKey"
-                 id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-                 required="@(Model.ViewComponentViewModel.Required)"
-                 value="@(item.SelectListItem.Value)"
-                 data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                 data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                 data-userid="@(Model.ViewComponentViewModel.UserID)"
-                 data-useranswerid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-                 data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-                 data-answersetid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                 data-toggle="tooltip"
-                 data-placement="left"
-                 title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
-        }
+        <input type="checkbox" class="mdc-checkbox__native-control persistable"
+               name="@Model.ViewComponentViewModel.QuestionKey"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+               required="@(Model.ViewComponentViewModel.Required)"
+               value="@item.SelectListItem.Value"
+               checked="@(isChecked)"
+               data-stageid="@(Model.ViewComponentViewModel.StageID)"
+               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+               data-userid="@(Model.ViewComponentViewModel.UserID)"
+               data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+               data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+               data-toggle="tooltip"
+               data-placement="left"
+               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
+
         <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"></span>
 
         <div class="mdc-checkbox__background">
@@ -77,7 +60,7 @@
     @*prevent the next inner div to be flexed*@
     <div>
       <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
-        @($"{Model.ViewComponentViewModel.StageTitle}")
+        @($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")
       </div>
     </div>
   }

@@ -11,14 +11,14 @@ import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
 
 $(function () {
   $('.rehabAction').each(function () {
-    let $this = $(this);
+    let $thisButton = $(this);
     //call closure
     //commandBtnController.addRipple($this);
 
-    $this.click(function () {
+    $thisButton.click(function () {
       //call closure
       //commandBtnController.makeRequest($this);
-      commandBtnController.makeRequestUsingFormAction($this);
+      commandBtnController.makeRequestUsingFormAction($thisButton);
     })
   });
 });
@@ -88,9 +88,9 @@ let commandBtnController = (function () {
     }
   }
 
-  function makeRequestUsingFormAction($this) {
+  function makeRequestUsingFormAction($thisButton) {
 
-    let stage: string = $this.data('stage');
+    let stage: string = $thisButton.data('stage');
     let stageLowerCase: string = stage.toLowerCase();
     if (stageLowerCase.indexOf('patientlist') != -1) {
       stageLowerCase = 'patient;'
@@ -125,10 +125,25 @@ let commandBtnController = (function () {
       $('.spinnerContainer').hide();
     }
     else {
-      //get formaction attribute which is created by Tag Helper
-      let thisUrl: string = $this.attr('formaction');
-      console.log('thisUrl', thisUrl);
-      location.href = thisUrl;
+      let theSubmitButton = $('#submit');
+      if (theSubmitButton.length == 0) {
+        //submit doesn't exist on this page
+        //get formaction attribute for this button and navigate away
+        let thisUrl: string = $thisButton.attr('formaction');
+        location.href = thisUrl;
+      }
+      else {
+        //submit exists on this page
+        //if submit is not disabled then the form is dirty
+        if (!theSubmitButton.is(":disabled")) {
+          $('#dialog').text('Data is not saved');
+          $('.spinnerContainer').hide();
+        }
+        else {
+          let thisUrl: string = $thisButton.attr('formaction');
+          location.href = thisUrl;
+        }
+      }
     }
   }
 

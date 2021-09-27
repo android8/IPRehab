@@ -9,6 +9,7 @@ namespace IPRehabWebAPI2.Models
   public class QuestionDTO
   {
     public string FormName { get; set; }
+    public int StageID { get; set; }
     public int QuestionID { get; set; }
     public bool? Required { get; set; }
     public string QuestionKey { get; set; }

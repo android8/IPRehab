@@ -16,7 +16,7 @@
     {
       @*prevent the next inner div to be flexed*@
       <div>
-        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle}")</div>
+        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")</div>
       </div>
     }
     <div class="flex-start-row-nowrap">
@@ -28,13 +28,15 @@
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
-             data-oldvalue="@(originalAnswer == null ? " " : originalAnswer?.Description)"
-             data-codesetid="@(thisItem.Value)"
+             data-stageid="@(Model.ViewComponentViewModel.StageID)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-             data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
+             data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             data-codesetid="@(thisItem.Value)"
+             data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
              data-placement="left" />
       <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>

@@ -1,4 +1,5 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+/// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
 /// <reference path="../appModels/IUseranswer.ts" />
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
@@ -29,8 +30,8 @@ $(function () {
     /* collect all persistable input values */
     $('#submit').click(function () {
         $('.spinnerContainer').show();
-        //$('#userAnswerForm').validate();
-        $('#userAnswerForm').submit();
+        let theScope = $('#userAnswerForm');
+        formController.searlizeTheForm($('.persistable', theScope));
     });
     formController.checkRules();
 });
@@ -103,6 +104,13 @@ let formController = (function () {
         }
     }
     /* private function */
+    function validate() {
+        //$('form#userAnswerForm').validate({
+        //  rules: {
+        //  }
+        //})
+    }
+    /* private function */
     function breakLongSentence(thisSelectElement) {
         console.log('thisSelectElement', thisSelectElement);
         let maxLength = 50;
@@ -136,6 +144,108 @@ let formController = (function () {
         let width = context.measureText(someText).width;
         return Math.ceil(width);
     }
+    /* private function */
+    function searlizeTheForm(persistables) {
+        //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
+        //console.log("serialized input", inputAnswerArray);
+        //const selectAnswerArray: any[] = [];
+        //$.map($('select', theForm), function () {
+        //  let $thisDropdown = $(this);
+        //  $('option', $thisDropdown).each(function () {
+        //    let $thisOption = $(this);
+        //    if ($thisOption.is(':selected')) {
+        //    }
+        //  })
+        //});
+        const oldAnswers = new Array();
+        let oldAnswersJson;
+        const newAnswers = new Array();
+        ;
+        let newAnswersJson;
+        const updatedAnswers = new Array();
+        let updatedAnswersJson;
+        //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
+        let CRUD;
+        persistables.map(function () {
+            let $thisPersistable = $(this);
+            let currentValue = $thisPersistable.val();
+            let oldValue = $thisPersistable.attr('data-oldvalue');
+            let answerID = $thisPersistable.attr('data-answerid');
+            if ($thisPersistable.type == 'select-one' && currentValue == -1 && oldValue == '') {
+                return false; //won't break the .map, but skip the item and contintue mapping
+            }
+            if (currentValue == oldValue) {
+                return false;
+            }
+            let thisAnswer = {};
+            if ($thisPersistable.attr('data-answerid'))
+                thisAnswer.AnswerID = $thisPersistable.attr('data-answerid');
+            if ($thisPersistable.attr('data-episodeid'))
+                thisAnswer.EpisodeID = $thisPersistable.attr('data-episodeid');
+            thisAnswer.QuestionID = $thisPersistable.attr('data-questionid');
+            thisAnswer.StageID = $thisPersistable.attr('data-stageid');
+            thisAnswer.AnswerCodeSetID = $thisPersistable.value;
+            if ($thisPersistable.attr('data-answersequence'))
+                thisAnswer.AnswerSequenceNumber = $thisPersistable.attr('data-answersequence');
+            let inputType = $thisPersistable.type;
+            if (inputType == 'text' || inputType == 'date' || inputType == 'number' || inputType == 'textarea') {
+                /* save extra description of the wide range of date, text, or number */
+                thisAnswer.AnswerCodeSetID = $thisPersistable.attr('data-codesetid');
+                thisAnswer.Description = $thisPersistable.value;
+            }
+            thisAnswer.AnswerByUserID = $thisPersistable.attr('data-userid');
+            thisAnswer.LastUpdate = new Date();
+            if (currentValue != '' && answerID == '') {
+                CRUD = 'C';
+            }
+            else if (currentValue == '' && answerID != '') {
+                CRUD = 'D';
+            }
+            else {
+                CRUD = "U";
+            }
+            switch (CRUD) {
+                case 'C':
+                    newAnswers.push(thisAnswer);
+                    newAnswersJson += JSON.stringify(newAnswers);
+                    break;
+                case 'U':
+                    updatedAnswers.push(thisAnswer);
+                    updatedAnswersJson += JSON.stringify(updatedAnswers);
+                    break;
+                case 'D':
+                    oldAnswers.push(thisAnswer);
+                    oldAnswersJson += JSON.stringify(oldAnswers);
+                    break;
+            }
+        });
+        $("#dialog").text(newAnswersJson + '<br/>' + updatedAnswersJson + '<br/>' + oldAnswersJson);
+        $('.spinnerContainer').hide();
+        $("#dialog").dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+                "Save": function () {
+                    let thisUrl = $('#submit').attr('formaction');
+                    //ToDo: ajax post here
+                    let postBackModel;
+                    postBackModel.NewAnswers = newAnswers;
+                    postBackModel.OldAnswers = oldAnswers;
+                    postBackModel.UpdatedAnswers = updatedAnswers;
+                    alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+                },
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    /* private function */
+    function validateForm(theForm) {
+        theForm.validate();
+    }
     /****************************************************************************
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
@@ -145,7 +255,9 @@ let formController = (function () {
         'resetRehabBtns': resetRehabBtns,
         'checkRules': checkRules,
         'breakLongSentence': breakLongSentence,
-        'getTextPixels': getTextPixels
+        'getTextPixels': getTextPixels,
+        'searlizeTheForm': searlizeTheForm,
+        'validate': validateForm
     };
 })();
 export {};

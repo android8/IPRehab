@@ -7,9 +7,9 @@
     "sass": "^1.35.1"
   },
   "devDependencies": {
+    "@types/jqueryui": "^1.12.16",
     "bootstrap-ui": "^3.1.0",
     "del": "^6.0.0",
-    "gulp": "^4.0.2",
     "gulp-sass": "^5.0.0",
     "materialize-css": "^1.0.0",
     "node": "^10.24.1"

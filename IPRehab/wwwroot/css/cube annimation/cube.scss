@@ -1,3 +1,4 @@
+@use 'sass:math';
 @import url('https://fonts.googleapis.com/css?family=Roboto:700');
 $size: 150px;
 
@@ -45,7 +46,7 @@ $size: 150px;
 .cube .sides * {
   box-sizing: border-box;
   background-color: rgba(0, 50, 100, .8);
-  border: $size / 10 solid black;
+  border: math.div($size,10) solid black;
 }
 
 @mixin side($name, $rotate, $i) {
@@ -60,8 +61,8 @@ $size: 150px;
   
   @keyframes #{$name}-animation {
     0% { opacity: 1; transform: #{$rotate} translateZ($size)}  
-    20% { opacity: 1; transform: #{$rotate} translateZ($size / 2)}  
-    70% {  opacity: 1; transform: #{$rotate} translateZ($size / 2) }
+    20% { opacity: 1; transform: #{$rotate} translateZ(math.div($size, 2))}  
+    70% {  opacity: 1; transform: #{$rotate} translateZ(math.div($size, 2)) }
     90% {  opacity: 1; transform: #{$rotate} translateZ($size) }
     100% {  opacity: 1; transform: #{$rotate} translateZ($size) }
   }

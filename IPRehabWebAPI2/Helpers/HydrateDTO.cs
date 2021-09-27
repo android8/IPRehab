@@ -14,10 +14,11 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID)
     {
       QuestionDTO questionDTO = new();
       questionDTO.FormName = questionStage;
+      questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
       questionDTO.Required = q.tblQuestionStage.Where(x =>
           x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
