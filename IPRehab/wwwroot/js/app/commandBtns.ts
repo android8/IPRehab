@@ -1,11 +1,10 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-/// <reference path="../appModels/IUseranswer.ts" />
 
 //don't need use strict because the script is loaded as module which by default is executed in strict mode
 //'use strict';
 
 import { MDCRipple } from "../../node_modules/@material/ripple/component";
-import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
+
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
@@ -38,10 +37,8 @@ let commandBtnController = (function () {
   /* private function */
   function makeRequest($this) {
     //get formaction attribute which is created by Tag Helper
-    let formAction: string = $this.attr('formaction');
-    console.log('formAction', formAction);
 
-    let thisUrl: string = formAction;
+    let thisUrl: string = $this.prop('formAction');;
 
     /* data-attribute are all in lower case by covention */
     let controller: string = $this.data('controller');
@@ -74,7 +71,7 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    const pageTitleLowerCase = $(document).attr('title').toLowerCase();
+    const pageTitleLowerCase = $(document).prop('title').toLowerCase();
     console.log('pageTitleLowerCase', pageTitleLowerCase);
 
     if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
@@ -111,7 +108,7 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    const pageTitleLowerCase = $(document).attr('title').toLowerCase();
+    const pageTitleLowerCase = $(document).prop('title').toLowerCase();
     console.log('pageTitleLowerCase', pageTitleLowerCase);
 
     if (stageLowerCase.indexOf('followup') != -1)
@@ -120,27 +117,50 @@ let commandBtnController = (function () {
     if (stageLowerCase == '')
       stageLowerCase = 'full';
 
+
     if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
-      alert('You are already in it');
+      $('#dialog')
+        .text('You are already in it')
+        .dialog();
       $('.spinnerContainer').hide();
     }
     else {
-      let theSubmitButton = $('#submit');
-      if (theSubmitButton.length == 0) {
+      let submitButton: any = $('#ajaxPost');
+      if (submitButton.length == 0) {
         //submit doesn't exist on this page
         //get formaction attribute for this button and navigate away
-        let thisUrl: string = $thisButton.attr('formaction');
+        let thisUrl: string = $thisButton.prop('formAction');
         location.href = thisUrl;
       }
       else {
         //submit exists on this page
         //if submit is not disabled then the form is dirty
-        if (!theSubmitButton.is(":disabled")) {
-          $('#dialog').text('Data is not saved');
+        if (!submitButton.is(":disabled")) {
+
+          $('#dialog')
+            .text('Data is not saved. Click Cancel then click the Save button to save the data. Click OK to not save the data and go to the ' + stage + ' page')
+            .dialog({
+              resizable: true,
+              height: "auto",
+              width: 400,
+              modal: true,
+              stack: true,
+              //sticky: true,
+              buttons: {
+                Ok: function () {
+                  var thisUrl = $thisButton.prop('formAction');
+                  //navigate away
+                  location.href = thisUrl;
+                },
+                Cancel: function () {
+                  $(this).dialog("close");
+                }
+              }
+            });
           $('.spinnerContainer').hide();
         }
         else {
-          let thisUrl: string = $thisButton.attr('formaction');
+          let thisUrl: string = $thisButton.prop('formAction');
           location.href = thisUrl;
         }
       }

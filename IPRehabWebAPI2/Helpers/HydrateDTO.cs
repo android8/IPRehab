@@ -44,19 +44,19 @@ namespace IPRehabWebAPI2.Helpers
       return questionDTO;
     }
 
-    public static AnswerDTO HydrateAnswer(tblAnswer a)
+    public static AnswerDTO HydrateAnswer(tblAnswer a, tblEpisodeOfCare thisEpisode)
     {
       EpisodeOfCareDTO episode = new()
       {
-        EpisodeOfCareID = a.EpsideOfCareIDFK,
-        OnsetDate = a.EpsideOfCareIDFKNavigation.OnsetDate,
-        AdmissionDate = a.EpsideOfCareIDFKNavigation.AdmissionDate,
-        PatientIcnFK = a.EpsideOfCareIDFKNavigation.PatientICNFK
+        EpisodeOfCareID = thisEpisode.EpisodeOfCareID,
+        OnsetDate = thisEpisode.OnsetDate,
+        AdmissionDate = thisEpisode.AdmissionDate,
+        PatientIcnFK = thisEpisode.PatientICNFK
       };
 
       CodeSetDTO answerCodeSet = new()
       {
-        CodeSetID = a.AnswerCodeSetFKNavigation.CodeSetID,
+        CodeSetID = a.AnswerCodeSetFK,
         CodeValue = a.AnswerCodeSetFKNavigation.CodeValue,
         CodeDescription = a.AnswerCodeSetFKNavigation.CodeDescription,
         Comment = a.AnswerCodeSetFKNavigation.Comment
@@ -64,6 +64,7 @@ namespace IPRehabWebAPI2.Helpers
 
       AnswerDTO answerDTO = new()
       {
+        AnswerID = a.AnswerID,
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
         CareStage = a.StageIDFKNavigation.CodeDescription,

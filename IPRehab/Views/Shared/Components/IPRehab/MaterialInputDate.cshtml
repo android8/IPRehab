@@ -22,7 +22,6 @@
     <div class="flex-start-row-nowrap">
       <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
              class="persistable"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
              name="@Model.ViewComponentViewModel.QuestionKey"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
@@ -32,13 +31,15 @@
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-             data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
              data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              data-codesetid="@(thisItem.Value)"
+             data-codesetdescription="@(thisItem.Text)"
              data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
-             data-placement="left" />
+             data-placement="left"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+ />
       <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
     </div>
   </div>

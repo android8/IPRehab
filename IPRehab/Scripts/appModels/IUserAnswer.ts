@@ -1,13 +1,21 @@
 ﻿export interface IUserAnswer {
 
+  PatientName: string;
   AnswerID: number;
   EpisodeID: number;
   QuestionID: number;
+  QuestionKey: string;
   StageID: number;
+  StageName: string;
   AnswerCodeSetID: number;
+  AnswerCodeSetDescription: string;
   AnswerSequenceNumber: number;
-  Description: string; //optional but required for text (date, ICD), number (therapy Hours), or text area type
-  AnswerByUserID: number;
+  
+  //optional but required for text (date, ICD), number (therapy Hours), or text area type
+  Description: string; 
+
+  //user network ID
+  AnswerByUserID: string; //user network ID
   LastUpdate: Date;
 }
 

@@ -62,6 +62,25 @@
   padding: 5px 0 0 10px;
 }
 
+/*override jquery UI dialog title bar */
+.my-dialog-header {
+  background: #ffc107 !important;
+  border: 1px solid #dddddd;
+  color: #333333;
+  font-weight: bold;
+}
+
+.my-dialog {
+  top: 0;
+  left: 0;
+  padding: 0.2em;
+  outline: 0;
+  position: fixed !important;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+}
+
 body {
   scrollbar-width: 5px;
 }
@@ -106,7 +125,7 @@ body {
 }
 
 .textNoWrap {
-  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
 }
 
 .disabled {
@@ -311,6 +330,10 @@ div.answer2 {
   padding: 2px 10px 5px 10px;
 }
 
+.numeric-text {
+  width: 4em;
+}
+
 .footerInstruction {
   font-size: smaller;
   font-weight: normal;
@@ -485,6 +508,7 @@ div.answer .nullLabel {
   border: 1px solid #ced4da;
   border-top: none;
   border-radius: 0 0 5px 5px;
+  font-weight: 500;
 }
 
 .radioLabel {
@@ -569,6 +593,17 @@ div.answer .nullLabel {
 div.questionRow {
   padding: 0 10px;
   border: 1px solid #c8cab7;
+}
+
+.mvc-post-btn {
+  left: -20px !important;
+  top: 250px !important;
+  width: 100px !important;
+}
+
+.ajax-post-btn {
+  width: 150px !important;
+  left: -45px !important;
 }
 
 .rotate {

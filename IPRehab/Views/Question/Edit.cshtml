@@ -6,7 +6,7 @@
 }
 
 @section Links{
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 }
 
 @section Scripts {
@@ -22,12 +22,13 @@
 @if (!Model.ReadOnly)
 {
   <div>
-    <div class="mdc-touch-target-wrapper">
-      <button class="mdc-button mdc-button--raised mdc-button--touch rotate" id="submit" disabled>
+    <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
+      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled>
         <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">Save</span>
+        <span class="mdc-button__label">Ajax Post</span>
         <div class="mdc-button__touch"></div>
       </button>
+      <input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>
     </div>
   </div>
 }
@@ -67,7 +68,6 @@
     <input type="hidden" id="stage" name="stage" value="@(Model.StageTitle)" />
     <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
     <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
-
     <div class="flex-start-column-nowrap">
       @if (Model.StageTitle == "Full" || Model.StageTitle == "All")
       {
@@ -201,6 +201,7 @@
                     @await Component.InvokeAsync(viewComponentName,
                                    new
                                    {
+                                     EpisodeID = Model.EpisodeID,
                                      ControlCounter = controlCounter,
                                      QWS = q,
                                      NetworkID = (string)ViewBag.CurrentNetworkID,

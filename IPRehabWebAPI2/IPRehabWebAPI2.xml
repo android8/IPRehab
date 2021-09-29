@@ -52,6 +52,21 @@
             Hydrate the DTO with selected domain properties
             </summary>
         </member>
+        <member name="P:IPRehabWebAPI2.Models.AnswerDTO.AnswerID">
+            <summary>
+            record key
+            </summary>
+        </member>
+        <member name="P:IPRehabWebAPI2.Models.UserAnswer.Description">
+            <summary>
+            optional but required for text (date, ICD), number (therapy Hours), or text area type
+            </summary>
+        </member>
+        <member name="P:IPRehabWebAPI2.Models.UserAnswer.AnswerByUserID">
+            <summary>
+            user network ID
+            </summary>
+        </member>
         <member name="P:IPRehabWebAPI2.Models.QuestionDTO.Enabled">
             <summary>
             set the Enabled property to false, if this question is dependent on another question's answers and if other question(s) determines to false 

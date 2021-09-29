@@ -4,12 +4,9 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
 using UserModel;
 
 namespace IPRehabWebAPI2.Controllers

@@ -58,11 +58,30 @@
 
 /*override Material Design style*/
 .mdc-text-field--outlined {
- height: 30px;
+  height: 30px;
 }
 
 .mdc-radio {
   padding: 5px 0 0 10px;
+}
+
+/*override jquery UI dialog title bar */
+ .my-dialog-header {
+  background: #ffc107 !important;
+ border: 1px solid #dddddd;
+  color: #333333;
+  font-weight: bold;
+}
+
+ .my-dialog {
+ top: 0;
+  left: 0;
+  padding: .2em;
+  outline: 0;
+  position: fixed !important;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
 body {
@@ -73,7 +92,6 @@ body {
   font-size: 2em;
   font-weight: bold;
 }
-
 /*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
   background-color: white;
@@ -105,11 +123,11 @@ body {
   background-color: #0e2640;
   text-align: center;
   font-weight: bold;
-  padding-top:10px;
+  padding-top: 10px;
 }
 
 .textNoWrap {
-  flex-wrap:nowrap !important;
+  white-space: nowrap !important;
 }
 
 .disabled {
@@ -190,10 +208,9 @@ alert-info {
   height: 100%;
 }
 
-input{
+input {
   transition: all 0.5s ease-out;
 }
-
 /*.table-striped tbody tr:nth-of-type(odd) {
   background-color: rgb(0 0 0 / 13%);
 }
@@ -217,19 +234,19 @@ td {
   left: -10px;
 }
 
-.episode{
-  padding-left:15px;
-  padding-bottom:30px;
+.episode {
+  padding-left: 15px;
+  padding-bottom: 30px;
 }
 
-.episode-node-symbol{
-  position:relative;
-  top:-10px;
-  font-size:smaller;
-  height:5px;
-  border-left:1px solid darkgray;
-  border-bottom:2px solid darkgray;
-  border-bottom-left-radius:10px;
+.episode-node-symbol {
+  position: relative;
+  top: -10px;
+  font-size: smaller;
+  height: 5px;
+  border-left: 1px solid darkgray;
+  border-bottom: 2px solid darkgray;
+  border-bottom-left-radius: 10px;
 }
 
 .commandBtn {
@@ -281,7 +298,7 @@ div.questionText2 {
 
 div.questionKey {
   width: 15%;
-  padding:0 2% 0 1%;
+  padding: 0 2% 0 1%;
 }
 
 div.answer2 {
@@ -289,7 +306,7 @@ div.answer2 {
 }
 
 .questionText {
-  max-width:30% !important;
+  max-width: 30% !important;
   padding-left: 10px;
 }
 
@@ -313,6 +330,10 @@ div.answer2 {
   color: gold;
   width: 100%;
   padding: 2px 10px 5px 10px;
+}
+
+.numeric-text {
+  width: 4em;
 }
 
 .footerInstruction {
@@ -369,8 +390,8 @@ div.answer .dropdown {
   width: 100%;
 }
 
-div.answer .physical-therapy{
-  max-width:90%;
+div.answer .physical-therapy {
+  max-width: 90%;
 }
 
 div .radioContainer {
@@ -482,14 +503,15 @@ div.answer .dropdown option .textWhiteOnWhite {
 
 
 div.answer .nullLabel {
-  display:none #important;
+  display: none #important;
 }
 
 .longTextOption {
   padding: 0 0 0 13px;
   border: 1px solid #ced4da;
-  border-top:none;
+  border-top: none;
   border-radius: 0 0 5px 5px;
+  font-weight: 500;
 }
 
 .radioLabel {
@@ -577,6 +599,17 @@ div.questionRow {
   border: 1px solid #c8cab7;
 }
 
+.mvc-post-btn {
+  left: -20px !important;
+  top: 250px !important;
+  width: 100px !important;
+}
+
+.ajax-post-btn {
+  width: 150px !important;
+  left: -45px !important;
+}
+
 .rotate {
   width: 35px;
   top: 100px;
@@ -661,7 +694,7 @@ div.questionRow {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  justify-content:start;
+  justify-content: start;
   /*align-items: center;*/
 }
 
@@ -701,7 +734,6 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*flex-grow: 4;*/
   /*width: 500px;*/
 }
-
 /* Inserting this collapsed row between two flex items will make 
  * the flex item that comes after it break to a new row */
 .break {
@@ -781,12 +813,12 @@ div.questionRow:last-child {
 
 .rehabAction {
   text-decoration: none !important;
-  color: white !important ;
+  color: white !important;
 }
 
-button.rehabAction{
-  height:20px;
-  font-size:x-small;
+button.rehabAction {
+  height: 20px;
+  font-size: x-small;
   margin: 0 1px;
 }
 
@@ -817,6 +849,7 @@ button.rehabAction{
 .actionBtnPatientList {
   background-color: darkslategray !important;
 }
+
 .visible {
   display: inline;
 }

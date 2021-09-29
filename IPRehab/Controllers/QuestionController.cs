@@ -140,13 +140,29 @@ namespace IPRehab.Controllers
     // POST: QuestionController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Edit(IFormCollection form)
+    public ActionResult Edit(PostbackModel model)
     {
-      string stage = form["stage"];
-      string patientName = form["patientName"];
-      string episodeID = form["episodeID"];
+      if (ModelState.IsValid)
+      {
+        List<UserAnswer> newAnswers = model.NewAnswers;
+        List<UserAnswer> oldAnswers = model.OldAnswers;
+        List<UserAnswer> updatedAnswers = model.UpdatedAnswers;
+        UserAnswer thisAnswer = new();
+        if (newAnswers != null)
+          thisAnswer = newAnswers.Find(x => x.StageName != string.Empty); 
+        else if (oldAnswers != null)
+          thisAnswer = oldAnswers.Find(x => x.StageName != string.Empty);
+        else if (updatedAnswers != null)
+          thisAnswer = updatedAnswers.Find(x => x.StageName != string.Empty);
 
-      return RedirectToAction(nameof(Edit), new { stage = stage, patientName = patientName, episodeID = episodeID, redirectFrom = "Edit" });
+        //ToDo: call webapi Question controller to persist the data to database
+
+        return RedirectToAction(nameof(Edit), new { stage = thisAnswer.StageName, patientName = thisAnswer.PatientName, episodeID = thisAnswer.EpisodeID.ToString(), redirectFrom = "Edit" });
+      }
+      else
+      {
+        return RedirectToAction("Index", "Patient");
+      }
     }
 
     // GET: QuestionController/Delete/5

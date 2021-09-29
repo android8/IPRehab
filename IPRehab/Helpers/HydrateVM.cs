@@ -252,49 +252,19 @@ namespace IPRehab.Helpers
       List<SelectListItem> selectedChoices = new();
       string text = string.Empty, value = string.Empty ;
 
-      if (!choices.Any())
+      /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
+      foreach (var c in choices)
       {
-        if (answers.Any())
-        {
-          foreach (var thisAnswer in answers)
-          {
-            /* an empty validChoices parameter only possible for questions with Y/N, check, or free text answer 
-             so use the text in the answer to populate the selectedChoices with single SelectListItem */
-            text = thisAnswer.Description;
-            value = thisAnswer.AnswerCodeSet.CodeSetID.ToString();
-
-            if (answerCodeCategory == "Date")
-            {
-              text = ParseDateString(thisAnswer.Description);
-              value = text;
-            }
-
-            SelectListItem thisChiceItem = new()
-            {
-              Text = text,
-              Value = text,
-              Selected = true
-            };
-            selectedChoices.Add(thisChiceItem);
-          }
-        }
-        return selectedChoices;
+        text = c.CodeDescription;
+        var isSelected = answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
+        SelectListItem thisChiceItem = new () { 
+          Text = text, 
+          Value = c.CodeSetID.ToString(), 
+          Selected = isSelected
+        };
+        selectedChoices.Add(thisChiceItem);
       }
-      else
-      {
-        foreach (var c in choices)
-        {
-          text = c.CodeDescription;
-          var isSelected = answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
-          SelectListItem thisChiceItem = new () { 
-            Text = text, 
-            Value = c.CodeSetID.ToString(), 
-            Selected = isSelected
-          };
-          selectedChoices.Add(thisChiceItem);
-        }
-        return selectedChoices;
-      }
+      return selectedChoices;
     }
 
     private static List<ChoiceAndAnswer> SetChoicesAnswers(QuestionDTO questionDTO)

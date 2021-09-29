@@ -52,7 +52,7 @@ namespace IPRehabWebAPI2.Controllers
             episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
 
           var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
-            .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
+            .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToList();
 
           if (thisQuestionAnswers == null)
           {
@@ -84,6 +84,7 @@ namespace IPRehabWebAPI2.Controllers
     {
       int stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
       stageName = stageName.Trim().ToUpper();
+      
       List<QuestionDTO> questions = null;
 
       questions = _questionRepository.FindByCondition(q =>
@@ -118,8 +119,8 @@ namespace IPRehabWebAPI2.Controllers
             var thisEpisode = await _episodeRepository.FindByCondition(episode =>
               episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
 
-            var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
-              .Select(a => HydrateDTO.HydrateAnswer(a)).ToList();
+            var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID && a.StageIDFKNavigation.CodeSetID == stageID)
+              .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToList();
 
             if (thisQuestionAnswers == null)
             {

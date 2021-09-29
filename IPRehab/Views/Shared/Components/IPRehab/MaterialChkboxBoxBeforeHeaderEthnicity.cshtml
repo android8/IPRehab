@@ -14,23 +14,26 @@
 
     <div class="mdc-form-field">
       <div class="mdc-checkbox">
-        <input type="checkbox" class="mdc-checkbox__native-control persistable"
+        <input type="checkbox" 
+               class="mdc-checkbox__native-control persistable"
                name="@Model.ViewComponentViewModel.QuestionKey"
                id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
                required="@(Model.ViewComponentViewModel.Required)"
                value="@item.SelectListItem.Value"
+               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                checked="@(isChecked)"
                data-stageid="@(Model.ViewComponentViewModel.StageID)"
                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-               data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
                data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+               data-codesetid="@item.SelectListItem.Value"
+               data-codesetdescription="@(item.SelectListItem.Text)"
                data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
 
         <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"></span>
 
@@ -46,7 +49,7 @@
       </div>
 
       <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}")"
-             aria-label="label for dropdown left blank use the question text">
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
         @*strip the code value *@
         @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
         {

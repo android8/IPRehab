@@ -11,10 +11,9 @@
       originalAnswer = thisChoiceAndAnswer.Answer;
     }
   }
-
   bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
 
-  string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in hours";
+  string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in minutes";
 }
 
 <div class="flex-start-column-nowrap">
@@ -26,7 +25,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
           <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
           <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-          <title>Section Instruction</title>
+          <title>Instruction for therapy type and length</title>
         </svg>
         @therapyInstruction
       </div>
@@ -46,22 +45,37 @@
       </div>
     }
 
-    <div>
-      <select class="browser-default custom-select select2 dropdown persistable physical-therapy"
-              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+    <div class="flex-start-column-nowrap">
+
+      @*the labe is required by HTML5 specification*@
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+             class="nullLabel"></label>
+
+      @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
+      @if (displayStageHeader)
+      {
+        @*prevent the next inner div to be flexed*@
+        <div>
+          <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")</div>
+        </div>
+      }
+      <select class="browser-default custom-select select2 dropdown persistable"
+              name="@(Model.ViewComponentViewModel.QuestionKey)"
               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
               required="@(Model.ViewComponentViewModel.Required)"
+              title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
               data-stageid="@(Model.ViewComponentViewModel.StageID)"
               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
               data-userid="@(Model.ViewComponentViewModel.UserID)"
-              data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-              data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+              data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
               data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+              data-codesetid="irrelevant"
+              data-codesetdescription="irrelevant"
               data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
               data-toggle="tooltip"
               data-placement="left"
-              title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
@@ -73,12 +87,13 @@
           {
             selectedItem = item;
           }
-
-          @* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID *@
-          <option value="@(item.SelectListItem.Value)" selected="@(item.SelectListItem.Selected)">@(item.SelectListItem.Text)</option>
+          /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
+          <option value="@(item.SelectListItem.Value)"
+                  selected="@(item.SelectListItem.Selected)">
+            @(item.SelectListItem.Text)
+          </option>
         }
       </select>
-
       @if (selectedItem != null)
       {
         <div class="longTextOption">@(selectedItem.SelectListItem.Text)</div>
@@ -89,12 +104,12 @@
       }
     </div>
 
-    @* Hours of Therapy *@
+    @**************** Minutes of Therapy ****************@
     <div class="flex-start-column-nowrap">
-      <div class="stageHeaderNoBottomBorder number">Hours</div>
+      <div class="stageHeaderNoBottomBorder number">Minutes</div>
       <label class="mdc-text-field mdc-text-field--outlined"
-             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_HRlabel")"
+             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
              aria-label="enter a number">
         <span class="mdc-notched-outline">
           <span class="mdc-notched-outline__leading"></span>
@@ -103,23 +118,26 @@
           </span>
           <span class="mdc-notched-outline__trailing"></span>
         </span>
-        <input type="number"
+        <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
                class="mdc-text-field__input numeric-text inputContainer persistable"
                name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")" )"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+               required="@(Model.ViewComponentViewModel.Required)"
                value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-               maxlength="3" min="0" max="100"
-               placeholder="enter a number"
-               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+               data-stageid="@(Model.ViewComponentViewModel.StageID)"
                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                data-userid="@(Model.ViewComponentViewModel.UserID)"
+               data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+               data-codesetid="@(Model.ViewComponentViewModel.TherapyHoursCodeSetID /*changed by TypeScript when the therapy type changes*/)"
+               data-codesetdescription="@(Model.ViewComponentViewModel.TherapyHoursCodeSetValue /*changed by TypeScript when the therapy type changes*/)"
                data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
                data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_HRlabel")" />
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")" />
       </label>
     </div>
   </div>

@@ -5,7 +5,8 @@
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
     $('.persistable').change(function () {
-        $('#submit').removeAttr('disabled');
+        $('#ajaxPost').removeAttr('disabled');
+        $('#mvcPost').removeAttr('disabled');
     });
     $('select').each(function () {
         let $this = $(this);
@@ -27,11 +28,18 @@ $(function () {
             formController.scrollToAnchor(anchorId);
         });
     });
-    /* collect all persistable input values */
-    $('#submit').click(function () {
+    /* traditional form post */
+    $('#mvcPost').click(function () {
+        $('form').submit();
+    });
+    /* ajax post form */
+    $('#ajaxPost').click(function () {
         $('.spinnerContainer').show();
         let theScope = $('#userAnswerForm');
-        formController.searlizeTheForm($('.persistable', theScope));
+        let stageName = $('#stage', theScope).val();
+        const patientName = $('#patientName', theScope).val();
+        const episodeID = $('#episodeID', theScope).val();
+        formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID);
     });
     formController.checkRules();
 });
@@ -49,14 +57,14 @@ let formController = (function () {
         let currentIdx = 0;
         $.each($('.rehabAction', targetScope), function () {
             let $this = $(this);
-            let newTitle = $this.attr('title').replace(/Edit/g, 'Create');
-            let newHref = $this.attr('href').replace(/Edit/g, 'Create');
-            $this.attr('title', newTitle);
-            $this.attr('href', newHref);
+            let newTitle = $this.prop('title').replace(/Edit/g, 'Create');
+            let newHref = $this.prop('href').replace(/Edit/g, 'Create');
+            $this.prop('title', newTitle);
+            $this.prop('href', newHref);
             currentIdx++;
-            let newClass = $this.attr('class') + ' createActionCmd' + currentIdx.toString();
+            let newClass = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
             ;
-            $this.attr('class', newClass);
+            $this.prop('class', newClass);
         });
     }
     /* private function */
@@ -65,14 +73,14 @@ let formController = (function () {
         let currentIdx = 0;
         $.each($('.rehabAction', targetScope), function () {
             let $this = $(this);
-            let newTitle = $this.attr('title').replace(/Create/g, 'Edit');
-            let newHref = $this.attr('href').replace(/Create/g, 'Edit');
-            $this.attr('title', newTitle);
-            $this.attr('href', newHref);
+            let newTitle = $this.prop('title').replace(/Create/g, 'Edit');
+            let newHref = $this.prop('href').replace(/Create/g, 'Edit');
+            $this.prop('title', newTitle);
+            $this.prop('href', newHref);
             let resetClass = '';
             resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
             currentIdx++;
-            $this.attr('class', resetClass);
+            $this.prop('class', resetClass);
         });
     }
     /* private function */
@@ -83,23 +91,23 @@ let formController = (function () {
         let q46 = $('#Q46_').val();
         if (!q44c_is_1 && !q44c_is_0) {
             /* Q44c is not answered */
-            $('#Q44D_').attr('disabled', 'true');
-            $('#Q45_').attr('disabled', 'true');
+            $('#Q44D_').prop('disabled', 'true');
+            $('#Q45_').prop('disabled', 'true');
         }
         if (q44c_is_1 && q44d_is_1) {
             /*Q44C = 1 and Q44D = 1*/
-            $('#Q45_').attr('disabled', 'false');
+            $('#Q45_').prop('disabled', 'false');
         }
         else {
             if (q44c_is_0) {
-                $('#Q44D_').attr('disabled', 'false');
+                $('#Q44D_').prop('disabled', 'false');
                 $('#Q46_').focus();
             }
         }
         /* interrupted */
         let q42_is_interrupted = $('#Q42-INTRRUPT_86').prop('checked');
         if (q42_is_interrupted) {
-            $('#Q43_').attr('disabled', 'false');
+            $('#Q43_').prop('disabled', 'false');
             $('#Q43_').focus();
         }
     }
@@ -129,6 +137,11 @@ let formController = (function () {
             longTextOptionDIV.text('');
             if (oldTextInPixel > thisSelectWidth) {
                 let newStr = oldText.replace(regX, "$1\n");
+                newStr = newStr.trim();
+                let startWithNumber = $.isNumeric(newStr.substring(0, 1));
+                if (startWithNumber) {
+                    newStr = newStr.substring(newStr.indexOf(" ") + 1);
+                }
                 console.log('old ->', oldText);
                 console.log('new ->', newStr);
                 longTextOptionDIV.text(newStr);
@@ -145,7 +158,7 @@ let formController = (function () {
         return Math.ceil(width);
     }
     /* private function */
-    function searlizeTheForm(persistables) {
+    function searlizeTheForm(persistables, stageName, patientName, episodeID) {
         //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
         //console.log("serialized input", inputAnswerArray);
         //const selectAnswerArray: any[] = [];
@@ -158,47 +171,65 @@ let formController = (function () {
         //  })
         //});
         const oldAnswers = new Array();
-        let oldAnswersJson;
+        let oldAnswersJson = '';
         const newAnswers = new Array();
         ;
-        let newAnswersJson;
+        let newAnswersJson = '';
         const updatedAnswers = new Array();
-        let updatedAnswersJson;
+        let updatedAnswersJson = '';
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
-        let CRUD;
         persistables.map(function () {
             let $thisPersistable = $(this);
             let currentValue = $thisPersistable.val();
-            let oldValue = $thisPersistable.attr('data-oldvalue');
-            let answerID = $thisPersistable.attr('data-answerid');
-            if ($thisPersistable.type == 'select-one' && currentValue == -1 && oldValue == '') {
+            let oldValue = $thisPersistable.prop('data-oldvalue');
+            let answerID = $thisPersistable.prop('data-answerid');
+            let CRUD;
+            if ($thisPersistable.prop('type') == 'select-one' && (+currentValue == -1 && !oldValue)) {
                 return false; //won't break the .map, but skip the item and contintue mapping
             }
-            if (currentValue == oldValue) {
+            if (($thisPersistable.prop('type') == 'checkbox' || $thisPersistable.prop('type') == 'radio')
+                && (!$thisPersistable.prop('checked') && !oldValue)) {
+                return false; //won't break the .map, but skip the item and contintue mapping
+            }
+            if (currentValue == oldValue //both are not undefined and with the same empty or non-empty strings, ie ''=='', 'xyx'=='xyz'
+                || (currentValue == '' && !oldValue) //currentValue is blank and oldValue is undefined
+                || (!currentValue && !oldValue)) //both are undefineed
+             {
                 return false;
             }
             let thisAnswer = {};
-            if ($thisPersistable.attr('data-answerid'))
-                thisAnswer.AnswerID = $thisPersistable.attr('data-answerid');
-            if ($thisPersistable.attr('data-episodeid'))
-                thisAnswer.EpisodeID = $thisPersistable.attr('data-episodeid');
-            thisAnswer.QuestionID = $thisPersistable.attr('data-questionid');
-            thisAnswer.StageID = $thisPersistable.attr('data-stageid');
-            thisAnswer.AnswerCodeSetID = $thisPersistable.value;
-            if ($thisPersistable.attr('data-answersequencenumber'))
-                thisAnswer.AnswerSequenceNumber = $thisPersistable.attr('data-answersequencenumber');
-            let thisInputType = $thisPersistable.attr('type');
-            if (thisInputType == 'text' || thisInputType == 'date' || thisInputType == 'number' || thisInputType == 'textarea') {
-                /* save extra description of the wide range of date, text, or number */
-                thisAnswer.AnswerCodeSetID = $thisPersistable.attr('data-codesetid');
-                thisAnswer.Description = $thisPersistable.value;
+            thisAnswer.StageName = stageName.toString();
+            thisAnswer.PatientName = patientName.toString();
+            thisAnswer.EpisodeID = episodeID.toString();
+            if (answerID)
+                thisAnswer.AnswerID = +answerID;
+            //+ in front of string convert it to number
+            thisAnswer.QuestionID = +$thisPersistable.data('questionid');
+            thisAnswer.QuestionKey = $thisPersistable.data('questionkey');
+            thisAnswer.StageID = +$thisPersistable.data('stageid');
+            let thisInputType = $thisPersistable.prop('type');
+            switch (thisInputType) {
+                case 'text':
+                case 'date':
+                case 'textarea':
+                case 'number': /* only used for therapy minutes */
+                    /* save extra description */
+                    thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
+                    thisAnswer.Description = currentValue;
+                    break;
+                default: /* dropdown and radio */
+                    thisAnswer.AnswerCodeSetID = +currentValue;
+                    break;
             }
-            thisAnswer.AnswerByUserID = $thisPersistable.attr('data-userid');
+            thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
+            if ($thisPersistable.prop('data-answersequencenumber'))
+                thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
+            thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
             thisAnswer.LastUpdate = new Date();
-            if (currentValue != '' && answerID == '') {
+            if (currentValue != '' && (!answerID || +answerID == -1)) {
                 CRUD = 'C';
             }
-            else if (currentValue == '' && answerID != '') {
+            else if (currentValue == '' && (answerID || +answerID != -1)) {
                 CRUD = 'D';
             }
             else {
@@ -207,39 +238,81 @@ let formController = (function () {
             switch (CRUD) {
                 case 'C':
                     newAnswers.push(thisAnswer);
-                    newAnswersJson += JSON.stringify(newAnswers);
+                    newAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
                 case 'U':
                     updatedAnswers.push(thisAnswer);
-                    updatedAnswersJson += JSON.stringify(updatedAnswers);
+                    updatedAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
                 case 'D':
                     oldAnswers.push(thisAnswer);
-                    oldAnswersJson += JSON.stringify(oldAnswers);
+                    oldAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
             }
         });
-        $("#dialog").text(newAnswersJson + '<br/>' + updatedAnswersJson + '<br/>' + oldAnswersJson);
+        let allAnswersJson = '';
+        if (newAnswersJson != undefined && newAnswersJson != '')
+            allAnswersJson += '<h2>New Answers</h2><ul>' + newAnswersJson + '</ul>';
+        if (updatedAnswersJson != undefined && updatedAnswersJson != '')
+            allAnswersJson += '<h2>Updated Answers</h2><ul>' + updatedAnswersJson + '</ul>';
+        if (oldAnswersJson != undefined && oldAnswersJson != '')
+            allAnswersJson += '<h2>Old Answers</h2><ul>' + oldAnswersJson + '</ul>';
         $('.spinnerContainer').hide();
-        $("#dialog").dialog({
-            resizable: false,
+        let antiForgeryToken = $('input[name="CSRF-TOKEN-IPREHAB"]').val();
+        let headers = {};
+        headers['CSRF-TOKEN-IPREHAB'] = antiForgeryToken;
+        headers['Accept'] = 'application/json';
+        let dialogOptions = {
+            resizable: true,
             height: "auto",
             width: 400,
             modal: true,
-            buttons: {
-                "Save": function () {
-                    let thisUrl = $('#submit').attr('formaction');
-                    //ToDo: ajax post here
-                    let postBackModel;
-                    postBackModel.NewAnswers = newAnswers;
-                    postBackModel.OldAnswers = oldAnswers;
-                    postBackModel.UpdatedAnswers = updatedAnswers;
-                    alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-                },
-                Cancel: function () {
-                    $(this).dialog("close");
-                }
-            }
+            stack: true,
+            sticky: true,
+            position: { my: 'center', at: 'center', of: 'window' },
+            classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
+            //  buttons: {
+            //    "Save": function () {
+            //      //do something here
+            //      let thisUrl: string = $('form').prop('action');
+            //      let postBackModel: AjaxPostbackModel = <AjaxPostbackModel>{};
+            //      postBackModel.NewAnswers = newAnswers;
+            //      postBackModel.OldAnswers = oldAnswers;
+            //      postBackModel.UpdatedAnswers = updatedAnswers;
+            //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+            //    },
+            //    Cancel: function () {
+            //      $(this).dialog("close");
+            //    }
+            //  }
+        };
+        //let dialogPosition: any = { my: 'center', at: 'center', of: 'window' };
+        let postBackModel = {};
+        postBackModel.NewAnswers = newAnswers;
+        postBackModel.OldAnswers = oldAnswers;
+        postBackModel.UpdatedAnswers = updatedAnswers;
+        let thisUrl = $('form').attr('action');
+        $.ajax({
+            type: "POST",
+            url: thisUrl,
+            data: JSON.stringify(postBackModel),
+            contentType: 'application/json; charset=utf-8',
+        }).done(function (result) {
+            $('.spinnerContainer').hide();
+            console.log('postback result', result.message);
+            console.log('inserted entities', result.insetedEntities);
+            dialogOptions.title = 'Success';
+            $('#dialog')
+                .text('Data is saved. ' + result.message)
+                .dialog(dialogOptions);
+        }).fail(function (error) {
+            console.log('postback error', error);
+            $('.spinnerContainer').hide();
+            dialogOptions.title = error.statusText;
+            dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
+            $('#dialog')
+                .text('Data is not saved')
+                .dialog(dialogOptions);
         });
     }
     /* private function */

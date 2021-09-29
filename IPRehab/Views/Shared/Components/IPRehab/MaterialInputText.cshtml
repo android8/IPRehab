@@ -24,25 +24,25 @@
            id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
       <span class="mdc-line-ripple"></span>
       <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")">"@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"</span>
-      <input type="text"
+      <input type="text" placeholder="enter some text"
              class="mdc-text-field__input persistable"
              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-             placeholder="enter some text"
              data-stageid="@(Model.ViewComponentViewModel.StageID)"
-             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             data-codesetid="@(thisItem.Value)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-episodeid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             data-codesetid="@(thisItem.Value)"
+             data-codesetdescription="@(thisItem.Text)"
              data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
-             data-placement="left" />
+             data-placement="left"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
     </label>
   </div>
 </div>

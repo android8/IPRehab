@@ -19,33 +19,36 @@
     </div>
   }
 
-  @foreach (var item in Model.ChoiceAndAnswerList)
+  @foreach (var thisItem in Model.ChoiceAndAnswerList)
   {
     /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
-    var originalAnswer = item.Answer;
-    var isChecked = item.SelectListItem.Selected;
+    var originalAnswer = thisItem.Answer;
+    var isChecked = thisItem.SelectListItem.Selected;
 
     <div class="mdc-form-field">
       <div class="mdc-checkbox">
-        <input type="checkbox" class="mdc-checkbox__native-control persistable"
+        <input type="checkbox" 
+               class="mdc-checkbox__native-control persistable"
                name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{thisItem.SelectListItem.Value}")"
                required="@(Model.ViewComponentViewModel.Required)"
-               value="@(item.SelectListItem.Value)"
+               value="@(thisItem.SelectListItem.Value)"
+               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                checked="@(isChecked)"
                data-stageid="@(Model.ViewComponentViewModel.StageID)"
                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-               data-episodeid="@(originalAnswer == null ? -1: originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+               data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
                data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+               data-codesetid="@thisItem.SelectListItem.Value"
+               data-codesetdescription="@(thisItem.SelectListItem.Text)"
                data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")">
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{thisItem.SelectListItem.Value}_label")">
 
-        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"></span>
+        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{thisItem.SelectListItem.Value}")"></span>
 
         <div class="mdc-checkbox__background">
           <svg class="mdc-checkbox__checkmark"
@@ -59,9 +62,9 @@
       </div>
 
       @*the labe is required by HTML5 specification*@
-      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{item.SelectListItem.Value}")"
-             class="nullLabel"
-             aria-label="label for dropdown left blank use the question text"></label>
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{thisItem.SelectListItem.Value}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{thisItem.SelectListItem.Value}_label")"
+             class="nullLabel"></label>
     </div>
   }
 </div>

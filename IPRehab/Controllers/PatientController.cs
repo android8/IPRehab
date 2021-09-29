@@ -55,7 +55,6 @@ namespace IPRehab.Controllers
           $"&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
       }
 
-      PatientSearchResultDTO patientsMeta;
       IEnumerable<PatientDTO> patients;
       string resContent = string.Empty;
       try
@@ -68,7 +67,7 @@ namespace IPRehab.Controllers
       {
         var vm = new ErrorViewModelHelper();
         return PartialView("_ErrorPartial",
-          vm.Create("Serialization error", $"{ex?.Message} {Environment.NewLine} XXXX={resContent}", ex.InnerException?.Message)
+          vm.Create("Serialization error", $"{ex?.Message} {Environment.NewLine} HttpResponseMessage={resContent}", ex.InnerException?.Message)
         );
       }
 

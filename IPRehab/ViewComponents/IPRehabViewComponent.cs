@@ -10,14 +10,15 @@ namespace IPRehab.ViewComponents
     {
     }
 
-    public Task<IViewComponentResult> InvokeAsync(int ControlCounter, QuestionWithSelectItems QWS, string NetworkID)
+    public Task<IViewComponentResult> InvokeAsync(int EpisodeID, int ControlCounter, QuestionWithSelectItems QWS, string NetworkID)
     {
       ViewComponenViewModel thisVCVM = new();
       thisVCVM.ControlCounter = ControlCounter;
       thisVCVM.UserID = NetworkID;
+      thisVCVM.EpisodeID = EpisodeID;
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
-      thisVCVM.StageTitle = QWS.StageTitle.Replace(" ","_");
+      thisVCVM.StageTitle = QWS.StageTitle.Replace(" ", "_");
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
@@ -41,9 +42,22 @@ namespace IPRehab.ViewComponents
           viewName = "DropDown";
           if (QWS.QuestionKey.Contains("O0401") || QWS.QuestionKey.Contains("O0402"))
           {
-            /* week1 and week2 therapy with total hours*/
             viewName = "DropDownPT";
+  
+            if (QWS.QuestionKey.Contains("O0401"))
+            {
+              /* default codeset id 430 for wk1 therapy, changed by javascript with thearpy type changes, */
+              thisVCVM.TherapyHoursCodeSetID = 430;
+              thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
+            }
+            else
+            {
+              /* default codeset id 442 for wk2 threapy, changed by javascript with thearpy type changes, */
+              thisVCVM.TherapyHoursCodeSetID = 442;
+              thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
+            }
           }
+
           if (QWS.QuestionKey.Contains("A10"))
           {
             viewName = "MaterialChkboxBoxBeforeHeaderEthnicity";

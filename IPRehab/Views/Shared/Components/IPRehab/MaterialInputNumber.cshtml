@@ -28,25 +28,25 @@
         </span>
         <span class="mdc-notched-outline__trailing"></span>
       </span>
-      <input type="number"
+      <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
              class="mdc-text-field__input numeric-text inputContainer persistable"
              name="@(Model.ViewComponentViewModel.QuestionKey)"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" maxlength="3" min="0" max="100"
-             placeholder="enter a number"
              data-stageid="@(Model.ViewComponentViewModel.StageID)"
-             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             data-codesetid="@(thisItem.Value)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-episodeid="@(originalAnswer == null ? string.Empty : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
+             data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             data-codesetid="@(thisItem.Value)"
+             data-codesetdescription="@(thisItem.Text)"
              data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
-             data-placement="left" />
+             data-placement="left" 
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
     </label>
   }
 </div>

@@ -1,5 +1,4 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-/// <reference path="../appModels/IUseranswer.ts" />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
     $('#searchBtn').on('click', function () {
@@ -54,5 +53,4 @@ let patientListController = (function () {
         'search': search
     };
 })();
-export {};
 //# sourceMappingURL=patientList.js.map
