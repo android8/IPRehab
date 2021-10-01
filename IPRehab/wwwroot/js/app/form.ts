@@ -49,12 +49,13 @@ $(function () {
   /* ajax post form */
   $('#ajaxPost').click(function () {
     if (formController.validate) {
+      const thisPostBtn: any = $(this);
       $('.spinnerContainer').show();
       let theScope: any = $('#userAnswerForm');
       let stageName: any = $('#stage', theScope).val();
       const patientName: any = $('#patientName', theScope).val();
       const episodeID: any = $('#episodeID', theScope).val();
-      formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID);
+      formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID, thisPostBtn);
     }
   });
 
@@ -189,7 +190,7 @@ let formController = (function () {
   }
 
   /* private function */
-  function searlizeTheForm(persistables: any, stageName: any, patientName: any, episodeID: any): void {
+  function searlizeTheForm(persistables: any, stageName: any, patientName: any, episodeID: any, thisPostBtn): void {
     //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
     //console.log("serialized input", inputAnswerArray);
 
@@ -316,13 +317,13 @@ let formController = (function () {
 
     let dialogOptions: any = {
       resizable: true,
-      height: ($(window).height() - 200),
-      width: '90%',
+      //height: ($(window).height() - 200),
+      //width: '90%',
       classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
       modal: true,
       stack: true,
       sticky: true,
-      position: { my: 'center', at: 'center', of: window },
+      position: { my: 'center', at: 'center' , of: window },
       buttons: [{
         //    "Save": function () {
         //      //do something here
@@ -346,16 +347,19 @@ let formController = (function () {
     postBackModel.OldAnswers = oldAnswers;
     postBackModel.UpdatedAnswers = updatedAnswers;
 
-    $('#ajaxPost').attr('disabled', 'false');
+    thisPostBtn.attr('disabled', 'false');
+    let thisUrl: string = thisPostBtn.prop('formAction');
     $('.spinnerContainer').show();
 
     $.ajax({
       type: "POST",
-      url: $('form').prop('action'),
+      url: thisUrl,
+      //url: $('form').prop('action'),
       data: JSON.stringify(postBackModel),
       headers: headers,
       contentType: 'application/json; charset=utf-8',
     }).done(function (result) {
+      thisPostBtn.attr('disabled', 'true');
       $('.spinnerContainer').hide();
       console.log('postback result', result.message);
       console.log('inserted entities', result.insetedEntities);
@@ -363,8 +367,8 @@ let formController = (function () {
       $('#dialog')
         .text('Data is saved.')
         .dialog(dialogOptions);
-      $('#ajaxPost').attr('disabled', 'true');
     }).fail(function (error) {
+      thisPostBtn.attr('disabled', 'false');
       console.log('postback error', error);
       $('.spinnerContainer').hide();
       dialogOptions.title = error.statusText;
@@ -372,7 +376,6 @@ let formController = (function () {
       $('#dialog')
         .text('Data is not saved. ' + error.responseText)
         .dialog(dialogOptions)
-      $('#ajaxPost').attr('disabled', 'false');
     });
   }
 

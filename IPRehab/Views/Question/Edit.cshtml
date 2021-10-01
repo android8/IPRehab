@@ -23,7 +23,8 @@
 {
   <div>
     <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
-      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled>
+      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled
+              asp-controller="answer" asp-action="post">
         <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Save</span>
         <div class="mdc-button__touch"></div>
@@ -49,7 +50,7 @@
       @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}
     </div>
     <div class="text-center patientName">@Model.PatientName</div>
-    <div></div>
+    <div class=""></div>
   </div>
 
   @* icon legend *@

@@ -35,12 +35,13 @@ $(function () {
     /* ajax post form */
     $('#ajaxPost').click(function () {
         if (formController.validate) {
+            const thisPostBtn = $(this);
             $('.spinnerContainer').show();
             let theScope = $('#userAnswerForm');
             let stageName = $('#stage', theScope).val();
             const patientName = $('#patientName', theScope).val();
             const episodeID = $('#episodeID', theScope).val();
-            formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID);
+            formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID, thisPostBtn);
         }
     });
     formController.checkRules();
@@ -160,7 +161,7 @@ let formController = (function () {
         return Math.ceil(width);
     }
     /* private function */
-    function searlizeTheForm(persistables, stageName, patientName, episodeID) {
+    function searlizeTheForm(persistables, stageName, patientName, episodeID, thisPostBtn) {
         //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
         //console.log("serialized input", inputAnswerArray);
         //const selectAnswerArray: any[] = [];
@@ -268,8 +269,8 @@ let formController = (function () {
         };
         let dialogOptions = {
             resizable: true,
-            height: ($(window).height() - 200),
-            width: '90%',
+            //height: ($(window).height() - 200),
+            //width: '90%',
             classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
             modal: true,
             stack: true,
@@ -296,15 +297,18 @@ let formController = (function () {
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;
-        $('#ajaxPost').attr('disabled', 'false');
+        thisPostBtn.attr('disabled', 'false');
+        let thisUrl = thisPostBtn.prop('formAction');
         $('.spinnerContainer').show();
         $.ajax({
             type: "POST",
-            url: $('form').prop('action'),
+            url: thisUrl,
+            //url: $('form').prop('action'),
             data: JSON.stringify(postBackModel),
             headers: headers,
             contentType: 'application/json; charset=utf-8',
         }).done(function (result) {
+            thisPostBtn.attr('disabled', 'true');
             $('.spinnerContainer').hide();
             console.log('postback result', result.message);
             console.log('inserted entities', result.insetedEntities);
@@ -312,8 +316,8 @@ let formController = (function () {
             $('#dialog')
                 .text('Data is saved.')
                 .dialog(dialogOptions);
-            $('#ajaxPost').attr('disabled', 'true');
         }).fail(function (error) {
+            thisPostBtn.attr('disabled', 'false');
             console.log('postback error', error);
             $('.spinnerContainer').hide();
             dialogOptions.title = error.statusText;
@@ -321,7 +325,6 @@ let formController = (function () {
             $('#dialog')
                 .text('Data is not saved. ' + error.responseText)
                 .dialog(dialogOptions);
-            $('#ajaxPost').attr('disabled', 'false');
         });
     }
     /* private function */
