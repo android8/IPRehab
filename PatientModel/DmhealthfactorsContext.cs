@@ -18,17 +18,17 @@ namespace PatientModel
         {
         }
 
-        public virtual DbSet<FSODPatientDetailFY21Q2> FSODPatientDetailFY21Q2 { get; set; }
+        public virtual DbSet<FSODPatient> FSODPatient { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<FSODPatientDetailFY21Q2>(entity =>
+            modelBuilder.Entity<FSODPatient>(entity =>
             {
                 entity.HasNoKey();
 
-                entity.ToTable("FSODPatientDetailFY21Q2", "FSOD");
+                entity.ToTable("FSODPatientDetailFY21Q3", "FSOD");
 
                 entity.Property(e => e.District)
                     .HasMaxLength(100)

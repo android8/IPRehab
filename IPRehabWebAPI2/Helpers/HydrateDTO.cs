@@ -91,7 +91,7 @@ namespace IPRehabWebAPI2.Helpers
       }
     }
 
-    public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatientDetailFY21Q2 p)
+    public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)
     {
       UserFacilityGrant grants = new();
       grants.District.Add(p.District);
@@ -101,7 +101,7 @@ namespace IPRehabWebAPI2.Helpers
       return grants;
     }
 
-    public static PatientDTO HydratePatient(FSODPatientDetailFY21Q2 p)
+    public static PatientDTO HydratePatient(FSODPatient p)
     {
       return new PatientDTO
       {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace PatientModel
 {
-    public partial class FSODPatientDetailFY21Q2
+    public partial class FSODPatient
     {
         public string VISN { get; set; }
         public string Facility { get; set; }

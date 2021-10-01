@@ -27,7 +27,7 @@ namespace IPRehabRepository.Contracts
    /// external patient data source from BI25.DMHealthFactors
    /// only needed for CRUD operation which would never happen other than select
    /// </summary>
-   public interface IFSODPatientRepository : IRepositoryBase<FSODPatientDetailFY21Q2>
+   public interface IFSODPatientRepository : IRepositoryBase<FSODPatient>
    {
    }
 

@@ -1,0 +1,10 @@
+﻿Change the entity name to "FSODPatient" after EF Power Tools re-generats the FSODPatientDetailFYyyQx 
+so that only code change for the Patient model project will be to replace the quarter suffix in the table name in the ToTable() in the DmhealthfactorsContext.cs as below.
+
+    entity.HasNoKey();
+
+    entity.ToTable("FSODPatientDetailFY21Q3", "FSOD");
+
+    entity.Property(e => e.District)
+        .HasMaxLength(100)
+        .IsUnicode(false);

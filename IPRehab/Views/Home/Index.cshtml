@@ -25,8 +25,8 @@
     </div>
     <div class="btn-sm btn-block btn-outline-dark">
       <a asp-controller="Patient"
-         asp-action="Index" asp-route-searchCriteria="@(Model.SearchCriteria)"
-         asp-route-pageNumber="@(Model.PageNumber)" asp-route-orderBy="@(Model.OrderBy)">Paients</a>
+         asp-action="Index" asp-route-searchCriteria="@(string.IsNullOrEmpty(Model.SearchCriteria)? string.Empty : Model.SearchCriteria)"
+         asp-route-pageNumber="@(Model.PageNumber)" asp-route-orderBy="@(string.IsNullOrEmpty(Model.OrderBy)? string.Empty : Model.OrderBy)">Paients</a>
     </div>
     <div class="btn-sm btn-block btn-outline-dark">
       <a asp-controller="Answer"
