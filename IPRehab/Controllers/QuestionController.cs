@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
@@ -83,7 +81,7 @@ namespace IPRehab.Controllers
       return View(vm);
     }
 
-    public async Task<ActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string searchCriteria, int pageNumber, string orderBy)
+    public async Task<IActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string searchCriteria, int pageNumber, string orderBy)
     {
       stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
       patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
@@ -140,13 +138,13 @@ namespace IPRehab.Controllers
     // POST: QuestionController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Edit(PostbackModel model)
+    public async Task<IActionResult> Edit([FromBody] PostbackModel postbackModel)
     {
       if (ModelState.IsValid)
       {
-        List<UserAnswer> newAnswers = model.NewAnswers;
-        List<UserAnswer> oldAnswers = model.OldAnswers;
-        List<UserAnswer> updatedAnswers = model.UpdatedAnswers;
+        List<UserAnswer> newAnswers = postbackModel.NewAnswers;
+        List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
+        List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
         UserAnswer thisAnswer = new();
         if (newAnswers != null)
           thisAnswer = newAnswers.Find(x => x.StageName != string.Empty); 
@@ -155,13 +153,26 @@ namespace IPRehab.Controllers
         else if (updatedAnswers != null)
           thisAnswer = updatedAnswers.Find(x => x.StageName != string.Empty);
 
-        //ToDo: call webapi Question controller to persist the data to database
-
-        return RedirectToAction(nameof(Edit), new { stage = thisAnswer.StageName, patientName = thisAnswer.PatientName, episodeID = thisAnswer.EpisodeID.ToString(), redirectFrom = "Edit" });
+        //forward the postbackModel to web api Answer controller
+        Uri uri = new Uri($"{_apiBaseUrl}/api/Answer/Post");
+        
+        var Res = await APIAgent.PostDataAsync(uri, postbackModel);
+        if (Res.IsSuccessStatusCode)
+        {
+          Response.StatusCode = (int)Res.StatusCode;
+          //return Json("Data saved successfully");
+          return new JsonResult("Data saved successfully");
+        }
+        else
+        {
+          Response.StatusCode = (int)Res.StatusCode;
+          return new JsonResult($"Data not saved. {Res}");
+        }
       }
       else
       {
-        return RedirectToAction("Index", "Patient");
+        Response.StatusCode = StatusCodes.Status400BadRequest;
+        return new JsonResult("Data not saved.  The post back model is not valid.");
       }
     }
 

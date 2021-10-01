@@ -12,7 +12,7 @@
 @section Scripts {
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
   @*<script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true" async></script>*@
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>
+  @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>*@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
   <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
@@ -25,10 +25,10 @@
     <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
       <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled>
         <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">Ajax Post</span>
+        <span class="mdc-button__label">Save</span>
         <div class="mdc-button__touch"></div>
       </button>
-      <input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>
+      @*<input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>*@
     </div>
   </div>
 }

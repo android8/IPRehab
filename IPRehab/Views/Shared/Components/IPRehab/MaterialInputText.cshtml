@@ -23,7 +23,7 @@
            for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
            id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
       <span class="mdc-line-ripple"></span>
-      <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")">"@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"</span>
+      <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")"></span>
       <input type="text" placeholder="enter some text"
              class="mdc-text-field__input persistable"
              name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"

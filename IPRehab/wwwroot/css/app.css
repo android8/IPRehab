@@ -58,10 +58,6 @@
   height: 30px;
 }
 
-.mdc-radio {
-  padding: 5px 0 0 10px;
-}
-
 /*override jquery UI dialog title bar */
 .my-dialog-header {
   background: #ffc107 !important;
@@ -79,6 +75,7 @@
   -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  overflow: auto;
 }
 
 body {
@@ -156,7 +153,6 @@ body {
 .fixedTop {
   position: fixed !important;
   top: 0;
-  width: 100%;
   background-color: white;
   /*padding-top:10px*/
   z-index: 10;
@@ -174,6 +170,10 @@ body {
 .main {
   /*  margin-top: 20px !important;
   */
+}
+
+article {
+  margin-left: 3em;
 }
 
 .footer {
@@ -519,6 +519,8 @@ div.answer .nullLabel {
   align-items: center;
   align-content: center;
   padding: 5px 3px 0 3px;
+  position: relative !important;
+  left: -15px;
 }
 
 .radio-with-long-text {
@@ -577,11 +579,6 @@ div.answer .nullLabel {
   display: inline-block;
 }
 
-.paddingTop {
-  padding-top: 60px;
-  margin-right: 20px;
-}
-
 .borderTop {
   border-top: 2px solid #cfcfcf;
 }
@@ -601,11 +598,10 @@ div.questionRow {
   width: 100px !important;
 }
 
-.ajax-post-btn {
+/*.ajax-post-btn {
   width: 150px !important;
   left: -45px !important;
-}
-
+}*/
 .rotate {
   width: 35px;
   top: 100px;
@@ -802,10 +798,6 @@ div.questionRow:last-child {
 
 .flex-item-right-justify {
   align-self: flex-end;
-}
-
-.paddingTop {
-  position: relative;
 }
 
 .rehabAction {

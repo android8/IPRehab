@@ -1,5 +1,5 @@
 ﻿/* transition main target <main> in _layout*/
-main {
+form {
   /*use @keyfame transitionIn animation*/
   /*  animation: transitionIn .75s;*/
 
@@ -7,9 +7,9 @@ main {
   animation: slide-up 1s ease-in-out;
 }
 
-/*table tr {
-  animation: text-crunching-slide-up 2s;
-}*/
+table {
+  animation: transitionIn .75s;
+}
 
 @keyframes transitionIn {
   from {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,18 +57,17 @@ namespace IPRehab.Controllers
       }
 
       IEnumerable<PatientDTO> patients;
-      string resContent = string.Empty;
+      HttpResponseMessage res = null;
       try
       {
         patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
-        var res = SerializationGeneric<IEnumerable<PatientDTO>>.Res;
-        resContent = res.Content.ToString();
+        res = SerializationGeneric<IEnumerable<PatientDTO>>.Res;
       }
       catch (Exception ex)
       {
         var vm = new ErrorViewModelHelper();
         return PartialView("_ErrorPartial",
-          vm.Create("Serialization error", $"{ex?.Message} {Environment.NewLine} HttpResponseMessage={resContent}", ex.InnerException?.Message)
+          vm.Create("Serialization error", message: $"{ex?.Message} {Environment.NewLine} HttpResponseMessage={res}", ex.InnerException?.Message)
         );
       }
 

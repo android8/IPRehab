@@ -117,12 +117,31 @@ let commandBtnController = (function () {
     if (stageLowerCase == '')
       stageLowerCase = 'full';
 
+    let dialogOptions: any = {
+      resizable: true,
+      height: "auto",
+      width: 400,
+      modal: true,
+      stack: true,
+      sticky: true,
+      position: { my: 'center', at: 'center', of: window },
+      classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+      buttons: [{
+        text: "Close",
+        //icon: "ui-icon-close",
+        click: function () {
+          $(this).dialog("close");
+        }
+      }]
+    };
 
     if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
+      $('.spinnerContainer').hide();
       $('#dialog')
         .text('You are already in it')
-        .dialog();
-      $('.spinnerContainer').hide();
+        .dialog(dialogOptions, {
+          title: 'Warning'
+        });
     }
     else {
       let submitButton: any = $('#ajaxPost');
@@ -136,28 +155,31 @@ let commandBtnController = (function () {
         //submit exists on this page
         //if submit is not disabled then the form is dirty
         if (!submitButton.is(":disabled")) {
-
-          $('#dialog')
-            .text('Data is not saved. Click Cancel then click the Save button to save the data. Click OK to not save the data and go to the ' + stage + ' page')
-            .dialog({
-              resizable: true,
-              height: "auto",
-              width: 400,
-              modal: true,
-              stack: true,
-              //sticky: true,
-              buttons: {
-                Ok: function () {
-                  var thisUrl = $thisButton.prop('formAction');
-                  //navigate away
-                  location.href = thisUrl;
-                },
-                Cancel: function () {
-                  $(this).dialog("close");
-                }
-              }
-            });
           $('.spinnerContainer').hide();
+          $('#dialog')
+            .text('Data is not saved. To save, click Cancel to close this box, then click the Save button on the left edge. To abandon the changes, click OK to continue going to the ' + stage + ' page')
+            .dialog(dialogOptions, {
+              title: 'Warning',
+              buttons:
+                [{
+                  text: "Ok",
+                  click: function () {
+                    $(this).dialog("close");
+                    $('.spinnerContainer').show();
+                    var thisUrl = $thisButton.prop('formAction');
+                    $('.spinnerContainer').show();
+                    //navigate away
+                    location.href = thisUrl;
+                  }
+                },
+                {
+                  text: "Cancel",
+                  click: function () {
+                    $('.spinnerContainer').hide();
+                    $(this).dialog("close");
+                  }
+                }]
+            })
         }
         else {
           let thisUrl: string = $thisButton.prop('formAction');

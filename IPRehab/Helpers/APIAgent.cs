@@ -75,7 +75,7 @@ namespace IPRehab.Helpers
       return null;
     }
 
-    public static async Task<HttpResponseMessage> PostDataAsync(Uri uri, PostbackModel postbackModel, string accessToken)
+    public static async Task<HttpResponseMessage> PostDataAsync(Uri uri, PostbackModel postbackModel)
     {
       //method 1
       using (var client = new HttpClient())

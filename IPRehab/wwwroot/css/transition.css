@@ -1,14 +1,15 @@
 /* transition main target <main> in _layout*/
-main {
+form {
   /*use @keyfame transitionIn animation*/
   /*  animation: transitionIn .75s;*/
   /*use @keyframe slide-up animation */
   animation: slide-up 1s ease-in-out;
 }
 
-/*table tr {
-  animation: text-crunching-slide-up 2s;
-}*/
+table {
+  animation: transitionIn 0.75s;
+}
+
 @keyframes transitionIn {
   from {
     opacity: 0;

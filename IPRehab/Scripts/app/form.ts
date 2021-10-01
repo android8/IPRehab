@@ -42,18 +42,20 @@ $(function () {
   });
 
   /* traditional form post */
-  $('#mvcPost').click(function () {
-    $('form').submit();
-  });
+  //$('#mvcPost').click(function () {
+  //  $('form').submit();
+  //});
 
   /* ajax post form */
   $('#ajaxPost').click(function () {
-    $('.spinnerContainer').show();
-    let theScope: any = $('#userAnswerForm');
-    let stageName: any = $('#stage', theScope).val();
-    const patientName: any = $('#patientName', theScope).val();
-    const episodeID: any = $('#episodeID', theScope).val();
-    formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID);
+    if (formController.validate) {
+      $('.spinnerContainer').show();
+      let theScope: any = $('#userAnswerForm');
+      let stageName: any = $('#stage', theScope).val();
+      const patientName: any = $('#patientName', theScope).val();
+      const episodeID: any = $('#episodeID', theScope).val();
+      formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID);
+    }
   });
 
   formController.checkRules();
@@ -136,11 +138,11 @@ let formController = (function () {
 
   /* private function */
   function validate() {
-    //$('form#userAnswerForm').validate({
+    $('form#userAnswerForm').validate({
     //  rules: {
 
     //  }
-    //})
+    })
   }
 
   /* private function */
@@ -204,7 +206,7 @@ let formController = (function () {
 
     const oldAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
     let oldAnswersJson: string = '';
-    const newAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();;
+    const newAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
     let newAnswersJson: string = '';
     const updatedAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
     let updatedAnswersJson: string = '';
@@ -217,12 +219,13 @@ let formController = (function () {
       let answerID: string = $thisPersistable.prop('data-answerid');
       let CRUD: string;
 
+      //return false doesn't break the .map, but skips the current item and continues mapping
       if ($thisPersistable.prop('type') == 'select-one' && (+currentValue == -1 && !oldValue)) {
-        return false; //won't break the .map, but skip the item and contintue mapping
+        return false;
       }
       if (($thisPersistable.prop('type') == 'checkbox' || $thisPersistable.prop('type') == 'radio')
         && (!$thisPersistable.prop('checked') && !oldValue)) {
-        return false; //won't break the .map, but skip the item and contintue mapping
+        return false;
       }
       if (currentValue == oldValue //both are not undefined and with the same empty or non-empty strings, ie ''=='', 'xyx'=='xyz'
         || (currentValue == '' && !oldValue) //currentValue is blank and oldValue is undefined
@@ -303,48 +306,54 @@ let formController = (function () {
 
     $('.spinnerContainer').hide();
 
-    let antiForgeryToken = $('input[name="CSRF-TOKEN-IPREHAB"]').val();
-    let headers = {};
-    headers['CSRF-TOKEN-IPREHAB'] = antiForgeryToken;
-    headers['Accept'] = 'application/json';
+    let antiForgeryToken: string = $('input[name="CSRF-TOKEN-IPREHAB"]').val().toString();
+
+    //the antiforerytoken must be named 'RequestVerificationToken' in the header
+    let headers = {
+      "RequestVerificationToken": antiForgeryToken,
+      "Accept": 'application/json'
+    };
 
     let dialogOptions: any = {
       resizable: true,
-      height: "auto",
-      width: 400,
+      height: ($(window).height() - 200),
+      width: '90%',
+      classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
       modal: true,
       stack: true,
       sticky: true,
-      position: { my: 'center', at: 'center', of: 'window' },
-      classes : { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
-      //  buttons: {
-      //    "Save": function () {
-      //      //do something here
-      //      let thisUrl: string = $('form').prop('action');
-      //      let postBackModel: AjaxPostbackModel = <AjaxPostbackModel>{};
-      //      postBackModel.NewAnswers = newAnswers;
-      //      postBackModel.OldAnswers = oldAnswers;
-      //      postBackModel.UpdatedAnswers = updatedAnswers;
-      //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-      //    },
-      //    Cancel: function () {
-      //      $(this).dialog("close");
-      //    }
-      //  }
+      position: { my: 'center', at: 'center', of: window },
+      buttons: [{
+        //    "Save": function () {
+        //      //do something here
+        //      let thisUrl: string = $('form').prop('action');
+        //      let postBackModel: AjaxPostbackModel = <AjaxPostbackModel>{};
+        //      postBackModel.NewAnswers = newAnswers;
+        //      postBackModel.OldAnswers = oldAnswers;
+        //      postBackModel.UpdatedAnswers = updatedAnswers;
+        //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+        //    },
+        text: "Close",
+        //icon: "ui-icon-close",
+        click: function () {
+          $(this).dialog("close");
+        }
+      }]
     };
 
-    //let dialogPosition: any = { my: 'center', at: 'center', of: 'window' };
-
     let postBackModel: AjaxPostbackModel = <AjaxPostbackModel>{};
-    postBackModel.NewAnswers = newAnswers;
+    postBackModel.NewAnswers = newAnswers
     postBackModel.OldAnswers = oldAnswers;
     postBackModel.UpdatedAnswers = updatedAnswers;
 
-    let thisUrl: string = $('form').attr('action');
+    $('#ajaxPost').attr('disabled', 'false');
+    $('.spinnerContainer').show();
+
     $.ajax({
       type: "POST",
-      url: thisUrl,
+      url: $('form').prop('action'),
       data: JSON.stringify(postBackModel),
+      headers: headers,
       contentType: 'application/json; charset=utf-8',
     }).done(function (result) {
       $('.spinnerContainer').hide();
@@ -352,16 +361,18 @@ let formController = (function () {
       console.log('inserted entities', result.insetedEntities);
       dialogOptions.title = 'Success';
       $('#dialog')
-        .text('Data is saved. ' + result.message)
+        .text('Data is saved.')
         .dialog(dialogOptions);
+      $('#ajaxPost').attr('disabled', 'true');
     }).fail(function (error) {
       console.log('postback error', error);
       $('.spinnerContainer').hide();
       dialogOptions.title = error.statusText;
-      dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar':'my-dialog-header'}
+      dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
       $('#dialog')
-        .text('Data is not saved')
+        .text('Data is not saved. ' + error.responseText)
         .dialog(dialogOptions)
+      $('#ajaxPost').attr('disabled', 'false');
     });
   }
 
