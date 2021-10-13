@@ -60,6 +60,18 @@
 .mdc-text-field--outlined {
   height: 30px;
 }
+.mdc-text-field--filled::before {
+  display: inline-block !important;
+  width: 0 !important;
+  height: auto !important;
+  content: "" !important;
+  vertical-align: 0 !important;
+}
+
+
+.mdc-text-field--filled {
+  height: auto !important;
+}
 
 /*override jquery UI dialog title bar */
 .my-dialog-header {
@@ -78,6 +90,8 @@
   -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  width:30em;
+  height:50em;
   overflow:auto;
 }
 
@@ -236,9 +250,16 @@ td {
   left: -10px;
 }
 
-.episode {
+.episode:last-child {
   padding-left: 15px;
   padding-bottom: 30px;
+}
+
+.episode table td {
+  text-align:center;
+  align-content: center;
+  align-items: center;
+  background-color: #ffff0073;
 }
 
 .episode-node-symbol {
@@ -427,11 +448,22 @@ div .radioContainer {
 }
 
 .arrow-left {
+  position: relative;
   width: 0;
   height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 10px solid #dfdede;
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  border-right: 13px solid whitesmoke;
+}
+
+.arrow-left-radio {
+  position: relative;
+  width: 0;
+  height: 0;
+  left: -10px;
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  border-right: 13px solid whitesmoke;
 }
 
 .stageHeaderNoBottomBorder {
@@ -443,11 +475,11 @@ div .radioContainer {
   padding: 0 13px 5px 13px;
   text-align: left;
   color: #555555;
-  background-color: #dfdede;
+  background-color: whitesmoke;
   font-weight: bold;
   font-size: x-small;
   border: 1px solid #ced4da;
-  border-bottom: none;
+  border-bottom: 0;
   border-radius: 5px 5px 0 0;
 }
 
@@ -459,7 +491,7 @@ div .radioContainer {
   margin-top: 10px;
   text-align: center;
   color: #555555;
-  background-color: #dfdede;
+  background-color: whitesmoke;
   font-weight: bold;
   font-size: x-small;
   border: 1px solid #ced4da;
@@ -474,7 +506,7 @@ div .radioContainer {
   padding: 0 5px;
   text-align: left;
   color: #555555;
-  background-color: #dfdede;
+  background-color: whitesmoke;
   font-weight: bold;
   font-size: x-small;
   border: 1px solid #ced4da;
@@ -486,12 +518,12 @@ div .radioContainer {
   position: relative;
   top: 0px;
   margin-top: 0px;
-  padding: 0 5px;
+  padding: 2px 5px;
   text-align: left;
   color: #555555;
-  background-color: #dfdede;
+  background-color: whitesmoke;
   font-weight: bold;
-  font-size: x-small;
+  font-size: small;
   border: 1px solid #ced4da;
   border-left: none;
   border-radius: 0 5px 5px 0;
@@ -517,26 +549,35 @@ div.answer .nullLabel {
 }
 
 .radioLabel {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: center;
-  align-content: center;
-  padding: 5px 3px 0 3px;
-  position: relative !important;
-  left: -15px;
+  position: relative;
+  top: 4px;
+  left: -10px;
+  margin-top: 0px;
+  padding: 1px 5px;
+  text-align: left;
+  color: #555555;
+  background-color: whitesmoke;
+  font-weight: bold;
+  font-size: small;
+  border: 1px solid #ced4da;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+}
+
+.number-wrapper {
+  position: relative;
+  top: -5px;
+}
+
+.pt-number-wrapper {
+  position: relative;
+  margin: 15px;
+  top: 5px;
 }
 
 .radio-with-long-text {
   padding-bottom: 1rem;
 }
-
-.spacer {
-  padding-bottom: 5px !important;
-  background-color: white;
-}
-
 
 #SelfCareScore, #MobilityScore {
   font-size: 2em;
@@ -806,15 +847,17 @@ div.questionRow:last-child {
   align-self: flex-end;
 }
 
-.rehabAction {
+button.rehabAction {
   text-decoration: none !important;
   color: white !important;
-}
-
-button.rehabAction {
   height: 20px;
   font-size: x-small;
   margin: 0 1px;
+}
+
+.disabled {
+  opacity:0.3;
+  cursor:not-allowed;
 }
 
 .actionBtnFull {
@@ -854,5 +897,5 @@ button.rehabAction {
 }
 
 input[type="datetime"], input[type="text"] {
-  border: solid 1px black;
+/*  border: solid 1px black;*/
 }

@@ -27,8 +27,9 @@ namespace IPRehab.Models
     public string AnswerCodeCategory { get; set; }
 
     public QuestionWithSelectItems() {
-      ChoiceList = new List<SelectListItem>();
-      Instructions = new List<QuestionInstructionDTO>();
+      Instructions = new();
+      ChoiceList = new();
+      ChoicesAnswers = new();
     }
   }
 }

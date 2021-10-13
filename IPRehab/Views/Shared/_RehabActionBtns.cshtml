@@ -5,8 +5,8 @@
     var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
     var actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
     string textNode, stage, title, actionBtnCssClass;
-    string controllerName = "Question";
-    string actionName = "Edit";
+    string controllerName = Model.ControllerName;
+    string actionName = Model.ActionName;
   }
 
   @foreach (var entry in stageType)
@@ -16,14 +16,18 @@
     actionBtnCssClass = actionBtnClass[stage];
     textNode = stage;
     bool showThisButton = true;
-
+    bool disableThisButton = false;
+    string patientID = Model.PatientID;
+    string episodeID = Model.EpisodeID.ToString(); /*EpisodeID is -1 if new episode*/
     if (stage == "Patient")
     {
       if (Model.HostContainer == "Question")
       {
-        showThisButton = true;
         controllerName = "Patient";
         actionName = "Index";
+        stage = string.Empty;
+        patientID = string.Empty;
+        episodeID = string.Empty;
       }
       else
       {
@@ -37,6 +41,13 @@
       {
         title.Replace("Create", "Edit");
       }
+      else
+      {
+        if (stage != "Base" && controllerName != "Patient" && !Model.enableThisPatient)
+        {
+          disableThisButton = true;
+        }
+      }
 
       switch (stage)
       {
@@ -49,16 +60,16 @@
       }
 
       <div class="mdc-touch-target-wrapper">
-        <button id="@($"{stage}_{Model.PatientID}")"
-                class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction"
+        <button id="@($"{stage}_{actionName}_{Model.EpisodeID}" /*EpisodeID is -1 if new episode*/)"
+                class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction @(disableThisButton? "disabled":string.Empty)"
                 title="@(title)"
                 data-stage="@(stage /*important*/)"
+                disabled ="@(disableThisButton)"
                 asp-controller="@(controllerName)" 
                 asp-action="@(actionName)"
                 asp-route-stage="@(stage)"
-                asp-route-patientid="@(Model.PatientID)"
-                asp-route-patientname="@(Model.PatientName)"
-                asp-route-episodeid="@(Model.EpisodeID)"
+                asp-route-patientid="@(patientID)"
+                asp-route-episodeid="@(episodeID)"
                 asp-route-searchcriteria="@(Model.SearchCriteria)"
                 asp-route-orderby="@(Model.OrderBy)"
                 asp-route-pagenumber="@(Model.PageNumber)">

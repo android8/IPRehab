@@ -47,13 +47,11 @@ namespace IPRehab.Controllers
       //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
       if (!string.IsNullOrEmpty(_impersonatedUserName))
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&impersonatedUserName={_impersonatedUserName}" +
-          $"&pageNumber={pageNumber}&pageSize={_pageSize}&&orderBy={orderBy}";
+        url = $"{_apiBaseUrl}/api/FSODPatient?networkID={_impersonatedUserName}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
       else
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true" +
-          $"&pageNumber={pageNumber}&pageSize={_pageSize}&orderBy={orderBy}";
+        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
 
       IEnumerable<PatientDTO> patients;
@@ -83,33 +81,48 @@ namespace IPRehab.Controllers
       }
       else
       {
+        bool firstPatient = true;
         foreach (var pat in patients)
         {
           PatientViewModel thisPatVM = new();
           thisPatVM.Patient = pat;
 
+          //don't use FSODSSN, it may be null
+          string rawSSN = pat.PTFSSN;
+
+          //ToDo: encrypt the SSN, only when patient has no existing episode
+          thisPatVM.Patient.PTFSSN = rawSSN.Substring(rawSSN.Length - 4, 4);
+         
           RehabActionViewModel episodeCommandBtn = new();
-          foreach (var episode in pat.CareEpisodes)
-          {
-            episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
-            episodeCommandBtn.PatientID = episode.PatientIcnFK;
-          }
-          if (thisPatVM.ActionButtonVM == null)
+          if (!pat.CareEpisodes.Any())
           {
             episodeCommandBtn.EpisodeID = -1;
-            episodeCommandBtn.PatientID = pat.PTFSSN;
+            episodeCommandBtn.PatientID = rawSSN; 
+          }
+          else
+          {
+            foreach (var episode in pat.CareEpisodes)
+            {
+              //don't use FSODSSN, it may be null
+              episode.PatientIcnFK = rawSSN.Substring(rawSSN.Length - 4, 4);
+              episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+            }
           }
 
-          episodeCommandBtn.PatientName = pat.Name;
+          episodeCommandBtn.HostContainer = "Patient";
           episodeCommandBtn.SearchCriteria = searchCriteria;
           episodeCommandBtn.PageNumber = pageNumber;
           episodeCommandBtn.OrderBy = orderBy;
-          episodeCommandBtn.HostContainer = "Patient";
-
           thisPatVM.ActionButtonVM = episodeCommandBtn;
 
           patientListVM.Patients.Add(thisPatVM);
           patientListVM.TotalPatients = patients.Count();
+
+          if (firstPatient)
+          {
+            episodeCommandBtn.enableThisPatient = true;
+            firstPatient = false;
+          }
         }
 
         //returning the question list to view  

@@ -157,7 +157,7 @@ let commandBtnController = (function () {
         if (!submitButton.is(":disabled")) {
           $('.spinnerContainer').hide();
           $('#dialog')
-            .text('Data is not saved. To save, click Cancel to close this box, then click the Save button on the left edge. To abandon the changes, click OK to continue going to the ' + stage + ' page')
+            .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
             .dialog(dialogOptions, {
               title: 'Warning',
               buttons:

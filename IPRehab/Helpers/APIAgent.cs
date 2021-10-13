@@ -22,7 +22,7 @@ namespace IPRehab.Helpers
 
         var httpResponseMsg = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
 
-        //httpResponseMsg.EnsureSuccessStatusCode();
+        httpResponseMsg.EnsureSuccessStatusCode();
         return httpResponseMsg;
       }
     }

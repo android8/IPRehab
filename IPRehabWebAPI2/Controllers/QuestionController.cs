@@ -23,12 +23,14 @@ namespace IPRehabWebAPI2.Controllers
     private readonly IQuestionRepository _questionRepository;
     private readonly IEpisodeOfCareRepository _episodeRepository;
     private readonly ICodeSetRepository _codeSetRepository;
+    private readonly IAnswerRepository _answerRepository;
 
-    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository)
+    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository)
     {
       _questionRepository = questionRepository;
       _episodeRepository = episodeRepository;
       _codeSetRepository = codeSetRepository;
+      _answerRepository = answerRepository;
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -84,10 +86,8 @@ namespace IPRehabWebAPI2.Controllers
     {
       int stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
       stageName = stageName.Trim().ToUpper();
-      
-      List<QuestionDTO> questions = null;
 
-      questions = _questionRepository.FindByCondition(q =>
+      List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
         q.Active.Value != false &&
         q.tblQuestionStage.Any(s =>
           s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
@@ -96,48 +96,25 @@ namespace IPRehabWebAPI2.Controllers
       .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey)
       .ToList();
 
-      if (episodeID == -1 /* new episode hoist Q12, Q23 to top of the list*/)
+      List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
+      if (keyQuestions.Any())
       {
-        var episodeKeyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23");
-        if (episodeKeyQuestions != null)
-        {
-          var hoisted = questions;
-          episodeKeyQuestions = episodeKeyQuestions.ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey);
-          hoisted = questions.Except(episodeKeyQuestions).ToList();
-          /* hoist OnsetDate question to the top of the list */
-          hoisted.InsertRange(0, episodeKeyQuestions);
-          questions = hoisted;
-        }
+        keyQuestions = keyQuestions.OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey).ToList();
+        questions = questions.Except(keyQuestions).ToList();
+        /* hoist OnsetDate question to the top of the list */
+        questions.InsertRange(0, keyQuestions);
       }
-      else
+      if (includeAnswer & episodeID > 0)
       {
-        if (includeAnswer)
+        tblEpisodeOfCare thisEpisode = _episodeRepository.FindByCondition(e => e.EpisodeOfCareID == episodeID).Single();
+        foreach (var q in questions)
         {
-          //the answer keys are contained in the episode then use episodeID to find all the answers to each question
-          foreach (var q in questions)
-          {
-            var thisEpisode = await _episodeRepository.FindByCondition(episode =>
-              episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
-
-            var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID && a.StageIDFKNavigation.CodeSetID == stageID)
-              .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToList();
-
-            if (thisQuestionAnswers == null)
-            {
-              //ToDo: create app.tblQuestionDependency
-              //find the question dependencies
-              //if determining question has enabling answers then set the q.Enabled = true, otherwise, false
-              q.Enabled = false;
-            }
-            else
-            {
-              q.Enabled = true;
-              if (thisQuestionAnswers.Any())
-              {
-                q.Answers = thisQuestionAnswers;
-              }
-            }
-          }
+          q.Enabled = true;
+          List<AnswerDTO> thisQuestionAnswers = await _answerRepository
+            .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK==episodeID)
+            .Select(a=>HydrateDTO.HydrateAnswer(a, thisEpisode)).ToListAsync();
+          if (thisQuestionAnswers.Any())
+            q.Answers = thisQuestionAnswers;
         }
       }
       return Ok(questions);

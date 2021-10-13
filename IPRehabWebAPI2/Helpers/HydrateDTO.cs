@@ -113,10 +113,10 @@ namespace IPRehabWebAPI2.Helpers
         Sta6aKey = p.Sta6aKey,
         Bedsecn = p.bedsecn,
         Name = p.Name,
-        //PTFSSN = string.IsNullOrEmpty(p.PTFSSN) ? string.Empty :  $"*{p.PTFSSN.Substring(p.PTFSSN.Length - 4, 4)}",
-        //FSODSSN = string.IsNullOrEmpty(p.FSODSSN) ? string.Empty : $"*{p.PTFSSN.Substring(p.FSODSSN.Length - 4, 4)}",
-        PTFSSN = string.IsNullOrEmpty(p.PTFSSN) ? string.Empty : $"{p.PTFSSN.Substring(p.PTFSSN.Length-4)}",
-        FSODSSN = string.IsNullOrEmpty(p.FSODSSN) ? string.Empty : $"{p.PTFSSN.Substring(p.PTFSSN.Length - 4)}",
+
+        PTFSSN = p.PTFSSN,
+        FSODSSN = p.FSODSSN,
+
         FiscalPeriod = p.FiscalPeriod,
         FiscalPeriodInt = p.FiscalPeriodInt
       };
@@ -126,39 +126,33 @@ namespace IPRehabWebAPI2.Helpers
     {
       DateTime admissionDate = new(DateTime.MinValue.Ticks);
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
-
-      /* check if Q12 and Q23 have answers and, it yes, trump the episode dates */
-      IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
-        a.EpsideOfCareIDFK == e.EpisodeOfCareID && (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
-        .OrderBy(a => a.QuestionIDFKNavigation.Order).ThenBy(a => a.QuestionIDFKNavigation.QuestionKey);
-      if (keyDates.Any())
-      {
-        /* there is only one admission date and one onset date, so first must be Q12 admission date*/
-        if (DateTime.TryParse(ParseDateString(keyDates.First().Description), out admissionDate))
-        {
-          if (admissionDate.Ticks == DateTime.MinValue.Ticks)
-          {
-            admissionDate = e.AdmissionDate;
-          }
-        }
-
-        /* the Last() must be onset date */
-        if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))
-        {
-          if (onsetDate.Ticks == DateTime.MinValue.Ticks)
-          {
-            onsetDate = e.OnsetDate;
-          }
-        }
-      }
-
-      return new EpisodeOfCareDTO
+      
+      EpisodeOfCareDTO thisDTO = new EpisodeOfCareDTO
       {
         EpisodeOfCareID = e.EpisodeOfCareID,
         AdmissionDate = admissionDate,
         OnsetDate = onsetDate,
         PatientIcnFK = e.PatientICNFK
       };
+
+      /* check if Q12 and Q23 have answers and, it yes, trump the episode dates */
+      IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
+        a.EpsideOfCareIDFK == e.EpisodeOfCareID && 
+          (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
+        .OrderBy(a => a.QuestionIDFKNavigation.QuestionKey);
+
+      if (keyDates.Any())
+      {
+        /* there is only one admission date and one onset date, so first must be Q12 admission date*/
+        if (DateTime.TryParse(ParseDateString(keyDates.First().Description), out admissionDate))
+          thisDTO.AdmissionDate = admissionDate;
+
+        /* the Last() must be onset date */
+        if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))
+          thisDTO.OnsetDate = onsetDate;
+      }
+
+      return thisDTO;
     }
 
     public static MastUserDTO HydrateUser(uspVSSCMain_SelectAccessInformationFromNSSDResult u)

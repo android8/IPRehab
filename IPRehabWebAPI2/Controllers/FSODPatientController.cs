@@ -1,4 +1,5 @@
-﻿using IPRehabRepository.Contracts;
+﻿using IPRehabModel;
+using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UserModel;
 
 namespace IPRehabWebAPI2.Controllers
 {
@@ -18,15 +18,13 @@ namespace IPRehabWebAPI2.Controllers
   {
     private readonly IFSODPatientRepository _patientRepository;
     private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
-    private readonly MasterreportsContext _masterReportsContext;
-    private readonly CacheHelper cacheHelper;
+    private readonly IUserPatientCacheHelper _cacheHelper;
 
-    public FSODPatientController(IFSODPatientRepository patientRepository, IEpisodeOfCareRepository episodeOfCareRepository, MasterreportsContext masterReportContext)
+    public FSODPatientController(IFSODPatientRepository patientRepository, IEpisodeOfCareRepository episodeOfCareRepository, IUserPatientCacheHelper cacheHelper)
     {
       _patientRepository = patientRepository;
       _episodeOfCareRepository = episodeOfCareRepository;
-      _masterReportsContext = masterReportContext;
-      cacheHelper = new CacheHelper(_masterReportsContext);
+      _cacheHelper = cacheHelper;
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,27 +39,21 @@ namespace IPRehabWebAPI2.Controllers
     /// <returns></returns>
     // GET: api/Patients
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients(string impersonatedUserName, string criteria, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 50)
+    public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients(string patientID, string networkID, string criteria, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 50)
     {
       //ToDo: use Registration to authorize user.  Otherwise, any string in the currentUser parameter containing a valid network ID will be parameterized for  cacheHelper.GetUserAccessLevels()
 
       //internally retrieve windows identity from User.Claims
       //string networkName = string.IsNullOrEmpty(impersonatedUserName) ? HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value : impersonatedUserName;
-      string networkName = string.IsNullOrEmpty(impersonatedUserName) ? HttpContext.User.Identity.Name : impersonatedUserName;
+      networkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
 
       //ToDo: remove this hard coded network name
       //networkName = "VHALEBBIDELD";
 
-      if (string.IsNullOrEmpty(networkName))
-      {
-        return NotFound("Windows Identity is null.  Make sure the service allows Windows Authentication");
-      }
-
-
       //get all patient with criteria and quarter filter
-      var patients = await cacheHelper.GetPatients(_patientRepository, networkName, criteria, orderBy, pageNumber, pageSize);
+      List<PatientDTO> patients = await _cacheHelper.GetPatients(_patientRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
 
-      if (patients == null || patients == null)
+      if (patients == null)
       {
         return NotFound("No patient is in rehab for the quarter with spcified criteria and visible with your access level.  First, check if patient data is avaialbe for the specified quarter. Second, remove or widen the search criteria, Third, check your level of facility access");
       }
@@ -69,13 +61,17 @@ namespace IPRehabWebAPI2.Controllers
       {
         if (withEpisode)
         {
-          foreach (var p in patients)
+          foreach (PatientDTO p in patients)
           {
-            var theseEpisodes = await _episodeOfCareRepository.FindByCondition(episode =>
+            //p.CareEpisodes = new();
+            List<tblEpisodeOfCare> episodes = await _episodeOfCareRepository.FindByCondition(episode =>
               episode.PatientICNFK == p.PTFSSN).ToListAsync();
-            if (theseEpisodes.Any())
+
+            foreach (var episode in episodes)
             {
-              p.CareEpisodes = theseEpisodes.Select(e => HydrateDTO.HydrateEpisodeOfCare(e));
+              EpisodeOfCareDTO  thisEpisode = HydrateDTO.HydrateEpisodeOfCare(episode);
+              //hydrate and add the dates from the tblAnswer because they are more up-to-date than the episode dates
+              p.CareEpisodes.Add(thisEpisode);
             }
           }
         }
@@ -86,9 +82,9 @@ namespace IPRehabWebAPI2.Controllers
     /// <summary>
     /// get only meta data of an individual patient by id
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="patientID"></param>
+    /// <param name="networkID"></param>
     /// <param name="withEpisode"></param>
-    /// <param name="networkName"></param>
     /// <param name="orderBy"></param>
     /// <param name="pageNumber"></param>
     /// <param name="pageSize"></param>
@@ -96,12 +92,15 @@ namespace IPRehabWebAPI2.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     // GET: api/Patients/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<PatientDTO>> GetPatient(string id, string networkName, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 1)
+    [HttpGet("{patientID}")]
+    public async Task<ActionResult<PatientDTO>> GetPatient(string patientID, string networkID, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 1)
     {
+      if (string.IsNullOrEmpty(networkID)) {
+        networkID = HttpContext.User.Identity.Name;
+      }
       string criteria = string.Empty; //no criteria is needed for patient search based on id
-      var patients= await cacheHelper.GetPatients(_patientRepository, networkName, criteria, orderBy, pageNumber, pageSize);
-      var thisPatient = patients.FirstOrDefault(x => x.PTFSSN == id);
+      List<PatientDTO> patients = await _cacheHelper.GetPatients(_patientRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
+      PatientDTO thisPatient = patients.FirstOrDefault(x => x.PTFSSN == patientID);
       if (thisPatient == null)
       {
         return NotFound();
@@ -110,10 +109,33 @@ namespace IPRehabWebAPI2.Controllers
       {
         if (withEpisode)
         {
-          var episodes = await _episodeOfCareRepository.FindByCondition(p =>
-            p.PatientICNFKNavigation.ICN == p.PatientICNFK).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
+          List<EpisodeOfCareDTO> episodes = await _episodeOfCareRepository.FindByCondition(p =>
+            p.PatientICNFK == p.PatientICNFK).Select(e => HydrateDTO.HydrateEpisodeOfCare(e)).ToListAsync();
           thisPatient.CareEpisodes = episodes;
         }
+        return Ok(thisPatient);
+      }
+    }
+
+    /// <summary>
+    /// get individual patient by episode since patient ID and patient name cannot be used in querystring
+    /// </summary>
+    /// <param name="episodeID"></param>
+    /// <returns></returns>
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    // GET: api/Patients/5
+    [HttpGet("Episode/{episodeID}")]
+    public async Task<ActionResult<PatientDTO>> GetPatient(int episodeID)
+    {
+      var thisEpisode = _episodeOfCareRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
+      var thisPatient = await _cacheHelper.GetPatientByEpisode(_episodeOfCareRepository, _patientRepository, episodeID);
+      if (thisPatient == null)
+      {
+        return NotFound();
+      }
+      else
+      {
         return Ok(thisPatient);
       }
     }

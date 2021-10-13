@@ -43,7 +43,7 @@ namespace IPRehab.ViewComponents
           if (QWS.QuestionKey.Contains("O0401") || QWS.QuestionKey.Contains("O0402"))
           {
             viewName = "DropDownPT";
-  
+
             if (QWS.QuestionKey.Contains("O0401"))
             {
               /* default codeset id 430 for wk1 therapy, changed by javascript with thearpy type changes, */
@@ -106,7 +106,8 @@ namespace IPRehab.ViewComponents
               thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
               break;
             case "Number":
-              viewName = "MaterialInputNumber";
+              thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoBottomBorder";
+              viewName = "MDNumberAfterHeader";
               break;
             case "TextArea":
               viewName = "MaterialTextArea";
@@ -114,6 +115,12 @@ namespace IPRehab.ViewComponents
             case "ICD":
             case "FreeText":
               viewName = "MaterialInputText";
+              if (QWS.QuestionKey.Contains("M0300"))
+              {
+                thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
+                thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+                viewName = "MDNumberAfterHeader";
+              }
               break;
           }
           break;

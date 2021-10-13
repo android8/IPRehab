@@ -14,7 +14,7 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class QuestionController : BaseController
   {
-    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger) 
+    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger)
       : base(configuration, logger)
     {
     }
@@ -38,11 +38,10 @@ namespace IPRehab.Controllers
       List<QuestionDTO> questions = new List<QuestionDTO>();
       bool includeAnswer = (action == "Edit");
 
-      RehabActionViewModel actionButtonVM = new() { 
+      RehabActionViewModel actionButtonVM = new()
+      {
         HostContainer = "Question",
         EpisodeID = episodeID,
-        PatientID = patientID,
-        PatientName = encodedPatientName
       };
 
       ViewBag.ActionBtnVM = actionButtonVM;
@@ -81,50 +80,63 @@ namespace IPRehab.Controllers
       return View(vm);
     }
 
-    public async Task<IActionResult> Edit(string stage, string patientID, string patientName, int episodeID, string searchCriteria, int pageNumber, string orderBy)
+    public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy)
     {
+      string patientApiEndpoint = string.Empty;
+      string questionApiEndpoint = string.Empty;
       stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
-      patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
-      string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
-      
+      string patientName = string.Empty;
+
+      PatientDTO thisPatient;
+      //enforcing PHI/PII, no patient ID nor patient name can be used in querystring
+      //so use episode id to search for the target patient
+      if (episodeID == -1)
+        patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={_impersonatedUserName}&pageSize={_pageSize}";
+      else
+        patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+
+      thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", _options);
+      patientID = thisPatient.PTFSSN;
+      patientName = thisPatient.Name;
+
       string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
-      
+
       RehabActionViewModel actionButtonVM = new()
       {
         HostContainer = "Question",
         EpisodeID = episodeID,
-        PatientID = patientID,
-        PatientName = encodedPatientName,
         SearchCriteria = searchCriteria,
         PageNumber = pageNumber
       };
 
-      List<QuestionDTO> questions = new ();
+      List<QuestionDTO> questions = new();
 
-      string apiEndpoint;
       string actionBtnColor;
       switch (stage)
       {
         case null:
         case "":
         case "Full":
-          apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-          actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+          questionApiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
           break;
         default:
-          apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
-          actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+          questionApiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
           break;
       }
 
-      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", _options);
+      ViewBag.ApiBaseUrl = _apiBaseUrl;  //for binding to ajaxPost button
+
+      actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+
+      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", _options);
 
       QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stageTitle);
       qh.ReadOnly = false;
       qh.EpisodeID = episodeID;
       qh.StageTitle = stageTitle;
+      qh.PatientID = patientID;
       qh.PatientName = patientName;
       qh.ActionButtons = actionButtonVM;
       qh.CurrentAction = $"{action} Mode";
@@ -147,7 +159,7 @@ namespace IPRehab.Controllers
         List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
         UserAnswer thisAnswer = new();
         if (newAnswers != null)
-          thisAnswer = newAnswers.Find(x => x.StageName != string.Empty); 
+          thisAnswer = newAnswers.Find(x => x.StageName != string.Empty);
         else if (oldAnswers != null)
           thisAnswer = oldAnswers.Find(x => x.StageName != string.Empty);
         else if (updatedAnswers != null)
@@ -155,7 +167,7 @@ namespace IPRehab.Controllers
 
         //forward the postbackModel to web api Answer controller
         Uri uri = new Uri($"{_apiBaseUrl}/api/Answer/Post");
-        
+
         var Res = await APIAgent.PostDataAsync(uri, postbackModel);
         if (Res.IsSuccessStatusCode)
         {

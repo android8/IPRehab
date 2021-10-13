@@ -23,8 +23,8 @@
 {
   <div>
     <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
-      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled
-              asp-controller="answer" asp-action="post">
+      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled="disabled" data-apibaseurl="@(ViewBag.ApiBaseUrl)"
+              data-controller="answer" data-action="post">
         <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Save</span>
         <div class="mdc-button__touch"></div>
@@ -67,6 +67,7 @@
 
   <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
     <input type="hidden" id="stage" name="stage" value="@(Model.StageTitle)" />
+    <input type="hidden" id="patientID" name="patientID" value="@(Model.PatientID)" />
     <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
     <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
     <div class="flex-start-column-nowrap">

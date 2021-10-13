@@ -102,12 +102,6 @@ namespace IPRehabModel
                     .HasName("PK_app.tblEpisodeOfCare");
 
                 entity.Property(e => e.PatientICNFK).IsUnicode(false);
-
-                entity.HasOne(d => d.PatientICNFKNavigation)
-                    .WithMany(p => p.tblEpisodeOfCare)
-                    .HasForeignKey(d => d.PatientICNFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblEpisodeOfCare_tblPatient");
             });
 
             modelBuilder.Entity<tblPatient>(entity =>

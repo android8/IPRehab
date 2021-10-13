@@ -1,8 +1,12 @@
-﻿using IPRehabWebAPI2.Models;
+﻿using IPRehabModel;
+using IPRehabWebAPI2.Helpers;
+using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -14,51 +18,84 @@ namespace IPRehabWebAPI2.Controllers
   [ApiController]
   public class AnswerController : ControllerBase
   {
-    // GET: api/<AnswerController>
-    [HttpGet]
-    public IEnumerable<string> Get()
-    {
-      return new string[] { "value1", "value2" };
-    }
+    private readonly AnswerHelper _answerHelper;
 
-    // GET api/<AnswerController>/5
-    [HttpGet("{id}")]
-    public string Get(int id)
+    /// <summary>
+    /// inject AnserHelper
+    /// </summary>
+    /// <param name="answerHelper"></param>
+    public AnswerController(AnswerHelper answerHelper)
     {
-      return "value";
+      _answerHelper = answerHelper;
     }
 
     // POST api/<AnswerController>
     [HttpPost]
-    public IActionResult Post([FromBody] PostbackModel postbackModel)
+    public async Task<IActionResult> PostAsync([FromBody] PostbackModel postbackModel)
     {
       if(!ModelState.IsValid)
       {
         return BadRequest();
       }
+      
+      string exceptionMsg = string.Empty;
 
-      var newAnswers = postbackModel.NewAnswers;
-      var oldAnswers = postbackModel.OldAnswers;
-      var updatedAnswers = postbackModel.UpdatedAnswers;
+      if (postbackModel.NewAnswers.Any())
+      {
+        try
+        {
+          if (postbackModel.EpisodeID == -1)
+          {
+            //both episode and answers are new
+            await _answerHelper.TransactionalInsertAsync(postbackModel.NewAnswers);
+          }
+          else
+          {
+            //existing episode but new answers
+            await _answerHelper.TransactionalInsertAnswerOnlyAsync(postbackModel.EpisodeID, postbackModel.NewAnswers);
+          }
+        }
+        catch (Exception ex)
+        {
+          exceptionMsg += $"insert transaction failed and rolled back. {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Insert Model: {JsonSerializer.Serialize(postbackModel.NewAnswers)}";
+        }
+      }
 
-      //Transaction.Current.TransactionCompleted();
+      if (postbackModel.OldAnswers.Any())
+      {
+        try
+        {
+          //delete old answers and keep existing episode
+          await _answerHelper.TransactionalDeleteAsync(postbackModel.EpisodeID, postbackModel.OldAnswers);
+        }
+        catch (Exception ex)
+        {
+          exceptionMsg += $"delete transaction failed and rolled back.  {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Delete Model: {JsonSerializer.Serialize(postbackModel.OldAnswers)}";
+        }
+      }
 
-      //begin transaction
-      //  
-      //end transaction
-      return Ok();
-    }
-
-    // PUT api/<AnswerController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
-    {
-    }
-
-    // DELETE api/<AnswerController>/5
-    [HttpDelete("{id}")]
-    public void Delete(int id)
-    {
+      if (postbackModel.UpdatedAnswers.Any())
+      {
+        try
+        {
+          //update existing episode and existing answers
+          await _answerHelper.TransactionalUpdateAnswerAsync(postbackModel.EpisodeID, postbackModel.UpdatedAnswers);
+        }
+        catch (Exception ex)
+        {
+          exceptionMsg += $"update transaction failed and rolled back. {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Update Model: {JsonSerializer.Serialize(postbackModel.UpdatedAnswers)}";
+        }
+      }
+      
+      if(string.IsNullOrEmpty(exceptionMsg))
+      {
+        //return BadRequest();
+        return StatusCode(StatusCodes.Status200OK);
+      }
+      else
+      {
+        return StatusCode(StatusCodes.Status400BadRequest, exceptionMsg);
+      }
     }
   }
 }

@@ -2,9 +2,11 @@ using IPRehabModel;
 using IPRehabRepository;
 using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Filters;
+using IPRehabWebAPI2.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PatientModel;
 using System.Net.Mime;
+using System.Text.Json;
 using UserModel;
 
 namespace IPRehabWebAPI2
@@ -29,17 +32,25 @@ namespace IPRehabWebAPI2
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      #region db setup
       string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
       string FSODPatientConnectionString = Configuration.GetConnectionString("FSODPatientDetail");
       string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
 
+      //register the internal IPRehab DB context
       services.AddDbContext<IPRehabContext>(
          o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
+
+      //register the external Dmhealthfactors DB context for patients
       services.AddDbContext<DmhealthfactorsContext>(
          o => o.UseLazyLoadingProxies().UseSqlServer(FSODPatientConnectionString));
+
+      //register the external Masterreports DB context for users
       services.AddDbContext<MasterreportsContext>(
         o => o.UseLazyLoadingProxies().UseSqlServer(MasterReportsConnectionString));
+      #endregion
 
+      #region IoC container
       services.AddScoped<IQuestionRepository, QuestionRepository>();
       services.AddScoped<IAnswerRepository, AnswerRepository>();
       services.AddScoped<ICodeSetRepository, CodeSetRepository>();
@@ -50,38 +61,12 @@ namespace IPRehabWebAPI2
       services.AddScoped<ISignatureRepository, SignatureRepository>();
       services.AddScoped<IQuestionStageRepository, QuestionStageRepository>();
       services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
+      services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
 
-      /* https://docs.microsoft.com/en-us/samples/dotnet/aspnetcore.docs/getstarted-swashbuckle-aspnetcore/?tabs=visual-studio */
-      
-      /* set "launchUrl": "api/FSODPatient" in properties\launchSettimgs.json to start with FSODPatient page
-             "launchUrl": "swagger" to start with Swagger interface
-      */
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v3", new OpenApiInfo
-        {
-          Title = "IPRehabWebAPI2",
-          Version = "v3",
-          Description = "A simple .Net CORE Web API for IP Rehab Patients and Uswer Access Level for filtering patient visibility",
-          Contact = new OpenApiContact
-          {
-            Name = "C. Jonathan Sun",
-            Email = "chun.sun@va.gov",
-          }
-        });
-      });
+      services.AddScoped<AnswerHelper, AnswerHelper>();
+      #endregion
 
-      services.AddCors(options =>
-      {
-        options.AddPolicy(name: MyAllowSpecificOrigins,
-                          builder =>
-                          {
-                            builder.WithOrigins("https://vhaausweb3.vha.med.va.gov",
-                                                "https://vhaausweb3.vha.med.va.gov/iprehabmetrics",
-                                                "https://localhost:44381");
-                          });
-      });
-
+      #region API Controller behaviors
       services.AddControllers(o =>
       {
         o.EnableEndpointRouting = true;
@@ -107,10 +92,56 @@ namespace IPRehabWebAPI2
       })
       .AddJsonOptions(o =>
         {
-          //   //preserve circular reference
-          //   o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-          //   o.JsonSerializerOptions.WriteIndented = true;
+          //preserve circular reference
+          //o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+          o.JsonSerializerOptions.WriteIndented = true;
+          o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
+      #endregion
+
+      services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+      #region SWAGGER interface
+      /* https://docs.microsoft.com/en-us/samples/dotnet/aspnetcore.docs/getstarted-swashbuckle-aspnetcore/?tabs=visual-studio */
+
+      /* set "launchUrl": "api/FSODPatient" in properties\launchSettimgs.json to start with FSODPatient page
+             "launchUrl": "swagger" to start with Swagger interface
+      */
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v3", new OpenApiInfo
+        {
+          Title = "IPRehabWebAPI2",
+          Version = "v3",
+          Description = "A simple .Net 5 Web API for IP Rehab Patients and Uswer Access Level for filtering patient visibility",
+          Contact = new OpenApiContact
+          {
+            Name = "C. Jonathan Sun",
+            Email = "chun.sun@va.gov",
+          }
+        });
+      });
+      #endregion
+
+      #region CORS
+      //services.AddCors();
+      services.AddCors(options =>
+      {
+        options.AddPolicy(MyAllowSpecificOrigins, builder =>
+                          {
+                            // The specified URL must not contain a trailing slash (/)
+                            builder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                            //.SetIsOriginAllowed(origin => true)
+                            //.SetIsOriginAllowedToAllowWildcardSubdomains()
+
+                            //.WithOrigins("https://localhost:44381")
+                            //.AllowCredentials();
+                          });
+      });
+      #endregion
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -129,28 +160,33 @@ namespace IPRehabWebAPI2
       app.UseSwaggerUI(c =>
       {
 #if DEBUG
-          // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-          // specifying the Swagger JSON endpoint.
-          // For Debug in Kestrel
-          c.SwaggerEndpoint("/swagger/v3/swagger.json", "Web API V3");
+        // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+        // specifying the Swagger JSON endpoint.
+        // For Debug in Kestrel
+        c.SwaggerEndpoint("/swagger/v3/swagger.json", "Web API V3");
 #else
             // To deploy on IIS
             c.SwaggerEndpoint("/iprehabmetricswebapi/swagger/v3/swagger.json", "Web API V3");
 #endif
-          //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string:
-          //c.RoutePrefix = string.Empty;
-        });
+        //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string:
+        //c.RoutePrefix = string.Empty;
+      });
 
       app.UseHttpsRedirection();
 
+      //The call to UseCors must be placed after UseRouting, but before UseAuthorization
       app.UseRouting();
-      app.UseCors();
+
+      app.UseCors(MyAllowSpecificOrigins);
+      //app.UseCors();
+
+      //app.UseAuthentication();
       app.UseAuthorization();
 
       app.UseEndpoints(endpoints =>
       {
-        //enforce CORS for all controlers
-        endpoints.MapControllers().RequireCors(MyAllowSpecificOrigins);
+        //enforce CORS for all web api controlers without [CORS] attribute
+        endpoints.MapControllers();//.RequireCors(MyAllowSpecificOrigins);
 
         //the following line is for most apps with controllers and views, since webapi doesn't have view so it is not needed
         //endpoints.MapDefaultControllerRoute();

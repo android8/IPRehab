@@ -13,10 +13,12 @@ namespace IPRehabWebAPI2.Controllers
   public class MasterReportsUserController : ControllerBase
   {
     private readonly MasterreportsContext _masterReportsContext;
+    private readonly IUserPatientCacheHelper _userPatientCacheHelper;
 
-    public MasterReportsUserController(MasterreportsContext context)
+    public MasterReportsUserController(MasterreportsContext context, IUserPatientCacheHelper userPatientCacheHelper)
     {
       _masterReportsContext = context;
+      _userPatientCacheHelper = userPatientCacheHelper;
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -29,8 +31,7 @@ namespace IPRehabWebAPI2.Controllers
     [HttpGet()]
     public async Task<ActionResult<IEnumerable<MastUserDTO>>> GetUserPermission(string networkID)
     {
-      var helper = new CacheHelper(_masterReportsContext);
-      var userAccessLevels = await helper.GetUserAccessLevels(networkID);
+      var userAccessLevels = await _userPatientCacheHelper.GetUserAccessLevels(networkID);
       return Ok(userAccessLevels);
     }
   }

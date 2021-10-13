@@ -10,14 +10,19 @@ using UserModel;
 
 namespace IPRehabWebAPI2.Helpers
 {
-  public class CacheHelper
+  public class UserPatientCacheHelper : IUserPatientCacheHelper
   {
     readonly MasterreportsContext _context;
 
-    public CacheHelper(MasterreportsContext context)
+    /// <summary>
+    /// constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
+    /// </summary>
+    /// <param name="context"></param>
+    public UserPatientCacheHelper(MasterreportsContext context)
     {
       _context = context;
     }
+
     /// <summary>
     /// Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
     /// </summary>
@@ -52,14 +57,15 @@ namespace IPRehabWebAPI2.Helpers
     /// use generic IFODPatientRepository to get patient filtered by quarter and criteria
     /// </summary>
     /// <param name="_patientRepository"></param>
-    /// <param name="networkName"></param>
-    /// <param name="criteria"></param>
-    /// <param name="orderBy"></param>
-    /// <param name="pageNumber"></param>
-    /// <param name="PageSize"></param>
+    /// <param name="networkName">optional</param>
+    /// <param name="criteria">optional</param>
+    /// <param name="orderBy">optional</param>
+    /// <param name="pageNumber">optional</param>
+    /// <param name="PageSize">optional</param>
+    /// <param name="patientID">optional, used by individual patient search only</param>
 
     /// <returns></returns>
-    public async Task<IEnumerable<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria, string orderBy, int pageNumber, int PageSize)
+    public async Task<List<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria, string orderBy, int pageNumber, int PageSize, string patientID)
     {
       //get user access level from external stored proc
       var distinctUserFacilities = await GetUserAccessLevels(networkName);
@@ -72,28 +78,11 @@ namespace IPRehabWebAPI2.Helpers
       {
         List<string> userFacilitySta3 = distinctUserFacilities.Select(x => x.Facility).Distinct().ToList();
 
-        int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
-        DateTime today = DateTime.Today;
-        int currentFY = today.Year;
-        if (today.Month >= 10)
-          currentFY = today.Year + 1;
-
-        List<int> fiscalPeriodsOfInterest = new()
-        {
-          /* use month posistion in the quarters[] for the target quarter data whichever is available */
-          /* current Q */
-          (currentFY * 10) + quarters[today.Month],
-          /* last Q */
-          (today.AddMonths(-3).Year * 10) + quarters[today.AddMonths(-3).Month],
-          /* 2nd Q */
-          (today.AddMonths(-6).Year * 10) + quarters[today.AddMonths(-6).Month]
-        };
-
         string cacheKey = criteria;
         if (string.IsNullOrEmpty(criteria))
           cacheKey = "No Criteria";
 
-        IEnumerable<PatientDTO> patients = null;
+        List<PatientDTO> patients = null;
         int totalViewablePatientCount = 0;
         string searchCriteriaType = string.Empty;
         int numericCriteria = -1;
@@ -105,36 +94,43 @@ namespace IPRehabWebAPI2.Helpers
         else
           searchCriteriaType = "non-numeric";
 
-        foreach (int thisPeriod in fiscalPeriodsOfInterest)
+        foreach (int thisPeriod in GetQuarterOfInterest())
         {
-          patients = await _patientRepository.FindByCondition(p => thisPeriod == p.FiscalPeriodInt)
-            .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
-
           switch (searchCriteriaType)
           {
             case "none":
               {
-                if (patients.Any())
+                var rawPatients = await _patientRepository.FindByCondition(p => thisPeriod == p.FiscalPeriodInt).ToListAsync();
+
+                if (rawPatients.Any())
                 {
                   //applying facility filter cannot be done in previous SQL server side query
                   //it must be filtered in IIS memory after the last ToListAsync()
-                  var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+
+                  if (!string.IsNullOrEmpty(patientID))
+                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+
                   totalViewablePatientCount = viewablePatients.Count();
+
                   if (pageNumber <= 0)
                   {
-                    patients = viewablePatients.Take(PageSize);
+                    viewablePatients = viewablePatients.Take(PageSize);
                   }
                   else
                   {
-                    patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+                    viewablePatients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
                   }
+
+                  patients = viewablePatients.Select(p => HydrateDTO.HydratePatient(p)).ToList();
+
                   break; //break out foreach loop since patients are in this period
                 }
               }
               break; //break case
             case "numeric":
               {
-                patients = await _patientRepository.FindByCondition(p =>
+                var rawPatients = await _patientRepository.FindByCondition(p =>
                                   (thisPeriod == p.FiscalPeriodInt) &&
                                   (
                                     p.ADMParent_Key == numericCriteria ||
@@ -145,36 +141,46 @@ namespace IPRehabWebAPI2.Helpers
                                     p.Facility.Contains(criteria) ||
                                     p.VISN.Contains(criteria)
                                   )
-                                )
-                                .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
+                                ).ToListAsync();
 
-                if (patients.Any())
+                if (rawPatients.Any())
                 {
                   //facility filter cannot be done in previous SQL server side LINQ. must be filtered in IIS memory 
-                  var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+
+                  if (!string.IsNullOrEmpty(patientID))
+                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+
                   totalViewablePatientCount = viewablePatients.Count();
-                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
-                  
+                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
+                    .Select(p => HydrateDTO.HydratePatient(p)).ToList();
+
                   break; //break out foreach loop since patients are in this period
                 }
               }
               break; //break case
             case "non-numeric":
               {
-                patients = await _patientRepository.FindByCondition(p =>
+                var rawPatients = await _patientRepository.FindByCondition(p =>
                                   (thisPeriod == p.FiscalPeriodInt) &&
                                   (
                                     p.Name.Contains(criteria) || p.PTFSSN.Contains(criteria) || p.Facility.Contains(criteria) ||
                                     p.VISN.Contains(criteria) || p.District.Contains(criteria) || p.FiscalPeriod.Contains(criteria)
                                   )
-                                ).Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
+                                ).ToListAsync();
 
-                if (patients.Any())
+                if (rawPatients.Any())
                 {
                   //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
-                  var viewablePatients = patients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+
+                  if (!string.IsNullOrEmpty(patientID))
+                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+
                   totalViewablePatientCount = viewablePatients.Count();
-                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+
+                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
+                    .Select(p => HydrateDTO.HydratePatient(p)).ToList();
 
                   break;  //break out foreach loop since patients are in this period
                 }
@@ -187,6 +193,49 @@ namespace IPRehabWebAPI2.Helpers
 
         return patients;
       }
+    }
+
+    public async Task<PatientDTO> GetPatientByEpisode(IEpisodeOfCareRepository _episodeRepository, IFSODPatientRepository _patientRepository, int episodeID)
+    {
+      List<PatientDTO> patients = null;
+      var thisEpisode = _episodeRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
+      if (thisEpisode != null)
+      {
+      foreach (int thisPeriod in GetQuarterOfInterest())
+      {
+        patients = await _patientRepository.FindByCondition(p => thisPeriod == p.FiscalPeriodInt && p.PTFSSN == thisEpisode.PatientICNFK)
+                  .Select(p => HydrateDTO.HydratePatient(p)).ToListAsync();
+
+        if (patients.Any())
+        {
+          break;
+        }
+      }
+
+      }
+      return patients.FirstOrDefault();
+    }
+
+    private List<int> GetQuarterOfInterest() {
+      int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
+      DateTime today = DateTime.Today;
+      int currentFY = today.Year;
+      if (today.Month >= 10)
+        currentFY = today.Year + 1;
+
+      //the fiscalPeriodOfInterest is a numeric dentifier that is made up of FY and quarter in 5 digits format, thus the multiplier of 10
+      //to get the base than add the quarter number
+      List<int> fiscalPeriodsOfInterest = new()
+      {
+        /* use month posistion in the quarters[] for the target quarter data whichever is available */
+        /* current Q */
+        (currentFY * 10) + quarters[today.Month],
+        /* last Q */
+        (today.AddMonths(-3).Year * 10) + quarters[today.AddMonths(-3).Month],
+        /* 2nd Q */
+        (today.AddMonths(-6).Year * 10) + quarters[today.AddMonths(-6).Month]
+      };
+      return fiscalPeriodsOfInterest;
     }
 
     /// <summary>

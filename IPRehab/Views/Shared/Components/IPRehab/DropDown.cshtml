@@ -6,11 +6,9 @@
   var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
   if (thisChoiceAndAnswer != null)
   {
-    if (thisChoiceAndAnswer.Answer != null)
-    {
-      originalAnswer = thisChoiceAndAnswer.Answer;
-    }
+    originalAnswer = thisChoiceAndAnswer.Answer;
   }
+
   bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
 }
 

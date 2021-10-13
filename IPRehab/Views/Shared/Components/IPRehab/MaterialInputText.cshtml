@@ -11,7 +11,7 @@
 <div class="@(ContainerCssClass)">
   @if (displayStageHeader)
   {
-    @*prevent the next inner div to be flexed*@
+    @*prevent the next inner div from being flexed*@
     <div>
       <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", string.Empty)}")</div>
     </div>

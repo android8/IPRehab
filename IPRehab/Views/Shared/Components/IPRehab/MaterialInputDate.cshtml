@@ -1,7 +1,16 @@
 ﻿@model ViewComponentTemplateModel
 @{
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+  string thisHtmlDate = string.Empty;
+  string answeredBy = string.Empty;
+  if (originalAnswer != null)
+  {
+    thisHtmlDate = $"{DateTime.Parse(originalAnswer.Description).ToString("yyyy-MM-dd")}";
+    answeredBy = $"Answered by {originalAnswer.ByUser}";
+  }
+
   bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
   string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
@@ -25,14 +34,14 @@
              name="@Model.ViewComponentViewModel.QuestionKey"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
-             value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             title="@(originalAnswer == null ? string.Empty : $" Answered by {originalAnswer.ByUser}")"
+             value="@(thisHtmlDate)"
+             title="@(answeredBy)"
              data-stageid="@(Model.ViewComponentViewModel.StageID)"
              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
              data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-useranswerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+             data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+             data-oldvalue="@(thisHtmlDate)"
              data-codesetid="@(thisItem.Value)"
              data-codesetdescription="@(thisItem.Text)"
              data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"

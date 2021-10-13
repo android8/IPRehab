@@ -39,9 +39,10 @@ $(function () {
             $('.spinnerContainer').show();
             let theScope = $('#userAnswerForm');
             let stageName = $('#stage', theScope).val();
+            const patientID = $('#patientID', theScope).val();
             const patientName = $('#patientName', theScope).val();
             const episodeID = $('#episodeID', theScope).val();
-            formController.searlizeTheForm($('.persistable', theScope), stageName, patientName, episodeID, thisPostBtn);
+            formController.searlizeTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
         }
     });
     formController.checkRules();
@@ -161,7 +162,7 @@ let formController = (function () {
         return Math.ceil(width);
     }
     /* private function */
-    function searlizeTheForm(persistables, stageName, patientName, episodeID, thisPostBtn) {
+    function searlizeTheForm(persistables, stageName, patientID, patientName, episodeID, thisPostBtn) {
         //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
         //console.log("serialized input", inputAnswerArray);
         //const selectAnswerArray: any[] = [];
@@ -174,17 +175,18 @@ let formController = (function () {
         //  })
         //});
         const oldAnswers = new Array();
-        let oldAnswersJson = '';
         const newAnswers = new Array();
-        let newAnswersJson = '';
         const updatedAnswers = new Array();
-        let updatedAnswersJson = '';
+        //get the key answers. these must be done outside of the .map() 
+        //because each answer in .map() will use the same episode onset date and admission date
+        let onsetDate = $(".persistable[data-questionkey^='Q23']").val();
+        let admissionDate = $(".persistable[data-questionkey^='Q12']").val();
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         persistables.map(function () {
             let $thisPersistable = $(this);
             let currentValue = $thisPersistable.val();
-            let oldValue = $thisPersistable.prop('data-oldvalue');
-            let answerID = $thisPersistable.prop('data-answerid');
+            let oldValue = $thisPersistable.data('oldvalue');
+            let answerID = $thisPersistable.data('answerid');
             let CRUD;
             //return false doesn't break the .map, but skips the current item and continues mapping
             if ($thisPersistable.prop('type') == 'select-one' && (+currentValue == -1 && !oldValue)) {
@@ -200,16 +202,33 @@ let formController = (function () {
              {
                 return false;
             }
+            //determine CRUD operation
+            if (currentValue != '' && (!answerID || +answerID == -1)) {
+                CRUD = 'C';
+            }
+            else if (currentValue == '' && (answerID || +answerID != -1)) {
+                CRUD = 'D';
+            }
+            else {
+                CRUD = "U";
+            }
             let thisAnswer = {};
-            thisAnswer.StageName = stageName.toString();
             thisAnswer.PatientName = patientName.toString();
-            thisAnswer.EpisodeID = episodeID.toString();
+            thisAnswer.PatientID = patientID.toString();
             if (answerID)
                 thisAnswer.AnswerID = +answerID;
+            thisAnswer.EpisodeID = episodeID.toString();
+            //both of these answers are rendered with MaterialInputDate view template with the same class
+            //so use id to determine to which the data-codesetdescription property belong
+            thisAnswer.AdmissionDate = admissionDate;
+            thisAnswer.OnsetDate = onsetDate;
             //+ in front of string convert it to number
             thisAnswer.QuestionID = +$thisPersistable.data('questionid');
             thisAnswer.QuestionKey = $thisPersistable.data('questionkey');
+            //a question may show several input fields for multiple stages,
+            //so we have to use the data-stagid at the field level, not the stage hidden input set at the form level
             thisAnswer.StageID = +$thisPersistable.data('stageid');
+            thisAnswer.StageName = stageName.toString();
             let thisInputType = $thisPersistable.prop('type');
             switch (thisInputType) {
                 case 'text':
@@ -229,44 +248,20 @@ let formController = (function () {
                 thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
             thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
             thisAnswer.LastUpdate = new Date();
-            if (currentValue != '' && (!answerID || +answerID == -1)) {
-                CRUD = 'C';
-            }
-            else if (currentValue == '' && (answerID || +answerID != -1)) {
-                CRUD = 'D';
-            }
-            else {
-                CRUD = "U";
-            }
             switch (CRUD) {
                 case 'C':
                     newAnswers.push(thisAnswer);
-                    newAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
                 case 'U':
                     updatedAnswers.push(thisAnswer);
-                    updatedAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
                 case 'D':
                     oldAnswers.push(thisAnswer);
-                    oldAnswersJson += '<li>' + JSON.stringify(thisAnswer) + '</li>';
                     break;
             }
         });
-        let allAnswersJson = '';
-        if (newAnswersJson != undefined && newAnswersJson != '')
-            allAnswersJson += '<h2>New Answers</h2><ul>' + newAnswersJson + '</ul>';
-        if (updatedAnswersJson != undefined && updatedAnswersJson != '')
-            allAnswersJson += '<h2>Updated Answers</h2><ul>' + updatedAnswersJson + '</ul>';
-        if (oldAnswersJson != undefined && oldAnswersJson != '')
-            allAnswersJson += '<h2>Old Answers</h2><ul>' + oldAnswersJson + '</ul>';
         $('.spinnerContainer').hide();
-        let antiForgeryToken = $('input[name="CSRF-TOKEN-IPREHAB"]').val().toString();
-        //the antiforerytoken must be named 'RequestVerificationToken' in the header
-        let headers = {
-            "RequestVerificationToken": antiForgeryToken,
-            "Accept": 'application/json'
-        };
+        const antiForgeryToken = $('input[name="CSRF-TOKEN-IPREHAB"]').val().toString();
         let dialogOptions = {
             resizable: true,
             //height: ($(window).height() - 200),
@@ -294,38 +289,88 @@ let formController = (function () {
                 }]
         };
         let postBackModel = {};
+        postBackModel.EpisodeID = episodeID;
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;
         thisPostBtn.attr('disabled', 'false');
-        let thisUrl = thisPostBtn.prop('formAction');
+        let apiBaseUrl = thisPostBtn.data('apibaseurl');
+        let apiController = thisPostBtn.data('controller');
+        let thisUrl = apiBaseUrl + '/api/' + apiController;
+        //thisUrl = $('form').prop('action');
         $('.spinnerContainer').show();
-        $.ajax({
-            type: "POST",
-            url: thisUrl,
-            //url: $('form').prop('action'),
-            data: JSON.stringify(postBackModel),
-            headers: headers,
-            contentType: 'application/json; charset=utf-8',
-        }).done(function (result) {
-            thisPostBtn.attr('disabled', 'true');
-            $('.spinnerContainer').hide();
-            console.log('postback result', result.message);
-            console.log('inserted entities', result.insetedEntities);
-            dialogOptions.title = 'Success';
-            $('#dialog')
-                .text('Data is saved.')
-                .dialog(dialogOptions);
-        }).fail(function (error) {
-            thisPostBtn.attr('disabled', 'false');
-            console.log('postback error', error);
-            $('.spinnerContainer').hide();
-            dialogOptions.title = error.statusText;
-            dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
-            $('#dialog')
-                .text('Data is not saved. ' + error.responseText)
-                .dialog(dialogOptions);
-        });
+        jQueryAjax();
+        //onPost();
+        //use jquery ajax
+        function jQueryAjax() {
+            $.ajax({
+                type: "POST",
+                url: thisUrl,
+                data: JSON.stringify(postBackModel),
+                headers: {
+                //  //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
+                //  'RequestVerificationToken': antiForgeryToken,
+                //  'Accept': 'application/json',
+                },
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                crossDomain: true,
+                //xhrFields: {
+                //  withCredentials: true
+                //}
+            }).done(function (result) {
+                thisPostBtn.attr('disabled', 'true');
+                $('.spinnerContainer').hide();
+                console.log('postback result', result.message);
+                console.log('inserted entities', result.insetedEntities);
+                dialogOptions.title = 'Success';
+                $('#dialog')
+                    .text('Data is saved.')
+                    .dialog(dialogOptions);
+                $('.rehabAction').removeAttr('disabled');
+            }).fail(function (error) {
+                thisPostBtn.attr('disabled', 'false');
+                console.log('postback error', error);
+                $('.spinnerContainer').hide();
+                dialogOptions.title = error.statusText;
+                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
+                $('#dialog')
+                    .text('Data is not saved. ' + error.responseText)
+                    .dialog(dialogOptions);
+            });
+        }
+        //use fetch api
+        function onPost() {
+            const url = thisUrl;
+            var headers = {};
+            fetch(url, {
+                method: "POST",
+                mode: 'cors',
+                headers: headers
+            })
+                .then((response) => {
+                if (!response.ok) {
+                    throw new Error(response.text.toString());
+                }
+                return response.json();
+            })
+                .then(data => {
+                -$('#dialog')
+                    .text('Data is saved.')
+                    .dialog(dialogOptions);
+                $('.rehabAction').removeAttr('disabled');
+            })
+                .catch(function (error) {
+                thisPostBtn.attr('disabled', 'false');
+                console.log('postback error', error);
+                $('.spinnerContainer').hide();
+                dialogOptions.title = error.statusText;
+                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
+                $('#dialog')
+                    .text('Data is not saved. ' + error)
+                    .dialog(dialogOptions);
+            });
+        }
     }
     /* private function */
     function validateForm(theForm) {

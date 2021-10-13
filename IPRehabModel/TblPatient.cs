@@ -13,11 +13,6 @@ namespace IPRehabModel
     [Index(nameof(LastName), nameof(FirstName), nameof(MiddleName), nameof(Last4SSN), Name = "IX_tblPatient_UniqueName", IsUnique = true)]
     public partial class tblPatient
     {
-        public tblPatient()
-        {
-            tblEpisodeOfCare = new HashSet<tblEpisodeOfCare>();
-        }
-
         [Key]
         [StringLength(10)]
         public string ICN { get; set; }
@@ -39,8 +34,5 @@ namespace IPRehabModel
         public string Last4SSN { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
-
-        [InverseProperty("PatientICNFKNavigation")]
-        public virtual ICollection<tblEpisodeOfCare> tblEpisodeOfCare { get; set; }
     }
 }

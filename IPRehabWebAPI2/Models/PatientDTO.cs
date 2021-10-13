@@ -46,10 +46,10 @@ namespace IPRehabWebAPI2.Models
     public int FiscalPeriodInt { get; set; }
 
     [DisplayName("Episode of Care")]
-    public IEnumerable<EpisodeOfCareDTO> CareEpisodes { get; set; }
+    public List<EpisodeOfCareDTO> CareEpisodes { get; set; }
 
     public PatientDTO() {
-      CareEpisodes = new List<EpisodeOfCareDTO>();
+      CareEpisodes = new();
     }
   }
 }

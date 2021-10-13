@@ -1,8 +1,11 @@
 export interface IUserAnswer {
 
   PatientName: string;
+  PatientID: string;
   AnswerID: number;
   EpisodeID: number;
+  OnsetDate: string;
+  AdmissionDate: string;
   QuestionID: number;
   QuestionKey: string;
   StageID: number;
@@ -20,6 +23,7 @@ export interface IUserAnswer {
 }
 
 export interface AjaxPostbackModel {
+  EpisodeID: number
   OldAnswers: Array<IUserAnswer>
   UpdatedAnswers: Array<IUserAnswer>
   NewAnswers: Array<IUserAnswer>
