@@ -5,12 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -122,6 +118,10 @@ namespace IPRehab.Controllers
       }
       
       ViewBag.AppVersion = $"Version {_appVersion}";
+
+      var routeData = this.RouteData;
+      var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
+      await UserAudit.AuditUserAsync(trueUser, RouteData, remoteIpAddress);
       await next();
     }
   }

@@ -8,38 +8,20 @@
   <h1 class="display-4">Welcome</h1>
   <div class="flex-row">
     <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Question"
-         asp-action="Edit" asp-route-stage="Initial">Initial Questions</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Question"
-         asp-action="Edit" asp-route-stage="Interim">Interim Questions</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Question"
-         asp-action="Edit" asp-route-stage="Discharge">Discharge Questions</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Question"
-         asp-action="Edit" asp-route-stage="Followup">Followup Questions</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Patient"
-         asp-action="Index" asp-route-searchCriteria="@(string.IsNullOrEmpty(Model.SearchCriteria)? string.Empty : Model.SearchCriteria)"
-         asp-route-pageNumber="@(Model.PageNumber)" asp-route-orderBy="@(string.IsNullOrEmpty(Model.OrderBy)? string.Empty : Model.OrderBy)">Paients</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Answer"
-         asp-action="Index" asp-route-criteria="">Answers</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="Question"
-         asp-action="Edit" asp-route-stage="">All Questions</a>
-    </div>
-    <div class="btn-sm btn-block btn-outline-dark">
-      <a asp-controller="TestColor"
-         asp-action="Index">Color Test</a>
+      @if (Model != null && !string.IsNullOrEmpty(Model.SearchCriteria))
+      {
+        string searchCriteria = Model.SearchCriteria;
+        string pageNumber = Model?.PageNumber.ToString();
+        string orderBy = Model?.OrderBy;
+
+        <a asp-controller="Patient"
+           asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
+           asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Paients</a>
+      }
+      else
+      {
+        <a asp-controller="Patient" asp-action="Index">Paients</a>
+      }
     </div>
   </div>
-  <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

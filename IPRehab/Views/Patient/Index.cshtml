@@ -1,7 +1,7 @@
 ﻿@model PatientListViewModel
 
 @{
-  ViewData["Title"] = "Patients";
+  ViewData["Title"] = Model.PageTitle;
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -51,12 +51,12 @@
       </thead>
       <tbody>
         @{
-          int row = 0;
+          int patientRowIndex = 0;
           foreach (var pat in Model.Patients)
           {
             <!--Patient row-->
             <tr class="patientRow">
-              <td class="rowCounter">@(++row)</td>
+              <td class="rowCounter">@(++patientRowIndex)</td>
               <td>
                 @Html.DisplayFor(modelItem => pat.Patient.VISN)
               </td>
@@ -87,75 +87,115 @@
             </tr>
 
             <!--Episode of Care row-->
-            @if (!pat.Patient.CareEpisodes.Any())
-            {
-              <tr>
-                <td colspan="10" class="text-danger">
-                  <div class="flex-start-row-nowrap episode">
-                    <div>
-                      <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                      No episode of care&nbsp;
-                    </div>
-                    <div>
-                      @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            }
-            else
-            {
-              <tr>
-                <td colspan="10">
-                  <div class="flex-start-row-nowrap episode">
-                    <div>
-                      <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    </div>
-                    <table class="table-striped table-responsive-md table-bordered">
-                      <thead>
-                        <tr>
-                          <th></th>
-                          <th>
-                            @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
-                          </th>
-                          <th>
-                            @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
-                          </th>
-                          <th>
-                            @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
-                          </th>
-                          <th>
-                            @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach (var episode in pat.Patient.CareEpisodes)
+            @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
+            <tr>
+              <td colspan="10">
+                <div class="flex-start-row-nowrap episode">
+                  <table class="table-striped table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th>
+                          <div>
+                            <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                          </div>
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
+                        </th>
+                        <th>
+                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
+                        </th>
+                        <th>@* stage command buttons view component controller *@</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
+                      {
+                        if (thisEpisodeConfig.EpisodeOfCareID <= 0)
                         {
-                          <tr class="episode">
-                            <td>
-                              @{await Html.RenderPartialAsync("_RehabActionBtns", pat.ActionButtonVM);}
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => episode.EpisodeOfCareID)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => episode.AdmissionDate)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => episode.OnsetDate)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => episode.PatientIcnFK)
+                          <tr>
+                            <td>@*episode-node-symbol*@</td>
+                            <td colspan="5" class="text-danger">
+                              <div class="flex-start-row-nowrap episode">
+                                <div>
+                                  No episode of care&nbsp;
+                                </div>
+                                <div>
+                                  @*<div class="mdc-touch-target-wrapper">
+                                      <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
+                                              title="show commands" data-hidden="true">
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="mdc-button__label textNoWrap">Commands</span>
+                                        <div class="mdc-button__touch"></div>
+                                      </button>
+                                    </div>*@
+
+                                  @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
+
+                                  @{
+                                    string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+
+                                    /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                  }
+
+                                  @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         }
-                      </tbody>
-                    </table>
-                  </div>
-                </td>
-              </tr>
-            }
+                        else
+                        {
+                          <tr class="episode">
+                            <td>@*episode-node-symbol*@</td>
+                            <td>
+                              @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
+                            </td>
+                            <td>
+                              @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
+                            </td>
+                            <td>
+                              @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
+                            </td>
+                            <td>
+                              @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
+                            </td>
+                            <td>
+                              @*<div class="mdc-touch-target-wrapper">
+                                <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
+                                title="show commands" data-hidden="true">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="mdc-button__label textNoWrap">Commands</span>
+                                <div class="mdc-button__touch"></div>
+                                </button>
+                                </div>*@
+
+                              @*/
+                                *the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
+
+                              @{
+                                /* stage command buttons view component controller */
+                                string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                              }
+
+                              @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+
+                            </td>
+                          </tr>
+                        }
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
           }
         }
       </tbody>

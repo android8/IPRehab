@@ -14,6 +14,34 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
+         "Name": "[app].[AspNetRoleClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserLogins]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserTokens]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[app].[tblAnswer]",
          "ObjectType": 0
       },
@@ -52,6 +80,10 @@
       {
          "Name": "[app].[tblUser]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[shared].[vFSODPatientDetail]",
+         "ObjectType": 3
       }
    ],
    "UiHint": "VHAAUSDB9.RehabAssessmentCareTool",
@@ -63,6 +95,7 @@
    "UseInflector": false,
    "UseLegacyPluralizer": false,
    "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
    "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,

@@ -12,7 +12,7 @@ namespace IPRehab.Models
     public int EpisodeID { get; set; }
     public string PatientID { get; set; }
     public string PatientName { get; set;}
-    public RehabActionViewModel ActionButtons { get; set; }
+    public List<PatientEpisodeAndCommandVM> EpisodeBtnConfig { get; set; }
     public string StageTitle { get; set; }
     public string CurrentAction { get; set; }
     public string ModeColorCssClass { get; set; }
@@ -20,6 +20,7 @@ namespace IPRehab.Models
 
     public QuestionHierarchy()
     {
+      EpisodeBtnConfig = new();
       Sections = new();
     }
   }

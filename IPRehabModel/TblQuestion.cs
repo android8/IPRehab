@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblQuestion", Schema = "app")]
-    [Index(nameof(QuestionKey), nameof(GroupTitle), Name = "IX_tblQuestion", IsUnique = true)]
     public partial class tblQuestion
     {
         public tblQuestion()

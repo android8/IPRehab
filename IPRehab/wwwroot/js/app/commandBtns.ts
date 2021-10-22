@@ -20,6 +20,19 @@ $(function () {
       commandBtnController.makeRequestUsingFormAction($thisButton);
     })
   });
+
+  $('.commandTrigger').click(function () {
+    const $this: any = $(this);
+    const thisContainer: any = $this.parent(); //should be <div class="mdc-touch-target-wrapper">
+
+    let hidden: boolean = $this.data('hidden');
+    commandBtnController.slideCommands(thisContainer, hidden);
+    $this.data('hidden', !hidden);
+    if (hidden)
+      $this.prop('title', 'Show Commands');
+    else
+      $this.prop('title', 'Hide Commands');
+  })
 });
 
 /****************************************************************************
@@ -189,13 +202,31 @@ let commandBtnController = (function () {
     }
   }
 
+  function slideCommands(triggerContainer: any, hidden: boolean) {
+    let siblingContainers: any[] = [];
+    triggerContainer.siblings().each(function () {
+      let siblingContainer = $(this); //should be <div class="mdc-touch-target-wrapper">
+      let el: any = {};
+      el.h = siblingContainer; 
+      el.width = el.h.children().eq(0).width(); //should be <button>
+      el.h.width(0);
+      siblingContainers.push(el);
+    });
+
+    for (var i = 0; i < siblingContainers.length; i++) {
+      let thisCommandbtn: any = siblingContainers[i];
+      let target: string = hidden ? thisCommandbtn.width + "px" : "0px";
+      thisCommandbtn.h.animate({ width: target });
+    }
+  }
   /****************************************************************************
    * public functions exposing addRipple() and makeRequest() to outside of the closure
   ****************************************************************************/
   return {
     'addRipple': addRipple,
     'makeRequest': makeRequest,
-    'makeRequestUsingFormAction': makeRequestUsingFormAction
+    'makeRequestUsingFormAction': makeRequestUsingFormAction,
+    'slideCommands': slideCommands
   }
 })();
 

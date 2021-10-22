@@ -29,11 +29,11 @@
 .splashscreen #flashText {
   display: flex;
   color: #1c2d8e;
-  font-size: 5em;
+  font-size: 3em;
   align-items: center;
   justify-content: center;
   /*position:fixed;*/
-  background-image: -webkit-linear-gradient(#fff, #a6bad0,#433181);
+  background-image: -webkit-linear-gradient(#fff, #e2e2f2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -67,7 +67,6 @@
   content: "" !important;
   vertical-align: 0 !important;
 }
-
 
 .mdc-text-field--filled {
   height: auto !important;
@@ -214,6 +213,10 @@ alert-info {
   /*border-color: #bee5eb;*/
 }
 
+#recordCount{
+  font-size:1.2em;
+  }
+
 .noData {
   display: flex;
   color: red;
@@ -255,11 +258,20 @@ td {
   padding-bottom: 30px;
 }
 
+.episode table{
+  border-left: none !important;
+  box-shadow:none;
+}
+
 .episode table td {
   text-align:center;
   align-content: center;
   align-items: center;
-  background-color: #ffff0073;
+}
+
+.episode table thead th:first-child, .episode table tbody td:first-child {
+  border: none !important;
+  background-color: white !important;
 }
 
 .episode-node-symbol {
@@ -847,9 +859,18 @@ div.questionRow:last-child {
   align-self: flex-end;
 }
 
+.mdc-touch-target-wrapper {
+  overflow: hidden;
+}
+
+button.commandTrigger {
+  height: 20px;
+  font-size: x-small;
+  margin: 0 1px;
+}
+
 button.rehabAction {
   text-decoration: none !important;
-  color: white !important;
   height: 20px;
   font-size: x-small;
   margin: 0 1px;
@@ -860,32 +881,56 @@ button.rehabAction {
   cursor:not-allowed;
 }
 
+/*button[data-stage*='New'] {
+  background-color: white;
+  width: 1px;
+  height: 1px;
+  border: none;
+}
+
+button[data-stage*='New'] svg{
+  position:relative;
+  left:-5px
+}
+*/
+.actionBtnNew {
+  background-color: #0325ab;
+  color:white !important;
+}
+
 .actionBtnFull {
-  background-color: #9a24ad !important;
+  background-color: #b200ff;
+  color: white !important;
 }
 
 .actionBtnBase {
-  background-color: #be5205 !important;
+  background-color: #4800ff;
+  color: white !important;
 }
 
 .actionBtnInitial {
-  background-color: #3800ff !important;
+  background-color: gold;
+  color: black !important;
 }
 
 .actionBtnInterim {
-  background-color: #0325ab !important;
+  background-color: teal;
+  color:white !important;
 }
 
 .actionBtnDischarge {
-  background-color: #ad1255 !important;
+  background-color: #ac0404;
+  color: white !important;
 }
 
 .actionBtnFollowup {
-  background-color: #3eca03 !important;
+  background-color: #808080;
+  color: white !important;
 }
 
 .actionBtnPatientList {
   background-color: darkslategray !important;
+  color: white !important;
 }
 
 .visible {

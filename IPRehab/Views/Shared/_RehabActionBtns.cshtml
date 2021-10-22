@@ -1,15 +1,14 @@
 ﻿@model RehabActionViewModel
 
-<div class="flex-start-row-wrap">
-  @{
-    var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
-    var actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
-    string textNode, stage, title, actionBtnCssClass;
-    string controllerName = Model.ControllerName;
-    string actionName = Model.ActionName;
-  }
+@{
+  var stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
+  var actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
+  string textNode, stage, title, actionBtnCssClass;
+  string controllerName = Model.ControllerName;
+  string actionName = Model.ActionName;
+  bool enableThisPatient = Model.EnableThisPatient;
 
-  @foreach (var entry in stageType)
+  foreach (var entry in stageType)
   {
     stage = entry.Key;
     title = entry.Value;
@@ -19,66 +18,106 @@
     bool disableThisButton = false;
     string patientID = Model.PatientID;
     string episodeID = Model.EpisodeID.ToString(); /*EpisodeID is -1 if new episode*/
-    if (stage == "Patient")
-    {
-      if (Model.HostContainer == "Question")
-      {
-        controllerName = "Patient";
-        actionName = "Index";
-        stage = string.Empty;
-        patientID = string.Empty;
-        episodeID = string.Empty;
-      }
-      else
-      {
-        showThisButton = false;
-      }
-    }
+    string searchCriteria = Model.SearchCriteria;
+    string orderBy = Model.OrderBy;
+    string pageNumber = Model.PageNumber.ToString();
 
-    if (showThisButton)
+    switch (stage)
     {
-      @if (Model.EpisodeID != -1)
-      {
-        title.Replace("Create", "Edit");
-      }
-      else
-      {
-        if (stage != "Base" && controllerName != "Patient" && !Model.enableThisPatient)
+      case "Patient":
+        textNode = "Patient List";
+        if (Model.HostingPage == "Question")
+        {
+          controllerName = "Patient";
+          actionName = "Index";
+          //stage = string.Empty;
+          patientID = string.Empty;
+          episodeID = string.Empty;
+        }
+        else
+          showThisButton = false;
+        break;
+
+      case "New":
+        if (episodeID == "-1")
+          showThisButton = false;
+        else
+        {
+          textNode = "New Episode";
+        }
+        break;
+
+      case "Full":
+        textNode = "IRF-PAI";
+        if (!enableThisPatient && episodeID == "-1")
+          disableThisButton = true;
+        break;
+
+      case "Followup":
+        textNode = "Follow Up";
+        if (!enableThisPatient && episodeID == "-1")
+          disableThisButton = true;
+        break;
+
+      default:
+        if (stage != "Base" && !enableThisPatient && episodeID == "-1")
         {
           disableThisButton = true;
         }
-      }
+        break;
+    }
 
-      switch (stage)
+    if (episodeID != "-1")
+      title = title.Replace("Create new", "Edit existing");
+
+    @if (showThisButton)
+    {
+      if (stage == "New")
       {
-        case "Followup":
-          textNode = "Follow Up";
-          break;
-        case "Patient":
-          textNode = "Patient List";
-          break;
+        <div class="mdc-touch-target-wrapper">
+          <button class="mdc-button rehabAction @(disableThisButton ? "disabled" : string.Empty)" title="Add new episode"
+                  id="@($"{stage}_{actionName}_{episodeID}" /*EpisodeID is -1 if new episode*/)"
+                  data-stage="@(stage /*important*/)"
+                  disabled="@(disableThisButton)"
+                  asp-controller="@(controllerName)"
+                  asp-action="@(actionName)"
+                  asp-route-stage="@(stage)"
+                  asp-route-patientid="@(patientID)"
+                  asp-route-episodeid="@(episodeID)"
+                  asp-route-searchcriteria="@(searchCriteria)"
+                  asp-route-orderby="@(orderBy)"
+                  asp-route-pagenumber="@(pageNumber)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+              <title>Add new episode</title>
+            </svg>
+            <span class="mdc-button__ripple"></span>
+          </button>
+        </div>
       }
-
-      <div class="mdc-touch-target-wrapper">
-        <button id="@($"{stage}_{actionName}_{Model.EpisodeID}" /*EpisodeID is -1 if new episode*/)"
-                class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction @(disableThisButton? "disabled":string.Empty)"
-                title="@(title)"
-                data-stage="@(stage /*important*/)"
-                disabled ="@(disableThisButton)"
-                asp-controller="@(controllerName)" 
-                asp-action="@(actionName)"
-                asp-route-stage="@(stage)"
-                asp-route-patientid="@(patientID)"
-                asp-route-episodeid="@(episodeID)"
-                asp-route-searchcriteria="@(Model.SearchCriteria)"
-                asp-route-orderby="@(Model.OrderBy)"
-                asp-route-pagenumber="@(Model.PageNumber)">
-          <span class="mdc-button__ripple"></span>
-          <span class="mdc-button__label textNoWrap">@textNode</span>
-          <div class="mdc-button__touch"></div>
-        </button>
-      </div>
+      else
+      {
+        <div class="mdc-touch-target-wrapper">
+          <button id="@($"{stage}_{actionName}_{episodeID}" /*EpisodeID is -1 if new episode*/)"
+                  class="mdc-button mdc-button--raised mdc-button--touch @(actionBtnCssClass) rehabAction @(disableThisButton ? "disabled" : string.Empty)"
+                  title="@(title)"
+                  data-stage="@(stage /*important*/)"
+                  disabled="@(disableThisButton)"
+                  asp-controller="@(controllerName)"
+                  asp-action="@(actionName)"
+                  asp-route-stage="@(stage)"
+                  asp-route-patientid="@(patientID)"
+                  asp-route-episodeid="@(episodeID)"
+                  asp-route-searchcriteria="@(searchCriteria)"
+                  asp-route-orderby="@(orderBy)"
+                  asp-route-pagenumber="@(pageNumber)">
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__label textNoWrap">@textNode</span>
+            <div class="mdc-button__touch"></div>
+          </button>
+        </div>
+      }
     }
   }
-</div>
+}
 

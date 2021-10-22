@@ -33,7 +33,11 @@ namespace IPRehabWebAPI2.Controllers
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] PostbackModel postbackModel)
     {
-      if(!ModelState.IsValid)
+      PostbackResponseDTO newAnswerpostBackResponse = new();
+      PostbackResponseDTO oldAnswerpostBackResponse = new();
+      PostbackResponseDTO updatedAnswerpostBackResponse = new();
+
+      if (!ModelState.IsValid)
       {
         return BadRequest();
       }
@@ -44,7 +48,7 @@ namespace IPRehabWebAPI2.Controllers
       {
         try
         {
-          if (postbackModel.EpisodeID == -1)
+          if (postbackModel.EpisodeID <= 0)
           {
             //both episode and answers are new
             await _answerHelper.TransactionalInsertAsync(postbackModel.NewAnswers);
@@ -57,7 +61,9 @@ namespace IPRehabWebAPI2.Controllers
         }
         catch (Exception ex)
         {
-          exceptionMsg += $"insert transaction failed and rolled back. {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Insert Model: {JsonSerializer.Serialize(postbackModel.NewAnswers)}";
+          newAnswerpostBackResponse.ExecptionMsg = $"insert transaction failed and rolled back. {ex.Message}";
+          newAnswerpostBackResponse.InnerExceptionMsg = ex.InnerException.Message;
+          newAnswerpostBackResponse.OriginalAnswers = postbackModel.NewAnswers;
         }
       }
 
@@ -70,7 +76,9 @@ namespace IPRehabWebAPI2.Controllers
         }
         catch (Exception ex)
         {
-          exceptionMsg += $"delete transaction failed and rolled back.  {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Delete Model: {JsonSerializer.Serialize(postbackModel.OldAnswers)}";
+          oldAnswerpostBackResponse.ExecptionMsg = $"delete transaction failed and rolled back. {ex.Message}";
+          oldAnswerpostBackResponse.InnerExceptionMsg = ex.InnerException.Message;
+          oldAnswerpostBackResponse.OriginalAnswers = postbackModel.OldAnswers;
         }
       }
 
@@ -83,18 +91,23 @@ namespace IPRehabWebAPI2.Controllers
         }
         catch (Exception ex)
         {
-          exceptionMsg += $"update transaction failed and rolled back. {Environment.NewLine} {ex.Message} {Environment.NewLine}{Environment.NewLine} Inner Exception: {ex.InnerException.Message} {Environment.NewLine}{Environment.NewLine} Failed Update Model: {JsonSerializer.Serialize(postbackModel.UpdatedAnswers)}";
+
+          updatedAnswerpostBackResponse.ExecptionMsg = $"update transaction failed and rolled back. {ex.Message}";
+          updatedAnswerpostBackResponse.InnerExceptionMsg = ex.InnerException.Message;
+          updatedAnswerpostBackResponse.OriginalAnswers = postbackModel.UpdatedAnswers;
         }
       }
       
       if(string.IsNullOrEmpty(exceptionMsg))
       {
-        //return BadRequest();
         return StatusCode(StatusCodes.Status200OK);
       }
       else
       {
-        return StatusCode(StatusCodes.Status400BadRequest, exceptionMsg);
+        return StatusCode(StatusCodes.Status400BadRequest, 
+          $"{JsonSerializer.Serialize(newAnswerpostBackResponse)} {Environment.NewLine} " +
+          $"{JsonSerializer.Serialize(oldAnswerpostBackResponse)} {Environment.NewLine} " +
+          $"{JsonSerializer.Serialize(updatedAnswerpostBackResponse)}");
       }
     }
   }

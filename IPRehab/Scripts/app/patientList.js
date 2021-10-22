@@ -3,6 +3,7 @@
 $(function () {
     $('#searchBtn').on('click', function () {
         let $this = $(this);
+        $('.spinnerContainer').show();
         patientListController.search($this);
     });
 });

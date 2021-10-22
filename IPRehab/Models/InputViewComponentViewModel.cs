@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IPRehab.Models
 {
-  public class ViewComponenViewModel
+  public class InputViewComponenViewModel
   {
     public int ControlCounter { get; set; }
     public string UserID { get; set; }
@@ -13,6 +12,7 @@ namespace IPRehab.Models
     public int QuestionID { get; set; }
     public string QuestionKey { get; set; }
     public string StageTitle { get; set; }
+    public string StageTitleNormalized { get; set; }
     public int StageID { get; set; }
     public bool MultipleChoices { get; set; }
     public bool Required { get; set; }
@@ -25,17 +25,5 @@ namespace IPRehab.Models
     /// </summary>
     public int TherapyHoursCodeSetID { get; set; }
     public string TherapyHoursCodeSetValue { get; set; }
-  }
-
-  public class ViewComponentTemplateModel
-  {
-    public List<ChoiceAndAnswer> ChoiceAndAnswerList {get;set;}
-    public ViewComponenViewModel ViewComponentViewModel {get;set;}
-
-    public ViewComponentTemplateModel()
-    {
-      ChoiceAndAnswerList = new();
-      ViewComponentViewModel = new();
-    }
   }
 }

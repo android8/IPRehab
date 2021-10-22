@@ -16,7 +16,7 @@ namespace IPRehab.Controllers
 
     public IActionResult Splash()
     {
-      string vm = _office;
+      string vm = $"Sponsored by {_office}";
       return View("splash", vm);
     }
 

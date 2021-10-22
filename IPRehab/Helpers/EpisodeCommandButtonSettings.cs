@@ -9,6 +9,7 @@ namespace IPRehab.Helpers
   public static class EpisodeCommandButtonSettings
   {
     public static Dictionary<string, string> stageType = new Dictionary<string, string>() {
+      { "New", "Create new episode with Base form"},
       { "Full", "Create new episode with Full IRF-PAI form"},
       { "Base", "Create new episode with Base questions"},
       { "Initial", "Create new episode with Initial questions"},
@@ -20,6 +21,7 @@ namespace IPRehab.Helpers
 
     public static Dictionary<string, string> actionBtnColor = new Dictionary<string, string>()
     {
+      { "New", "actionBtnNew"},
       { "Full", "actionBtnFull"},
       { "Base", "actionBtnBase"},
       { "Initial", "actionBtnInitial"},

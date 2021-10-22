@@ -1,7 +1,7 @@
 ﻿@model QuestionHierarchy
 
 @{
-  ViewData["Title"] = $"{Model.StageTitle}";
+  ViewData["Title"] = Model.StageTitle;
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -45,9 +45,20 @@
 </aside>
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
-    <div class="pageTitle">@Model.StageTitle</div>
-    <div class="flex-container-evenly-justified">
-      @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}
+    <div class="pageTitle">@(Model.StageTitle == "Full" ? "IRF-PAI" : Model?.StageTitle)</div>
+    <div class="flex-start-row-nowrap">
+
+      @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}*@
+
+      @* view component controller *@
+      @{
+        string cmdBtnViewComponentName = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+
+        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+      }
+
+      @await Component.InvokeAsync(cmdBtnViewComponentName, Model.EpisodeBtnConfig.First())
+
     </div>
     <div class="text-center patientName">@Model.PatientName</div>
     <div class=""></div>
@@ -75,7 +86,7 @@
       {
         @*form name row*@
         <div id="nonPaddinRow">
-          <div class="flex-end-row-nowrap formName">@Model.StageTitle</div>
+          <div class="flex-end-row-nowrap formName">IRF-PAI</div>
         </div>
       }
 
@@ -198,16 +209,19 @@
 
                   @* cell for question key and stage group*@
                   <div>
-                    @* view component controller *@
-                    @{ string viewComponentName = typeof(IPRehab.ViewComponents.IPRehabViewComponent).Name.Replace("ViewComponent", string.Empty);}
-                    @await Component.InvokeAsync(viewComponentName,
-                                   new
-                                   {
-                                     EpisodeID = Model.EpisodeID,
-                                     ControlCounter = controlCounter,
-                                     QWS = q,
-                                     NetworkID = (string)ViewBag.CurrentNetworkID,
-                                   })
+                    @{
+                      string inputViewComponentName = typeof(IPRehab.ViewComponents.InputViewComponent).Name.Replace("ViewComponent", string.Empty);
+
+                      /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                    }
+
+                    @await Component.InvokeAsync(inputViewComponentName, new
+                    {
+                      EpisodeID = Model.EpisodeID,
+                      ControlCounter = controlCounter,
+                      QWS = q,
+                      NetworkID = (string)ViewBag.CurrentNetworkID,
+                    })
                   </div>
                 }
               </div>

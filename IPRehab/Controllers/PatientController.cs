@@ -27,7 +27,6 @@ namespace IPRehab.Controllers
     public async Task<ActionResult> Index(string searchCriteria, int pageNumber, string orderBy)
     {
       searchCriteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(searchCriteria));
-      ViewBag.Title = "Patient";
 
       string sessionCriteria;
       string sessionKey = "SearchCriteria";
@@ -70,6 +69,8 @@ namespace IPRehab.Controllers
       }
 
       PatientListViewModel patientListVM = new();
+      patientListVM.TotalPatients = patients.Count();
+      patientListVM.PageTitle = "Inpatients Rehab";
       patientListVM.SearchCriteria = searchCriteria;
       patientListVM.PageNumber = pageNumber;
       patientListVM.OrderBy = orderBy;
@@ -81,8 +82,7 @@ namespace IPRehab.Controllers
       }
       else
       {
-        bool firstPatient = true;
-        foreach (var pat in patients)
+        foreach (PatientDTO pat in patients)
         {
           PatientViewModel thisPatVM = new();
           thisPatVM.Patient = pat;
@@ -92,37 +92,57 @@ namespace IPRehab.Controllers
 
           //ToDo: encrypt the SSN, only when patient has no existing episode
           thisPatVM.Patient.PTFSSN = rawSSN.Substring(rawSSN.Length - 4, 4);
-         
-          RehabActionViewModel episodeCommandBtn = new();
+
           if (!pat.CareEpisodes.Any())
           {
-            episodeCommandBtn.EpisodeID = -1;
-            episodeCommandBtn.PatientID = rawSSN; 
+            RehabActionViewModel episodeCommandBtn = new()
+            {
+              //since no episode ID we have to use patient ID to find patient
+              PatientID = rawSSN,
+              HostingPage = "Patient",
+              SearchCriteria = searchCriteria,
+              PageNumber = pageNumber,
+              OrderBy = orderBy,
+              EpisodeID = -1,
+              EnableThisPatient = false
+            };
+
+            PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
+            //Don't assign episode properties for patient without episode
+            thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+            thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
           }
           else
           {
-            foreach (var episode in pat.CareEpisodes)
+            foreach (EpisodeOfCareDTO episode in pat.CareEpisodes)
             {
-              //don't use FSODSSN, it may be null
               episode.PatientIcnFK = rawSSN.Substring(rawSSN.Length - 4, 4);
-              episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+
+              RehabActionViewModel episodeCommandBtn = new()
+              {
+                //to avoid exposing PHI/PII, leave the PatientID blank and use the EpisodeID to search for patient ID
+                PatientID = string.Empty,
+                HostingPage = "Patient",
+                SearchCriteria = searchCriteria,
+                PageNumber = pageNumber,
+                OrderBy = orderBy,
+                EpisodeID = episode.EpisodeOfCareID,
+                EnableThisPatient = true
+              };
+
+              //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
+
+              PatientEpisodeAndCommandVM thisEpisodeAndCommands = new() {
+                EpisodeOfCareID= episode.EpisodeOfCareID,
+                OnsetDate = episode.OnsetDate,
+                AdmissionDate = episode.AdmissionDate,
+                PatientIcnFK = episode.PatientIcnFK
+              };
+              thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+              thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
             }
           }
-
-          episodeCommandBtn.HostContainer = "Patient";
-          episodeCommandBtn.SearchCriteria = searchCriteria;
-          episodeCommandBtn.PageNumber = pageNumber;
-          episodeCommandBtn.OrderBy = orderBy;
-          thisPatVM.ActionButtonVM = episodeCommandBtn;
-
           patientListVM.Patients.Add(thisPatVM);
-          patientListVM.TotalPatients = patients.Count();
-
-          if (firstPatient)
-          {
-            episodeCommandBtn.enableThisPatient = true;
-            firstPatient = false;
-          }
         }
 
         //returning the question list to view  

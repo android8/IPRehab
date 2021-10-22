@@ -40,7 +40,7 @@ namespace IPRehab.Controllers
 
       RehabActionViewModel actionButtonVM = new()
       {
-        HostContainer = "Question",
+        HostingPage = "Question",
         EpisodeID = episodeID,
       };
 
@@ -90,10 +90,25 @@ namespace IPRehab.Controllers
       PatientDTO thisPatient;
       //enforcing PHI/PII, no patient ID nor patient name can be used in querystring
       //so use episode id to search for the target patient
-      if (episodeID == -1)
-        patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={_impersonatedUserName}&pageSize={_pageSize}";
-      else
-        patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+      switch (stage)
+      {
+        case "New":
+          //get patient by episodeID of -1
+          patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+          break;
+        default:
+          if (episodeID == -1)
+          {
+            //get patient by patientID since no episodeID to go by
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={_impersonatedUserName}&pageSize={_pageSize}";
+          }
+          else
+          {
+            //get patient by episodeID
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+          }
+          break;
+      }
 
       thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", _options);
       patientID = thisPatient.PTFSSN;
@@ -102,14 +117,10 @@ namespace IPRehab.Controllers
       string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
-
-      RehabActionViewModel actionButtonVM = new()
+      if (stage == "New")
       {
-        HostContainer = "Question",
-        EpisodeID = episodeID,
-        SearchCriteria = searchCriteria,
-        PageNumber = pageNumber
-      };
+        includeAnswer = false;
+      }
 
       List<QuestionDTO> questions = new();
 
@@ -132,18 +143,31 @@ namespace IPRehab.Controllers
 
       questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", _options);
 
+      RehabActionViewModel episodeCommandBtn = new()
+      {
+        HostingPage = "Question",
+        SearchCriteria = searchCriteria,
+        PageNumber = pageNumber,
+        EpisodeID = episodeID,
+      };
+
+      if (stage == "New")
+        episodeCommandBtn.EnableThisPatient = false;
+
+      PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
+      //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
+      thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+
       QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stageTitle);
       qh.ReadOnly = false;
       qh.EpisodeID = episodeID;
       qh.StageTitle = stageTitle;
       qh.PatientID = patientID;
       qh.PatientName = patientName;
-      qh.ActionButtons = actionButtonVM;
+      qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
       qh.CurrentAction = $"{action} Mode";
       qh.ModeColorCssClass = actionBtnColor;
-      //model for section navigator side bar
 
-      //returning the question list to view  
       return View(qh);
     }
 

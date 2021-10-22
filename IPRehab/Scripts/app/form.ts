@@ -55,8 +55,11 @@ $(function () {
       let stageName: any = $('#stage', theScope).val();
       const patientID: any = $('#patientID', theScope).val();
       const patientName: any = $('#patientName', theScope).val();
-      const episodeID: any = $('#episodeID', theScope).val();
-      formController.searlizeTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
+      let episodeID: number = +$('#episodeID', theScope).val();
+      if (stageName.toString().toLowerCase() == "new")
+        episodeID = -1;
+      
+      formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
     }
   });
 
@@ -84,7 +87,7 @@ let formController = (function () {
       $this.prop('title', newTitle);
       $this.prop('href', newHref);
       currentIdx++;
-      let newClass: string = $this.prop('class') + ' createActionCmd' + currentIdx.toString();;
+      let newClass: string = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
       $this.prop('class', newClass);
     });
   }
@@ -191,7 +194,7 @@ let formController = (function () {
   }
 
   /* private function */
-  function searlizeTheForm(persistables: any, stageName: any, patientID: any, patientName: any, episodeID: any, thisPostBtn: any): void {
+  function submitTheForm(persistables: any, stageName: any, patientID: any, patientName: any, episodeID: number, thisPostBtn: any): void {
     //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
     //console.log("serialized input", inputAnswerArray);
 
@@ -256,9 +259,9 @@ let formController = (function () {
       if (answerID)
         thisAnswer.AnswerID = +answerID;
 
-      thisAnswer.EpisodeID = episodeID.toString();
+      thisAnswer.EpisodeID = episodeID;
 
-      //both of these answers are rendered with MaterialInputDate view template with the same class
+      //both of admission date and onset date are rendered with MaterialInputDate view template with the same class
       //so use id to determine to which the data-codesetdescription property belong
       thisAnswer.AdmissionDate = admissionDate;
       thisAnswer.OnsetDate = onsetDate;
@@ -294,7 +297,6 @@ let formController = (function () {
 
       thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
       thisAnswer.LastUpdate = new Date();
-
 
       switch (CRUD) {
         case 'C':
@@ -389,11 +391,18 @@ let formController = (function () {
         $('.spinnerContainer').hide();
         dialogOptions.title = error.statusText;
         dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
-        $('#dialog')
-          .text('Data is not saved. ' + error.responseText)
-          .dialog(dialogOptions)
-      });
 
+        if (error.statusText == "OK" || error.statusText == "Ok") {
+          $('#dialog')
+            .text('Data is saved.')
+            .dialog(dialogOptions)
+        }
+        else {
+          $('#dialog')
+            .text('Data is not saved. ' + error.responseText)
+            .dialog(dialogOptions)
+        }
+      });
     }
 
     //use fetch api
@@ -447,7 +456,7 @@ let formController = (function () {
     'checkRules': checkRules,
     'breakLongSentence': breakLongSentence,
     'getTextPixels': getTextPixels,
-    'searlizeTheForm': searlizeTheForm,
+    'submitTheForm': submitTheForm,
     'validate': validateForm
   }
 })();

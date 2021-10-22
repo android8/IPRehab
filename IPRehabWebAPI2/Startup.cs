@@ -129,7 +129,6 @@ namespace IPRehabWebAPI2
       {
         options.AddPolicy(MyAllowSpecificOrigins, builder =>
                           {
-                            // The specified URL must not contain a trailing slash (/)
                             builder
                             .AllowAnyOrigin()
                             .AllowAnyHeader()
@@ -137,6 +136,7 @@ namespace IPRehabWebAPI2
                             //.SetIsOriginAllowed(origin => true)
                             //.SetIsOriginAllowedToAllowWildcardSubdomains()
 
+                            // The specified URL must not contain a trailing slash (/)
                             //.WithOrigins("https://localhost:44381")
                             //.AllowCredentials();
                           });

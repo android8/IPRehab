@@ -8,5 +8,11 @@ namespace IPRehab.Models
   {
     public SelectListItem SelectListItem { get; set; }
     public AnswerDTO Answer{ get; set; }
+
+    public ChoiceAndAnswer()
+    {
+      SelectListItem = new();
+      Answer = new();
+    }
   }
 }

@@ -41,8 +41,10 @@ $(function () {
             let stageName = $('#stage', theScope).val();
             const patientID = $('#patientID', theScope).val();
             const patientName = $('#patientName', theScope).val();
-            const episodeID = $('#episodeID', theScope).val();
-            formController.searlizeTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
+            let episodeID = +$('#episodeID', theScope).val();
+            if (stageName.toString().toLowerCase() == "new")
+                episodeID = -1;
+            formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
         }
     });
     formController.checkRules();
@@ -67,7 +69,6 @@ let formController = (function () {
             $this.prop('href', newHref);
             currentIdx++;
             let newClass = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
-            ;
             $this.prop('class', newClass);
         });
     }
@@ -162,7 +163,7 @@ let formController = (function () {
         return Math.ceil(width);
     }
     /* private function */
-    function searlizeTheForm(persistables, stageName, patientID, patientName, episodeID, thisPostBtn) {
+    function submitTheForm(persistables, stageName, patientID, patientName, episodeID, thisPostBtn) {
         //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
         //console.log("serialized input", inputAnswerArray);
         //const selectAnswerArray: any[] = [];
@@ -217,8 +218,8 @@ let formController = (function () {
             thisAnswer.PatientID = patientID.toString();
             if (answerID)
                 thisAnswer.AnswerID = +answerID;
-            thisAnswer.EpisodeID = episodeID.toString();
-            //both of these answers are rendered with MaterialInputDate view template with the same class
+            thisAnswer.EpisodeID = episodeID;
+            //both of admission date and onset date are rendered with MaterialInputDate view template with the same class
             //so use id to determine to which the data-codesetdescription property belong
             thisAnswer.AdmissionDate = admissionDate;
             thisAnswer.OnsetDate = onsetDate;
@@ -334,9 +335,16 @@ let formController = (function () {
                 $('.spinnerContainer').hide();
                 dialogOptions.title = error.statusText;
                 dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
-                $('#dialog')
-                    .text('Data is not saved. ' + error.responseText)
-                    .dialog(dialogOptions);
+                if (error.statusText == "OK" || error.statusText == "Ok") {
+                    $('#dialog')
+                        .text('Data is saved.')
+                        .dialog(dialogOptions);
+                }
+                else {
+                    $('#dialog')
+                        .text('Data is not saved. ' + error.responseText)
+                        .dialog(dialogOptions);
+                }
             });
         }
         //use fetch api
@@ -386,7 +394,7 @@ let formController = (function () {
         'checkRules': checkRules,
         'breakLongSentence': breakLongSentence,
         'getTextPixels': getTextPixels,
-        'searlizeTheForm': searlizeTheForm,
+        'submitTheForm': submitTheForm,
         'validate': validateForm
     };
 })();

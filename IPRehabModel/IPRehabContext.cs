@@ -18,6 +18,13 @@ namespace IPRehabModel
         {
         }
 
+        public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
+        public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
+        public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<tblAnswer> tblAnswer { get; set; }
         public virtual DbSet<tblBranching> tblBranching { get; set; }
         public virtual DbSet<tblCodeSet> tblCodeSet { get; set; }
@@ -28,11 +35,45 @@ namespace IPRehabModel
         public virtual DbSet<tblQuestionStage> tblQuestionStage { get; set; }
         public virtual DbSet<tblSignature> tblSignature { get; set; }
         public virtual DbSet<tblUser> tblUser { get; set; }
+        public virtual DbSet<vFSODPatientDetail> vFSODPatientDetail { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("VHA20\\VHAPORSUNC")
                 .HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+            modelBuilder.Entity<AspNetRoles>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedName] IS NOT NULL)");
+            });
+
+            modelBuilder.Entity<AspNetUserLogins>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+            });
+
+            modelBuilder.Entity<AspNetUserRoles>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.RoleId });
+            });
+
+            modelBuilder.Entity<AspNetUserTokens>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+            });
+
+            modelBuilder.Entity<AspNetUsers>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+                entity.Property(e => e.FirstName).IsUnicode(false);
+
+                entity.Property(e => e.LastName).IsUnicode(false);
+            });
 
             modelBuilder.Entity<tblAnswer>(entity =>
             {
@@ -126,6 +167,10 @@ namespace IPRehabModel
                 entity.HasKey(e => e.QuestionID)
                     .HasName("PK_app.tblQuestion");
 
+                entity.HasIndex(e => new { e.QuestionKey, e.GroupTitle }, "IX_tblQuestion")
+                    .IsUnique()
+                    .HasFillFactor((byte)90);
+
                 entity.Property(e => e.GroupTitle).IsUnicode(false);
 
                 entity.Property(e => e.Question).IsUnicode(false);
@@ -209,6 +254,21 @@ namespace IPRehabModel
                 entity.Property(e => e.LastName).IsUnicode(false);
 
                 entity.Property(e => e.NetworkName).IsFixedLength(true);
+            });
+
+            modelBuilder.Entity<vFSODPatientDetail>(entity =>
+            {
+                entity.ToView("vFSODPatientDetail", "shared");
+
+                entity.Property(e => e.District).IsUnicode(false);
+
+                entity.Property(e => e.FiscalPeriod).IsUnicode(false);
+
+                entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Property(e => e.PTFSSN).IsUnicode(false);
+
+                entity.Property(e => e.VISN).IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

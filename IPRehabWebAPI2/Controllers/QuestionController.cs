@@ -84,8 +84,15 @@ namespace IPRehabWebAPI2.Controllers
     [HttpGet()]
     public async Task<IActionResult> GetStageAsync(string stageName, bool includeAnswer, int episodeID)
     {
-      int stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
       stageName = stageName.Trim().ToUpper();
+      int stageID;
+      if (stageName == "NEW")
+      {
+        // NEW and BASE stages have the same set of questions.
+        stageName = "BASE";
+      }
+
+      stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
 
       List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
         q.Active.Value != false &&
@@ -104,14 +111,16 @@ namespace IPRehabWebAPI2.Controllers
         /* hoist OnsetDate question to the top of the list */
         questions.InsertRange(0, keyQuestions);
       }
-      if (includeAnswer & episodeID > 0)
+      if (includeAnswer && episodeID > 0 && stageName != "NEW")
       {
         tblEpisodeOfCare thisEpisode = _episodeRepository.FindByCondition(e => e.EpisodeOfCareID == episodeID).Single();
         foreach (var q in questions)
         {
+          //ToDo: use tblBranching to determine if the question should be enabled
           q.Enabled = true;
+
           List<AnswerDTO> thisQuestionAnswers = await _answerRepository
-            .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK==episodeID)
+            .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK==episodeID & a.StageIDFKNavigation.CodeValue==stageName)
             .Select(a=>HydrateDTO.HydrateAnswer(a, thisEpisode)).ToListAsync();
           if (thisQuestionAnswers.Any())
             q.Answers = thisQuestionAnswers;

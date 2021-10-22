@@ -7,7 +7,7 @@ namespace IPRehab.Models
 {
   public class RehabActionViewModel
   {
-    public string HostContainer { get; set; }
+    public string HostingPage { get; set; }
     public string ControllerName { get; set; }
     public string ActionName { get; set; }
     public int EpisodeID { get; set; }
@@ -19,7 +19,7 @@ namespace IPRehab.Models
     public string SearchCriteria { get; set; }
     public int PageNumber { get; set; }
     public string OrderBy { get; set; }
-    public bool enableThisPatient { get; set; }
+    public bool EnableThisPatient { get; set; }
 
     public RehabActionViewModel() {
       ControllerName = "Question";

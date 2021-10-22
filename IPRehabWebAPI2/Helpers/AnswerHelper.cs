@@ -48,7 +48,7 @@ namespace IPRehabWebAPI2.Helpers
         };
 
         _ipRehabContext.tblEpisodeOfCare.Add(thisEpisode);
-        //await _ipRehabContext.SaveChangesAsync();
+        await _ipRehabContext.SaveChangesAsync(); //must SaveChangesAsync() to get new ID
 
         foreach (UserAnswer ans in newAnswers)
         {
