@@ -1,7 +1,7 @@
 ﻿@model QuestionHierarchy
 
 @{
-  ViewData["Title"] = Model.StageTitle;
+  ViewData["Title"] = $"{Model.StageTitle}";
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -45,19 +45,19 @@
 </aside>
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
-    <div class="pageTitle">@(Model.StageTitle == "Full" ? "IRF-PAI" : Model?.StageTitle)</div>
-    <div class="flex-start-row-nowrap">
+    <div class="pageTitle">@Model.StageTitle</div>
+    <div class="flex-container-evenly-justified">
 
-      @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons);}*@
+      @*/*the old partial view*/ @await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons)*@
 
-      @* view component controller *@
       @{
-        string cmdBtnViewComponentName = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-
+        string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+        PatientEpisodeAndCommandVM thisEpisodeBtnConfig = Model.EpisodeBtnConfig.First();
+        
         /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
       }
 
-      @await Component.InvokeAsync(cmdBtnViewComponentName, Model.EpisodeBtnConfig.First())
+      @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeBtnConfig })
 
     </div>
     <div class="text-center patientName">@Model.PatientName</div>
@@ -86,7 +86,7 @@
       {
         @*form name row*@
         <div id="nonPaddinRow">
-          <div class="flex-end-row-nowrap formName">IRF-PAI</div>
+          <div class="flex-end-row-nowrap formName">@Model.StageTitle</div>
         </div>
       }
 
@@ -207,21 +207,14 @@
                   if (string.IsNullOrEmpty(q.StageTitle))
                     q.StageTitle = Model.StageTitle;
 
-                  @* cell for question key and stage group*@
                   <div>
                     @{
-                      string inputViewComponentName = typeof(IPRehab.ViewComponents.InputViewComponent).Name.Replace("ViewComponent", string.Empty);
+                      string inputViewComponent = typeof(IPRehab.ViewComponents.InputViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                      /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                      /* don't put the next next component invocationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                     }
 
-                    @await Component.InvokeAsync(inputViewComponentName, new
-                    {
-                      EpisodeID = Model.EpisodeID,
-                      ControlCounter = controlCounter,
-                      QWS = q,
-                      NetworkID = (string)ViewBag.CurrentNetworkID,
-                    })
+                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentNetworkID, })
                   </div>
                 }
               </div>

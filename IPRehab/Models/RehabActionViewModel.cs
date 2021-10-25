@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace IPRehab.Models
 {
-  public class RehabActionViewModel
+  public class RehabActionViewModel : ICloneable
   {
     public string HostingPage { get; set; }
     public string ControllerName { get; set; }
@@ -21,9 +21,31 @@ namespace IPRehab.Models
     public string OrderBy { get; set; }
     public bool EnableThisPatient { get; set; }
 
-    public RehabActionViewModel() {
+    public RehabActionViewModel()
+    {
       ControllerName = "Question";
       ActionName = "Edit";
+    }
+
+    public object Clone()
+    {
+      return new RehabActionViewModel()
+      {
+        HostingPage = this.HostingPage,
+        ControllerName = this.ControllerName,
+        ActionName = this.ActionName,
+        PatientID = this.PatientID,
+        SearchCriteria = this.SearchCriteria,
+        OrderBy = this.OrderBy,
+        PageNumber = this.PageNumber,
+        EpisodeID = this.EpisodeID,
+        EnableThisPatient = this.EnableThisPatient
+      };
+    }
+
+    public override string ToString()
+    {
+      return $"HostingPage = {this.HostingPage}, ControllerName = {this.ControllerName},ActionName = {this.ActionName}, PatientID = {this.PatientID}, SearchCriteria = {this.SearchCriteria}, OrderBy = {this.OrderBy}, PageNumber = {this.PageNumber}, EpisodeID = {this.EpisodeID}, EnableThisPatient = {this.EnableThisPatient}";
     }
   }
 }

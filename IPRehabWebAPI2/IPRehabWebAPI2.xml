@@ -10,11 +10,6 @@
             </summary>
             <param name="answerHelper"></param>
         </member>
-        <member name="T:IPRehabWebAPI2.Controllers.ErrorController">
-            <summary>
-            https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-5.0
-            </summary>
-        </member>
         <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
             <summary>
             get only meta data of an individual patient by id
