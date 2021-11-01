@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": true,
     "anonymousAuthentication": false,
+    "iis": {
+      "applicationUrl": "http://localhost/IPRehabWebAPI2",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:2083",
       "sslPort": 44333
@@ -20,7 +24,7 @@
       "use64Bit": true
     },
     "IPRehabWebAPI2": {
-      "commandName": "Project",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

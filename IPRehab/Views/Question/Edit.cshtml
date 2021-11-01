@@ -16,6 +16,7 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
   <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+  <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
 }
 
 @* save button *@
@@ -176,27 +177,28 @@
               </div>
 
               @*cell for question key *@
-              <div class="questionKey" title="question key">
-                @if (thisGroup.SharedQuestionKey != "AssessmentCompleted")
-                {
-                  @thisGroup.SharedQuestionKey
-                }
+            <div class="questionKey" title="question key">
+              @if (thisGroup.SharedQuestionKey != "AssessmentCompleted")
+              {
+                @thisGroup.SharedQuestionKey
+              }
 
-                @* add morebutton *@
-                @if (thisGroup.Questions.Any(q => q.MultipleChoices))
-                {
-                  <div class="mdc-touch-target-wrapper">
-                    <button class="mdc-button mdc-button--touch" title="Add more answers">
-                      <div class="mdc-button__ripple"></div>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                        <title>Add more answers</title>
-                      </svg>
-                      <div class="mdc-button__touch"></div>
-                    </button>
-                  </div>
-                }
-              </div>
+              @* add morebutton *@
+              @if (thisGroup.Questions.Any(q => q.MultipleChoices))
+              {
+                string thisQuestion = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
+                <div class="mdc-touch-target-wrapper">
+                  <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestion}")">
+                    <div class="mdc-button__ripple"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                      <title>Add more answers</title>
+                    </svg>
+                    <div class="mdc-button__touch"></div>
+                  </button>
+                </div>
+              }
+            </div>
 
               @* cell for question key and stage group*@
               <div class="answer2">

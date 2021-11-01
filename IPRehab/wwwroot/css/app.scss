@@ -94,8 +94,24 @@
   overflow:auto;
 }
 
+html,body {
+  padding:0px;
+  margin: 0px;
+}
+
+html {
+  overflow: hidden;
+}
+
 body {
-  scrollbar-width: 5px;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+/*  perspective: 1px;
+  -webkit-perspective: 1px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;*/
 }
 
 .pageTitle {
@@ -103,6 +119,7 @@ body {
   font-weight: bold;
   padding-right:1em;
 }
+
 /*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
   background-color: white;

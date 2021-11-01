@@ -41,13 +41,17 @@ namespace IPRehab.ViewComponents
         StageCommandViewComponentTemplateModel cmdBtnTemplateVM = new();
         cmdBtnTemplateVM.ShowThisButton = false;
 
-        if (entry.Key == "Patient" && EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
+        if (entry.Key == "Patient")
         {
+          if (EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
+          {
+            cmdBtnTemplateVM.ShowThisButton = true;
+          }
+
           cmdBtnTemplateVM.TextNode = "Patient List";
           cmdBtnTemplateVM.Title = entry.Value;
           cmdBtnTemplateVM.Stage = entry.Key;
           cmdBtnTemplateVM.ActionBtnCssClass = actionBtnClass[entry.Key];
-          cmdBtnTemplateVM.ShowThisButton = true;
 
           RehabActionViewModel clonedPatientActionVM = episodeVM.ActionButtonVM.Clone() as RehabActionViewModel;
           clonedPatientActionVM.ControllerName = "Patient";
@@ -80,7 +84,7 @@ namespace IPRehab.ViewComponents
 
         if (cmdBtnTemplateVM.ShowThisButton)
         {
-          if (episodeVM.ActionButtonVM.EpisodeID == -1 && cmdBtnTemplateVM.Stage != "Base")
+          if (episodeVM.ActionButtonVM.EpisodeID == -1 && cmdBtnTemplateVM.Stage != "Base" && cmdBtnTemplateVM.Stage != "Patient")
             cmdBtnTemplateVM.DisableThisButton = true;
 
           if (episodeVM.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")

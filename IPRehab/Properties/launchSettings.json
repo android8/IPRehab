@@ -19,7 +19,7 @@
       "jsWebView2Debugging": true
     },
     "IPRehab": {
-      "commandName": "Project",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

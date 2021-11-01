@@ -62,8 +62,6 @@ $(function () {
       formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
     }
   });
-
-  formController.checkRules();
 });
 
 /****************************************************************************
@@ -107,38 +105,6 @@ let formController = (function () {
       currentIdx++;
       $this.prop('class', resetClass);
     });
-  }
-
-  /* private function */
-  function checkRules() {
-    let q44c_is_1: boolean = $('#Q44C_86').prop("checked");
-    let q44c_is_0: boolean = $('#Q44C_87').prop("checked");
-    let q44d_is_1: boolean = $('#Q44D_').val() == '1';
-    let q46: any = $('#Q46_').val();
-
-    if (!q44c_is_1 && !q44c_is_0) {
-      /* Q44c is not answered */
-      $('#Q44D_').prop('disabled', 'true');
-      $('#Q45_').prop('disabled', 'true');
-    }
-    if (q44c_is_1 && q44d_is_1) {
-      /*Q44C = 1 and Q44D = 1*/
-      $('#Q45_').prop('disabled', 'false');
-    }
-    else {
-      if (q44c_is_0) {
-        $('#Q44D_').prop('disabled', 'false');
-        $('#Q46_').focus();
-      }
-    }
-
-    /* interrupted */
-    let q42_is_interrupted: boolean = $('#Q42-INTRRUPT_86').prop('checked');
-
-    if (q42_is_interrupted) {
-      $('#Q43_').prop('disabled', 'false');
-      $('#Q43_').focus();
-    }
   }
 
   /* private function */
@@ -453,7 +419,6 @@ let formController = (function () {
     'scrollToAnchor': scrollToAnchor,
     'setRehabBtns': setRehabBtns,
     'resetRehabBtns': resetRehabBtns,
-    'checkRules': checkRules,
     'breakLongSentence': breakLongSentence,
     'getTextPixels': getTextPixels,
     'submitTheForm': submitTheForm,

@@ -54,18 +54,9 @@ namespace IPRehab.Controllers
       }
 
       IEnumerable<PatientDTO> patients;
-      //try
-      //{
-      patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
-      HttpResponseMessage res = SerializationGeneric<IEnumerable<PatientDTO>>.Res;
-      //}
-      //catch (Exception ex)
-      //{
-      //  var vm = new ErrorViewModelHelper();
-      //  return PartialView("_ErrorPartial",
-      //    vm.Create("Serialization error", message: $"{ex?.Message} {Environment.NewLine} HttpResponseMessage={res}", ex.InnerException?.Message)
-      //  );
-      //}
+
+      //patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
+      patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
 
       PatientListViewModel patientListVM = new();
       patientListVM.TotalPatients = patients.Count();

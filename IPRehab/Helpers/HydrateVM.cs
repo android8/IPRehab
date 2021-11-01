@@ -38,7 +38,7 @@ namespace IPRehab.Helpers
         AnswerCodeCategory = questionDTO.AnswerCodeCategory,
         MultipleChoices = questionDTO.MultipleChoices,
 
-        ChoiceList = SetSelectedChoice(questionDTO.ChoiceList, questionDTO.Answers, questionDTO.AnswerCodeCategory),
+        ChoiceList = SetSelectedChoice(questionDTO),
 
         ChoicesAnswers = SetChoicesAnswers(questionDTO),
 
@@ -247,20 +247,19 @@ namespace IPRehab.Helpers
       }
     }
 
-    private static List<SelectListItem> SetSelectedChoice(List<CodeSetDTO> choices, List<AnswerDTO> answers, string answerCodeCategory)
+    private static List<SelectListItem> SetSelectedChoice(QuestionDTO questionDTO)
     {
       List<SelectListItem> selectedChoices = new();
       string text = string.Empty, value = string.Empty ;
 
       /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
-      foreach (var c in choices)
+      foreach (var c in questionDTO.ChoiceList)
       {
         text = c.CodeDescription;
-        var isSelected = answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
         SelectListItem thisChiceItem = new () { 
           Text = text, 
           Value = c.CodeSetID.ToString(), 
-          Selected = isSelected
+          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.StageID == questionDTO.StageID)
         };
         selectedChoices.Add(thisChiceItem);
       }
@@ -274,7 +273,7 @@ namespace IPRehab.Helpers
 
       if (questionDTO.ChoiceList.Count == 0)
       {
-        var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == questionDTO.AnswerCodeSetID);
+        var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == questionDTO.AnswerCodeSetID && a.StageID == questionDTO.StageID);
 
         /* make choice list with only one codeset id */
         SelectListItem thisChice = new()
@@ -294,7 +293,7 @@ namespace IPRehab.Helpers
       {
         foreach (var c in questionDTO.ChoiceList)
         {
-          var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
+          var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.StageID == questionDTO.StageID);
 
           SelectListItem thisChice = new()
           {

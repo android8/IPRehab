@@ -92,9 +92,11 @@
   overflow: auto;
 }
 
+/* for parallax to work the next 3 style must be in place*/
 html, body {
   padding: 0px;
   margin: 0px;
+  /*scrollbar-width: 5px;*/
 }
 
 html {
@@ -106,10 +108,43 @@ body {
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  /*  perspective: 1px;
-    -webkit-perspective: 1px;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;*/
+  perspective: 1px;
+  -webkit-perspective: 1px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/*slower background scroll than foreground*/
+div.parallax {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+div.parallax:after {
+  background-image: url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: -1;
+  content: "";
+  transform: translateZ(-1px) scale(2);
+  -webkit-transform: translateZ(-1px) scale(2);
+}
+
+/*parallax safari ios workaround*/
+div.content-outer {
+  width: 100%;
+  background-color: white;
+  perspective: 2px;
+  -webkit-perspective: 2px;
 }
 
 .pageTitle {

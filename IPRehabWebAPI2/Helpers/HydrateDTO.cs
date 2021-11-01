@@ -68,6 +68,7 @@ namespace IPRehabWebAPI2.Helpers
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
         CareStage = a.StageIDFKNavigation.CodeDescription,
+        StageID = a.StageIDFK,
         AnswerCodeSet = answerCodeSet,
         AnswerSequenceNumber = a.AnswerSequenceNumber,
         Description = a.Description,

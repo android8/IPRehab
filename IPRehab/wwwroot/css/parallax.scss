@@ -1,9 +1,12 @@
+﻿//@use "node_modules/material-components-web/material-components-web";
+
 @media (min-width: 768px) {
   .paddingTop {
     padding-top: 60px;
     margin-right: 20px;
   }
 }
+
 .splashscreen {
   /*  position: absolute;
   top: 0;
@@ -57,7 +60,6 @@
 .mdc-text-field--outlined {
   height: 30px;
 }
-
 .mdc-text-field--filled::before {
   display: inline-block !important;
   width: 0 !important;
@@ -81,20 +83,22 @@
 .my-dialog {
   top: 0;
   left: 0;
-  padding: 0.2em;
+  padding: .2em;
   outline: 0;
   position: fixed !important;
   -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
-  width: 30em;
-  height: 50em;
-  overflow: auto;
+  width:30em;
+  height:50em;
+  overflow:auto;
 }
 
-html, body {
-  padding: 0px;
+/* for parallax to work the next 3 style must be in place*/
+html,body {
+  padding:0px;
   margin: 0px;
+  /*scrollbar-width: 5px;*/
 }
 
 html {
@@ -106,16 +110,49 @@ body {
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  /*  perspective: 1px;
-    -webkit-perspective: 1px;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;*/
+  perspective: 1px;
+  -webkit-perspective: 1px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/*slower background scroll than foreground*/
+div.parallax {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+div.parallax:after {
+  background-image: url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: -1;
+  content: "";
+  transform: translateZ(-1px) scale(2);
+  -webkit-transform: translateZ(-1px) scale(2);
+}
+
+/*parallax safari ios workaround*/
+div.content-outer {
+  width: 100%;
+  background-color: white;
+  perspective: 2px;
+  -webkit-perspective: 2px;
 }
 
 .pageTitle {
   font-size: 2em;
   font-weight: bold;
-  padding-right: 1em;
+  padding-right:1em;
 }
 
 /*sandwitch button*/
@@ -157,14 +194,14 @@ body {
 }
 
 .disabled {
-  pointer-events: none;
+  pointer-events: none
 }
 
 .alert-dismissible .close {
   position: relative;
   top: 0;
   right: 0;
-  padding: 0.75rem 1.25rem;
+  padding: .75rem 1.25rem;
   color: inherit;
 }
 
@@ -195,12 +232,12 @@ body {
   margin-bottom: 0;
   width: 100%;
   background-color: #f3eab8;
-  padding: 5px;
+  padding: 5px
 }
 
 .main {
   /*  margin-top: 20px !important;
-  */
+*/
 }
 
 article {
@@ -228,9 +265,9 @@ alert-info {
   /*border-color: #bee5eb;*/
 }
 
-#recordCount {
-  font-size: 1.2em;
-}
+#recordCount{
+  font-size:1.2em;
+  }
 
 .noData {
   display: flex;
@@ -245,11 +282,11 @@ alert-info {
 input {
   transition: all 0.5s ease-out;
 }
-
 /*.table-striped tbody tr:nth-of-type(odd) {
   background-color: rgb(0 0 0 / 13%);
 }
 */
+
 table {
   -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -273,13 +310,13 @@ td {
   padding-bottom: 30px;
 }
 
-.episode table {
+.episode table{
   border-left: none !important;
-  box-shadow: none;
+  box-shadow:none;
 }
 
 .episode table td {
-  text-align: center;
+  text-align:center;
   align-content: center;
   align-items: center;
 }
@@ -425,7 +462,7 @@ div.answer {
   padding-right: 10px !important;
 }
 
-div.answer input[type=checkbox], input[type=radio] {
+div.answer input[type="checkbox"], input[type="radio"] {
   display: flex;
   flex-direction: column;
   align-content: flex-start;
@@ -562,6 +599,7 @@ div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }
 
+
 div.answer .nullLabel {
   display: none #important;
 }
@@ -657,7 +695,7 @@ div.answer .nullLabel {
 }
 
 .borderBottom {
-  border-bottom: 2px solid #cfcfcf;
+  border-bottom: 2px solid #cfcfcf
 }
 
 div.questionRow {
@@ -675,6 +713,7 @@ div.questionRow {
   width: 150px !important;
   left: -45px !important;
 }*/
+
 .rotate {
   width: 35px;
   top: 100px;
@@ -687,8 +726,7 @@ div.questionRow {
   /* Firefox */
   -moz-transform: rotate(-90deg);
   /* IE */
-  -ms-transform: rotate(-90deg);
-  /* IE 9 */
+  -ms-transform: rotate(-90deg); /* IE 9 */
   /* Opera */
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
@@ -700,7 +738,7 @@ div.questionRow {
 }
 
 .roate2 {
-  transform: rotate(-90deg) translate(0px, -40px);
+  transform: rotate(-90deg) translate(0px,-40px);
 }
 
 .flex-start-row-nowrap {
@@ -712,7 +750,7 @@ div.questionRow {
   align-content: center;
 }
 
-.flex-start-row-nowrap input[type=radio] {
+.flex-start-row-nowrap input[type="radio"] {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -720,6 +758,7 @@ div.questionRow {
   align-items: flex-start;
   align-content: flex-start;
 }
+
 
 .flex-start-row-wrap {
   display: flex;
@@ -788,10 +827,10 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   overflow: hidden;
   padding: 4px;
   /*  
-    margin: 0 8px 5px 0;  
-    border: 1px solid #ced4da;
-    width:150px;
-  */
+  margin: 0 8px 5px 0;  
+  border: 1px solid #ced4da;
+  width:150px;
+*/
 }
 
 .flex-item:nth-child(5n) {
@@ -799,7 +838,6 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   /*flex-grow: 4;*/
   /*width: 500px;*/
 }
-
 /* Inserting this collapsed row between two flex items will make 
  * the flex item that comes after it break to a new row */
 .break {
@@ -891,8 +929,8 @@ button.rehabAction {
 }
 
 .disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  opacity:0.3;
+  cursor:not-allowed;
 }
 
 /*button[data-stage*='New'] {
@@ -909,7 +947,7 @@ button[data-stage*='New'] svg{
 */
 .actionBtnNew {
   background-color: #0325ab;
-  color: white !important;
+  color:white !important;
 }
 
 .actionBtnFull {
@@ -929,7 +967,7 @@ button[data-stage*='New'] svg{
 
 .actionBtnInterim {
   background-color: teal;
-  color: white !important;
+  color:white !important;
 }
 
 .actionBtnDischarge {
@@ -955,6 +993,6 @@ button[data-stage*='New'] svg{
   display: none;
 }
 
-input[type=datetime], input[type=text] {
-  /*  border: solid 1px black;*/
+input[type="datetime"], input[type="text"] {
+/*  border: solid 1px black;*/
 }

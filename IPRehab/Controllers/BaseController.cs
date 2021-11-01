@@ -40,9 +40,10 @@ namespace IPRehab.Controllers
       _options = new JsonSerializerOptions()
       {
         ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true,
+        WriteIndented = false,
         PropertyNameCaseInsensitive = true,
-        IgnoreNullValues = true
+        IgnoreNullValues = true,
+        AllowTrailingCommas = true
       };
     }
 

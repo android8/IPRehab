@@ -53,24 +53,29 @@
   </header>
 
   <main role="main" class="pb-3 main">
-    <div class="container">
-      <aside>
-        <div class="spinnerContainer">
-          <img id="chiropractor" src="~/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
-          @*<div class="cube">
-              <div class="sides">
-                <div class="top"></div>
-                <div class="right"></div>
-                <div class="bottom"></div>
-                <div class="left"></div>
-                <div class="front"></div>
-                <div class="back"></div>
-              </div>
-            </div>*@
+    @*<div class="parallax"></div>*@
+    <div class="content-outer">
+      <div class="content-inner">
+        <div class="container">
+          <aside>
+            <div class="spinnerContainer">
+              <img id="chiropractor" src="~/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
+              @*<div class="cube">
+            <div class="sides">
+              <div class="top"></div>
+              <div class="right"></div>
+              <div class="bottom"></div>
+              <div class="left"></div>
+              <div class="front"></div>
+              <div class="back"></div>
+            </div>
+          </div>*@
+            </div>
+          </aside>
+          @RenderBody()
+          <partial name="_CookieConsentPartial" />
         </div>
-      </aside>
-      @RenderBody()
-      <partial name="_CookieConsentPartial" />
+      </div>
     </div>
   </main>
 
