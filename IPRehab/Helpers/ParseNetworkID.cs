@@ -9,23 +9,21 @@ namespace IPRehab.Helpers
   {
     public static string CleanUserName(string networkID)
     {
-      string networkName = networkID;
-      if (string.IsNullOrEmpty(networkName))
-        return null;
-      else
-      {
-        if (networkName.Contains('\\') || networkName.Contains("%2F") || networkName.Contains("//"))
-        {
-          String[] separator = { "\\", "%2F", "//" };
-          var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+      bool isZEROAccount = networkID.Substring(networkID.Length-1) == "0"; 
+      if (isZEROAccount)
+        networkID = networkID.Substring(0, networkID.Length - 1); //if ZERO account drop the last 0
 
-          if (networkNameWithDomain.Length > 0)
-            networkName = networkNameWithDomain[1];
-          else
-            networkName = networkNameWithDomain[0];
-        }
-        return networkName;
+      if (networkID.Contains('\\') || networkID.Contains("%2F") || networkID.Contains("//"))
+      {
+        String[] separator = { "\\", "%2F", "//" };
+        var networkNameWithDomain = networkID.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+        if (networkNameWithDomain.Length > 0)
+          networkID = networkNameWithDomain[1];
+        else
+          networkID = networkNameWithDomain[0];
       }
+      return networkID;
     }
 
   }

@@ -5,17 +5,45 @@
 /* http://emranahmed.github.io/Form-Field-Dependency */
 
 $(function () {
-  const stage: string = $(document).prop('title').toLowerCase();
+  const stage: string = $('.pageTitle').text().replace(' ', '_');
 
-  $('iput[id^="Q42_' + stage + '"]').each(function () {
+  formController.Q12_Q23_blank_then_Lock_All(stage);
+  $("input[id^=Q12_" + stage + ", input[id ^= Q23_" + stage + "]").change(function () {
+    let Q12: any = $("input[id^=Q12_" + stage + "]");
+    let Q23: any = $("input[id^=Q23_" + stage + "]");
+    if (Q12.val() == null || Q23.val() == null) {
+      alert('Q12 and Q23 are key questions can not be blank');
+      formController.Q12_Q23_blank_then_Lock_All(stage);
+    }
+    else {
+      formController.Q14B_enabled_if_Q14A_is_86(stage);
+      formController.Q16A_is_Home_then_Q17(stage);
+      formController.Q42_Interrupted_then_Q43(stage, $(this));
+    }
+  });
+
+  formController.Q14B_enabled_if_Q14A_is_86(stage);
+  $('input[id^=Q14A_' + stage + ']').change(function () {
+    formController.Q14B_enabled_if_Q14A_is_86(stage);
+  });
+
+  formController.Q16A_is_Home_then_Q17(stage);
+  $('input[id^=Q16A_' + stage + ']').change(function () {
+    formController.Q16A_is_Home_then_Q17(stage);
+  });
+
+
+  $('input[id^="Q42_' + stage + '"]').each(function () {
     $(this).change(function () {
       formController.Q42_Interrupted_then_Q43(stage, $(this));
     });
   })
+
   $('#btnMoreQ42').each(function () {
     $(this).click(function () {
-        formController.AddMoreQ42Q43(stage, 'Q42')
+      formController.AddMoreQ42Q43(stage, 'Q42')
     });
+
   });
   $('#btnMoreQ43').each(function () {
     $(this).click(function () {
@@ -27,49 +55,56 @@ $(function () {
 let formController = (function () {
 
   /* private function */
-  function Q12_Q23_blank_then_Lock_All(stage: string): boolean {
-    let Q12_isNull: boolean = $("input[id^='Q12_" + stage + "']").val() == null;
-    let Q23_isNull: boolean = $("input[id^='Q23_" + stage + "']").val() == null;
+  function Q12_Q23_blank_then_Lock_All(stage: string): void {
+    let Q12: any = $("input[id^=Q12_" + stage + "]");
+    let Q23: any = $("input[id^=Q23_" + stage + "]");
 
-    if (Q12_isNull || Q23_isNull) {
+    if (Q12.val() == null || Q23.val() == null) {
       $('.persistable').each(function () {
         let $this: any = $(this);
-        if ($this.prop("id").indexOf('Q12') < 0 || $this.prop("id").indexOf('Q23') < 0) {
-          $this.prop("disabled", true); 
+        if ($this.prop("id").indexOf('Q12') < 0 && $this.prop("id").indexOf('Q23') < 0) {
+          $this.prop("disabled", true);
         }
       });
-      return false;
-    }
-    else {
-      $("input[id^='Q14A']").prop('disabled', false).focus();
-      return false;
     }
   }
 
   /* private function */
-  function Q16A_is_Home_then_Q17(stage: string): boolean {
-    let Q16A_is_Home: boolean = $("input[id^='Q16']").val() == 94 /*1. Home */;
+  function Q14B_enabled_if_Q14A_is_86(stage: string): void {
+    let Q14A: any = $('input[id^=Q14A_' + stage + ']');
+    let Q14B: any = $('input[id^=Q14B_' + stage + ']');
+    if (Q14A.val() == '86') //codeset id 86 == yes
+      Q14B.removeAttr('disabled').focus();
+    else
+      Q14B.prop('disabled', true);
+  }
+
+  /* private function */
+  function Q16A_is_Home_then_Q17(stage: string): void {
+    let Q16A_is_Home: boolean = $("select[id^=Q16_" + stage + "]").val() == 94 /*1. Home */;
     if (Q16A_is_Home) {
-      $("input[id^='Q17']").prop('disabled', false).focus();
-      return false;
+      $("input[id^=Q17_" + stage + "]").removeAttr('disabled').focus();
+    }
+    else {
+      $("input[id^=Q17_" + stage + "]").prop('disabled', true);
     }
   }
 
   /* private function */
   function Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A(stage: string): boolean {
     let Q24A_is_set: boolean = false;
-    $('input[id ^= "Q21A"]').each(function () {
+    $('[id ^= Q21A]').each(function () {
       if ($(this).val() == '123.45') {
-        $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+        $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
         Q24A_is_set = true;
         return; //break out each()
       }
     });
 
     if (!Q24A_is_set) {
-      $('input[id^="Q22"]').each(function () {
+      $('input[id^=Q22]').each(function () {
         if ($(this).val() == '123.45') {
-          $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+          $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
           Q24A_is_set = true;
           return; //break out each()
         }
@@ -77,9 +112,9 @@ let formController = (function () {
     }
 
     if (!Q24A_is_set) {
-      $('input[id^="Q24"]').each(function () {
+      $('input[id^=Q24]').each(function () {
         if ($(this).val() == '123.45') {
-          $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+          $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
           Q24A_is_set = true;
           return; //break out each()
         }
@@ -119,7 +154,7 @@ let formController = (function () {
   /*private function*/
   function AddMoreQ42Q43(stage: string, questionKey: string) {
     /* add interrup date control */
-    let lastInputIdx: number = $('input[id^="' + questionKey + '_' + stage + '"]').length;
+    let lastInputIdx: number = $('input[id^=' + questionKey + '_' + stage + ']').length;
     let lastInputDate: any = $('#' + questionKey + '_' + stage + '_' + lastInputIdx);
     let dateClone: any = lastInputDate.clone();
     dateClone.val(null).focus();
@@ -128,11 +163,11 @@ let formController = (function () {
   /* private function */
   function Q44C_is_Y_then_Q44D(stage: string): boolean {
     /*codeset ID 86(Y) 87(N)*/
-    let Q44C_Y: any = $('input[id^="Q44C' + stage + '_86"]');
+    let Q44C_Y: any = $('input[id^=Q44C' + stage + '_86]');
     if (Q44C_Y.prop('checked')) {
-      $('iput[id^="Q44D"]').prop('disabled', false).focus();
-      $('iput[id^="Q44E"]').prop('disabled', false).focus();
-      $('iput[id^="Q45"]').prop('disabled', false).focus();
+      $('input[id^=Q44D]').prop('disabled', false).focus();
+      $('input[id^=Q44E]').prop('disabled', false).focus();
+      $('input[id^=Q45]').prop('disabled', false).focus();
       return false;
     }
     return true;
@@ -141,29 +176,130 @@ let formController = (function () {
   /* private function */
   function Q44C_is_N_then_Q46(stage: string): boolean {
     /*codeset ID 87(N)*/
-    let Q44C_N: any = $('input[id%="Q44C' + stage + '_87]');
+    let Q44C_N: any = $('input[id^=Q44C' + stage + '_87]');
     if (Q44C_N.prop('checked')) {
       if (confirm('Q44D and Q44E answers will be resetted')) {
-        $('iput[id^="Q44D"]').val(-1);
-        $('iput[id^="Q44D"]').prop('disabled', true).focus();
-        $('iput[id^="Q44E"]').val(-1);
-        $('iput[id^="Q44E"]').prop('disabled', true).focus();
-        $('iput[id^="Q46"]').prop('disabled', false).focus();
+        $('input[id^=Q44D]').val(-1);
+        $('input[id^=Q44D]').prop('disabled', true).focus();
+        $('input[id^=Q44E]').val(-1);
+        $('input[id^=Q44E]').prop('disabled', true).focus();
+        $('input[id^=Q46]').prop('disabled', false).focus();
       }
     }
     return true;
   }
 
-  /****************************************************************************
- * public functions exposing the private functions to outside of the closure
-***************************************************************************/
+  /* private function */
+  function GG0170M_depends_on_GG0170I(): void {
+    const GG0170IAdmPerformance: any = $('#GG0170I_Admission_Performance_1');
+    const GG0170Ms: any = $('select[id^=GG0170M]');
+    const factors: string[] = ['309', '310', '311', '312'];
+    if (factors.indexOf(GG0170IAdmPerformance.val()) !== -1) {
+      GG0170Ms.each(function () {
+        $(this).prop('disabled', false).focus();
+      });
+    }
+    else {
+      GG0170Ms.each(function () {
+        $(this).prop('disabled', false).val(-1);
+      });
+    }
+  }
+
+  /* private function */
+  function GG0170P_depends_on_GG0170M(): void {
+    let GG0170MAdmPerformance: any = $('#GG0170M_Admission_Performance_1');
+    let GG0170Ps: any = $('select[id^=GG0170P]');
+    let factors: string[] = ['309', '310', '311', '312'];
+    if (factors.indexOf(GG0170MAdmPerformance.val()) !== -1) {
+      GG0170Ps.each(function () {
+        $(this).prop('disabled',false).focus();
+      });
+    }
+    else {
+      GG0170Ps.each(function () {
+        $(this).prop('disabled', true).val(-1);
+      });
+    }
+  }
+
+  /* private function */
+  function GG0170P_depends_on_GG0170N(): void {
+    let GG0170NAdmPerformance: any = $('#GG0170N_Admission_Performance_1');
+    let GG0170Ps: any = $('select[id^=GG0170P]');
+    let factors: string[] = ['309', '310', '311', '312'];
+    if (factors.indexOf(GG0170NAdmPerformance.val()) !== -1) {
+      GG0170Ps.each(function () {
+        $(this).prop('disabled', false).focus();
+      });
+    }
+    else {
+      GG0170Ps.each(function () {
+        $(this).prop('disabled', true).val(-1);
+      });
+    }
+  }
+
+  /* private function */
+  function H0350_depends_on_GG0170Q(): void {
+    let GG0170QAdmPerformanceNo: any = $('#GG0170Q_Admission_Performance_315');
+    let GG0170QAdmPerformanceYes: any = $('#GG0170Q_Admission_Performance_314');
+    let GG0170Rs: any = $('#GG0170R_Admission_Performance_1');
+    let H0350s: any = $('select[id^=H0350]');
+    if (GG0170QAdmPerformanceNo.prop('checked')) {
+      H0350s.each(function () {
+        $(this).removeAttr('disabled').focus();
+      });
+    }
+    else {
+      H0350s.each(function () {
+        $(this).prop('disabled', true).val(-1);
+      });
+    }
+    if (GG0170QAdmPerformanceYes.prop('checked')) {
+      GG0170Rs.each(function () {
+        $(this).removeAttr('disabled').focus();
+      });
+    }
+    else {
+      GG0170Rs.each(function () {
+        $(this).prop('disabled', true).val(-1);
+      });
+    }
+  }
+
+  /* private function */
+  function J1750_depends_on_J0510(stage: string): void {
+    let J0510: any = $('#J0510_' + stage + '_1');
+    let J1750s: any = $('input[id^=J1750');
+    if (J0510.val() == '345' ) { /*345 == 0. Does not apply */
+      J1750s.each(function () {
+        $(this).prop('disabled',false).focus();
+      });
+    }
+    else {
+      J1750s.each(function () {
+        $(this).prop('checked', false);
+      });
+    }
+  }
+
+  /***************************************************************************
+   * public functions exposing the private functions to outside of the closure
+  ***************************************************************************/
   return {
-    'Q12_Q23_blank_then_Lock_All_else_Q14A': Q12_Q23_blank_then_Lock_All,
-    'Q16A_is_Home_Then_Q17': Q16A_is_Home_then_Q17,
+    'Q12_Q23_blank_then_Lock_All': Q12_Q23_blank_then_Lock_All,
+    'Q14B_enabled_if_Q14A_is_86': Q14B_enabled_if_Q14A_is_86,
+    'Q16A_is_Home_then_Q17': Q16A_is_Home_then_Q17,
     'Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A': Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A,
     'Q42_Interrupted_then_Q43': Q42_Interrupted_then_Q43,
     'AddMoreQ42Q43': AddMoreQ42Q43,
     'Q44C_is_Y_then_Q44D': Q44C_is_Y_then_Q44D,
-    'Q44C_is_N_then_Q46': Q44C_is_N_then_Q46
+    'Q44C_is_N_then_Q46': Q44C_is_N_then_Q46,
+    'GG0170M_depends_on_GG0170I': GG0170M_depends_on_GG0170I,
+    'GG0170P_depends_on_GG0170M': GG0170P_depends_on_GG0170M,
+    'GG0170P_depends_on_GG0170N': GG0170P_depends_on_GG0170N,
+    'J1750_depends_on_J0510': J1750_depends_on_J0510,
+    'H0350_depends_on_GG0170Q': H0350_depends_on_GG0170Q
   }
 })();

@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\ErrorController.cs" />
-    <Compile Remove="Controllers\FSODPatientController - Copy.cs" />
     <Compile Remove="Controllers\PatientController.cs" />
     <Compile Remove="Controllers\TodoItemsController.cs" />
     <Compile Remove="Controllers\WeatherForecastController.cs" />

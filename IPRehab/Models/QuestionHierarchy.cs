@@ -15,6 +15,7 @@ namespace IPRehab.Models
     public List<PatientEpisodeAndCommandVM> EpisodeBtnConfig { get; set; }
     public string StageTitle { get; set; }
     public string CurrentAction { get; set; }
+    public string WebApiBaseUrl { get; set; }
     public string ModeColorCssClass { get; set; }
     public List<SectionInfo> Sections { get; set; }
 

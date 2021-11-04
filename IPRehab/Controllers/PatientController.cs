@@ -42,15 +42,21 @@ namespace IPRehab.Controllers
       }
 
       string url;
-
+      string currentUserID = ViewBag.CurrentUserID;
       //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
-      if (!string.IsNullOrEmpty(_impersonatedUserName))
+      if (!string.IsNullOrEmpty(currentUserID))
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?networkID={_impersonatedUserName}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+        url = $"{_apiBaseUrl}/api/FSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+
+        /* ToDo: to be deleted after test */
+        //url = $"{_apiBaseUrl}/api/TestFSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
       else
       {
         url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+
+        /* ToDo: to be deleted after test */
+        //url = $"{_apiBaseUrl}/api/TestFSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
 
       IEnumerable<PatientDTO> patients;

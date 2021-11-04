@@ -1,0 +1,12 @@
+﻿During the deployment of ASP.NET 5, there is an error "error the antiforgy token could not be decrypted. The key {guid} WAS NOT FOUND in the key ring"
+
+ERROR 2021-02-25 20:39:28,460 [16   ] spNetCore.Antiforgery.DefaultAntiforgery - An exception was thrown while deserializing the token.
+Microsoft.AspNetCore.Antiforgery.AntiforgeryValidationException: The antiforgery token could not be decrypted.
+ ---> System.Security.Cryptography.CryptographicException: The key {238a0f63-439d-4e88-883b-002c09902988} was not found in the key ring.
+
+ Go to Google checking it, saying that the ASP.NET Core prevented the cause of the cross-site request for the forgery mechanism, and the procedure should not be the problem of the program. Later, in an abroad post, I need to define Machine Key, If IIS7.5 or if you want to apply a dedicated, you need to define it in Web.config. Otherwise, it can be defined directly in the IIS server layer.
+
+ IIS Managment Console
+ 1. Click Machine Key in ASP.NET (group by AREA)
+ 2. After clicking in, if you apply a full server, you need to select two check boxes for "Automatical Generate At Runtime" & "Automatic Or Generate At Runtime".
+ 3. In the Itentity Advanced Settings, set Load User Profile to True

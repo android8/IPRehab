@@ -24,7 +24,7 @@
 {
   <div>
     <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
-      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled="disabled" data-apibaseurl="@(ViewBag.ApiBaseUrl)"
+      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
               data-controller="answer" data-action="post">
         <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Save</span>
@@ -54,7 +54,7 @@
       @{
         string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
         PatientEpisodeAndCommandVM thisEpisodeBtnConfig = Model.EpisodeBtnConfig.First();
-        
+
         /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
       }
 
@@ -66,15 +66,18 @@
   </div>
 
   @* icon legend *@
-  <div class="flex-nowrap">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-      <title>Anser is required</title>
-    </svg> Answer is required
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
-      <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-      <title>Key question</title>
-    </svg> Key question
+  <div class="flex-container-evenly-justified">
+    <div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+        <title>Anser is required</title>
+      </svg> Answer is required &nbsp;
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+        <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+        <title>Key question</title>
+      </svg> Key question
+    </div>
+    <div>@(Model.StageTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
   </div>
 
   <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
@@ -177,28 +180,28 @@
               </div>
 
               @*cell for question key *@
-            <div class="questionKey" title="question key">
-              @if (thisGroup.SharedQuestionKey != "AssessmentCompleted")
-              {
-                @thisGroup.SharedQuestionKey
-              }
+              <div class="questionKey" title="question key">
+                @if (thisGroup.SharedQuestionKey != "AssessmentCompleted")
+                {
+                  @thisGroup.SharedQuestionKey
+                }
 
-              @* add morebutton *@
-              @if (thisGroup.Questions.Any(q => q.MultipleChoices))
-              {
-                string thisQuestion = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
-                <div class="mdc-touch-target-wrapper">
-                  <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestion}")">
-                    <div class="mdc-button__ripple"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                      <title>Add more answers</title>
-                    </svg>
-                    <div class="mdc-button__touch"></div>
-                  </button>
-                </div>
-              }
-            </div>
+                @* add morebutton *@
+                @if (thisGroup.Questions.Any(q => q.MultipleChoices))
+                {
+                  string thisQuestion = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
+                  <div class="mdc-touch-target-wrapper">
+                    <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestion}")">
+                      <div class="mdc-button__ripple"></div>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                        <title>Add more answers</title>
+                      </svg>
+                      <div class="mdc-button__touch"></div>
+                    </button>
+                  </div>
+                }
+              </div>
 
               @* cell for question key and stage group*@
               <div class="answer2">
@@ -216,7 +219,7 @@
                       /* don't put the next next component invocationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                     }
 
-                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentNetworkID, })
+                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
                   </div>
                 }
               </div>

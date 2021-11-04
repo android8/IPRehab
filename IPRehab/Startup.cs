@@ -43,6 +43,7 @@ namespace IPRehab
 
       //services.AddDistributedMemoryCache(); //do not use because out of process 
       //services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
+
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; //preserve circular reference
@@ -61,9 +62,11 @@ namespace IPRehab
 
       services.AddAntiforgery(options =>
       {
-        options.Cookie.Name = "X-CSRF-TOKEN-IPREHAB"; //should be more sophisticated
-        options.FormFieldName = "CSRF-TOKEN-IPREHAB"; //should be more sophisticated
+        options.HeaderName = "X-CSRF-TOKEN-IPREHAB";
+        options.FormFieldName = "X-CSRF-TOKEN-IPREHAB";
+        options.Cookie.Name = "X-CSRF-TOKEN-IPREHAB";
       });
+
       services.AddApplicationInsightsTelemetry();
     }
 
@@ -88,7 +91,7 @@ namespace IPRehab
       app.UseCookiePolicy();
 
       app.UseRouting();
-      //DB connection and Identty is handle in Areas.Identity.IdentityHostingStartup.cs
+      //DB connection and Identty is handled in Areas.Identity.IdentityHostingStartup.cs
       app.UseAuthentication();
       app.UseAuthorization();
 

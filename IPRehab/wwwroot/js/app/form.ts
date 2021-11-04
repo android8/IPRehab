@@ -279,8 +279,6 @@ let formController = (function () {
 
     $('.spinnerContainer').hide();
 
-    const antiForgeryToken: string = $('input[name="CSRF-TOKEN-IPREHAB"]').val().toString();
-
     let dialogOptions: any = {
       resizable: true,
       //height: ($(window).height() - 200),
@@ -325,15 +323,15 @@ let formController = (function () {
     //onPost();
 
     //use jquery ajax
-    function jQueryAjax() {
+    function jQueryAjax() {                                     
       $.ajax({
         type: "POST",
         url: thisUrl,
         data: JSON.stringify(postBackModel),
         headers: {
-        //  //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
-        //  'RequestVerificationToken': antiForgeryToken,
-        //  'Accept': 'application/json',
+          //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
+          'RequestVerificationToken': $('input[name="X-CSRF-TOKEN-IPREHAB"]').val().toString(),
+          'Accept': 'application/json',
         },
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',

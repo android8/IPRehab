@@ -3,8 +3,9 @@
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
-    const stage = $(document).prop('title').toLowerCase();
-    $('iput[id^="Q42_' + stage + '"]').each(function () {
+    const stage = $('.pageTitle').text().replace(' ', '_');
+    formController.Q12_Q23_blank_then_Lock_All(stage);
+    $('input[id^="Q42_' + stage + '"]').each(function () {
         $(this).change(function () {
             formController.Q42_Interrupted_then_Q43(stage, $(this));
         });
@@ -23,53 +24,49 @@ $(function () {
 let formController = (function () {
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
-        let Q12_isNull = $("input[id^='Q12_" + stage + "']").val() == null;
-        let Q23_isNull = $("input[id^='Q23_" + stage + "']").val() == null;
-        if (Q12_isNull || Q23_isNull) {
+        let Q12 = $("input[id^=Q12_" + stage + "_1]");
+        let Q23 = $("input[id^=Q23_" + stage + "_1]");
+        if (Q12.val() == null || Q23.val() == null) {
             $('.persistable').each(function () {
                 let $this = $(this);
-                if ($this.prop("id").indexOf('Q12') < 0 || $this.prop("id").indexOf('Q23') < 0) {
+                if ($this.prop("id").indexOf('Q12') < 0 && $this.prop("id").indexOf('Q23') < 0) {
                     $this.prop("disabled", true);
                 }
             });
             return false;
         }
-        else {
-            $("input[id^='Q14A']").prop('disabled', false).focus();
-            return false;
-        }
     }
     /* private function */
     function Q16A_is_Home_then_Q17(stage) {
-        let Q16A_is_Home = $("input[id^='Q16']").val() == 94 /*1. Home */;
+        let Q16A_is_Home = $("input[id^=Q16]").val() == 94 /*1. Home */;
         if (Q16A_is_Home) {
-            $("input[id^='Q17']").prop('disabled', false).focus();
+            $("input[id^=Q17]").prop('disabled', false).focus();
             return false;
         }
     }
     /* private function */
     function Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A(stage) {
         let Q24A_is_set = false;
-        $('input[id ^= "Q21A"]').each(function () {
+        $('input[id ^= Q21A]').each(function () {
             if ($(this).val() == '123.45') {
-                $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+                $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
                 Q24A_is_set = true;
                 return; //break out each()
             }
         });
         if (!Q24A_is_set) {
-            $('input[id^="Q22"]').each(function () {
+            $('input[id^=Q22]').each(function () {
                 if ($(this).val() == '123.45') {
-                    $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+                    $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
                     Q24A_is_set = true;
                     return; //break out each()
                 }
             });
         }
         if (!Q24A_is_set) {
-            $('input[id^="Q24"]').each(function () {
+            $('input[id^=Q24]').each(function () {
                 if ($(this).val() == '123.45') {
-                    $('input[id^="Q24A_' + stage + '_86"]').prop('checked', true);
+                    $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
                     Q24A_is_set = true;
                     return; //break out each()
                 }
@@ -106,7 +103,7 @@ let formController = (function () {
     /*private function*/
     function AddMoreQ42Q43(stage, questionKey) {
         /* add interrup date control */
-        let lastInputIdx = $('input[id^="' + questionKey + '_' + stage + '"]').length;
+        let lastInputIdx = $('input[id^=' + questionKey + '_' + stage + ']').length;
         let lastInputDate = $('#' + questionKey + '_' + stage + '_' + lastInputIdx);
         let dateClone = lastInputDate.clone();
         dateClone.val(null).focus();
@@ -114,11 +111,11 @@ let formController = (function () {
     /* private function */
     function Q44C_is_Y_then_Q44D(stage) {
         /*codeset ID 86(Y) 87(N)*/
-        let Q44C_Y = $('input[id^="Q44C' + stage + '_86"]');
+        let Q44C_Y = $('input[id^=Q44C' + stage + '_86]');
         if (Q44C_Y.prop('checked')) {
-            $('iput[id^="Q44D"]').prop('disabled', false).focus();
-            $('iput[id^="Q44E"]').prop('disabled', false).focus();
-            $('iput[id^="Q45"]').prop('disabled', false).focus();
+            $('input[id^=Q44D]').prop('disabled', false).focus();
+            $('input[id^=Q44E]').prop('disabled', false).focus();
+            $('input[id^=Q45]').prop('disabled', false).focus();
             return false;
         }
         return true;
@@ -126,14 +123,14 @@ let formController = (function () {
     /* private function */
     function Q44C_is_N_then_Q46(stage) {
         /*codeset ID 87(N)*/
-        let Q44C_N = $('input[id%="Q44C' + stage + '_87]');
+        let Q44C_N = $('input[id^=Q44C' + stage + '_87]');
         if (Q44C_N.prop('checked')) {
             if (confirm('Q44D and Q44E answers will be resetted')) {
-                $('iput[id^="Q44D"]').val(-1);
-                $('iput[id^="Q44D"]').prop('disabled', true).focus();
-                $('iput[id^="Q44E"]').val(-1);
-                $('iput[id^="Q44E"]').prop('disabled', true).focus();
-                $('iput[id^="Q46"]').prop('disabled', false).focus();
+                $('input[id^=Q44D]').val(-1);
+                $('input[id^=Q44D]').prop('disabled', true).focus();
+                $('input[id^=Q44E]').val(-1);
+                $('input[id^=Q44E]').prop('disabled', true).focus();
+                $('input[id^=Q46]').prop('disabled', false).focus();
             }
         }
         return true;
@@ -142,8 +139,8 @@ let formController = (function () {
    * public functions exposing the private functions to outside of the closure
   ***************************************************************************/
     return {
-        'Q12_Q23_blank_then_Lock_All_else_Q14A': Q12_Q23_blank_then_Lock_All,
-        'Q16A_is_Home_Then_Q17': Q16A_is_Home_then_Q17,
+        'Q12_Q23_blank_then_Lock_All': Q12_Q23_blank_then_Lock_All,
+        'Q16A_is_Home_then_Q17': Q16A_is_Home_then_Q17,
         'Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A': Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A,
         'Q42_Interrupted_then_Q43': Q42_Interrupted_then_Q43,
         'AddMoreQ42Q43': AddMoreQ42Q43,

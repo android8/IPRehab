@@ -156,10 +156,6 @@ body {
   white-space: nowrap !important;
 }
 
-.disabled {
-  pointer-events: none;
-}
-
 .alert-dismissible .close {
   position: relative;
   top: 0;

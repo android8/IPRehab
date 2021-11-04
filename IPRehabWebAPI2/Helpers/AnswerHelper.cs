@@ -101,9 +101,9 @@ namespace IPRehabWebAPI2.Helpers
             LastUpdate = ans.LastUpdate
           };
           _ipRehabContext.tblAnswer.Add(thisAnswer);
+          await _ipRehabContext.SaveChangesAsync();
         }
         
-        await _ipRehabContext.SaveChangesAsync();
         transaction.Commit();
       }
       catch
@@ -132,7 +132,7 @@ namespace IPRehabWebAPI2.Helpers
         thisEpisode.LastUpdate = firstNewAnswer.LastUpdate;
 
         _ipRehabContext.tblEpisodeOfCare.Update(thisEpisode);
-        //await _ipRehabContext.SaveChangesAsync();
+        await _ipRehabContext.SaveChangesAsync();
 
         foreach (UserAnswer ans in udatedAnswers)
         {
@@ -148,9 +148,9 @@ namespace IPRehabWebAPI2.Helpers
             thisAnswer.LastUpdate = ans.LastUpdate;
           }
           _ipRehabContext.tblAnswer.Update(thisAnswer);
+          await _ipRehabContext.SaveChangesAsync();
         }
         
-        await _ipRehabContext.SaveChangesAsync();
         transaction.Commit();
       }
       catch
@@ -161,7 +161,7 @@ namespace IPRehabWebAPI2.Helpers
     }
 
     /// <summary>
-    /// only delete answers, do not delte episode
+    /// delete answers, and delte this episode when all answers are deleted
     /// </summary>
     /// <param name="thisEpisodeID"></param>
     /// <param name="oldAnswers"></param>
@@ -177,7 +177,7 @@ namespace IPRehabWebAPI2.Helpers
           if (thisAnswer != null)
           {
             _ipRehabContext.tblAnswer.Remove(thisAnswer);
-            //await _ipRehabContext.SaveChangesAsync();
+            await _ipRehabContext.SaveChangesAsync();
           }
         }
 
@@ -185,9 +185,9 @@ namespace IPRehabWebAPI2.Helpers
         {
           var thisEpisode = await _ipRehabContext.tblEpisodeOfCare.FindAsync(thisEpisodeID);
           _ipRehabContext.tblEpisodeOfCare.Remove(thisEpisode);
+          await _ipRehabContext.SaveChangesAsync();
         }
         
-        await _ipRehabContext.SaveChangesAsync();
         transaction.Commit();
       }
       catch

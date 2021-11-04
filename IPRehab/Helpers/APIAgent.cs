@@ -58,6 +58,7 @@ namespace IPRehab.Helpers
         client.DefaultRequestHeaders.Clear();
         //Define request data format  
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
         using var httpResponse = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
 
         httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299

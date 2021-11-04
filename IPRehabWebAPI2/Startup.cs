@@ -63,6 +63,9 @@ namespace IPRehabWebAPI2
       services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
       services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
 
+      /* ToDO: to be deleted after test */
+      services.AddScoped<ITestUserPatientCacheHelper, TestUserPatientCacheHelper>();
+
       services.AddScoped<AnswerHelper, AnswerHelper>();
       #endregion
 

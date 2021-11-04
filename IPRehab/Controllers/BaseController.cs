@@ -17,16 +17,17 @@ namespace IPRehab.Controllers
 {
   public class BaseController : Controller
   {
-    protected IIdentity _windowsIdentity;
     protected readonly IConfiguration _configuration;
     protected readonly string _apiBaseUrl;
     protected readonly string _appVersion;
     protected readonly JsonSerializerOptions _options;
-    protected List<MastUserDTO> userAccessLevels;
     protected readonly ILogger _logger;
-    protected readonly string _impersonatedUserName;
     protected readonly int _pageSize;
     protected readonly string _office;
+
+    protected IIdentity _windowsIdentity;
+    protected List<MastUserDTO> userAccessLevels;
+    protected string _userID;
 
     protected BaseController(IConfiguration configuration, ILogger logger)
     {
@@ -34,7 +35,14 @@ namespace IPRehab.Controllers
       _logger = logger;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
-      _impersonatedUserName = System.Web.HttpUtility.UrlEncode(_configuration.GetSection("AppSettings").GetValue<string>("Impersonate"));
+
+      string impersonnated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
+
+      if (!string.IsNullOrEmpty(impersonnated)) {
+        //get impersonated user from appSettings.json
+        _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(impersonnated));
+      }
+
       _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
       _office = _configuration.GetSection("AppSettings").GetValue<string>("Office");
       _options = new JsonSerializerOptions()
@@ -49,80 +57,82 @@ namespace IPRehab.Controllers
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-      string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
-
-      //no impersonation so get identity from User.Claims
-      //string trueUser = HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value; 
-
-      //drop the last zero if the admin ZERO account is used
-      string trueUser = HttpContext.User.Identity.Name.Replace("0","");
-
-      string encodedTrueUser = System.Web.HttpUtility.UrlEncode(trueUser);
+      string userAccessLevelSessionKey = "UserAccessLevel";
       List<MastUserDTO> accessLevels = new();
-
-      ViewBag.Office = _office;
-      ViewBag.CurrentUser = trueUser;
-      ViewBag.CurrentNetworkID = HttpContext.User.Identity.Name;
+      string viewBagCurrentUserName = string.Empty;
+      string sourceOfCredential;
       CancellationToken cancellationToken = new();
       await HttpContext.Session.LoadAsync(cancellationToken);
 
-      string userAccessLevelSessionKey = "UserAccessLevel";
-
       //get userAccessLevels from session
       string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
-      bool callWebAPI = true;
-      //if (!string.IsNullOrEmpty(jsonStringFromSession))
-      //{
-      //  //the impersonation can be manually changed in appSettings.json during a session
-      //  //retrieve serialized object from session and check if it is the same log in user 
-      //  accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
 
-      //  string userInSession = accessLevels.First().NTUserName;
-      //  if (!string.IsNullOrEmpty(_impersonatedUserName) && userInSession == _impersonatedUserName)
-      //  {
-      //    callWebAPI = false;
-      //  }
-      //  else
-      //  {
-      //    if (userInSession == ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(encodedtrueUser)))
-      //      callWebAPI = false;
-      //  }
-      //}
-
-      if (callWebAPI)
+      if (string.IsNullOrEmpty(_userID))
       {
-        if (string.IsNullOrEmpty(_impersonatedUserName))
+        _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
+      }
+
+      //user not in HttpContext.Session then call web API
+      if (string.IsNullOrEmpty(jsonStringFromSession))
+      {
+        string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
+        accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_userID}", _options);
+        if (accessLevels != null && accessLevels.Any())
         {
-          /* use current log in user network name */
-          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{encodedTrueUser}", _options);
+          MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
+          if (thisUser != null)
+          {
+            sourceOfCredential = "(from WebAPI)";
+            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+            //update session key UserAccessLevels value
+            string serializedString = JsonSerializer.Serialize(accessLevels);
+            HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
+          }
+          else
+          {
+            sourceOfCredential = "(WebAPI: user not contained in access level)";
+            viewBagCurrentUserName = "Unknown";
+          }
         }
         else
         {
-          /* use impersonated network name */
-          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_impersonatedUserName}", _options);
-        }
-
-
-        if (accessLevels != null && accessLevels.Any())
-        {
-          //update session key UserAccessLevels value
-          string serializedString = JsonSerializer.Serialize(accessLevels);
-          HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
+          sourceOfCredential = "(WebAPI: access level is null)";
+          viewBagCurrentUserName = "Unknown";
         }
       }
-
-      MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-      if (thisUser != null)
+      //user in HttpContext.Session then don't call web API
+      else
       {
-        ViewBag.CurrentUser = $"{thisUser.LName}, {thisUser.FName}";
-        ViewBag.CurrentNetworkID = thisUser.NTUserName;
+        accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
+        if (accessLevels == null || accessLevels.Count == 0)
+        {
+          sourceOfCredential = "(Session deserialization issue)";
+          viewBagCurrentUserName = "Unknown";
+        }
+        else
+        {
+          MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
+          if (thisUser != null)
+          {
+            sourceOfCredential = "(from Session)";
+            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+          }
+          else
+          {
+            sourceOfCredential = "(Session has no user information)";
+            viewBagCurrentUserName = "Unknown";
+          }
+        }
       }
-      
+      ViewBag.SourceOfCredential = sourceOfCredential;
+      ViewBag.CurrentUserID = $"{_userID}";
+      ViewBag.CurrentUserName = viewBagCurrentUserName;
       ViewBag.AppVersion = $"Version {_appVersion}";
+      ViewBag.Office = _office;
 
       var routeData = this.RouteData;
       var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-      await UserAudit.AuditUserAsync(trueUser, RouteData, remoteIpAddress);
+      await UserAudit.AuditUserAsync(_userID, RouteData, remoteIpAddress);
       await next();
     }
   }

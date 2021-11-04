@@ -29,6 +29,25 @@
             <param name="episodeID"></param>
             <returns></returns>
         </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get only meta data of an individual patient by id
+            </summary>
+            <param name="patientID"></param>
+            <param name="networkID"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatient(System.Int32)">
+            <summary>
+            get individual patient by episode since patient ID and patient name cannot be used in querystring
+            </summary>
+            <param name="episodeID"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.#ctor(IPRehabModel.IPRehabContext,IPRehabRepository.Contracts.IAnswerRepository)">
             <summary>
             constructor injection of IPRehabContext in order to use _ipRehabContext transaction
@@ -61,7 +80,7 @@
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalDeleteAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
-            only delete answers, do not delte episode
+            delete answers, and delte this episode when all answers are deleted
             </summary>
             <param name="thisEpisodeID"></param>
             <param name="oldAnswers"></param>
@@ -71,6 +90,39 @@
             <summary>
             Hydrate the DTO with selected domain properties
             </summary>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.TestUserPatientCacheHelper.#ctor(UserModel.MasterreportsContext)">
+            <summary>
+            constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.TestUserPatientCacheHelper.GetUserAccessLevels(System.String)">
+            <summary>
+            Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.TestUserPatientCacheHelper.GetPatients(IPRehabRepository.Contracts.IFSODPatientRepository,System.String,System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            use generic IFODPatientRepository to get patient filtered by quarter and criteria
+            </summary>
+            <param name="_patientRepository"></param>
+            <param name="networkName">optional</param>
+            <param name="criteria">optional</param>
+            <param name="orderBy">optional</param>
+            <param name="pageNumber">optional</param>
+            <param name="PageSize">optional</param>
+            <param name="patientID">optional, used by individual patient search only</param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.TestUserPatientCacheHelper.CleanUserName(System.String)">
+            <summary>
+            this should be in a utility library
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(UserModel.MasterreportsContext)">
             <summary>
