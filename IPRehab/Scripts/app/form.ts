@@ -62,6 +62,28 @@ $(function () {
       formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
     }
   });
+
+  const stage: string = $('.pageTitle').text().replace(' ', '_');
+
+  /* on load */
+  formController.selfCareScore(stage);
+
+  /* on change */
+  $('[id^=GG0130]').each(function () {
+    $(this).change(function () {
+      formController.selfCareScore(stage);
+    });
+  });
+
+  /* on load */
+  formController.mobilityScore(stage);
+
+  /* on change */
+  $('[id^=GG1070]').each(function () {
+    $(this).change(function () {
+      formController.mobilityScore(stage);
+    })
+  });
 });
 
 /****************************************************************************
@@ -69,6 +91,13 @@ $(function () {
  ***************************************************************************/
 
 let formController = (function () {
+  function isEmpty($this: any): boolean {
+    if ((typeof $this.val() !== 'undefined' || typeof $this.val() === 'string') && $this.val())
+      return false;
+    else
+      return true;
+  }
+
   /* private function */
   function scrollToAnchor(anchorId: string) {
     let aTag: any = $('a[name="' + anchorId + '"]');
@@ -410,16 +439,77 @@ let formController = (function () {
     theForm.validate();
   }
 
+  /*
+  sum(gg0170A.val()..GG0170H.val() if val() <= 6)
+  sum(gg0170A.val()..GG0170H.val() as 1 each if val() >= 7)
+  (GG0170R + GG0170RR) x 2 if GG0170I.val() >=7
+  */
+  /* private function */
+  function selfCareScore(stage: string): void {
+    let factors: string[] = ['GG0130A_' + stage, 'GG0130B_' + stage, 'GG0130C_' + stage, 'GG0130E_' + stage, 'GG0130F_' + stage, 'GG0130G_' + stage, 'GG0130H_' + stage];
+    let selfScore: number = 0;
+    $('[id^=GG1030]').each(function () {
+      let $this: any = $(this);
+      if (factors.indexOf($this.prop('id')) != -1) {
+        if (!isEmpty($this)) {
+          if ($this.val() <= 6)
+            selfScore += $this.val();
+          else {
+            selfScore++;
+          }
+        }
+      }
+    });
+    $('#Self_Care_Aggregate_Score').text(selfScore);
+  }
+
+  function mobilityScore(stage: string): void {
+    $('[id^=GG1070]').each(function () {
+      let factors: string[] = ['GG0170A_' + stage, 'GG0170B_' + stage, 'GG0170C_' + stage, 'GG0170D_' + stage, 'GG0170E_' + stage, 'GG0170F_' + stage, 'GG0170G_' + stage];
+      let singleFactors: string[] = ['GG0170J_' + stage, 'GG0170K_' + stage, 'GG0170L_' + stage, 'GG0170M_' + stage, 'GG0170N_' + stage, 'GG0170O_' + stage, 'GG0170P_' + stage, 'GG0170Q_' + stage, 'GG0170RR_' + stage, 'GG0170S_' + stage];
+      let doubleFactors: string[] = ['GG0170I_' + stage];
+      let mobilityScore: number = 0;
+      let $this: any = $(this);
+      if (factors.indexOf($this.prop('id')) != -1) {
+        if (!isEmpty($this) && $this.val() <= 6) {
+          mobilityScore += $this.val();
+        }
+        else {
+          mobilityScore++;
+        }
+      }
+      if (singleFactors.indexOf($this.prop('id')) != -1) {
+        if (!isEmpty($this)) {
+          mobilityScore++;
+        }
+      }
+      if (doubleFactors.indexOf($this.prop('id')) != -1) {
+        if (!isEmpty($this) && $this.val() >=7) {
+          let GG0170R: any = $('id[GG0170R_' + stage + ']');
+          let GG0170S: any = $('id[GG0170S_' + stage + ']');
+          if(!isEmpty(GG0170R))
+            mobilityScore += GG0170R.val() * 2;
+          if (!isEmpty(GG0170S))
+            mobilityScore += GG0170S.val() * 2;
+        }
+      }
+      $('#Mobility_Aggregate_Score').text(mobilityScore);
+    });
+  }
+
   /****************************************************************************
    * public functions exposing the private functions to outside of the closure
   ***************************************************************************/
   return {
+    'isEmpty': isEmpty,
     'scrollToAnchor': scrollToAnchor,
     'setRehabBtns': setRehabBtns,
     'resetRehabBtns': resetRehabBtns,
     'breakLongSentence': breakLongSentence,
     'getTextPixels': getTextPixels,
     'submitTheForm': submitTheForm,
-    'validate': validateForm
+    'validate': validateForm,
+    'selfCareScore': selfCareScore,
+    'mobilityScore': mobilityScore
   }
 })();

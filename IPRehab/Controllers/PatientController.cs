@@ -63,10 +63,10 @@ namespace IPRehab.Controllers
 
       //patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
       patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
-
+      patients = patients.OrderBy(x => x.Name);
       PatientListViewModel patientListVM = new();
       patientListVM.TotalPatients = patients.Count();
-      patientListVM.PageTitle = "Inpatients Rehab";
+      patientListVM.PageTitle = "In-patient Rehab";
       patientListVM.SearchCriteria = searchCriteria;
       patientListVM.PageNumber = pageNumber;
       patientListVM.OrderBy = orderBy;

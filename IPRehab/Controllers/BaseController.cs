@@ -38,7 +38,8 @@ namespace IPRehab.Controllers
 
       string impersonnated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
 
-      if (!string.IsNullOrEmpty(impersonnated)) {
+      if (!string.IsNullOrEmpty(impersonnated))
+      {
         //get impersonated user from appSettings.json
         _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(impersonnated));
       }
@@ -64,40 +65,41 @@ namespace IPRehab.Controllers
       CancellationToken cancellationToken = new();
       await HttpContext.Session.LoadAsync(cancellationToken);
 
-      //get userAccessLevels from session
-      string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
-
+      //get user ID from Windows Identity
       if (string.IsNullOrEmpty(_userID))
       {
         _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
       }
 
-      //user not in HttpContext.Session then call web API
+      //get userAccessLevels from session
+      string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
+
+      //get userAccessLevel from web API, if not in the HttpContext.Session
       if (string.IsNullOrEmpty(jsonStringFromSession))
       {
         string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
         accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_userID}", _options);
-        if (accessLevels != null && accessLevels.Any())
+        if (accessLevels == null && !accessLevels.Any())
+        {
+          sourceOfCredential = "(WebAPI: access level is null)";
+          viewBagCurrentUserName = "Unknown";
+        }
+        else
         {
           MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-          if (thisUser != null)
+          if (thisUser == null)
           {
-            sourceOfCredential = "(from WebAPI)";
+            sourceOfCredential = "(WebAPI: user not contained in access level)";
+            viewBagCurrentUserName = "Unknown";
+          }
+          else
+          {
+            sourceOfCredential = "(WebAPI)";
             viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
             //update session key UserAccessLevels value
             string serializedString = JsonSerializer.Serialize(accessLevels);
             HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
           }
-          else
-          {
-            sourceOfCredential = "(WebAPI: user not contained in access level)";
-            viewBagCurrentUserName = "Unknown";
-          }
-        }
-        else
-        {
-          sourceOfCredential = "(WebAPI: access level is null)";
-          viewBagCurrentUserName = "Unknown";
         }
       }
       //user in HttpContext.Session then don't call web API
@@ -106,21 +108,21 @@ namespace IPRehab.Controllers
         accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
         if (accessLevels == null || accessLevels.Count == 0)
         {
-          sourceOfCredential = "(Session deserialization issue)";
+          sourceOfCredential = "(Session: deserialization issue)";
           viewBagCurrentUserName = "Unknown";
         }
         else
         {
           MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-          if (thisUser != null)
+          if (thisUser == null)
           {
-            sourceOfCredential = "(from Session)";
-            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+            sourceOfCredential = "(Session: has no user information)";
+            viewBagCurrentUserName = "Unknown";
           }
           else
           {
-            sourceOfCredential = "(Session has no user information)";
-            viewBagCurrentUserName = "Unknown";
+            sourceOfCredential = "(Session)";
+            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
           }
         }
       }
@@ -132,7 +134,7 @@ namespace IPRehab.Controllers
 
       var routeData = this.RouteData;
       var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-      await UserAudit.AuditUserAsync(_userID, RouteData, remoteIpAddress);
+      UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress); //don't await the external audit result
       await next();
     }
   }

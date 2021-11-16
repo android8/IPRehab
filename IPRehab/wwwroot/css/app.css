@@ -1,7 +1,7 @@
 @media (min-width: 768px) {
   .paddingTop {
     padding-top: 60px;
-    margin-right: 20px;
+    /*    margin-right: 20px;*/
   }
 }
 .splashscreen {
@@ -25,10 +25,10 @@
 
 .splashscreen #flashText {
   display: flex;
-  color: #1c2d8e;
-  font-size: 3em;
   align-items: center;
   justify-content: center;
+  color: #1c2d8e;
+  font-size: 3em;
   /*position:fixed;*/
   background-image: -webkit-linear-gradient(#fff, #e2e2f2);
   -webkit-background-clip: text;
@@ -102,14 +102,17 @@ html {
 }
 
 body {
+  /*  display: flex;
+    justify-items: center;
+    align-content: center;*/
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
   /*  perspective: 1px;
-    -webkit-perspective: 1px;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;*/
+  -webkit-perspective: 1px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;*/
 }
 
 .pageTitle {
@@ -183,6 +186,7 @@ body {
   background-color: white;
   /*padding-top:10px*/
   z-index: 10;
+  width: 100%;
 }
 
 .fixedBottom {
@@ -190,17 +194,7 @@ body {
   bottom: 0px;
   margin-bottom: 0;
   width: 100%;
-  background-color: #f3eab8;
   padding: 5px;
-}
-
-.main {
-  /*  margin-top: 20px !important;
-  */
-}
-
-article {
-  margin-left: 3em;
 }
 
 .footer {

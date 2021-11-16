@@ -14,11 +14,13 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  @await RenderSectionAsync("Links", required: false)
+
   <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
   <link href="~/css/transition.css" asp-append-version="true" rel="stylesheet" />
   <link href="~/css/app.css" asp-append-version="true" rel="stylesheet" />
   @*<link href="~/css/cube annimation/cube.css" asp-append-version="true" rel="stylesheet" />*@
-  @await RenderSectionAsync("Links", required: false)
 </head>
 <body>
   <header>
@@ -52,7 +54,7 @@
       </div>*@
   </header>
 
-  <main role="main" class="pb-3 main">
+  <main role="main">
     @*<div class="parallax"></div>*@
     <div class="content-outer">
       <div class="content-inner">
@@ -61,19 +63,18 @@
             <div class="spinnerContainer">
               <img id="chiropractor" src="~/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
               @*<div class="cube">
-            <div class="sides">
-              <div class="top"></div>
-              <div class="right"></div>
-              <div class="bottom"></div>
-              <div class="left"></div>
-              <div class="front"></div>
-              <div class="back"></div>
-            </div>
-          </div>*@
+                  <div class="sides">
+                    <div class="top"></div>
+                    <div class="right"></div>
+                    <div class="bottom"></div>
+                    <div class="left"></div>
+                    <div class="front"></div>
+                    <div class="back"></div>
+                  </div>
+                </div>*@
             </div>
           </aside>
           @RenderBody()
-          <partial name="_CookieConsentPartial" />
         </div>
       </div>
     </div>
@@ -94,6 +95,7 @@
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <script src="~/js/app/animateBanner.js" asp-append-version="true"></script>
+  @await RenderSectionAsync("Scripts", required: false)
 
   <script type="text/javascript" asp-append-version="true">
     $(function () {
@@ -105,7 +107,6 @@
     })
   </script>
 
-  @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>

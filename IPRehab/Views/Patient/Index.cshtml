@@ -5,200 +5,212 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Links {
+  @* JQuery Data Table stylesheet *@
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.css" />
+}
+
 @section Scripts {
+  @* JQuery Data Table script *@
+  @*<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.js"></script>*@
+
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
   <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
   <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+  <script type="module" src="~/js/app/patientDataTable.js" asp-append-version="true" async></script>
+  <script type="text/javascript">
+    $(function () {
+      doDataTable();
+    });
+  </script>
 }
 
 <div class="flex-start-column-nowrap paddingTop">
-  <div class="flex-start-row-nowrap">
-    @{await Html.RenderPartialAsync("_SearchPartial", Model);}
-  </div>
-  <div>
-    <table class="table-responsive-md table-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.VISN)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.Facility)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.District)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.Division)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
-          </th>
-          <th class="bedSection">
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
-          </th>
-          <th>
-            @Html.DisplayNameFor(model => model.Patients.First().Patient.FiscalPeriod)
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @{
-          int patientRowIndex = 0;
-          foreach (var pat in Model.Patients)
-          {
-            <!--Patient row-->
-            <tr class="patientRow">
-              <td class="rowCounter">@(++patientRowIndex)</td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.VISN)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Facility)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.District)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Division)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
-              </td>
-              <td class="bedSection">
-                @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.Name)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
-              </td>
-              <td>
-                @Html.DisplayFor(modelItem => pat.Patient.FiscalPeriod)
-              </td>
-            </tr>
+  @{await Html.RenderPartialAsync("_SearchPartial", Model);}
+  <table class="table-responsive-md table-bordered patients">
+    <thead>
+      <tr>
+        <th></th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.VISN)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.Facility)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.District)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.Division)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
+        </th>
+        <th class="bedSection">
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Patients.First().Patient.FiscalPeriod)
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @{
+        int patientRowIndex = 0;
+        foreach (var pat in Model.Patients)
+        {
+          <!--Patient row-->
+          <tr class="patientRow">
+            <td class="rowCounter">@(++patientRowIndex)</td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.VISN)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.Facility)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.District)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.Division)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
+            </td>
+            <td class="bedSection">
+              @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.Name)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => pat.Patient.FiscalPeriod)
+            </td>
+          </tr>
 
-            <!--Episode of Care row-->
-            @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
-            <tr>
-              <td colspan="10">
-                <div class="flex-start-row-nowrap episode">
-                  <table class="table-striped table-responsive-md">
-                    <thead>
-                      <tr>
-                        <th>
-                          <div>
-                            <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                          </div>
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
-                        </th>
-                        <th>
-                          @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
-                        </th>
-                        <th>@* stage command buttons view component controller *@</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
+          <!--Episode of Care row-->
+          @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
+          <tr>
+            <td colspan="10">
+              <div class="flex-start-row-nowrap episode">
+                <table class="table-striped table-responsive-md">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div>
+                          <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                      </th>
+                      <th>
+                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
+                      </th>
+                      <th>
+                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
+                      </th>
+                      <th>
+                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
+                      </th>
+                      <th>
+                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
+                      </th>
+                      <th>@* stage command buttons view component controller *@</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
+                    {
+                      if (thisEpisodeConfig.EpisodeOfCareID <= 0)
                       {
-                        if (thisEpisodeConfig.EpisodeOfCareID <= 0)
-                        {
-                          <tr>
-                            <td>@*episode-node-symbol*@</td>
-                            <td colspan="5" class="text-danger">
-                              <div class="flex-start-row-nowrap episode">
-                                <div>
-                                  No episode of care&nbsp;
-                                </div>
-                                <div>
-                                  @*<div class="mdc-touch-target-wrapper">
-                                      <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
-                                              title="show commands" data-hidden="true">
-                                        <span class="mdc-button__ripple"></span>
-                                        <span class="mdc-button__label textNoWrap">Commands</span>
-                                        <div class="mdc-button__touch"></div>
-                                      </button>
-                                    </div>*@
-
-                                  @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
-
-                                  @{
-                                    string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-
-                                    /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                                  }
-
-                                  @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
-                                </div>
+                        <tr>
+                          <td>@*episode-node-symbol*@</td>
+                          <td class="text-danger">
+                            <div class="flex-start-row-nowrap episode">
+                              <div>
+                                No episode of care&nbsp;
                               </div>
-                            </td>
-                          </tr>
-                        }
-                        else
-                        {
-                          <tr class="episode">
-                            <td>@*episode-node-symbol*@</td>
-                            <td>
-                              @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
-                            </td>
-                            <td>
-                              @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
-                            </td>
-                            <td>
-                              @*<div class="mdc-touch-target-wrapper">
-                                <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
-                                title="show commands" data-hidden="true">
-                                <span class="mdc-button__ripple"></span>
-                                <span class="mdc-button__label textNoWrap">Commands</span>
-                                <div class="mdc-button__touch"></div>
-                                </button>
-                                </div>*@
+                              <div>
+                                @*<div class="mdc-touch-target-wrapper">
+                                    <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
+                                            title="show commands" data-hidden="true">
+                                      <span class="mdc-button__ripple"></span>
+                                      <span class="mdc-button__label textNoWrap">Commands</span>
+                                      <div class="mdc-button__touch"></div>
+                                    </button>
+                                  </div>*@
 
-                              @*/
-                                *the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
+                                @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
 
-                              @{
-                                /* stage command buttons view component controller */
-                                string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-                                /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                              }
+                                @{
+                                  string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                              @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                  /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                }
 
-                            </td>
-                          </tr>
-                        }
+                                @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
                       }
-                    </tbody>
-                  </table>
-                </div>
-              </td>
-            </tr>
-          }
+                      else
+                      {
+                        <tr class="episode">
+                          <td>@*episode-node-symbol*@</td>
+                          <td>
+                            @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
+                          </td>
+                          <td>
+                            @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
+                          </td>
+                          <td>
+                            @*<div class="mdc-touch-target-wrapper">
+                              <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
+                              title="show commands" data-hidden="true">
+                              <span class="mdc-button__ripple"></span>
+                              <span class="mdc-button__label textNoWrap">Commands</span>
+                              <div class="mdc-button__touch"></div>
+                              </button>
+                              </div>*@
+
+                            @*/
+                              *the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
+
+                            @{
+                              /* stage command buttons view component controller */
+                              string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                              /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                            }
+
+                            @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
         }
-      </tbody>
-    </table>
-  </div>
+      }
+    </tbody>
+  </table>
 </div>
+<partial name="_CookieConsentPartial" />
