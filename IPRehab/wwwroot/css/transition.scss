@@ -62,3 +62,26 @@ table {
     opacity: 1;
   }
 }
+
+@keyframes fly-in-font{
+  0% {
+    font-size: 40px;
+  }
+  100%{
+    font-size:initial;
+  }
+}
+
+@keyframes heart-beat{
+  0% {
+    font-size: initial;
+  }
+
+  50% {
+    font-size: 40px;
+  }
+
+  100% {
+    font-size: initial;
+  }
+}

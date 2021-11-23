@@ -886,8 +886,14 @@ button.rehabAction {
 
 .disabled {
   opacity: 0.3;
-  cursor: not-allowed;
 }
+
+.disabled:hover:not([enabled="enabled"]), persistable:hover:not([enabled="enabled"]) {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
 
 /*button[data-stage*='New'] {
   background-color: white;
@@ -951,4 +957,12 @@ button[data-stage*='New'] svg{
 
 input[type="datetime"], input[type="text"] {
   /*  border: solid 1px black;*/
+}
+
+i.score {
+  animation: fly-in-font 2s;
+}
+
+#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
+  animation: heart-beat 1s;
 }

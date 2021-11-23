@@ -12,19 +12,14 @@
 
 @section Scripts {
   @* JQuery Data Table script *@
-  @*<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.js"></script>*@
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.js"></script>
 
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
   <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
   <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-  <script type="module" src="~/js/app/patientDataTable.js" asp-append-version="true" async></script>
-  <script type="text/javascript">
-    $(function () {
-      doDataTable();
-    });
-  </script>
-}
+@*  <script type="module" src="~/js/app/patientDataTable.js" asp-append-version="true" async></script>
+*@}
 
 <div class="flex-start-column-nowrap paddingTop">
   @{await Html.RenderPartialAsync("_SearchPartial", Model);}
@@ -133,7 +128,7 @@
                       {
                         <tr>
                           <td>@*episode-node-symbol*@</td>
-                          <td class="text-danger">
+                          <td class="text-danger" colspan="4">
                             <div class="flex-start-row-nowrap episode">
                               <div>
                                 No episode of care&nbsp;
@@ -198,7 +193,6 @@
                             }
 
                             @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
-
                           </td>
                         </tr>
                       }
