@@ -450,7 +450,7 @@ let formController = (function () {
       let thisControlType: string = $thisControl.prop('type');
 
       let thisControlScore: number = 0;
-      if (thisControlIntValue !== NaN && thisControlIntValue <= 0) {
+      if (thisControlIntValue !== NaN && thisControlIntValue <=0) {
         updateScore($thisControl, 0);
       }
       else {
@@ -471,7 +471,7 @@ let formController = (function () {
           case "text": {
             let thisValue: string = $thisControl.val().toString();
             thisControlScore = parseInt(thisValue);
-            if (thisControlScore !== NaN && thisControlScore > 0) {
+            if (thisControlScore > 0) {
               thisControlScore = 1;
             }
             break;
@@ -482,9 +482,12 @@ let formController = (function () {
           updateScore($thisControl, thisControlScore);
           selfCareScore += thisControlScore;
         }
-        else { // greater than 7,9,10,88
+        else if (thisControlScore >= 7) { // greater than 7,9,10,88
           updateScore($thisControl, 1);
           selfCareScore++;
+        }
+        else {
+          updateScore($thisControl, 0);
         }
       }
       $('#Self_Care_Aggregate_Score').text(selfCareScore);
@@ -528,10 +531,9 @@ let formController = (function () {
   function Score_GG0170_Except_GG0170R_GG0170S(): number {
     let mobilityScore: number = 0;
     /* select only GG0170 inputs including RR and SS but excluding R, S, and Discharge */
-    $('.persistable[id^=GG0170]:not([id*=Discharge]):not([id*=GG0170R]):not([id*=GG0170S]), .persistable[id^=GG0170RR], .persistable[id^=GG0170SS]').each(function () {
+    $('.persistable[id^=GG0170]:not([id*=Discharge]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
       let thisControlScore: number = 0;
       let $thisControl = $(this);
-      let continueMapping: boolean = true;
       let thisControlID: string = $thisControl.prop('id');
       let thisControType: string = $thisControl.prop('type');
       switch (thisControType) {
@@ -558,52 +560,29 @@ let formController = (function () {
         }
       }
 
-      const valueFactoringFields: string[] = ['A_', 'B_', 'C_', 'D_', 'E_', 'F_', 'G_'];
+      const valueFactoringFields: string[] = ['A_', 'B_', 'C_', 'D_', 'E_', 'F_', 'G_', 'I_', 'J_', 'K_', 'L_', 'M_', 'N_', 'O_', 'P_'];
 
       for (var i = 0; i < valueFactoringFields.length; i++) {
         if (thisControlID.indexOf(valueFactoringFields[i]) != -1) {
-          if (thisControlScore !== NaN || thisControlScore <= 0){
-            updateScore($thisControl, 0);
-          } 
-          else {
-            //control value score
-            if (thisControlScore <= 6) { //btw 1 and 6
-              updateScore($thisControl, thisControlScore);
-              mobilityScore += thisControlScore;
-            }
-            else { //7,9,10,88
+          switch (true) {
+            case thisControlScore >= 7:
+              //7,9,10, or 88 add 1 point
               //one point score
               updateScore($thisControl, 1);
               mobilityScore++;
-            }
+              break;
+            case thisControlScore > 0 && thisControlScore <= 6:
+              //btw 1 and 6 add value point 
+              updateScore($thisControl, thisControlScore);
+              mobilityScore += thisControlScore;
+              break;
+            default:
+              updateScore($thisControl, 0);
+              break;
           }
-
-          //this control id is matched in vauleFactoringFields so don't continue to the next factoring fields
-          continueMapping = false;
 
           //exit for() loop
           break;
-        }
-      }
-
-      if (continueMapping) {
-        /* exclude GG0170I to be calculated in the doublePointScore() */
-        const onePointFactoringFields: string[] = ['I_', 'J_', 'K_', 'L_', 'M_', 'N_', 'O_', 'P_', 'Q_', 'RR_', 'SS_'];
-
-        for (var i = 0; i < onePointFactoringFields.length; i++) {
-          if (thisControlID.indexOf(onePointFactoringFields[i]) != -1) {
-            if (thisControlScore !== NaN || thisControlScore <= 0){
-              updateScore($thisControl, 0);
-            }
-            else {
-              //one point score
-              updateScore($thisControl, 1);
-              mobilityScore++;
-            }
-
-            //exit for() loop
-            break;
-          }
         }
       }
     });
@@ -615,10 +594,10 @@ let formController = (function () {
     let mobilityScore: number = 0;
     /* only one element in the following selector will be matched per stage form */
     const GG0170I_Admission: any = $('#GG0170I_Admission_Performance_0, #GG0170I_Interim_Performance_0, #GG0170I_Admission_Goal_0, #GG0170I_Follow_Up_Performance_0');
-    let GG0170IAdmissionScore: number = GG0170I_Admission_Score(GG0170I_Admission);
+    let GG0170IAdmissionChoice: number = GG0170I_Admission_Choice(GG0170I_Admission);
 
     const GG0170I_Discharge: any = $('#GG0170I_Discharge_Goal_0, #GG0170I_Discharge_Performance_0');
-    let GG0170IDischargeScore: number = GG0170I_Discharge_Score(GG0170I_Discharge);
+    let GG0170IDischargeChoice: number = GG0170I_Discharge_Choice(GG0170I_Discharge);
 
     const GG0170R_Admission: any = $('#GG0170R_Admission_Performance_0, #GG0170R_Interim_Performance_0, #GG0170R_Admission_Goal_0, #GG0170R_Follow_Up_Performance_0');
     let GG0170RAdmissionScore: number = GG0170R_Admission_Score(GG0170R_Admission);
@@ -627,7 +606,7 @@ let formController = (function () {
     let GG0170SAdmissionScore: number = GG0170S_Admission_Score(GG0170S_Admission);
 
     let multiplier: number = 1;
-    if (GG0170IAdmissionScore >= 7 && GG0170IDischargeScore >= 7) {
+    if (GG0170IAdmissionChoice >= 7 && GG0170IDischargeChoice >= 7) {
       multiplier = 2;
     }
 
@@ -650,23 +629,23 @@ let formController = (function () {
     return mobilityScore;
   }
 
-  function GG0170I_Admission_Score(GG0170I_Admission: any): number {
-    let GG0170IAdmissionScore: number = 0;
+  function GG0170I_Admission_Choice(GG0170I_Admission: any): number {
+    let GG0170IAdmissionChoice: number = 0;
 
     /* there will only be one match from the selector per stage, so each() only loop once*/
     GG0170I_Admission.each(function () {
       let GG0170I_Admission_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170I_Admission_Control.prop('value'));
 
-      if (thisControlValueInt !== NaN && thisControlValueInt > 0) {
+      if (thisControlValueInt > 0) {
         let GG0170I_Admission_ControlType: string = GG0170I_Admission_Control.prop('type');
         switch (GG0170I_Admission_ControlType) {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: string = $('#' + GG0170I_Admission_Control.prop('id') + ' option:selected').text();
             let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt !== NaN && selectedOptionInt > 0) {
-              GG0170IAdmissionScore = selectedOptionInt;
+            if (selectedOptionInt > 0) {
+              GG0170IAdmissionChoice = selectedOptionInt;
             }
             break;
           }
@@ -677,8 +656,8 @@ let formController = (function () {
               let thisLableInt: number = parseInt(thisLabel);
 
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLableInt !== NaN && thisLableInt > 0) {
-                GG0170IAdmissionScore = thisLableInt;
+              if (thisLableInt > 0) {
+                GG0170IAdmissionChoice = thisLableInt;
               }
             }
             break;
@@ -686,33 +665,33 @@ let formController = (function () {
           case "text": {
             let thisInputValue: string = GG0170I_Admission_Control.val().toString();
             let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt !== NaN && thisInputValueInt > 0) {
-              GG0170IAdmissionScore = thisInputValueInt;
+            if (thisInputValueInt > 0) {
+              GG0170IAdmissionChoice = thisInputValueInt;
             }
             break;
           }
         }
       }
     });
-    return GG0170IAdmissionScore;
+    return GG0170IAdmissionChoice;
   }
 
-  function GG0170I_Discharge_Score(GG0170I_Discharge: any): number {
-    let GG0170IDischargeScore: number = 0;
+  function GG0170I_Discharge_Choice(GG0170I_Discharge: any): number {
+    let GG0170IDischargeChoice: number = 0;
 
     /* there will only be one match from the selector per stage, so each() only loop once */
     GG0170I_Discharge.each(function () {
       let GG0170I_Discharge_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170I_Discharge_Control.prop('value'));
-      if (thisControlValueInt !== NaN && thisControlValueInt > 0) {
+      if (thisControlValueInt > 0) {
         let GG0170I_Discharge_ControlType: string = GG0170I_Discharge_Control.prop('type');
         switch (GG0170I_Discharge_ControlType) {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: any = $('#' + GG0170I_Discharge_Control.prop('id') + ' option:selected').text();
             let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt !== NaN && selectedOptionInt > 0) {
-              GG0170IDischargeScore = selectedOptionInt;
+            if (selectedOptionInt > 0) {
+              GG0170IDischargeChoice = selectedOptionInt;
             }
             break;
           }
@@ -724,8 +703,8 @@ let formController = (function () {
               let thisLabelInt: number = parseInt(thisLabel);
 
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLabelInt !== NaN && thisLabelInt > 0) {
-                GG0170IDischargeScore = thisLabelInt;
+              if (thisLabelInt > 0) {
+                GG0170IDischargeChoice = thisLabelInt;
               }
             }
             break;
@@ -734,15 +713,15 @@ let formController = (function () {
             //true score is the entered text
             let thisInputValue: string = GG0170I_Discharge_Control.val().toString();
             let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt !== NaN && thisInputValueInt > 0) {
-              GG0170IDischargeScore = thisInputValueInt;
+            if (thisInputValueInt > 0) {
+              GG0170IDischargeChoice = thisInputValueInt;
             }
             break;
           }
         }
       }
     });
-    return GG0170IDischargeScore;
+    return GG0170IDischargeChoice;
   }
 
   function GG0170R_Admission_Score(GG0170R_Admission: any): number {
@@ -752,15 +731,15 @@ let formController = (function () {
     GG0170R_Admission.each(function () {
       let GG0170R_Admission_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170R_Admission_Control.prop('value'));
-      if (thisControlValueInt !== NaN && thisControlValueInt > 0) {
+      if (thisControlValueInt > 0) {
         let GG0170R_Admission_ControlType: string = GG0170R_Admission_Control.prop('type');
         switch (GG0170R_Admission_ControlType) {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: any = $('#' + GG0170R_Admission_Control.prop('id') + ' option:selected').text();
             let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt !== NaN && selectedOptionInt > 0) {
-              GG0170RAdmissionScore = 1;
+            if (selectedOptionInt > 0) {
+              GG0170RAdmissionScore = selectedOptionInt;
             }
             break;
           }
@@ -772,7 +751,7 @@ let formController = (function () {
               let thisLabelInt: number = parseInt(thisLabel);
 
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLabelInt !== NaN && thisLabelInt > 0) {
+              if (thisLabelInt > 0) {
                 GG0170RAdmissionScore = 1;
               }
             }
@@ -782,7 +761,7 @@ let formController = (function () {
             //true score is the entered text
             let thisInputValue: string = GG0170R_Admission_Control.val().toString();
             let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt !== NaN && thisInputValueInt > 0) {
+            if (thisInputValueInt > 0) {
               GG0170RAdmissionScore = 1;
             }
             break;
@@ -800,15 +779,15 @@ let formController = (function () {
     GG0170S_Admission.each(function () {
       let GG0170S_Admission_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170S_Admission_Control.prop('value'));
-      if (thisControlValueInt !== NaN && thisControlValueInt > 0) {
+      if (thisControlValueInt > 0) {
         let GG0170S_Admission_ControlType: string = GG0170S_Admission_Control.prop('type');
         switch (GG0170S_Admission_ControlType) {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: any = $('#' + GG0170S_Admission_Control.prop('id') + ' option:selected').text();
             let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt !== NaN && selectedOptionInt > 0) {
-              GG0170SAdmissionScore = 1;
+            if (selectedOptionInt > 0) {
+              GG0170SAdmissionScore = selectedOptionInt;
             }
             break;
           }
@@ -820,7 +799,7 @@ let formController = (function () {
               let thisLabelInt: number = parseInt(thisLabel);
 
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLabelInt !== NaN && thisLabelInt > 0) {
+              if (thisLabelInt > 0) {
                 GG0170SAdmissionScore = 1;
               }
             }
@@ -830,7 +809,7 @@ let formController = (function () {
             //true score is the entered text
             let thisInputValue: string = GG0170S_Admission_Control.val().toString();
             let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt !== NaN && thisInputValueInt > 0) {
+            if (thisInputValueInt > 0) {
               GG0170SAdmissionScore = 1;
             }
             break;
