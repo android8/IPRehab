@@ -100,7 +100,8 @@ namespace IPRehabWebAPI2.Helpers
           {
             case "none":
               {
-                var rawPatients = await _patientRepository.FindByCondition(p => thisPeriod == p.FiscalPeriodInt).ToListAsync();
+                var rawPatients = await _patientRepository
+                  .FindByCondition(p => thisPeriod == p.FiscalPeriodInt).OrderBy(x=>x.Name).ToListAsync();
 
                 if (rawPatients.Any())
                 {
@@ -141,7 +142,7 @@ namespace IPRehabWebAPI2.Helpers
                                     p.Facility.Contains(criteria) ||
                                     p.VISN.Contains(criteria)
                                   )
-                                ).ToListAsync();
+                                ).OrderBy(x=>x.Name).ToListAsync();
 
                 if (rawPatients.Any())
                 {
@@ -167,7 +168,7 @@ namespace IPRehabWebAPI2.Helpers
                                     p.Name.Contains(criteria) || p.PTFSSN.Contains(criteria) || p.Facility.Contains(criteria) ||
                                     p.VISN.Contains(criteria) || p.District.Contains(criteria) || p.FiscalPeriod.Contains(criteria)
                                   )
-                                ).ToListAsync();
+                                ).OrderBy(x=>x.Name).ToListAsync();
 
                 if (rawPatients.Any())
                 {

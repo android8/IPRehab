@@ -222,6 +222,7 @@ div.content-outer {
   background-color: white;
   /*padding-top:10px*/
   z-index: 10;
+  width: 100%;
 }
 
 .fixedBottom {

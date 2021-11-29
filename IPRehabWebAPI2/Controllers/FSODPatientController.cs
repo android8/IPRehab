@@ -65,7 +65,7 @@ namespace IPRehabWebAPI2.Controllers
           {
             //p.CareEpisodes = new();
             List<tblEpisodeOfCare> episodes = await _episodeOfCareRepository.FindByCondition(episode =>
-              episode.PatientICNFK == p.PTFSSN).ToListAsync();
+              episode.PatientICNFK == p.PTFSSN).OrderBy(x=>x.AdmissionDate).ToListAsync();
 
             foreach (var episode in episodes)
             {

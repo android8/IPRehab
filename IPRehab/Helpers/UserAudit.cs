@@ -1,5 +1,6 @@
 ﻿using IPRehab.Models;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace IPRehab.Helpers
     /// <summary>
     /// send audit data to Centurion
     /// </summary>
-    public static async Task AuditUserAsync(string user, RouteData routeData, IPAddress remoteIPAddress)
+    public static async Task AuditUserAsync(IConfiguration configuration, string user, RouteData routeData, IPAddress remoteIPAddress)
     {
       //Generate an audit
       UserAuditModel audit = new()
@@ -31,17 +32,22 @@ namespace IPRehab.Helpers
         ProductID = 6480  //Enter your ProductID
       };
 
-      const string baseUrl = "https://vhaausweb3.vha.med.va.gov/centurionapi/audit/";
+      string baseUrl = configuration.GetSection("AppSettings").GetValue<string>("WebStatsAPIUrl");
+      bool webStatsEnabled = configuration.GetSection("AppSettings").GetValue<string>("WebStatsEnabled").ToLower() == "true";
       string strApiCall = "Create/";
-      string url = $"{baseUrl}{strApiCall}";
-      using (var client = new HttpClient())
+      string url = $"{baseUrl}/{strApiCall}";
+
+      if (webStatsEnabled)
       {
-        var useraudit = JsonConvert.SerializeObject(audit);
-        StringContent content = new StringContent(useraudit, Encoding.UTF8, "application/json");
-        using (var response = await client.PostAsync(url, content))
+        using (var client = new HttpClient())
         {
-          var results = await response.Content.ReadAsStringAsync();
-          response.EnsureSuccessStatusCode();
+          var useraudit = JsonConvert.SerializeObject(audit);
+          StringContent content = new StringContent(useraudit, Encoding.UTF8, "application/json");
+          using (var response = await client.PostAsync(url, content))
+          {
+            var results = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
+          }
         }
       }
     }
