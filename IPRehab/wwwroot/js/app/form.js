@@ -49,19 +49,19 @@ $(function () {
     });
     const stage = $('.pageTitle').text().replace(' ', '_');
     /* on load */
-    formController.selfCareScore(stage);
+    formController.selfCareScore();
     /* on change */
-    $('[id^=GG0130]').each(function () {
+    $('.persistable[id^=GG0130]:not([id*=Discharge])').each(function () {
         $(this).change(function () {
-            formController.selfCareScore(stage);
+            formController.selfCareScore();
         });
     });
     /* on load */
-    formController.mobilityScore(stage);
+    formController.mobilityScore();
     /* on change */
-    $('[id^=GG1070]').each(function () {
+    $('[id^=GG0170]').each(function () {
         $(this).change(function () {
-            formController.mobilityScore(stage);
+            formController.mobilityScore();
         });
     });
 });
@@ -70,7 +70,7 @@ $(function () {
  ***************************************************************************/
 let formController = (function () {
     function isEmpty($this) {
-        if ((typeof $this.val() !== 'undefined' || typeof $this.val() === 'string') && $this.val())
+        if (typeof $this.val() !== 'undefined' && $this.val())
             return false;
         else
             return true;
@@ -183,7 +183,7 @@ let formController = (function () {
             let oldValue = $thisPersistable.data('oldvalue');
             let answerID = $thisPersistable.data('answerid');
             let CRUD;
-            //return false doesn't break the .map, but skips the current item and continues mapping
+            //return false doesn't break the .map, but skips the current item and continues mapping the next persistable
             if ($thisPersistable.prop('type') == 'select-one' && (+currentValue == -1 && !oldValue)) {
                 return false;
             }
@@ -356,7 +356,7 @@ let formController = (function () {
                 return response.json();
             })
                 .then(data => {
-                -$('#dialog')
+                $('#dialog')
                     .text('Data is saved.')
                     .dialog(dialogOptions);
                 $('.rehabAction').removeAttr('disabled');
@@ -377,61 +377,350 @@ let formController = (function () {
     function validateForm(theForm) {
         theForm.validate();
     }
-    /*
-    sum(gg0170A.val()..GG0170H.val() if val() <= 6)
-    sum(gg0170A.val()..GG0170H.val() as 1 each if val() >= 7)
-    (GG0170R + GG0170RR) x 2 if GG0170I.val() >=7
-    */
     /* private function */
-    function selfCareScore(stage) {
-        let factors = ['GG0130A_' + stage, 'GG0130B_' + stage, 'GG0130C_' + stage, 'GG0130E_' + stage, 'GG0130F_' + stage, 'GG0130G_' + stage, 'GG0130H_' + stage];
-        let selfScore = 0;
-        $('[id^=GG1030]').each(function () {
-            let $this = $(this);
-            if (factors.indexOf($this.prop('id')) != -1) {
-                if (!isEmpty($this)) {
-                    if ($this.val() <= 6)
-                        selfScore += $this.val();
-                    else {
-                        selfScore++;
+    function selfCareScore() {
+        let selfCareScore = 0;
+        $('.persistable[id^=GG0130]:not([id*=Discharge])').each(function () {
+            let $thisControl = $(this);
+            let thisControlID = $thisControl.prop('id');
+            let thisControlIntValue = parseInt($thisControl.prop('value'));
+            let thisControlType = $thisControl.prop('type');
+            let thisControlScore = 0;
+            if (thisControlIntValue !== NaN && thisControlIntValue <= 0) {
+                updateScore($thisControl, 0);
+            }
+            else {
+                switch (thisControlType) {
+                    case "select-one": {
+                        //true score is the selected option text
+                        let selectedOption = $('#' + thisControlID + ' option:selected').text();
+                        thisControlScore = parseInt(selectedOption);
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        if ($thisControl.prop('checked')) {
+                            thisControlScore = 1;
+                        }
+                        break;
+                    }
+                    case "text": {
+                        let thisValue = $thisControl.val().toString();
+                        thisControlScore = parseInt(thisValue);
+                        if (thisControlScore > 0) {
+                            thisControlScore = 1;
+                        }
+                        break;
+                    }
+                }
+                if (thisControlScore <= 6) { //between 1 and 6
+                    updateScore($thisControl, thisControlScore);
+                    selfCareScore += thisControlScore;
+                }
+                else if (thisControlScore >= 7) { // greater than 7,9,10,88
+                    updateScore($thisControl, 1);
+                    selfCareScore++;
+                }
+                else {
+                    updateScore($thisControl, 0);
+                }
+            }
+            $('#Self_Care_Aggregate_Score').text(selfCareScore);
+        });
+    }
+    /* private function */
+    function mobilityScore() {
+        let mobilityScore = 0;
+        /* handel all GG0170 except GG0170R and GG0170S */
+        mobilityScore += Score_GG0170_Except_GG0170R_GG0170S();
+        /* handle GG0170R and GG0170S together */
+        mobilityScore += Score_GG0170R_GG0170S();
+        $('#Mobility_Aggregate_Score').text(mobilityScore);
+    }
+    function updateScore(thisControl, newScore) {
+        let theScoreEl;
+        theScoreEl = $(thisControl.siblings('i.score'));
+        if (newScore <= 0) {
+            if (theScoreEl.length > 0) {
+                theScoreEl.remove();
+            }
+        }
+        else {
+            if (theScoreEl.length == 0) {
+                {
+                    thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
+                }
+            }
+            else {
+                theScoreEl.text('score: ' + newScore);
+            }
+        }
+    }
+    function Score_GG0170_Except_GG0170R_GG0170S() {
+        let mobilityScore = 0;
+        /* select only GG0170 inputs including RR and SS but excluding R, S, and Discharge */
+        $('.persistable[id^=GG0170]:not([id*=Discharge]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
+            let thisControlScore = 0;
+            let $thisControl = $(this);
+            let thisControlID = $thisControl.prop('id');
+            let thisControType = $thisControl.prop('type');
+            switch (thisControType) {
+                case "select-one": {
+                    //true score is the selected option text
+                    let selectedOption = $('#' + thisControlID + ' option:selected').text();
+                    thisControlScore = parseInt(selectedOption);
+                    break;
+                }
+                case "checkbox":
+                case "radio": {
+                    if ($thisControl.prop('checked')) {
+                        /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
+                        let thisLabel = $thisControl.closest('label').text();
+                        thisControlScore = parseInt(thisLabel);
+                    }
+                    break;
+                }
+                case "text": {
+                    /* only if the input contains numeric string */
+                    let thisValue = $thisControl.val().toString();
+                    thisControlScore = parseInt(thisValue);
+                    break;
+                }
+            }
+            const valueFactoringFields = ['A_', 'B_', 'C_', 'D_', 'E_', 'F_', 'G_', 'I_', 'J_', 'K_', 'L_', 'M_', 'N_', 'O_', 'P_'];
+            for (var i = 0; i < valueFactoringFields.length; i++) {
+                if (thisControlID.indexOf(valueFactoringFields[i]) != -1) {
+                    switch (true) {
+                        case thisControlScore >= 7:
+                            //7,9,10, or 88 add 1 point
+                            //one point score
+                            updateScore($thisControl, 1);
+                            mobilityScore++;
+                            break;
+                        case thisControlScore > 0 && thisControlScore <= 6:
+                            //btw 1 and 6 add value point 
+                            updateScore($thisControl, thisControlScore);
+                            mobilityScore += thisControlScore;
+                            break;
+                        default:
+                            updateScore($thisControl, 0);
+                            break;
+                    }
+                    //exit for() loop
+                    break;
+                }
+            }
+        });
+        return mobilityScore;
+    }
+    function Score_GG0170R_GG0170S() {
+        let mobilityScore = 0;
+        /* only one element in the following selector will be matched per stage form */
+        const GG0170I_Admission = $('#GG0170I_Admission_Performance_0, #GG0170I_Interim_Performance_0, #GG0170I_Admission_Goal_0, #GG0170I_Follow_Up_Performance_0');
+        let GG0170IAdmissionChoice = GG0170I_Admission_Choice(GG0170I_Admission);
+        const GG0170I_Discharge = $('#GG0170I_Discharge_Goal_0, #GG0170I_Discharge_Performance_0');
+        let GG0170IDischargeChoice = GG0170I_Discharge_Choice(GG0170I_Discharge);
+        const GG0170R_Admission = $('#GG0170R_Admission_Performance_0, #GG0170R_Interim_Performance_0, #GG0170R_Admission_Goal_0, #GG0170R_Follow_Up_Performance_0');
+        let GG0170RAdmissionScore = GG0170R_Admission_Score(GG0170R_Admission);
+        const GG0170S_Admission = $('#GG0170S_Admission_Performance_0, #GG0170S_Interim_Performance_0, #GG0170S_Admission_Goal_0, #GG0170S_Follow_Up_Performance_0');
+        let GG0170SAdmissionScore = GG0170S_Admission_Score(GG0170S_Admission);
+        let multiplier = 1;
+        if (GG0170IAdmissionChoice >= 7 && GG0170IDischargeChoice >= 7) {
+            multiplier = 2;
+        }
+        if (GG0170RAdmissionScore > 0) {
+            updateScore(GG0170R_Admission, GG0170RAdmissionScore * multiplier);
+            mobilityScore += GG0170RAdmissionScore * multiplier;
+        }
+        else {
+            updateScore(GG0170R_Admission, 0);
+        }
+        if (GG0170SAdmissionScore > 0) {
+            updateScore(GG0170S_Admission, GG0170SAdmissionScore * multiplier);
+            mobilityScore += GG0170SAdmissionScore * multiplier;
+        }
+        else {
+            updateScore(GG0170S_Admission, 0);
+        }
+        return mobilityScore;
+    }
+    function GG0170I_Admission_Choice(GG0170I_Admission) {
+        let GG0170IAdmissionChoice = 0;
+        /* there will only be one match from the selector per stage, so each() only loop once*/
+        GG0170I_Admission.each(function () {
+            let GG0170I_Admission_Control = $(this);
+            let thisControlValueInt = parseInt(GG0170I_Admission_Control.prop('value'));
+            if (thisControlValueInt > 0) {
+                let GG0170I_Admission_ControlType = GG0170I_Admission_Control.prop('type');
+                switch (GG0170I_Admission_ControlType) {
+                    case "select-one": {
+                        //true score is the selected option text
+                        let selectedOption = $('#' + GG0170I_Admission_Control.prop('id') + ' option:selected').text();
+                        let selectedOptionInt = parseInt(selectedOption);
+                        if (selectedOptionInt > 0) {
+                            GG0170IAdmissionChoice = selectedOptionInt;
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        if (GG0170I_Admission_Control.prop('checked')) {
+                            let thisLabel = GG0170I_Admission_Control.closest('label').text();
+                            let thisLableInt = parseInt(thisLabel);
+                            /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
+                            if (thisLableInt > 0) {
+                                GG0170IAdmissionChoice = thisLableInt;
+                            }
+                        }
+                        break;
+                    }
+                    case "text": {
+                        let thisInputValue = GG0170I_Admission_Control.val().toString();
+                        let thisInputValueInt = parseInt(thisInputValue);
+                        if (thisInputValueInt > 0) {
+                            GG0170IAdmissionChoice = thisInputValueInt;
+                        }
+                        break;
                     }
                 }
             }
         });
-        $('#Self_Care_Aggregate_Score').text(selfScore);
+        return GG0170IAdmissionChoice;
     }
-    function mobilityScore(stage) {
-        $('[id^=GG1070]').each(function () {
-            let factors = ['GG0170A_' + stage, 'GG0170B_' + stage, 'GG0170C_' + stage, 'GG0170D_' + stage, 'GG0170E_' + stage, 'GG0170F_' + stage, 'GG0170G_' + stage];
-            let singleFactors = ['GG0170J_' + stage, 'GG0170K_' + stage, 'GG0170L_' + stage, 'GG0170M_' + stage, 'GG0170N_' + stage, 'GG0170O_' + stage, 'GG0170P_' + stage, 'GG0170Q_' + stage, 'GG0170RR_' + stage, 'GG0170S_' + stage];
-            let doubleFactors = ['GG0170I_' + stage];
-            let mobilityScore = 0;
-            let $this = $(this);
-            if (factors.indexOf($this.prop('id')) != -1) {
-                if (!isEmpty($this) && $this.val() <= 6) {
-                    mobilityScore += $this.val();
-                }
-                else {
-                    mobilityScore++;
+    function GG0170I_Discharge_Choice(GG0170I_Discharge) {
+        let GG0170IDischargeChoice = 0;
+        /* there will only be one match from the selector per stage, so each() only loop once */
+        GG0170I_Discharge.each(function () {
+            let GG0170I_Discharge_Control = $(this);
+            let thisControlValueInt = parseInt(GG0170I_Discharge_Control.prop('value'));
+            if (thisControlValueInt > 0) {
+                let GG0170I_Discharge_ControlType = GG0170I_Discharge_Control.prop('type');
+                switch (GG0170I_Discharge_ControlType) {
+                    case "select-one": {
+                        //true score is the selected option text
+                        let selectedOption = $('#' + GG0170I_Discharge_Control.prop('id') + ' option:selected').text();
+                        let selectedOptionInt = parseInt(selectedOption);
+                        if (selectedOptionInt > 0) {
+                            GG0170IDischargeChoice = selectedOptionInt;
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        //true score is the checked label
+                        if (GG0170I_Discharge_Control.prop('checked')) {
+                            let thisLabel = GG0170I_Discharge_Control.closest('label').text();
+                            let thisLabelInt = parseInt(thisLabel);
+                            /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
+                            if (thisLabelInt > 0) {
+                                GG0170IDischargeChoice = thisLabelInt;
+                            }
+                        }
+                        break;
+                    }
+                    case "text": {
+                        //true score is the entered text
+                        let thisInputValue = GG0170I_Discharge_Control.val().toString();
+                        let thisInputValueInt = parseInt(thisInputValue);
+                        if (thisInputValueInt > 0) {
+                            GG0170IDischargeChoice = thisInputValueInt;
+                        }
+                        break;
+                    }
                 }
             }
-            if (singleFactors.indexOf($this.prop('id')) != -1) {
-                if (!isEmpty($this)) {
-                    mobilityScore++;
-                }
-            }
-            if (doubleFactors.indexOf($this.prop('id')) != -1) {
-                if (!isEmpty($this) && $this.val() >= 7) {
-                    let GG0170R = $('id[GG0170R_' + stage + ']');
-                    let GG0170S = $('id[GG0170S_' + stage + ']');
-                    if (!isEmpty(GG0170R))
-                        mobilityScore += GG0170R.val() * 2;
-                    if (!isEmpty(GG0170S))
-                        mobilityScore += GG0170S.val() * 2;
-                }
-            }
-            $('#Mobility_Aggregate_Score').text(mobilityScore);
         });
+        return GG0170IDischargeChoice;
+    }
+    function GG0170R_Admission_Score(GG0170R_Admission) {
+        let GG0170RAdmissionScore = 0;
+        /* there will only be one match from the selector per stage, so each() only loop once */
+        GG0170R_Admission.each(function () {
+            let GG0170R_Admission_Control = $(this);
+            let thisControlValueInt = parseInt(GG0170R_Admission_Control.prop('value'));
+            if (thisControlValueInt > 0) {
+                let GG0170R_Admission_ControlType = GG0170R_Admission_Control.prop('type');
+                switch (GG0170R_Admission_ControlType) {
+                    case "select-one": {
+                        //true score is the selected option text
+                        let selectedOption = $('#' + GG0170R_Admission_Control.prop('id') + ' option:selected').text();
+                        let selectedOptionInt = parseInt(selectedOption);
+                        if (selectedOptionInt > 0) {
+                            GG0170RAdmissionScore = selectedOptionInt;
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        //true score is the checked label
+                        if (GG0170R_Admission_Control.prop('checked')) {
+                            let thisLabel = GG0170R_Admission_Control.closest('label').text();
+                            let thisLabelInt = parseInt(thisLabel);
+                            /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
+                            if (thisLabelInt > 0) {
+                                GG0170RAdmissionScore = 1;
+                            }
+                        }
+                        break;
+                    }
+                    case "text": {
+                        //true score is the entered text
+                        let thisInputValue = GG0170R_Admission_Control.val().toString();
+                        let thisInputValueInt = parseInt(thisInputValue);
+                        if (thisInputValueInt > 0) {
+                            GG0170RAdmissionScore = 1;
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        return GG0170RAdmissionScore;
+    }
+    function GG0170S_Admission_Score(GG0170S_Admission) {
+        let GG0170SAdmissionScore = 0;
+        /* there will only be one match from the selector per stage, so each() only loop once */
+        GG0170S_Admission.each(function () {
+            let GG0170S_Admission_Control = $(this);
+            let thisControlValueInt = parseInt(GG0170S_Admission_Control.prop('value'));
+            if (thisControlValueInt > 0) {
+                let GG0170S_Admission_ControlType = GG0170S_Admission_Control.prop('type');
+                switch (GG0170S_Admission_ControlType) {
+                    case "select-one": {
+                        //true score is the selected option text
+                        let selectedOption = $('#' + GG0170S_Admission_Control.prop('id') + ' option:selected').text();
+                        let selectedOptionInt = parseInt(selectedOption);
+                        if (selectedOptionInt > 0) {
+                            GG0170SAdmissionScore = selectedOptionInt;
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        //true score is the checked label
+                        if (GG0170S_Admission_Control.prop('checked')) {
+                            let thisLabel = GG0170S_Admission_Control.closest('label').text();
+                            let thisLabelInt = parseInt(thisLabel);
+                            /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
+                            if (thisLabelInt > 0) {
+                                GG0170SAdmissionScore = 1;
+                            }
+                        }
+                        break;
+                    }
+                    case "text": {
+                        //true score is the entered text
+                        let thisInputValue = GG0170S_Admission_Control.val().toString();
+                        let thisInputValueInt = parseInt(thisInputValue);
+                        if (thisInputValueInt > 0) {
+                            GG0170SAdmissionScore = 1;
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        return GG0170SAdmissionScore;
     }
     /****************************************************************************
      * public functions exposing the private functions to outside of the closure

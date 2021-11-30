@@ -33,6 +33,9 @@ _ReSharper*/
 
 /node_modules/
 /IPrehab/node_modules/
-/IPRehab/wwwroot/js/
+/IPRehab/wwwroot/js/*.*
+/IPRehab/Scripts/app/*.js
+/IPRehab/Scripts/app/*.map
+
 
 
