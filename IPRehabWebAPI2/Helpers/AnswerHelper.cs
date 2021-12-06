@@ -33,7 +33,7 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     /// <param name="newAnswers"></param>
     /// <returns></returns>
-    public async Task TransactionalInsertAsync(List<UserAnswer> newAnswers)
+    public async Task<int> TransactionalInsertAsync(List<UserAnswer> newAnswers)
     {
       using var transaction = _ipRehabContext.Database.BeginTransaction();
       try
@@ -68,6 +68,7 @@ namespace IPRehabWebAPI2.Helpers
         
         await _ipRehabContext.SaveChangesAsync();
         transaction.Commit();
+        return thisEpisode.EpisodeOfCareID;
       }
       catch
       {

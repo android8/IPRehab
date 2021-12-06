@@ -12,8 +12,12 @@ import { InteractionTrigger } from "../../node_modules/@material/chips/deprecate
 
 $(function () {
   $('.persistable').change(function () {
-    $('#ajaxPost').removeAttr('disabled');
-    $('#mvcPost').removeAttr('disabled');
+    let onsetDate: any = $(".persistable[data-questionkey^='Q23']").val();
+    let admissionDate: any = $(".persistable[data-questionkey^='Q12']").val();
+    if (onsetDate && admissionDate) {
+      $('#ajaxPost').removeAttr('disabled');
+      $('#mvcPost').removeAttr('disabled');
+    }
   });
 
   $('select').each(function () {
@@ -37,7 +41,7 @@ $(function () {
   $('.gotoSection').each(function () {
     let $this = $(this);
     $this.click(function () {
-      let anchorId = $this.data("anchorid");
+      let anchorId: string = $this.data("anchorid");
       formController.scrollToAnchor(anchorId);
     });
   });
@@ -53,18 +57,16 @@ $(function () {
       const thisPostBtn: any = $(this);
       $('.spinnerContainer').show();
       let theScope: any = $('#userAnswerForm');
-      let stageName: any = $('#stage', theScope).val();
+      let stageName: string = $('#stage', theScope).val().toString();
       const patientID: any = $('#patientID', theScope).val();
       const patientName: any = $('#patientName', theScope).val();
       let episodeID: number = +$('#episodeID', theScope).val();
-      if (stageName.toString().toLowerCase() == "new")
+      if (stageName.toLowerCase() == "new")
         episodeID = -1;
 
       formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
     }
   });
-
-  const stage: string = $('.pageTitle').text().replace(' ', '_');
 
   /* on load */
   formController.selfCareScore();
@@ -101,8 +103,9 @@ let formController = (function () {
 
   /* private function */
   function scrollToAnchor(anchorId: string) {
-    let aTag: any = $('a[name="' + anchorId + '"]');
-    $('html,body').animate({ scrollTop: aTag.offset().top - 15 }, 'fast');
+    console.log('scroll to ' + anchorId);
+    let anchor: any = $('#' + anchorId);
+    $('html,body').animate({ scrollTop: anchor.offset().top }, 'fast');
   }
 
   /* private function */
@@ -138,15 +141,6 @@ let formController = (function () {
   }
 
   /* private function */
-  function validate() {
-    $('form#userAnswerForm').validate({
-      //  rules: {
-
-      //  }
-    })
-  }
-
-  /* private function */
   function breakLongSentence(thisSelectElement) {
     console.log('thisSelectElement', thisSelectElement);
     let maxLength: number = 50;
@@ -154,30 +148,36 @@ let formController = (function () {
     console.log('longTextOptionDIV', longTextOptionDIV);
     let thisSelectWidth = thisSelectElement[0].clientWidth;
     let thisScope: any = thisSelectElement;
-    $.each($('option:selected', thisScope), function () {
-      let $thisOption = $(this);
-
-      let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g")
-      let oldText: string = $thisOption.text();
-      let font = $thisOption.css('font');
-      let oldTextInPixel = getTextPixels(oldText, font);
-
-      console.log('oldTextInPixel', oldTextInPixel);
-      console.log('thisSelectWidth', thisSelectWidth);
+    let selectedValue: number = parseInt(thisSelectElement.prop('value'));
+    if (selectedValue <= 0) {
       longTextOptionDIV.text('');
-      if (oldTextInPixel > thisSelectWidth) {
-        let newStr = oldText.replace(regX, "$1\n");
-        newStr = newStr.trim();
-        let startWithNumber = $.isNumeric(newStr.substring(0, 1));
-        if (startWithNumber) {
-          newStr = newStr.substring(newStr.indexOf(" ") + 1);
+    }
+    else {
+      $.each($('option:selected', thisScope), function () {
+        let $thisOption = $(this);
+
+        let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g")
+        let oldText: string = $thisOption.text();
+        let font = $thisOption.css('font');
+        let oldTextInPixel = getTextPixels(oldText, font);
+
+        console.log('oldTextInPixel', oldTextInPixel);
+        console.log('thisSelectWidth', thisSelectWidth);
+        longTextOptionDIV.text('');
+        if (oldTextInPixel > thisSelectWidth) {
+          let newStr = oldText.replace(regX, "$1\n");
+          newStr = newStr.trim();
+          let startWithNumber = $.isNumeric(newStr.substring(0, 1));
+          if (startWithNumber) {
+            newStr = newStr.substring(newStr.indexOf(" ") + 1);
+          }
+          console.log('old ->', oldText);
+          console.log('new ->', newStr);
+          longTextOptionDIV.text(newStr);
+          longTextOptionDIV.removeClass("invisible");
         }
-        console.log('old ->', oldText);
-        console.log('new ->', newStr);
-        longTextOptionDIV.text(newStr);
-        longTextOptionDIV.removeClass("invisible");
-      }
-    });
+      });
+    }
   }
 
   /* private function */
@@ -190,7 +190,7 @@ let formController = (function () {
   }
 
   /* private function */
-  function submitTheForm(persistables: any, stageName: any, patientID: any, patientName: any, episodeID: number, thisPostBtn: any): void {
+  function submitTheForm(persistables: any, stageName: string, patientID: any, patientName: any, episodeID: number, thisPostBtn: any): void {
     //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
     //console.log("serialized input", inputAnswerArray);
 
@@ -205,6 +205,7 @@ let formController = (function () {
     //  })
     //});
 
+    let thisAnswer: IUserAnswer = <IUserAnswer>{};
     const oldAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
     const newAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
     const updatedAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
@@ -223,13 +224,17 @@ let formController = (function () {
       let CRUD: string;
 
       //return false doesn't break the .map, but skips the current item and continues mapping the next persistable
+      // !oldValue yields true only when the value is not acceptible, then skip the current item and exit the map() 
       if ($thisPersistable.prop('type') == 'select-one' && (+currentValue == -1 && !oldValue)) {
         return false;
       }
+
+      // !oldValue yields true only when the value is not acceptible, then skip the current item and exit the map() 
       if (($thisPersistable.prop('type') == 'checkbox' || $thisPersistable.prop('type') == 'radio')
         && (!$thisPersistable.prop('checked') && !oldValue)) {
         return false;
       }
+
       if (currentValue == oldValue //both are not undefined and with the same empty or non-empty strings, ie ''=='', 'xyx'=='xyz'
         || (currentValue == '' && !oldValue) //currentValue is blank and oldValue is undefined
         || (!currentValue && !oldValue))  //both are undefineed
@@ -237,24 +242,27 @@ let formController = (function () {
         return false;
       }
 
+      console.log('currentValue', currentValue);
+      console.log('!answerID', !answerID);
+      console.log('+answerID != -1', +answerID != -1);
+
       //determine CRUD operation
-      if (currentValue != '' && (!answerID || +answerID == -1)) {
-        CRUD = 'C';
-      }
-      else if (currentValue == '' && (answerID || +answerID != -1)) {
-        CRUD = 'D';
-      }
-      else {
-        CRUD = "U";
+      switch (true) {
+        case (currentValue != '' && (!answerID || +answerID == -1)):
+          CRUD = 'C';
+          break;
+        case (currentValue == '' && (answerID || +answerID != -1)):
+          CRUD = 'D';
+          thisAnswer.AnswerID = +answerID;
+          break;
+        default:
+          CRUD = "U";
+          thisAnswer.AnswerID = +answerID;
+          break;
       }
 
-      let thisAnswer: IUserAnswer = <IUserAnswer>{};
       thisAnswer.PatientName = patientName.toString();
       thisAnswer.PatientID = patientID.toString();
-
-      if (answerID)
-        thisAnswer.AnswerID = +answerID;
-
       thisAnswer.EpisodeID = episodeID;
 
       //both of admission date and onset date are rendered with MaterialInputDate view template with the same class
@@ -507,6 +515,7 @@ let formController = (function () {
     $('#Mobility_Aggregate_Score').text(mobilityScore);
   }
 
+  /* private function */
   function updateScore(thisControl: any, newScore: number) {
     let theScoreEl: any;
     theScoreEl = $(thisControl.siblings('i.score'));
@@ -584,6 +593,8 @@ let formController = (function () {
           //exit for() loop
           break;
         }
+        else
+          updateScore($thisControl, 0);
       }
     });
 
@@ -606,7 +617,7 @@ let formController = (function () {
     let GG0170SAdmissionScore: number = GG0170S_Admission_Score(GG0170S_Admission);
 
     let multiplier: number = 1;
-    if (GG0170IAdmissionChoice >= 7 && GG0170IDischargeChoice >= 7) {
+    if (GG0170IAdmissionChoice >= 7 || GG0170IDischargeChoice >= 7) {
       multiplier = 2;
     }
 
@@ -729,6 +740,7 @@ let formController = (function () {
 
     /* there will only be one match from the selector per stage, so each() only loop once */
     GG0170R_Admission.each(function () {
+      let selectedOptionInt: number = 0;
       let GG0170R_Admission_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170R_Admission_Control.prop('value'));
       if (thisControlValueInt > 0) {
@@ -737,10 +749,7 @@ let formController = (function () {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: any = $('#' + GG0170R_Admission_Control.prop('id') + ' option:selected').text();
-            let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt > 0) {
-              GG0170RAdmissionScore = selectedOptionInt;
-            }
+            selectedOptionInt = parseInt(selectedOption);
             break;
           }
           case "checkbox":
@@ -748,24 +757,25 @@ let formController = (function () {
             //true score is the checked label
             if (GG0170R_Admission_Control.prop('checked')) {
               let thisLabel = GG0170R_Admission_Control.closest('label').text();
-              let thisLabelInt: number = parseInt(thisLabel);
-
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLabelInt > 0) {
-                GG0170RAdmissionScore = 1;
-              }
+              selectedOptionInt = parseInt(thisLabel);
             }
             break;
           }
           case "text": {
             //true score is the entered text
             let thisInputValue: string = GG0170R_Admission_Control.val().toString();
-            let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt > 0) {
-              GG0170RAdmissionScore = 1;
-            }
+            selectedOptionInt = parseInt(thisInputValue);
             break;
           }
+        }
+        switch (true) {
+          case (selectedOptionInt > 0 && selectedOptionInt <= 6):
+            GG0170RAdmissionScore = selectedOptionInt;
+            break;
+          case (selectedOptionInt >= 7):
+            GG0170RAdmissionScore = 1;
+            break;
         }
       }
     });
@@ -777,6 +787,7 @@ let formController = (function () {
 
     /* there will only be one match from the selector per stage, so each() only loop once */
     GG0170S_Admission.each(function () {
+      let selectedOptionInt: number = 0;
       let GG0170S_Admission_Control: any = $(this);
       let thisControlValueInt: number = parseInt(GG0170S_Admission_Control.prop('value'));
       if (thisControlValueInt > 0) {
@@ -785,10 +796,7 @@ let formController = (function () {
           case "select-one": {
             //true score is the selected option text
             let selectedOption: any = $('#' + GG0170S_Admission_Control.prop('id') + ' option:selected').text();
-            let selectedOptionInt: number = parseInt(selectedOption);
-            if (selectedOptionInt > 0) {
-              GG0170SAdmissionScore = selectedOptionInt;
-            }
+            selectedOptionInt = parseInt(selectedOption);
             break;
           }
           case "checkbox":
@@ -796,24 +804,25 @@ let formController = (function () {
             //true score is the checked label
             if (GG0170S_Admission_Control.prop('checked')) {
               let thisLabel: string = GG0170S_Admission_Control.closest('label').text();
-              let thisLabelInt: number = parseInt(thisLabel);
-
               /* always NaN because currently there is no numeric data to go by for checkbox and radio controls */
-              if (thisLabelInt > 0) {
-                GG0170SAdmissionScore = 1;
-              }
+              selectedOptionInt = parseInt(thisLabel);
             }
             break;
           }
           case "text": {
             //true score is the entered text
             let thisInputValue: string = GG0170S_Admission_Control.val().toString();
-            let thisInputValueInt: number = parseInt(thisInputValue);
-            if (thisInputValueInt > 0) {
-              GG0170SAdmissionScore = 1;
-            }
+            selectedOptionInt = parseInt(thisInputValue);
             break;
           }
+        }
+        switch (true) {
+          case (selectedOptionInt > 0 && selectedOptionInt <= 6):
+            GG0170SAdmissionScore = selectedOptionInt;
+            break;
+          case (selectedOptionInt >= 7):
+            GG0170SAdmissionScore = 1;
+            break;
         }
       }
     });
@@ -833,6 +842,7 @@ let formController = (function () {
     'submitTheForm': submitTheForm,
     'validate': validateForm,
     'selfCareScore': selfCareScore,
-    'mobilityScore': mobilityScore
+    'mobilityScore': mobilityScore,
+    'updateScore': updateScore
   }
 })();
