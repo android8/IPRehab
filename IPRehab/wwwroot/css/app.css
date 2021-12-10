@@ -881,13 +881,14 @@ button.rehabAction {
   margin: 0 1px;
 }
 
-.disabled {
-  opacity: 0.3;
+.disabled, :disabled {
+  opacity: 0.3 !important;
+  color: black !important;
+  background-color: red !important;
 }
 
-.disabled:hover:not([enabled=enabled]), persistable:hover:not([enabled=enabled]) {
-  opacity: 0.3;
-  cursor: not-allowed;
+.disabled:hover:not([enabled=enabled]), :disabled:hover:not([enabled=enabled]), persistable:hover:not([enabled=enabled]) {
+  cursor: not-allowed !important;
   pointer-events: auto;
 }
 
@@ -923,6 +924,10 @@ button[data-stage*='New'] svg{
   color: black !important;
 }
 
+.actionBtnInitial:disabled {
+  color: white !important;
+}
+
 .actionBtnInterim {
   background-color: teal;
   color: white !important;
@@ -956,9 +961,9 @@ input[type=datetime], input[type=text] {
 }
 
 i.score {
-  animation: fly-in-font 2s;
+  animation: fly-in-font 0.1s;
 }
 
 #Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
-  animation: heart-beat 1s;
+  animation: heart-beat 0.1s;
 }

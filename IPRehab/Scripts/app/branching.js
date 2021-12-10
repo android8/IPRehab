@@ -4,12 +4,12 @@
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
     const stage = $('.pageTitle').text().replace(' ', '_');
-    if (stage !== 'Full') {
-        /* on ready */
-        branchingController.CommonUnlock(stage);
+    /* on ready */
+    if (stage == 'Full') {
+        $('.persistable').prop("disabled", true);
     }
     else {
-        $('.persistable').prop("disabled", true);
+        branchingController.CommonUnlock(stage);
     }
     /* on click */
     $('button[id^=btnMore]').each(function () {
@@ -61,31 +61,31 @@ $(function () {
             branchingController.Q44C_is_N_then_Q46($(this));
         });
     });
-    /* on click */
+    /* on change */
     $('select[id^=GG0170I_]').each(function () {
         $(this).change(function () {
             branchingController.GG0170JKLMN_depends_on_GG0170I($(this));
         });
     });
-    /* on click */
+    /* on change */
     $('select[id^=GG0170M_]').each(function () {
         $(this).change(function () {
             branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
         });
     });
-    /* on click */
+    /* on change */
     $('select[id^=GG0170N_]').each(function () {
         $(this).change(function () {
             branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
         });
     });
-    /* on click */
+    /* on change */
     $('input[id^=GG0170Q_]').each(function () {
         $(this).change(function () {
             branchingController.H0350_depends_on_GG0170Q($(this));
         });
     });
-    /* on click */
+    /* on change */
     $('select[id^=J0510_]').each(function () {
         $(this).change(function () {
             branchingController.J1750_depends_on_J0510($(this));
@@ -116,11 +116,12 @@ let branchingController = (function () {
         $('input[id^=Q44C_' + stage + '_87]').each(function () {
             Q44C_is_N_then_Q46($(this));
         });
-        GG0170JKLMN_depends_on_GG0170I($('#GG0170I_Admission_Performance_1'));
+        GG0170JKLMN_depends_on_GG0170I($('#GG0170I_Admission_Performance_0'));
         GG0170P_depends_on_GG0170M_and_GG0170N();
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_315'));
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_314'));
-        J1750_depends_on_J0510($('#J0510_' + stage + '_1'));
+        J1750_depends_on_J0510($('#J0510_' + stage + '_0'));
+        $("input[id^=Q12_" + stage + "]")[0].focus();
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
@@ -252,73 +253,43 @@ let branchingController = (function () {
     }
     /* private function */
     function GG0170JKLMN_depends_on_GG0170I(GG0170I) {
+        const GG0170Js = $('select[id^=GG0170J]');
         const GG0170JKLs = $('select[id^=GG0170J], select[id^=GG0170K], select[id^=GG0170L]');
         const GG0170Ms = $('select[id^=GG0170M]');
-        const GG0170Ns = $('select[id^=GG0170N]');
         let GG0170ISelectedOption = $('#' + GG0170I.prop('id') + ' option:selected').text();
         let GG0170ISelectedOptionInt = parseInt(GG0170ISelectedOption);
-        if (GG0170ISelectedOptionInt > 0) {
+        if (!isNaN(GG0170ISelectedOptionInt) && GG0170ISelectedOptionInt > 0) {
             switch (true) {
                 case (GG0170ISelectedOptionInt >= 7):
                     {
-                        /* lock and clear J K L, advance to M, unlock M N */
+                        /* lock and clear J K L, advance to M */
+                        if (GG0170JKLs.length > 0) {
+                            GG0170JKLs.each(function () {
+                                $(this).prop('disabled', true).val(-1).change();
+                            });
+                        }
                         if (GG0170Ms.length > 0) {
-                            if (GG0170JKLs.length > 0) {
-                                GG0170JKLs.each(function () {
-                                    $(this).prop('disabled', true).val(-1).change();
-                                });
-                            }
-                            if (GG0170Ns.length > 0) {
-                                GG0170Ns.each(function () {
-                                    $(this).prop('disabled', false).val(-1).change();
-                                });
-                            }
-                            if (GG0170Ms.length > 0) {
-                                GG0170Ms.each(function () {
-                                    $(this).prop('disabled', false).val(-1).change();
-                                });
-                                GG0170Ms[0].focus();
-                            }
+                            GG0170Ms[0].focus();
                         }
                     }
                     break;
                 case (GG0170ISelectedOptionInt <= 6):
                     {
-                        /* unlock and clear J K L, lock and clear M N */
+                        /* unlock and clear J K L, skip to J */
                         if (GG0170JKLs.length > 0) {
                             GG0170JKLs.each(function () {
                                 $(this).prop('disabled', false).val(-1).change();
                             });
-                        }
-                        if (GG0170Ms.length > 0) {
-                            GG0170Ms.each(function () {
-                                $(this).prop('disabled', true).val(-1).change();
-                            });
-                        }
-                        if (GG0170Ns.length > 0) {
-                            GG0170Ns.each(function () {
-                                $(this).prop('disabled', true).val(-1).change();
-                            });
+                            GG0170Js[0].focus();
                         }
                     }
                     break;
             }
         }
         else {
-            /* NaN or  <= 0 */
             /* lock and clear J K L M */
             if (GG0170JKLs.length > 0) {
                 GG0170JKLs.each(function () {
-                    $(this).prop('disabled', true).val(-1).change();
-                });
-            }
-            if (GG0170Ms.length > 0) {
-                GG0170Ms.each(function () {
-                    $(this).prop('disabled', true).val(-1).change();
-                });
-            }
-            if (GG0170Ns.length > 0) {
-                GG0170Ns.each(function () {
                     $(this).prop('disabled', true).val(-1).change();
                 });
             }
@@ -326,47 +297,51 @@ let branchingController = (function () {
     }
     /* private function */
     function GG0170P_depends_on_GG0170M_and_GG0170N() {
-        let GG0170MSelectedOption = $('#GG0170M_Admission_Performance_1 option:selected').text();
+        let GG0170MSelectedOption = $('#GG0170M_Admission_Performance_0 option:selected').text();
         let GG0170MSelectedOptionInt = parseInt(GG0170MSelectedOption);
-        let GG0170NSelectedOption = $('#GG0170N_Admission_Performance_1 option:selected').text();
+        let GG0170NSelectedOption = $('#GG0170N_Admission_Performance_0 option:selected').text();
         let GG0170NSelectedOptionInt = parseInt(GG0170NSelectedOption);
+        let GG0170Ns = $('select[id^=GG0170N]');
+        let GG0170Os = $('select[id^=GG0170O]');
         let GG0170Ps = $('select[id^=GG0170P]');
-        if (GG0170MSelectedOptionInt > 0 || GG0170NSelectedOptionInt > 0) {
+        if ((!isNaN(GG0170MSelectedOptionInt) && GG0170MSelectedOptionInt > 0)) {
             switch (true) {
-                case (GG0170MSelectedOptionInt <= 6 || GG0170NSelectedOptionInt <= 6):
-                    /* lock and clear P */
-                    if (GG0170Ps.length > 0) {
-                        GG0170Ps.each(function () {
-                            $(this).prop('disabled', true).val(-1).change();
-                        });
-                    }
+                case (GG0170MSelectedOptionInt <= 6):
+                    /* skip to N */
+                    if (GG0170Ns.length > 0)
+                        GG0170Ns[0].focus();
                     break;
-                case (GG0170MSelectedOptionInt >= 7 || GG0170NSelectedOptionInt >= 7):
-                    /* unlock and clear P */
+                case (GG0170MSelectedOptionInt >= 7):
+                    /* skp to P */
                     if (GG0170Ps.length > 0) {
-                        GG0170Ps.each(function () {
-                            $(this).prop('disabled', false).val(-1).change();
-                        });
                         GG0170Ps[0].focus();
                     }
                     break;
             }
         }
-        else {
-            /* lock and clear P */
-            if (GG0170Ps.length > 0) {
-                GG0170Ps.each(function () {
-                    $(this).prop('disabled', true).val(-1).change();
-                });
+        if (!isNaN(GG0170NSelectedOptionInt) && GG0170NSelectedOptionInt > 0) {
+            switch (true) {
+                case (GG0170NSelectedOptionInt <= 6):
+                    /* skip to O */
+                    if (GG0170Os.length > 0)
+                        GG0170Os[0].focus();
+                    break;
+                case (GG0170NSelectedOptionInt >= 7):
+                    /* skp to P */
+                    if (GG0170Ps.length > 0) {
+                        GG0170Ps[0].focus();
+                    }
+                    break;
             }
         }
     }
     /* private function */
     function H0350_depends_on_GG0170Q(GG0170QAdmPerformance) {
         switch (GG0170QAdmPerformance.prop('id')) {
+            /* 315 = No */
             case 'GG0170Q_Admission_Performance_315':
                 {
-                    let H0350s = $('select[id^=H0350]');
+                    let H0350s = $('select[id^=H0350_]');
                     if (GG0170QAdmPerformance.prop('checked')) {
                         H0350s.each(function () {
                             $(this).prop('disabled', false);
@@ -380,19 +355,15 @@ let branchingController = (function () {
                     }
                 }
                 break;
+            /* 314 = Yes */
             case 'GG0170Q_Admission_Performance_314':
                 {
-                    let GG0170Rs = $('#GG0170R_Admission_Performance_314');
+                    let GG0170Rs = $('select[id^=GG0170R_');
                     if (GG0170QAdmPerformance.prop('checked')) {
                         GG0170Rs.each(function () {
                             $(this).prop('disabled', false);
                         });
                         GG0170Rs[0].focus();
-                    }
-                    else {
-                        GG0170Rs.each(function () {
-                            $(this).prop('disabled', true).val(-1);
-                        });
                     }
                 }
                 break;
