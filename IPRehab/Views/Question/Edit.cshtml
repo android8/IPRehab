@@ -101,7 +101,8 @@
         @*section*@
         <div class="questionSection">
           <div class="section-title">
-            <a name="@si.SectionKey"></a>
+            <a name="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))" 
+              id="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"></a>
             @si.SectionTitle
             @if (!string.IsNullOrEmpty(si.SectionInstruction))
             {

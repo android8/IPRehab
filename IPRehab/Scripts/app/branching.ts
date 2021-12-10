@@ -7,19 +7,19 @@
 $(function () {
   const stage: string = $('.pageTitle').text().replace(' ', '_');
 
-  if (stage !== 'Full') {
-    /* on ready */
-    formController.CommonUnlock(stage);
+  /* on ready */
+  if (stage == 'Full') {
+    $('.persistable').prop("disabled", true);
   }
   else {
-    $('.persistable').prop("disabled", true);
+    branchingController.CommonUnlock(stage);
   }
 
   /* on click */
   $('button[id^=btnMore]').each(function () {
     $(this).click(function () {
       let questionKey: string = $(this).data('questionkey');
-      formController.AddMore(stage, questionKey);
+      branchingController.AddMore(stage, questionKey);
     });
   });
 
@@ -30,11 +30,11 @@ $(function () {
       $this.change(function () {
         let Q12: any = $("input[id^=Q12_" + stage + "]");
         let Q23: any = $("input[id^=Q23_" + stage + "]");
-        if (formController.isEmpty(Q12) && formController.isEmpty(Q23)) {
+        if (branchingController.isEmpty(Q12) && branchingController.isEmpty(Q23)) {
           alert('Q12 and Q23 can not be empty');
         }
-        //formController.Q12_Q23_blank_then_Lock_All(stage);
-        formController.CommonUnlock(stage);
+        //branchingController.Q12_Q23_blank_then_Lock_All(stage);
+        branchingController.CommonUnlock(stage);
       });
     }
   );
@@ -42,70 +42,70 @@ $(function () {
   /* on change */
   $('input[id^=Q14A_' + stage + ']').each(function () {
     $(this).change(function () {
-      formController.Q14B_enabled_if_Q14A_is_86(stage);
+      branchingController.Q14B_enabled_if_Q14A_is_86(stage);
     });
   });
 
   /* on change of dropdown Q16A*/
   $("select[id^=Q16A_" + stage + "]").each(function () {
     $(this).change(function () {
-      formController.Q16A_is_Home_then_Q17(stage);
+      branchingController.Q16A_is_Home_then_Q17(stage);
     });
   });
 
   /* on change */
   $('input[id^=Q42_' + stage + ']').each(function () {
     $(this).change(function () {
-      formController.Q42_Interrupted_then_Q43(stage);
+      branchingController.Q42_Interrupted_then_Q43(stage);
     });
   });
 
   /* on change */
   $('input[id^=Q44C_' + stage + '_86]').each(function () {
     $(this).change(function () {
-      formController.Q44C_is_Y_then_Q44D($(this));
+      branchingController.Q44C_is_Y_then_Q44D($(this));
     });
   });
 
   /* on change */
   $('input[id^=Q44C_' + stage + '_87]').each(function () {
     $(this).change(function () {
-      formController.Q44C_is_N_then_Q46($(this));
+      branchingController.Q44C_is_N_then_Q46($(this));
     });
   });
 
-  /* on click */
+  /* on change */
   $('select[id^=GG0170I_]').each(function () {
     $(this).change(function () {
-      formController.GG0170M_depends_on_GG0170I($(this));
+      branchingController.GG0170JKLMN_depends_on_GG0170I($(this));
     });
   });
 
-  /* on click */
+  /* on change */
   $('select[id^=GG0170M_]').each(function () {
     $(this).change(function () {
-      formController.GG0170P_depends_on_GG0170M($(this));
+      branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
     });
   });
 
-  /* on click */
+  /* on change */
   $('select[id^=GG0170N_]').each(function () {
     $(this).change(function () {
-      formController.GG0170P_depends_on_GG0170N($(this));
+      branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
     });
   });
 
-  /* on click */
+  /* on change */
   $('input[id^=GG0170Q_]').each(function () {
     $(this).change(function () {
-      formController.H0350_depends_on_GG0170Q($(this));
+      branchingController.H0350_depends_on_GG0170Q($(this));
     });
   });
 
-  /* on click */
+  /* on change */
   $('select[id^=J0510_]').each(function () {
     $(this).change(function () {
-      formController.J1750_depends_on_J0510($(this));
+      branchingController.J1750_depends_on_J0510($(this));
     });
   });
 });
@@ -114,7 +114,7 @@ $(function () {
  * javaScript closure
  ***************************************************************************/
 
-let formController = (function () {
+let branchingController = (function () {
   function isEmpty($this: any): boolean {
     if ((typeof $this.val() !== 'undefined') && $this.val())
       return false;
@@ -140,12 +140,12 @@ let formController = (function () {
       Q44C_is_N_then_Q46($(this));
     });
 
-    GG0170M_depends_on_GG0170I($('#GG0170I_Admission_Performance_1'));
-    GG0170P_depends_on_GG0170M($('#GG0170M_Admission_Performance_1'));
-    GG0170P_depends_on_GG0170N($('#GG0170N_Admission_Performance_1'));
+    GG0170JKLMN_depends_on_GG0170I($('#GG0170I_Admission_Performance_0'));
+    GG0170P_depends_on_GG0170M_and_GG0170N();
     H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_315'));
     H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_314'));
-    J1750_depends_on_J0510($('#J0510_' + stage + '_1'));
+    J1750_depends_on_J0510($('#J0510_' + stage + '_0'));
+    $("input[id^=Q12_" + stage + "]")[0].focus();
   }
 
   /* private function */
@@ -286,67 +286,99 @@ let formController = (function () {
   }
 
   /* private function */
-  function GG0170M_depends_on_GG0170I(GG0170I: any): void {
+  function GG0170JKLMN_depends_on_GG0170I(GG0170I: any): void {
+    const GG0170Js: any = $('select[id^=GG0170J]');
+    const GG0170JKLs: any = $('select[id^=GG0170J], select[id^=GG0170K], select[id^=GG0170L]');
     const GG0170Ms: any = $('select[id^=GG0170M]');
-    const factors: string[] = ['309', '310', '311', '312'];
-    if (factors.indexOf(GG0170I.val()) !== -1) {
-      if (GG0170Ms.length > 0) {
-        GG0170Ms.each(function () {
-          $(this).prop('disabled', false);
-        });
-        GG0170Ms[0].focus();
+    let GG0170ISelectedOption: any = $('#' + GG0170I.prop('id') + ' option:selected').text();
+    let GG0170ISelectedOptionInt: number = parseInt(GG0170ISelectedOption);
+
+    if (!isNaN(GG0170ISelectedOptionInt) && GG0170ISelectedOptionInt > 0) {
+      switch (true) {
+        case (GG0170ISelectedOptionInt >= 7):
+          {
+            /* lock and clear J K L, advance to M */
+            if (GG0170JKLs.length > 0) {
+              GG0170JKLs.each(function () {
+                $(this).prop('disabled', true).val(-1).change();
+              });
+            }
+            if (GG0170Ms.length > 0) {
+              GG0170Ms[0].focus();
+            }
+          }
+          break;
+        case (GG0170ISelectedOptionInt <= 6):
+          {
+            /* unlock and clear J K L, skip to J */
+            if (GG0170JKLs.length > 0) {
+              GG0170JKLs.each(function () {
+                $(this).prop('disabled', false).val(-1).change();
+              });
+              GG0170Js[0].focus();
+            }
+          }
+          break;
       }
     }
     else {
-      GG0170Ms.each(function () {
-        $(this).prop('disabled', true).val(-1);
-      });
+      /* lock and clear J K L M */
+      if (GG0170JKLs.length > 0) {
+        GG0170JKLs.each(function () {
+          $(this).prop('disabled', true).val(-1).change();
+        });
+      }
     }
   }
 
   /* private function */
-  function GG0170P_depends_on_GG0170M(GG0170MAdmPerformance: any): void {
+  function GG0170P_depends_on_GG0170M_and_GG0170N(): void {
+    let GG0170MSelectedOption: any = $('#GG0170M_Admission_Performance_0 option:selected').text();
+    let GG0170MSelectedOptionInt: number = parseInt(GG0170MSelectedOption);
+    let GG0170NSelectedOption: any = $('#GG0170N_Admission_Performance_0 option:selected').text();
+    let GG0170NSelectedOptionInt: number = parseInt(GG0170NSelectedOption);
+    let GG0170Ns: any = $('select[id^=GG0170N]');
+    let GG0170Os: any = $('select[id^=GG0170O]');
     let GG0170Ps: any = $('select[id^=GG0170P]');
-    let factors: string[] = ['309', '310', '311', '312'];
-    if (factors.indexOf(GG0170MAdmPerformance.val()) !== -1) {
-      if (GG0170Ps.length > 0) {
-        GG0170Ps.each(function () {
-          $(this).prop('disabled', false);
-        });
-        GG0170Ps[0].focus();
-      }
-    }
-    else {
-      GG0170Ps.each(function () {
-        $(this).prop('disabled', true).val(-1);
-      });
-    }
-  }
 
-  /* private function */
-  function GG0170P_depends_on_GG0170N(GG0170NAdmPerformance: any): void {
-    let GG0170Ps: any = $('select[id^=GG0170P]');
-    let factors: string[] = ['309', '310', '311', '312'];
-    if (factors.indexOf(GG0170NAdmPerformance.val()) !== -1) {
-      if (GG0170Ps.length > 0) {
-        GG0170Ps.each(function () {
-          $(this).prop('disabled', false);
-        });
-        GG0170Ps[0].focus();
+    if ((!isNaN(GG0170MSelectedOptionInt) && GG0170MSelectedOptionInt > 0)) {
+      switch (true) {
+        case (GG0170MSelectedOptionInt <= 6):
+          /* skip to N */
+          if (GG0170Ns.length > 0)
+            GG0170Ns[0].focus();
+          break;
+        case (GG0170MSelectedOptionInt >= 7):
+          /* skp to P */
+          if (GG0170Ps.length > 0) {
+            GG0170Ps[0].focus();
+          }
+          break;
       }
     }
-    else {
-      GG0170Ps.each(function () {
-        $(this).prop('disabled', true).val(-1);
-      });
+    if (!isNaN(GG0170NSelectedOptionInt) && GG0170NSelectedOptionInt > 0) {
+      switch (true) {
+        case (GG0170NSelectedOptionInt <= 6):
+          /* skip to O */
+          if (GG0170Os.length > 0)
+            GG0170Os[0].focus();
+          break;
+        case (GG0170NSelectedOptionInt >= 7):
+          /* skp to P */
+          if (GG0170Ps.length > 0) {
+            GG0170Ps[0].focus();
+          }
+          break;
+      }
     }
   }
 
   /* private function */
   function H0350_depends_on_GG0170Q(GG0170QAdmPerformance: any): void {
     switch (GG0170QAdmPerformance.prop('id')) {
+      /* 315 = No */
       case 'GG0170Q_Admission_Performance_315': {
-        let H0350s: any = $('select[id^=H0350]');
+        let H0350s: any = $('select[id^=H0350_]');
         if (GG0170QAdmPerformance.prop('checked')) {
           H0350s.each(function () {
             $(this).prop('disabled', false);
@@ -361,18 +393,14 @@ let formController = (function () {
       }
         break;
 
+      /* 314 = Yes */
       case 'GG0170Q_Admission_Performance_314': {
-        let GG0170Rs: any = $('#GG0170R_Admission_Performance_1');
+        let GG0170Rs: any = $('select[id^=GG0170R_');
         if (GG0170QAdmPerformance.prop('checked')) {
           GG0170Rs.each(function () {
             $(this).prop('disabled', false)
           });
           GG0170Rs[0].focus();
-        }
-        else {
-          GG0170Rs.each(function () {
-            $(this).prop('disabled', true).val(-1);
-          });
         }
       }
         break;
@@ -417,9 +445,8 @@ let formController = (function () {
     'Q42_Interrupted_then_Q43': Q42_Interrupted_then_Q43,
     'Q44C_is_Y_then_Q44D': Q44C_is_Y_then_Q44D,
     'Q44C_is_N_then_Q46': Q44C_is_N_then_Q46,
-    'GG0170M_depends_on_GG0170I': GG0170M_depends_on_GG0170I,
-    'GG0170P_depends_on_GG0170M': GG0170P_depends_on_GG0170M,
-    'GG0170P_depends_on_GG0170N': GG0170P_depends_on_GG0170N,
+    'GG0170JKLMN_depends_on_GG0170I': GG0170JKLMN_depends_on_GG0170I,
+    'GG0170P_depends_on_GG0170M_and_GG0170N': GG0170P_depends_on_GG0170M_and_GG0170N,
     'H0350_depends_on_GG0170Q': H0350_depends_on_GG0170Q,
     'J1750_depends_on_J0510': J1750_depends_on_J0510,
     'AddMore': AddMore

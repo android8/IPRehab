@@ -230,11 +230,11 @@ namespace IPRehabWebAPI2.Helpers
       {
         /* use month posistion in the quarters[] for the target quarter data whichever is available */
         /* current Q */
-        (currentFY * 10) + quarters[today.Month],
+        (currentFY * 10) + quarters[today.Month-1],
         /* last Q */
-        (today.AddMonths(-3).Year * 10) + quarters[today.AddMonths(-3).Month],
+        (today.AddMonths(-3).Year * 10) + quarters[today.AddMonths(-3).Month-1],
         /* 2nd Q */
-        (today.AddMonths(-6).Year * 10) + quarters[today.AddMonths(-6).Month]
+        (today.AddMonths(-6).Year * 10) + quarters[today.AddMonths(-6).Month-1]
       };
       return fiscalPeriodsOfInterest;
     }

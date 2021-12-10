@@ -2,7 +2,8 @@
   <div class="sectionNavHeader">Sections</div>
   @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
   {
-    <div role="listitem" class="nav-item gotoSection" data-anchorid="@sectionInfo.SectionKey">
+    <div role="listitem" class="nav-item gotoSection" 
+      data-anchorid="@(sectionInfo.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))">
       @($"{sectionInfo.SectionKey} {sectionInfo.SectionTitle}")
       <i class="fa fa-bookmark-o" aria-hidden="true"></i>
     </div>

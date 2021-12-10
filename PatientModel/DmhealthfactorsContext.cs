@@ -28,7 +28,7 @@ namespace PatientModel
             {
                 entity.HasNoKey();
 
-                entity.ToTable("FSODPatientDetailFY21Q3", "FSOD");
+                entity.ToTable("FSODPatientDetailFY21Q4", "FSOD");
 
                 entity.Property(e => e.District)
                     .HasMaxLength(100)
