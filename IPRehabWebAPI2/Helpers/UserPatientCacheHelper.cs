@@ -219,25 +219,31 @@ namespace IPRehabWebAPI2.Helpers
 
     private List<int> GetQuarterOfInterest() {
       int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
-      DateTime today = DateTime.Today;
+      DateTime today = DateTime.Today, lastQStartDate= DateTime.Today.AddMonths(-3), secondToLastQDate=DateTime.Today.AddMonths(-6);
+      int currentQTableNumber = 0, lastQTableNumber = 0, secondToLastQTableNumber = 0;
       int currentFY = today.Year;
       if (today.Month >= 10)
         currentFY = today.Year + 1;
-      string lastQStartDateString = $"{today.AddMonths(-3).Year}/{today.AddMonths(-3).Month}/01";
-      DateTime lastQStartDate = DateTime.Parse(lastQStartDateString);
-      string secondToLastQStartDateString = $"{today.AddMonths(-6).Year}/{today.AddMonths(-6).Month}/01";
-      DateTime secondToLastQDate = DateTime.Parse(secondToLastQStartDateString);
+
+      /* use month posistion in the quarters[] for the target quarter data whichever is available */
+      currentQTableNumber = (currentFY * 10) + quarters[today.Month - 1];
+      if (quarters[today.Month - 1] == 2)
+      {
+        lastQTableNumber = (currentFY * 10) + quarters[lastQStartDate.Month - 1];
+        secondToLastQTableNumber = ((currentFY - 1) * 10) + quarters[secondToLastQDate.Month - 1];
+      }
+      else
+      {
+        lastQTableNumber = (currentFY * 10) + quarters[lastQStartDate.Month - 1];
+        secondToLastQTableNumber = (currentFY * 10) + quarters[secondToLastQDate.Month - 1];
+      }
       //the fiscalPeriodOfInterest is a numeric dentifier that is made up of FY and quarter in 5 digits format, thus the multiplier of 10
       //to get the base than add the quarter number
       List<int> fiscalPeriodsOfInterest = new()
       {
-        /* use month posistion in the quarters[] for the target quarter data whichever is available */
-        /* current Q */
-        (currentFY * 10) + quarters[today.Month-1],
-        /* last Q */
-        lastQStartDate.Year * 10 + quarters[lastQStartDate.Month-1],
-        /* 2nd Q */
-        secondToLastQDate.Year * 10 + quarters[secondToLastQDate.Month-1]
+        currentQTableNumber,
+        lastQTableNumber,
+        secondToLastQTableNumber
       };
       return fiscalPeriodsOfInterest;
     }
