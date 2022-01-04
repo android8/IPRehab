@@ -223,7 +223,10 @@ namespace IPRehabWebAPI2.Helpers
       int currentFY = today.Year;
       if (today.Month >= 10)
         currentFY = today.Year + 1;
-
+      string lastQStartDateString = $"{today.AddMonths(-3).Year}/{today.AddMonths(-3).Month}/01";
+      DateTime lastQStartDate = DateTime.Parse(lastQStartDateString);
+      string secondToLastQStartDateString = $"{today.AddMonths(-6).Year}/{today.AddMonths(-6).Month}/01";
+      DateTime secondToLastQDate = DateTime.Parse(secondToLastQStartDateString);
       //the fiscalPeriodOfInterest is a numeric dentifier that is made up of FY and quarter in 5 digits format, thus the multiplier of 10
       //to get the base than add the quarter number
       List<int> fiscalPeriodsOfInterest = new()
@@ -232,9 +235,9 @@ namespace IPRehabWebAPI2.Helpers
         /* current Q */
         (currentFY * 10) + quarters[today.Month-1],
         /* last Q */
-        (today.AddMonths(-3).Year * 10) + quarters[today.AddMonths(-3).Month-1],
+        lastQStartDate.Year * 10 + quarters[lastQStartDate.Month-1],
         /* 2nd Q */
-        (today.AddMonths(-6).Year * 10) + quarters[today.AddMonths(-6).Month-1]
+        secondToLastQDate.Year * 10 + quarters[secondToLastQDate.Month-1]
       };
       return fiscalPeriodsOfInterest;
     }
