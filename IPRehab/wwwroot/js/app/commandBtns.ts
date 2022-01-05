@@ -68,6 +68,9 @@ let commandBtnController = (function () {
     if (stageLowerCase.indexOf('patientlist') != -1) {
       stageLowerCase = 'patient;'
     }
+    if (stageLowerCase.indexOf('base') != -1) {
+      stageLowerCase = 'episode of care';
+    }
 
     console.log('stageLowerCase', stageLowerCase);
     //get queryparameter. this is not suitable if the querystring is encrypted
@@ -85,6 +88,9 @@ let commandBtnController = (function () {
     //}
 
     const pageTitleLowerCase = $(document).prop('title').toLowerCase();
+    if (pageTitleLowerCase === 'base')
+      pageTitleLowerCase == 'episode of care';
+
     console.log('pageTitleLowerCase', pageTitleLowerCase);
 
     if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
@@ -106,6 +112,15 @@ let commandBtnController = (function () {
       stageLowerCase = 'patient;'
     }
 
+    if (stageLowerCase.indexOf('followup') != -1)
+      stageLowerCase = 'follow up';
+
+    if (stageLowerCase == '')
+      stageLowerCase = 'full';
+
+    if (stageLowerCase.indexOf('base') != -1)
+      stageLowerCase = 'episode of care';
+
     console.log('stageLowerCase', stageLowerCase);
     //get queryparameter. this is not suitable if the querystring is encrypted
     //const urlParams = new URLSearchParams(window.location.search);
@@ -123,12 +138,6 @@ let commandBtnController = (function () {
 
     const pageTitleLowerCase = $(document).prop('title').toLowerCase();
     console.log('pageTitleLowerCase', pageTitleLowerCase);
-
-    if (stageLowerCase.indexOf('followup') != -1)
-      stageLowerCase = 'follow up';
-
-    if (stageLowerCase == '')
-      stageLowerCase = 'full';
 
     let dialogOptions: any = {
       resizable: true,
