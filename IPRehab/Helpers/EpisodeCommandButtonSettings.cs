@@ -10,11 +10,11 @@ namespace IPRehab.Helpers
   {
     public static Dictionary<string, string> stageType = new Dictionary<string, string>() {
       { "New", "Create new episode with Base form"},
-      { "Full", "Create new episode with Full IRF-PAI form"},
+      //{ "Full", "Create new episode with Full IRF-PAI form"},
       { "Base", "Create new episode with Base questions"},
-      { "Initial", "Create new episode with Initial questions"},
+      //{ "Initial", "Create new episode with Initial questions"},
       { "Interim", "Create new episode with Interim questions"},
-      { "Discharge", "Create new episode with Discharge questions"},
+      //{ "Discharge", "Create new episode with Discharge questions"},
       { "Followup", "Create new episode with Follow up questions"},
       { "Patient", "Patient List"}
     };
@@ -22,11 +22,11 @@ namespace IPRehab.Helpers
     public static Dictionary<string, string> actionBtnColor = new Dictionary<string, string>()
     {
       { "New", "actionBtnNew"},
-      { "Full", "actionBtnFull"},
+      //{ "Full", "actionBtnFull"},
       { "Base", "actionBtnBase"},
-      { "Initial", "actionBtnInitial"},
+      //{ "Initial", "actionBtnInitial"},
       { "Interim", "actionBtnInterim"},
-      { "Discharge", "actionBtnDischarge"},
+      //{ "Discharge", "actionBtnDischarge"},
       { "Followup", "actionBtnFollowup"},
       { "Patient", "actionBtnPatientList"},
     };

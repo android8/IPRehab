@@ -121,7 +121,7 @@ namespace IPRehab.Controllers
       patientID = thisPatient.PTFSSN;
       patientName = thisPatient.Name;
 
-      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
+      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" :$"{stage}"));
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
       if (stage == "New")

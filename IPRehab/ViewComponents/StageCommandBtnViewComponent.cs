@@ -79,6 +79,9 @@ namespace IPRehab.ViewComponents
             case "Followup":
               cmdBtnTemplateVM.TextNode = "Follow Up";
               break;
+            case "Base":
+              cmdBtnTemplateVM.TextNode = "Episode of Care";
+              break;
           }
         }
 
