@@ -6,7 +6,6 @@
 
 $(function () {
   const stage: string = $('.pageTitle').text().replace(/\s/g, '_');
-  
 
   /* on ready */
   if (stage == 'Full') {
@@ -151,9 +150,6 @@ let branchingController = (function () {
 
   /* private function */
   function Q12_Q23_blank_then_Lock_All(stage: string): void {
-    if (stage == 'Episode_Of_Care')
-      stage = 'Base';
-
     let Q12: any = $("input[id^=Q12_" + stage + "]");
     let Q23: any = $("input[id^=Q23_" + stage + "]");
 

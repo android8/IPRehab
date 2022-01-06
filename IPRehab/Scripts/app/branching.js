@@ -125,8 +125,6 @@ let branchingController = (function () {
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
-        if (stage == 'Episode_Of_Care')
-            stage = 'Base';
         let Q12 = $("input[id^=Q12_" + stage + "]");
         let Q23 = $("input[id^=Q23_" + stage + "]");
         if (isEmpty(Q12) || isEmpty(Q23)) {
