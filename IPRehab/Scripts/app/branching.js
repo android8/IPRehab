@@ -3,7 +3,7 @@
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
-    const stage = $('.pageTitle').text().replace(' ', '_');
+    const stage = $('.pageTitle').text().replace(/\s/g, '_');
     /* on ready */
     if (stage == 'Full') {
         $('.persistable').prop("disabled", true);
@@ -125,6 +125,8 @@ let branchingController = (function () {
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
+        if (stage == 'Episode_Of_Care')
+            stage = 'Base';
         let Q12 = $("input[id^=Q12_" + stage + "]");
         let Q23 = $("input[id^=Q23_" + stage + "]");
         if (isEmpty(Q12) || isEmpty(Q23)) {

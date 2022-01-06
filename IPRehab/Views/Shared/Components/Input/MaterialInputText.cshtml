@@ -13,7 +13,7 @@
   {
     @*prevent the next inner div from being flexed*@
     <div>
-      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", string.Empty)}")</div>
+      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_", " ")}")</div>
     </div>
   }
 

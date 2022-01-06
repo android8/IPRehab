@@ -24,7 +24,7 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_",string.Empty)}")</div>
+      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_"," ")}")</div>
     </div>
   }
   <select class="browser-default custom-select select2 dropdown persistable"

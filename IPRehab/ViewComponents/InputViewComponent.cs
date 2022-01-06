@@ -37,10 +37,8 @@ namespace IPRehab.ViewComponents
       thisVCVM.DisplayStageHeader = false;
       thisVCVM.DisplayStageHeader = QWS.QuestionKey.Contains("Q43") ||
                                     QWS.QuestionKey.Contains("D0150") ||
-                                    QWS.QuestionKey.Contains("K0520") ||
-                                    QWS.QuestionKey.Contains("GG0130") ||
-                                    QWS.QuestionKey.Contains("GG0170") ||
-                                    QWS.QuestionKey.Contains("M0300") ||
+                                    QWS.QuestionKey.Contains("GG0130") || QWS.QuestionKey.Contains("GG0170") ||
+                                    QWS.QuestionKey.Contains("M0210") || QWS.QuestionKey.Contains("M0300") ||
                                     QWS.QuestionKey.Contains("N0415") ||
                                     QWS.QuestionKey.Contains("O0110");
 
@@ -83,15 +81,9 @@ namespace IPRehab.ViewComponents
               QWS.QuestionKey == "A1110B" ||
               QWS.QuestionKey == "C131A" ||
               QWS.QuestionKey == "C0300C" ||
-              QWS.QuestionKey == "J1750" ||
-              QWS.QuestionKey == "J1900" ||
-              QWS.QuestionKey == "J2000" ||
-              QWS.QuestionKey == "Q8" ||
-              QWS.QuestionKey.Contains("Q14") ||
-              QWS.QuestionKey == "Q24A" ||
-              QWS.QuestionKey.Contains("Q41") ||
-              QWS.QuestionKey.Contains("Q42") ||
-              QWS.QuestionKey.Contains("Q44C") ||
+              QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "Q8" ||
+              QWS.QuestionKey.Contains("Q14") || QWS.QuestionKey == "Q24A" || QWS.QuestionKey.Contains("Q41") ||
+              QWS.QuestionKey.Contains("Q42") || QWS.QuestionKey.Contains("Q44C") ||
               QWS.QuestionKey == "GG0170RR" ||
               QWS.QuestionKey == "GG0170SS")
           {
@@ -104,8 +96,7 @@ namespace IPRehab.ViewComponents
             case "Checked":
               viewName = "MaterialChkboxBoxAfterHeader";
 
-              if (QWS.QuestionKey.Contains("K0520") ||
-                QWS.QuestionKey.Contains("N0415") ||
+              if (QWS.QuestionKey.Contains("N0415") ||
                 QWS.QuestionKey.Contains("O0110"))
               {
                 viewName = "MaterialChkboxBoxBeforeHeader";
