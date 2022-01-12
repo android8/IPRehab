@@ -9,7 +9,7 @@
     originalAnswer = thisChoiceAndAnswer.Answer;
   }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageSysTitle);
 
   string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in minutes";
 }
@@ -31,8 +31,8 @@
   }
   <div class="flex-start-row-nowrap">
     @*the labe is required by HTML5 specification*@
-    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
            class="nullLabel"></label>
 
     @if (displayStageHeader)
@@ -46,8 +46,8 @@
     <div class="flex-start-column-nowrap">
 
       @*the labe is required by HTML5 specification*@
-      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
              class="nullLabel"></label>
 
       @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
@@ -60,7 +60,7 @@
       }
       <select class="browser-default custom-select select2 dropdown persistable"
               name="@(Model.ViewComponentViewModel.QuestionKey)"
-              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
               required="@(Model.ViewComponentViewModel.Required)"
               title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
               data-stageid="@(Model.ViewComponentViewModel.StageID)"
@@ -74,7 +74,7 @@
               data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
               data-toggle="tooltip"
               data-placement="left"
-              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
+              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
         <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
@@ -105,8 +105,8 @@
     @**************** Minutes of Therapy ****************@
     <div class="flex-start-row-nowrap pt-number-wrapper">
       <label class="mdc-text-field mdc-text-field--outlined"
-             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
+             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
              aria-label="enter a number">
         <span class="mdc-notched-outline">
           <span class="mdc-notched-outline__leading"></span>
@@ -118,7 +118,7 @@
         <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
                class="mdc-text-field__input numeric-text inputContainer persistable"
                name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
                required="@(Model.ViewComponentViewModel.Required)"
                value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -134,7 +134,7 @@
                data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")" />
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")" />
       </label>
       <div class="flex-start-row-nowrap number-wrapper">
         <div class="arrow-left"></div>

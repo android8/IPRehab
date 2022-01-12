@@ -12,7 +12,7 @@ namespace IPRehab.ViewComponents
     {
     }
 
-    public Task<IViewComponentResult> InvokeAsync(int EpisodeID, int ControlCounter, QuestionWithSelectItems QWS, string NetworkID)
+    public Task<IViewComponentResult> InvokeAsync(int EpisodeID, int ControlCounter, QuestionWithSelectItems QWS, string StageSysTitle, string NetworkID)
     {
       InputViewComponenViewModel thisVCVM = new();
       thisVCVM.ControlCounter = ControlCounter;
@@ -30,6 +30,7 @@ namespace IPRehab.ViewComponents
       }
 
       thisVCVM.StageTitle = QWS.StageTitle.Replace(" ", "_");
+      thisVCVM.StageSysTitle = StageSysTitle;
       thisVCVM.StageTitleNormalized = "";
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;

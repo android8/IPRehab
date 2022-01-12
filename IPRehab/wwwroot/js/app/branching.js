@@ -1,9 +1,11 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+import { formController } from '../app/form.js';
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
-    const stage = $('.pageTitle').text().replace(/\s/g, '_');
+    //const stage: string = $('.pageTitle').text().replace(/\s/g, '_');
+    const stage = $('.pageTitle').data('systitle');
     /* on ready */
     if (stage == 'Full') {
         $('.persistable').prop("disabled", true);
@@ -121,7 +123,7 @@ let branchingController = (function () {
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_315'));
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_314'));
         J1750_depends_on_J0510($('#J0510_' + stage + '_0'));
-        $("input[id^=Q12_" + stage + "]")[0].focus();
+        $("input[id^=Q12_" + stage + "]").focus();
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
@@ -265,7 +267,9 @@ let branchingController = (function () {
                         /* lock and clear J K L, advance to M */
                         if (GG0170JKLs.length > 0) {
                             GG0170JKLs.each(function () {
-                                $(this).prop('disabled', true).val(-1).change();
+                                console.log('GG0170JKL changed because I >= 7 triggering breakLongSentence from branching.ts');
+                                $(this).prop('disabled', true).val(-1); //don't use .change() since we are in a change event will cause infinite loop
+                                formController.breakLongSentence($(this));
                             });
                         }
                         if (GG0170Ms.length > 0) {
@@ -278,7 +282,9 @@ let branchingController = (function () {
                         /* unlock and clear J K L, skip to J */
                         if (GG0170JKLs.length > 0) {
                             GG0170JKLs.each(function () {
-                                $(this).prop('disabled', false).val(-1).change();
+                                console.log('GG0170JKL changed because I <= 6 triggering breakLongSentence from branching.ts');
+                                $(this).prop('disabled', false).val(-1); //don't use .change() since we are in a change event will cause infinite loop
+                                formController.breakLongSentence($(this));
                             });
                             GG0170Js[0].focus();
                         }
@@ -290,7 +296,9 @@ let branchingController = (function () {
             /* lock and clear J K L M */
             if (GG0170JKLs.length > 0) {
                 GG0170JKLs.each(function () {
-                    $(this).prop('disabled', true).val(-1).change();
+                    console.log('GG0170JKL are reset because I has no answer triggering breakLongSentence from branching.ts');
+                    $(this).prop('disabled', true).val(-1); //don't use .change() since we are in a change event will cause infinite loop
+                    formController.breakLongSentence($(this));
                 });
             }
         }

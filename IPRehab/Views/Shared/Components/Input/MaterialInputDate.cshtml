@@ -1,5 +1,6 @@
 ﻿@model InputViewComponentTemplateModel
 @{
+  var thisStage = Model.ViewComponentViewModel.StageSysTitle;
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
 
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
@@ -32,7 +33,7 @@
       <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
              class="persistable"
              name="@Model.ViewComponentViewModel.QuestionKey"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(thisHtmlDate)"
              title="@(answeredBy)"
@@ -47,9 +48,9 @@
              data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
              data-placement="left"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
  />
-      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
+      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
     </div>
   </div>
 </div>

@@ -46,7 +46,7 @@ let patientListController = (function () {
 
     /* create href conditionally on localhost or not */
     //let host: string = location.host;
-    //if (host.indexOf('localhost') != -1) {
+    //if (host.indexOf('localhost') !== -1) {
     //  thisHref = '/Patient/Index?searchCriteria=' + searchCriteria;
     //}
     //else {

@@ -48,10 +48,9 @@ namespace IPRehab.Helpers
       return qws;
     }
 
-    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions, string stageTitle)
+    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
     {
       QuestionHierarchy qh = new();
-      qh.StageTitle = stageTitle;
       
       List<QuestionWithSelectItems> qwsList = new();
       foreach(var q in questions)

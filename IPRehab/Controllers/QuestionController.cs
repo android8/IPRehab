@@ -121,12 +121,17 @@ namespace IPRehab.Controllers
       patientID = thisPatient.PTFSSN;
       patientName = thisPatient.Name;
 
-      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" :$"{stage}"));
+      string stageTitle = stage;
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
-      if (stage == "New")
+      switch (stage)
       {
-        includeAnswer = false;
+        case "Followup":
+          stageTitle = "Follow Up";
+          break;
+        case "Base":
+          stageTitle = "Episode of Care";
+          break;
       }
 
       List<QuestionDTO> questions = new();
@@ -162,10 +167,11 @@ namespace IPRehab.Controllers
       //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
       thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
 
-      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stageTitle);
+      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
       qh.ReadOnly = false;
       qh.EpisodeID = episodeID;
       qh.StageTitle = stageTitle;
+      qh.StageSysTitle = stage;
       qh.PatientID = patientID;
       qh.PatientName = patientName;
       qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);

@@ -9,20 +9,34 @@ import { InteractionTrigger } from "../../node_modules/@material/chips/deprecate
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
+export { formController };
 
 $(function () {
   $('.persistable').change(function () {
+    const $this = $(this);
     let onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
     let admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+
     if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
       $('#ajaxPost').removeAttr('disabled');
       //$('#mvcPost').removeAttr('disabled');
+
+      //let theScope: any = $('#userAnswerForm');
+      //let stageName: string = $('#stage', theScope).val().toString();
+      //const patientID: string = $('#patientID', theScope).val().toString();
+      //const patientName: string = $('#patientName', theScope).val().toString();
+      //let episodeID: number = +$('#episodeID', theScope).val();
+
+      //if ($this.prop('id').indexOf('Q12') === -1 && $this.prop('id').indexOf('Q23') === -1) {
+      //  formController.checkChanges($this, episodeID, stageName, patientID, patientName);
+      //}
     }
   });
 
   $('select').each(function () {
-    let $this = $(this);
+    const $this = $(this);
     $this.change(function () {
+      console.log($this.prop('id') + ' changed triggering breakLongSentence()')
       formController.breakLongSentence($this);
     });
   });
@@ -39,7 +53,7 @@ $(function () {
 
   /* jump to section anchor */
   $('.gotoSection').each(function () {
-    let $this = $(this);
+    const $this = $(this);
     $this.click(function () {
       let anchorId: string = $this.data("anchorid");
       formController.scrollToAnchor(anchorId);
@@ -53,18 +67,18 @@ $(function () {
 
   /* ajax post form */
   $('#ajaxPost').click(function () {
-    if (formController.validate) {
-      const thisPostBtn: any = $(this);
+    if ($('#userAnswerForm').validate()) {
       $('.spinnerContainer').show();
-      let theScope: any = $('#userAnswerForm');
-      let stageName: string = $('#stage', theScope).val().toString();
+      const thisPostBtn: any = $(this);
+      const theScope: any = $('#userAnswerForm');
       const patientID: string = $('#patientID', theScope).val().toString();
       const patientName: string = $('#patientName', theScope).val().toString();
+      //let stage: string = $('#stage', theScope).val().toString();
+      const stage: string = $('.pageTitle').data('systitle');
       let episodeID: number = +$('#episodeID', theScope).val();
-      if (stageName.toLowerCase() == "new")
+      if (stage.toLowerCase() == 'new')
         episodeID = -1;
-
-      formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
+      formController.submitTheForm($('.persistable', theScope), stage, patientID, patientName, episodeID, thisPostBtn);
     }
   });
 
@@ -94,6 +108,11 @@ $(function () {
  ***************************************************************************/
 
 let formController = (function () {
+  let oldAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
+  let newAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
+  let updatedAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
+  enum enumCRUD { C = 'Insert', U = 'Update', D = 'Delete', N = 'NoChange' };
+
   /* private function */
   function isEmpty($this: any): boolean {
     if (typeof $this.val() !== 'undefined' && $this.val())
@@ -146,7 +165,8 @@ let formController = (function () {
   }
 
   /* private function */
-  function breakLongSentence(thisSelectElement) {
+  function breakLongSentence(thisSelectElement: any) {
+    console.log('----------- begin breakLongSentence -----------');
     console.log('thisSelectElement', thisSelectElement);
     let maxLength: number = 50;
     let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
@@ -183,6 +203,7 @@ let formController = (function () {
         }
       });
     }
+    console.log('----------- end breakLongSentence -----------');
   }
 
   /* private function */
@@ -195,108 +216,90 @@ let formController = (function () {
   }
 
   /* private function */
-  function submitTheForm(persistables: any, stageName: string, patientID: string, patientName: string, episodeID: number, thisPostBtn: any): void {
-    //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
-    //console.log("serialized input", inputAnswerArray);
-
-    //const selectAnswerArray: any[] = [];
-    //$.map($('select', theForm), function () {
-    //  let $thisDropdown = $(this);
-    //  $('option', $thisDropdown).each(function () {
-    //    let $thisOption = $(this);
-    //    if ($thisOption.is(':selected')) {
-
-    //    }
-    //  })
-    //});
+  function checkChanges($thisPersistable: any, episodeID: number, stage: string, patientID: string, patientName: string): void {
+    console.log('$thisPersistable', $thisPersistable);
 
     let thisAnswer: IUserAnswer = <IUserAnswer>{};
-    const oldAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
-    const newAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
-    const updatedAnswers: Array<IUserAnswer> = new Array<IUserAnswer>();
 
-    //get the key answers. these must be done outside of the .map() 
-    //because each answer in .map() will use the same episode onset date and admission date
+    //a question may show several input fields for multiple stages,
+    //so we have to use the data-questionkey at the field level, not the stage hidden input set at the form level
     let onsetDate: any = $(".persistable[data-questionkey^='Q23']").val();
     let admissionDate: any = $(".persistable[data-questionkey^='Q12']").val();
 
+    //if not a concatenation, a '+' in front of a variable converts it to a number
     //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
-    persistables.map(function () {
-      let $thisPersistable: any = $(this);
-      let currentValue: string = $thisPersistable.val();
-      let oldValue: string = $thisPersistable.data('oldvalue');
-      let answerID: string = $thisPersistable.data('answerid');
-      let CRUD: string;
 
-      //return false doesn't break the .map, but skips the current item and continues mapping the next persistable
-      // !oldValue yields true only when the value is undefined or NaN, then skip the current item and exit the map() 
-      if ($thisPersistable.prop('type') == 'select-one' && (!(+currentValue) && !oldValue)) {
-        return false;
+    let currentValue: string = $thisPersistable.val();
+    /* for non-radio non-checkbox, non-select elements, the loaded value when DOM is ready before changed */
+    let defaultValue: string = $thisPersistable[0].defaultValue ? $thisPersistable[0].defaultValue : '';
+    let CRUD: enumCRUD;
+
+    switch ($thisPersistable.prop('type')) {
+      case 'select-one': {
+        defaultValue = $thisPersistable.data('codesetid');
+        CRUD = optionComparison(currentValue, defaultValue);
+
+        console.log($thisPersistable.prop('id') + ' ' + CRUD + ' current=' + (+currentValue.toString()) + ' default=' + (+defaultValue.toString()));
+        break;
       }
 
-      // !oldValue yields true only when the value is not acceptible, then skip the current item and exit the map() 
-      if (($thisPersistable.prop('type') == 'checkbox' || $thisPersistable.prop('type') == 'radio')
-        && (!$thisPersistable.prop('checked') && !oldValue)) {
-        return false;
+      case 'checkbox':
+      case 'radio': {
+        let currentChecked: boolean = Boolean($thisPersistable.prop('checked'));
+        let defaultChecked: boolean = Boolean($thisPersistable[0].defaultChecked);
+        CRUD = booleanComparison(currentChecked, defaultChecked);
+        console.log($thisPersistable.prop('id') + ' ' + CRUD + ' current=' + currentChecked + ' default=' + defaultChecked);
+        break;
       }
 
-      if (currentValue === oldValue)
-      {
-        return false;
+      case 'date': {
+        CRUD = dateComparison(currentValue, defaultValue);
+        console.log($thisPersistable.prop('id') + ' ' + CRUD + ' current=' + (+currentValue.toString()) + ' default=' + (+defaultValue.toString()));
+        break;
       }
 
-      //determine CRUD operation
-      switch (true) {
-        case (+currentValue > 0 && +oldValue <= 0):
-          console.log('Insert currentValue '+ (+currentValue).toString() + 'oldValue ' + (+oldValue).toString());
-          CRUD = 'C';
-          break;
-        case (+currentValue <= 0 && +oldValue > 0):
-          console.log('Delete oldValue ' + (+oldValue).toString());
-          CRUD = 'D';
-          thisAnswer.AnswerID = +answerID;
-          break;
-        default:
-          console.log('Update oldValue ' + (+oldValue).toString() + ' whith currentValue ' + (+currentValue));
-          CRUD = "U";
-          thisAnswer.AnswerID = +answerID;
-          break;
+      default: {
+        CRUD = stringComparison(currentValue, defaultValue);
+        console.log($thisPersistable.prop('id') + ' ' + CRUD + ' current=' + (+currentValue.toString()) + ' default=' + (+defaultValue.toString()));
+        break;
       }
+    }
 
+    if (CRUD !== enumCRUD.N) {
+      let answerID: string = $thisPersistable.data('answerid'); /* -1 if no answer */
+      thisAnswer.AnswerID = +answerID;
       thisAnswer.PatientName = patientName.toString();
       thisAnswer.PatientID = patientID;
       thisAnswer.EpisodeID = episodeID;
-
-      //both of admission date and onset date are rendered with MaterialInputDate view template with the same class
-      //so use id to determine to which the data-codesetdescription property belong
       thisAnswer.AdmissionDate = admissionDate;
       thisAnswer.OnsetDate = onsetDate;
-
-      //+ in front of string convert it to number
       thisAnswer.QuestionID = +$thisPersistable.data('questionid');
       thisAnswer.QuestionKey = $thisPersistable.data('questionkey');
 
-      //a question may show several input fields for multiple stages,
-      //so we have to use the data-stagid at the field level, not the stage hidden input set at the form level
-      thisAnswer.StageID = +$thisPersistable.data('stageid');
-      thisAnswer.StageName = stageName;
+      //12/6/2021 per stakeholder that all Q series questions (formerly BASE stage) should be shared across the stages
+      if ((stage.toLowerCase() === 'base') && thisAnswer.QuestionKey.indexOf('Q') === 0)
+        thisAnswer.StageID = 421  /* BASE stage ID*/;
+      else
+        thisAnswer.StageID = +$thisPersistable.data('stageid');
+
+      /* the currently selected stage name*/
+      thisAnswer.StageName = stage;
 
       let thisInputType: string = $thisPersistable.prop('type');
+      thisAnswer.AnswerCodeSetID = +currentValue;
+      thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
+
       switch (thisInputType) {
-        case 'text':
-        case 'date':
-        case 'textarea':
-        case 'number': /* only used for therapy minutes */
-          /* save extra description */
-          thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
+        case 'select-one':
+        case 'radio':
+        case 'checkbox':
+          break;
+        default:
+          /* all other input are text based, so in addition to the answer codesetID we need to save the current control text in the .Descrition field  */
+          /* number type is only used in therapy minutes (O0401 series) and number of wound (M series)] */
           thisAnswer.Description = currentValue;
           break;
-        default: /* dropdown and radio */
-          thisAnswer.AnswerCodeSetID = +currentValue;
-          break;
       }
-
-      thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
 
       if ($thisPersistable.data('answersequencenumber'))
         thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
@@ -304,18 +307,53 @@ let formController = (function () {
       thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
       thisAnswer.LastUpdate = new Date();
 
+      /* we are doing one time change checking at submit(), so the following lines which used for .persistable.change() events are obsolete. */
+      /* since the answer state can be changed from one to another before submit, so we need to find previous element in all arraries and clear them then re-push the action to the proper array */
+      //let inNew: IUserAnswer = newAnswers.find(e => e.QuestionKey == thisAnswer.QuestionKey && e.StageID == thisAnswer.StageID);
+      //let inOld: IUserAnswer = oldAnswers.find(e => e.QuestionKey == thisAnswer.QuestionKey && e.StageID == thisAnswer.StageID);
+      //let inUpdated: IUserAnswer = updatedAnswers.find(e => e.QuestionKey == thisAnswer.QuestionKey && e.StageID == thisAnswer.StageID);
+      //if (inNew)
+      //  newAnswers.splice(newAnswers.indexOf(inNew), 1);
+      //if (inOld)
+      //  oldAnswers.splice(newAnswers.indexOf(inNew), 1);
+      //if (inUpdated)
+      //  updatedAnswers.splice(newAnswers.indexOf(inNew), 1);
+
       switch (CRUD) {
-        case 'C':
+        case enumCRUD.C:
           newAnswers.push(thisAnswer);
+          console.log('push ' + $thisPersistable.prop('id') + ' to newAnswers');
+          console.log('newAnswers', newAnswers);
           break;
-        case 'U':
+        case enumCRUD.U:
           updatedAnswers.push(thisAnswer);
+          console.log('push ' + $thisPersistable.prop('id') + ' to updatedAnswers');
+          console.log('updatedAnswers', updatedAnswers);
+
           break;
-        case 'D':
+        case enumCRUD.D:
           oldAnswers.push(thisAnswer);
+          console.log('push ' + $thisPersistable.prop('id') + ' to oldAnswers');
+          console.log('updatedAnswers', oldAnswers);
           break;
       }
+    }
+  }
+
+  /* private function */
+  function submitTheForm(persistables: any, stage: string, patientID: string, patientName: string, episodeID: number, thisPostBtn: any): void {
+    /* reset the selected in case the previous post failed*/
+    newAnswers = [];
+    oldAnswers = [];
+    updatedAnswers = [];
+
+    $('.persistable').map(function () {
+      checkChanges($(this), episodeID, stage, patientID, patientName);
     });
+
+    console.log('newAnswers', newAnswers);
+    console.log('oldAnswers', oldAnswers);
+    console.log('updatedAnswers', updatedAnswers);
 
     $('.spinnerContainer').hide();
 
@@ -460,7 +498,7 @@ let formController = (function () {
       let thisControlType: string = $thisControl.prop('type');
 
       let thisControlScore: number = 0;
-      if (!isNaN(thisControlIntValue) && thisControlIntValue <=0) {
+      if (!isNaN(thisControlIntValue) && thisControlIntValue <= 0) {
         updateScore($thisControl, 0);
       }
       else {
@@ -539,6 +577,59 @@ let formController = (function () {
     }
   }
 
+  function optionComparison(currentValue: string, defaultValue: string): enumCRUD {
+    if (+currentValue === +defaultValue)
+      return enumCRUD.N;
+    if (+currentValue > 0 && +defaultValue <= 0)
+      return enumCRUD.C;
+    if (+currentValue <= 0 && +defaultValue > 0)
+      return enumCRUD.D;
+    if (+currentValue > 0 && +defaultValue > 0)
+      return enumCRUD.U;
+  }
+
+  function booleanComparison(currentChecked: boolean, defaultChecked: boolean): enumCRUD {
+    if (currentChecked === defaultChecked) {
+      return enumCRUD.N;
+    }
+
+    if (currentChecked && !defaultChecked) {
+      return enumCRUD.C;
+    }
+
+    if (!currentChecked && defaultChecked) {
+      return enumCRUD.D;
+    }
+  }
+
+  function dateComparison(currentValue: string, defaultValue: string): enumCRUD {
+    if ((currentValue === defaultValue) || new Date(currentValue) === new Date(defaultValue) || !isDate(new Date(currentValue)) === !isDate(new
+      Date(defaultValue))) {
+      return enumCRUD.N;
+    }
+    if (isDate(new Date(currentValue)) && !isDate(new Date(defaultValue))) {
+      return enumCRUD.C;
+    }
+    if (isDate(new Date(currentValue)) && isDate(new Date(defaultValue))) {
+      return enumCRUD.U;
+    }
+    if (currentValue === '' && !isDate(new Date(currentValue)) && isDate(new Date(defaultValue))) {
+      return enumCRUD.D;
+    }
+  }
+
+  function stringComparison(currentValue: string, defaultValue: string): enumCRUD {
+    if (currentValue === defaultValue) {
+      return enumCRUD.N;
+    }
+    if (currentValue !== '' && defaultValue === '')
+      return enumCRUD.C;
+    if (currentValue === '' && defaultValue !== '')
+      return enumCRUD.D;
+    if (currentValue !== '' && defaultValue !== '')
+      return enumCRUD.U;
+  }
+
   function Score_GG0170_Except_GG0170R_GG0170S(): number {
     let A_to_P_score: number = 0;
     /* select only GG0170 inputs including RR and SS but excluding R, S, and Discharge */
@@ -574,7 +665,7 @@ let formController = (function () {
       const valueFactoringFields: string[] = ['A_', 'B_', 'C_', 'D_', 'E_', 'F_', 'G_', 'I_', 'J_', 'K_', 'L_', 'M_', 'N_', 'O_', 'P_'];
 
       for (var i = 0; i < valueFactoringFields.length; i++) {
-        if (thisControlID.indexOf(valueFactoringFields[i]) != -1) {
+        if (thisControlID.indexOf(valueFactoringFields[i]) !== -1) {
           switch (true) {
             case thisControlScore >= 7:
               if (valueFactoringFields[i] == 'I_') {
@@ -609,7 +700,7 @@ let formController = (function () {
   }
 
   function Score_GG0170R_GG0170S(): number {
-    let R_Score: number = 0, S_Score:number = 0;
+    let R_Score: number = 0, S_Score: number = 0;
     /* only one element in the following selector will be matched per stage form */
     const GG0170I_Admission: any = $('#GG0170I_Admission_Performance_0, #GG0170I_Interim_Performance_0, #GG0170I_Admission_Goal_0, #GG0170I_Follow_Up_Performance_0');
     let GG0170IAdmissionChoice: number = GG0170I_Admission_Choice(GG0170I_Admission);
@@ -624,11 +715,15 @@ let formController = (function () {
     let GG0170SAdmissionScore: number = GG0170S_Admission_Score(GG0170S_Admission);
 
     let multiplier: number = 1;
-    if (GG0170IAdmissionChoice >= 7 || GG0170IDischargeChoice >= 7) {
-      multiplier = 2;
+    switch (true) {
+      case (GG0170IAdmissionChoice >= 7 || GG0170IDischargeChoice >= 7):
+        multiplier = 2;
+        break;
+      case ((GG0170IAdmissionChoice > 0 && GG0170IAdmissionChoice <= 6) ||
+        (GG0170IDischargeChoice > 0 && GG0170IDischargeChoice <= 6)):
+        multiplier = 0;
+        break;
     }
-    else 
-      multiplier = 0;
 
     if (GG0170RAdmissionScore > 0) {
       updateScore(GG0170R_Admission, GG0170RAdmissionScore * multiplier);
@@ -850,9 +945,10 @@ let formController = (function () {
     'breakLongSentence': breakLongSentence,
     'getTextPixels': getTextPixels,
     'submitTheForm': submitTheForm,
-    'validate': validateForm,
+    'validateForm': validateForm,
     'selfCareScore': selfCareScore,
     'mobilityScore': mobilityScore,
-    'updateScore': updateScore
+    'updateScore': updateScore,
+    'checkChanges': checkChanges
   }
 })();

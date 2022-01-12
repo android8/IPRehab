@@ -12,6 +12,7 @@ namespace IPRehab.Models
     public int QuestionID { get; set; }
     public string QuestionKey { get; set; }
     public string StageTitle { get; set; }
+    public string StageSysTitle { get; set; }
     public string StageTitleNormalized { get; set; }
     public int StageID { get; set; }
     public bool MultipleChoices { get; set; }

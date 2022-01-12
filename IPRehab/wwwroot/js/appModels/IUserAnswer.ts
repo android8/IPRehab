@@ -20,6 +20,8 @@ export interface IUserAnswer {
   //user network ID
   AnswerByUserID: string; //user network ID
   LastUpdate: Date;
+
+
 }
 
 export interface AjaxPostbackModel {

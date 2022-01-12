@@ -879,12 +879,14 @@ button.rehabAction {
   height: 20px;
   font-size: x-small;
   margin: 0 1px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .disabled, :disabled {
   opacity: 0.3 !important;
   color: black !important;
   background-color: red !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .disabled:hover:not([enabled=enabled]), :disabled:hover:not([enabled=enabled]), persistable:hover:not([enabled=enabled]) {

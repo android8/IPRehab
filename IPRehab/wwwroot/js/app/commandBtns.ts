@@ -65,14 +65,10 @@ let commandBtnController = (function () {
     let orderBy: string = $this.data('orderby')
     let pageNumber: string = $this.data('pagenumber')
 
-    if (stageLowerCase.indexOf('patientlist') != -1) {
+    if (stageLowerCase.indexOf('patientlist') !== -1) {
       stageLowerCase = 'patient;'
     }
-    if (stageLowerCase.indexOf('base') != -1) {
-      stageLowerCase = 'episode of care';
-    }
 
-    console.log('stageLowerCase', stageLowerCase);
     //get queryparameter. this is not suitable if the querystring is encrypted
     //const urlParams = new URLSearchParams(window.location.search);
     //console.log('urlParams', urlParams);
@@ -87,13 +83,9 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    const pageTitleLowerCase = $(document).prop('title').toLowerCase();
-    if (pageTitleLowerCase === 'base')
-      pageTitleLowerCase == 'episode of care';
-
-    console.log('pageTitleLowerCase', pageTitleLowerCase);
-
-    if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
+    let pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
+    if (stageLowerCase === pageTitleLowerCase)
+    {
       alert('You are already in it');
       $('.spinnerContainer').hide();
     }
@@ -108,20 +100,16 @@ let commandBtnController = (function () {
 
     let stage: string = $thisButton.data('stage');
     let stageLowerCase: string = stage.toLowerCase();
-    if (stageLowerCase.indexOf('patientlist') != -1) {
+    if (stageLowerCase.indexOf('patientlist') !== -1) {
       stageLowerCase = 'patient;'
     }
 
-    if (stageLowerCase.indexOf('followup') != -1)
+    if (stageLowerCase.indexOf('followup') !== -1)
       stageLowerCase = 'follow up';
 
     if (stageLowerCase == '')
       stageLowerCase = 'full';
 
-    if (stageLowerCase.indexOf('base') != -1)
-      stageLowerCase = 'episode of care';
-
-    console.log('stageLowerCase', stageLowerCase);
     //get queryparameter. this is not suitable if the querystring is encrypted
     //const urlParams = new URLSearchParams(window.location.search);
     //console.log('urlParams', urlParams);
@@ -136,8 +124,13 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    const pageTitleLowerCase = $(document).prop('title').toLowerCase();
-    console.log('pageTitleLowerCase', pageTitleLowerCase);
+    let pageTitleLowerCase: string = $(document).prop('title').toLowerCase();
+    let alreadyThere: boolean = false;
+    if (pageTitleLowerCase.indexOf('episode of care') !== -1) {
+      pageTitleLowerCase = 'base';
+    }
+    if (pageTitleLowerCase === stageLowerCase)
+      alreadyThere = true;
 
     let dialogOptions: any = {
       resizable: true,
@@ -157,7 +150,7 @@ let commandBtnController = (function () {
       }]
     };
 
-    if (pageTitleLowerCase.indexOf(stageLowerCase) != -1) {
+    if (alreadyThere) {
       $('.spinnerContainer').hide();
       $('#dialog')
         .text('You are already in it')
@@ -216,7 +209,7 @@ let commandBtnController = (function () {
     triggerContainer.siblings().each(function () {
       let siblingContainer = $(this); //should be <div class="mdc-touch-target-wrapper">
       let el: any = {};
-      el.h = siblingContainer; 
+      el.h = siblingContainer;
       el.width = el.h.children().eq(0).width(); //should be <button>
       el.h.width(0);
       siblingContainers.push(el);
