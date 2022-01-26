@@ -2,7 +2,7 @@
 
 @{
   /* data for title in _layout.cs */
-  ViewData["Title"] = Model.StageTitle;
+  ViewData["Title"] = Model.PageTitle;
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -47,7 +47,7 @@
 </aside>
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
-    <div class="pageTitle" data-systitle="@(Model.StageSysTitle)">@(Model.StageTitle)</div>
+    <div class="pageTitle" data-systitle="@(Model.PageSysTitle)">@(Model.PageTitle)</div>
     <div class="flex-container-evenly-justified">
 
       @*/*the old partial view*/ @await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons)*@
@@ -78,20 +78,20 @@
         <title>Key question</title>
       </svg> Key question
     </div>
-    <div>@(Model.StageSysTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
+    <div>@(Model.PageSysTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
   </div>
 
   <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
-    <input type="hidden" id="stage" name="stage" value="@(Model.StageSysTitle)" />
+    <input type="hidden" id="stage" name="stage" value="@(Model.PageSysTitle)" />
     <input type="hidden" id="patientID" name="patientID" value="@(Model.PatientID)" />
     <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
     <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
     <div class="flex-start-column-nowrap">
-      @if (Model.StageSysTitle == "Full" || Model.StageSysTitle == "All")
+      @if (Model.PageSysTitle == "Full" || Model.PageSysTitle == "All")
       {
         @*form name row*@
         <div id="nonPaddinRow">
-          <div class="flex-end-row-nowrap formName">@Model.StageTitle</div>
+          <div class="flex-end-row-nowrap formName">@Model.PageTitle</div>
         </div>
       }
 
@@ -214,8 +214,6 @@
                     controlCounter++;
 
                   aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
-                  if (string.IsNullOrEmpty(q.StageTitle))
-                    q.StageTitle = Model.StageTitle;
 
                   <div>
                     @{
@@ -224,7 +222,7 @@
                       /* don't put the next next component invocationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                     }
 
-                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, StageSysTitle = Model.StageSysTitle, NetworkID = (string)ViewBag.CurrentUserID })
+                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
                   </div>
                 }
               </div>

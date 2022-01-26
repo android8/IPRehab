@@ -124,14 +124,6 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    let pageTitleLowerCase: string = $(document).prop('title').toLowerCase();
-    let alreadyThere: boolean = false;
-    if (pageTitleLowerCase.indexOf('episode of care') !== -1) {
-      pageTitleLowerCase = 'base';
-    }
-    if (pageTitleLowerCase === stageLowerCase)
-      alreadyThere = true;
-
     let dialogOptions: any = {
       resizable: true,
       height: "auto",
@@ -150,7 +142,8 @@ let commandBtnController = (function () {
       }]
     };
 
-    if (alreadyThere) {
+    let pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
+    if (stageLowerCase === pageTitleLowerCase) {
       $('.spinnerContainer').hide();
       $('#dialog')
         .text('You are already in it')

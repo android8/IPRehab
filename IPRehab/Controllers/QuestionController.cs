@@ -167,11 +167,11 @@ namespace IPRehab.Controllers
       //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
       thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
 
-      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
+      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, stage);
       qh.ReadOnly = false;
       qh.EpisodeID = episodeID;
-      qh.StageTitle = stageTitle;
-      qh.StageSysTitle = stage;
+      qh.PageTitle = stageTitle;
+      qh.PageSysTitle = stage; /* contains no spaces used by javascript id selector */
       qh.PatientID = patientID;
       qh.PatientName = patientName;
       qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);

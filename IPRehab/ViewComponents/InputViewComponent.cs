@@ -12,7 +12,7 @@ namespace IPRehab.ViewComponents
     {
     }
 
-    public Task<IViewComponentResult> InvokeAsync(int EpisodeID, int ControlCounter, QuestionWithSelectItems QWS, string StageSysTitle, string NetworkID)
+    public Task<IViewComponentResult> InvokeAsync(int EpisodeID, int ControlCounter, QuestionWithSelectItems QWS, string NetworkID)
     {
       InputViewComponenViewModel thisVCVM = new();
       thisVCVM.ControlCounter = ControlCounter;
@@ -22,15 +22,18 @@ namespace IPRehab.ViewComponents
       thisVCVM.QuestionKey = QWS.QuestionKey;
 
       string source = QWS.StageTitle;
-      string result = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
-      if (source.IndexOf(" ") == -1 && result.Length > 1)
+      if (QWS.QuestionKey.StartsWith("GG"))
       {
-        string middleCapLeter = result.Substring(1,1);
-        string newWords = source.Replace(middleCapLeter, $" {middleCapLeter}");
+        string result = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
+        if (source.IndexOf(" ") == -1 && result.Length > 1)
+        {
+          string middleCapLeter = result.Substring(1,1);
+          source = source.Replace(middleCapLeter, $" {middleCapLeter}");
+        }
       }
 
-      thisVCVM.StageTitle = QWS.StageTitle.Replace(" ", "_");
-      thisVCVM.StageSysTitle = StageSysTitle;
+      thisVCVM.StageTitle = source;
+      thisVCVM.StageSysTitle = QWS.StageSysTitle;
       thisVCVM.StageTitleNormalized = "";
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;

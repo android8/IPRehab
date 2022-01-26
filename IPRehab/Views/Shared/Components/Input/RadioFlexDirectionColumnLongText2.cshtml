@@ -29,7 +29,7 @@
       <div class="mdc-radio mdc-radio--touch">
         <input type="radio"
                class="mdc-radio__native-control persistable"
-               name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}")"
+               name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle /*must be StageTitle not StageSysTitle */}")"
                id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}")"
                required="@(Model.ViewComponentViewModel.Required)"
                value="@(item.SelectListItem.Value)"

@@ -10,7 +10,7 @@ namespace IPRehab.Helpers
 {
   public class HydrateVM
   {
-    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDTO)
+    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDTO, string stage)
     {
       QuestionWithSelectItems qws = new()
       {
@@ -23,7 +23,7 @@ namespace IPRehab.Helpers
 
         /* turn on key question */
         KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
-        
+
         /* do not show key for AssessmentCompleted */
         QuestionKey = questionDTO.QuestionKey,
 
@@ -31,8 +31,8 @@ namespace IPRehab.Helpers
         Question = questionDTO.Question,
 
         StageID = questionDTO.StageID,
-        StageTitle = string.IsNullOrEmpty(questionDTO.GroupTitle) ?
-          string.Empty : Regex.IsMatch(questionDTO.GroupTitle, @"^\d") ? questionDTO.GroupTitle.Remove(0, 3) : questionDTO.GroupTitle,
+        StageTitle = questionDTO.GroupTitle, /* contains words separated by spaces */ 
+        StageSysTitle = stage, /* contains no space to be used by javascript selector */
 
         AnswerCodeSetID = questionDTO.AnswerCodeSetID,
         AnswerCodeCategory = questionDTO.AnswerCodeCategory,
@@ -44,18 +44,18 @@ namespace IPRehab.Helpers
 
         Instructions = questionDTO.QuestionInsructions
       };
-
+      //qws.StageTitle = questionDTO.QuestionStageCustomTitles.Where(x => x.StageID == questionDTO.StageID).FirstOrDefault().Title;
       return qws;
     }
 
-    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
+    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions, string stage)
     {
       QuestionHierarchy qh = new();
       
       List<QuestionWithSelectItems> qwsList = new();
       foreach(var q in questions)
       {
-        QuestionWithSelectItems qws = Hydrate(q);
+        QuestionWithSelectItems qws = Hydrate(q, stage);
         qwsList.Add(qws);
       }
 
@@ -120,18 +120,30 @@ namespace IPRehab.Helpers
               if (qGG0170SS != null)
               {
                 questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
-                  .Except(qGG0170SS)
-                  .OrderBy(q => q.QuestionKey).ToList();
+                  .Except(qGG0170SS).ToList();
               }
               else
               {
-                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
-                  .OrderBy(q => q.QuestionKey).ToList();
+                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText).ToList();
               }
               break;
             default:
-              questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
-                .OrderBy(q=>q.QuestionKey).ToList();     
+              questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText).ToList();
+              if (questionInTheGroup.First().QuestionKey.StartsWith("GG0130") || questionInTheGroup.First().QuestionKey.StartsWith("GG0170"))
+              {
+                List<QuestionWithSelectItems> QuestionInTheGroupByDesiredOrder = new ();
+                var EpisodeQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Episode")).FirstOrDefault();
+                var InterimQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Interim")).FirstOrDefault();
+                var FollowUpQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Follow Up")).FirstOrDefault();
+                if (EpisodeQ != null)
+                  QuestionInTheGroupByDesiredOrder.Add(EpisodeQ);
+                if(InterimQ != null)
+                  QuestionInTheGroupByDesiredOrder.Add(InterimQ);
+                if(FollowUpQ != null)
+                  QuestionInTheGroupByDesiredOrder.Add(FollowUpQ);
+
+                questionInTheGroup = QuestionInTheGroupByDesiredOrder;
+              }
               break;
           }
          
@@ -251,7 +263,7 @@ namespace IPRehab.Helpers
       List<SelectListItem> selectedChoices = new();
       string text = string.Empty, value = string.Empty ;
 
-      /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
+      /* text(CodesetID 153), date(CodeSetID 92), checkbox, textarea, and number have only one item in the choices list */
       foreach (var c in questionDTO.ChoiceList)
       {
         text = c.CodeDescription;

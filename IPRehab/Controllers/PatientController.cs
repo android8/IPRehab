@@ -67,6 +67,7 @@ namespace IPRehab.Controllers
       PatientListViewModel patientListVM = new();
       patientListVM.TotalPatients = patients.Count();
       patientListVM.PageTitle = "In-patient Rehab";
+      patientListVM.PageSysTitle = "In_Patient_Rehab";
       patientListVM.SearchCriteria = searchCriteria;
       patientListVM.PageNumber = pageNumber;
       patientListVM.OrderBy = orderBy;

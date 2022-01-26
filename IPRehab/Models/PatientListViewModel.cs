@@ -8,6 +8,7 @@ namespace IPRehab.Models
   public class PatientListViewModel
   {
     public string PageTitle { get; set; }
+    public string PageSysTitle { get; set; }
     public List<PatientViewModel> Patients { get; set; }
     public int TotalPatients { get; set; }
     public string SearchCriteria { get; set; }

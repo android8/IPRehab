@@ -24,13 +24,15 @@ namespace IPRehabWebAPI2.Controllers
     private readonly IEpisodeOfCareRepository _episodeRepository;
     private readonly ICodeSetRepository _codeSetRepository;
     private readonly IAnswerRepository _answerRepository;
+    private readonly IQuestionStageRepository _stageRepository;
 
-    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository)
+    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository, IQuestionStageRepository stageRepository)
     {
       _questionRepository = questionRepository;
       _episodeRepository = episodeRepository;
       _codeSetRepository = codeSetRepository;
       _answerRepository = answerRepository;
+      _stageRepository = stageRepository;
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -94,14 +96,42 @@ namespace IPRehabWebAPI2.Controllers
 
       stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
 
-      List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
-        q.Active.Value != false &&
-        q.tblQuestionStage.Any(s =>
-          s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
-      ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
-      .Select(q => HydrateDTO.HydrateQuestion(q, stageName, stageID))
-      .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey)
-      .ToList();
+      //List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
+      //  q.Active.Value != false &&
+      //  q.tblQuestionStage.Any(s =>
+      //    s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
+      //) 
+      List<QuestionDTO> questions = _stageRepository.FindByCondition(s =>
+        //get only base, interim, and followup stages for GG0130s or GG0170s
+        (
+          (s.QuestionIDFKNavigation.QuestionKey.StartsWith("GG0130") || s.QuestionIDFKNavigation.QuestionKey.StartsWith("GG0170")) &&
+          (s.StageFKNavigation.CodeValue == "Interim" || s.StageFKNavigation.CodeValue == "Followup" || s.StageFKNavigation.CodeValue == "Base")
+        )
+        //or the selected stage for non-GG questions
+        || s.StageFKNavigation.CodeSetID == stageID)
+      .Select(s => HydrateDTO.HydrateQuestion(s.QuestionIDFKNavigation, s.StageFKNavigation.CodeDescription, s.StageFK)).ToList();
+
+      IEnumerable<QuestionDTO> additionalQs;
+      switch (stageName)
+      {
+        /* Q12 and Q23 must be included to enable other input controls */
+        case "INTERIM":
+          {
+            additionalQs = _questionRepository.FindByCondition(q => q.QuestionKey == "Q12" || q.QuestionKey == "Q13" || q.QuestionKey == "Q23") 
+              .Select(q => HydrateDTO.HydrateQuestion(q, "Base", stageID)).ToList();
+            questions.AddRange(additionalQs);
+            break;
+          }
+        case "FOLLOWUP":
+          {
+            additionalQs = _questionRepository.FindByCondition(q => q.QuestionKey == "Q12" || q.QuestionKey == "Q13" || q.QuestionKey == "Q23" || q.QuestionKey == "Q44C" || q.QuestionKey == "Q44D" || q.QuestionKey == "Q45" || q.QuestionKey == "Q46" )
+              .Select(q => HydrateDTO.HydrateQuestion(q, "Base", stageID)).ToList();
+            questions.AddRange(additionalQs);
+            break;
+          }
+      }
+
+      questions = questions.OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey).ToList();
 
       List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
       if (keyQuestions.Any())

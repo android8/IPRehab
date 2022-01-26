@@ -21,12 +21,12 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
       questionDTO.Required = q.tblQuestionStage.Where(x =>
-          x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
+          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).SingleOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
-      //use tblQuestionStage.StageGroupTitle if it is not null or empty else use tblQuestion.GroupTitle
-      questionDTO.GroupTitle = GetGroupTitle(q, questionStage);
+      //use tblQuestionStage.StageGroupTitle
+      questionDTO.GroupTitle = q.tblQuestionStage.Where(s=>s.QuestionIDFK == q.QuestionID && s.StageFK == stageID).FirstOrDefault()?.StageGroupTitle; //GetStageTitles(q);  
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
@@ -77,19 +77,13 @@ namespace IPRehabWebAPI2.Helpers
       return answerDTO;
     }
 
-    private static string GetGroupTitle(tblQuestion q, string questionStage)
+    private static List<QuestionStageCustomTitle> GetStageTitles(tblQuestion q)
     {
-      var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID &&
-          (x.StageFKNavigation.CodeValue.ToUpper() == questionStage));
-      if (!alternateTitle.Any())
-        return q.GroupTitle;
-      else
-      {
-        if (!string.IsNullOrEmpty(alternateTitle.First().StageGroupTitle))
-          return alternateTitle.First().StageGroupTitle;
-        else
-          return q.GroupTitle;
-      }
+      var stageTitles = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID)
+        .Select(x => new QuestionStageCustomTitle (){
+            StageID= x.StageFK, Title= x.StageFKNavigation.CodeDescription }).ToList();
+
+      return stageTitles;
     }
 
     public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)
@@ -127,7 +121,7 @@ namespace IPRehabWebAPI2.Helpers
     {
       DateTime admissionDate = new(DateTime.MinValue.Ticks);
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
-      
+
       EpisodeOfCareDTO thisDTO = new EpisodeOfCareDTO
       {
         EpisodeOfCareID = e.EpisodeOfCareID,
@@ -138,7 +132,7 @@ namespace IPRehabWebAPI2.Helpers
 
       /* check if Q12 and Q23 have answers and, it yes, trump the episode dates */
       IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
-        a.EpsideOfCareIDFK == e.EpisodeOfCareID && 
+        a.EpsideOfCareIDFK == e.EpisodeOfCareID &&
           (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
         .OrderBy(a => a.QuestionIDFKNavigation.QuestionKey);
 

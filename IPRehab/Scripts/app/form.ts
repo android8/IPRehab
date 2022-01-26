@@ -233,8 +233,8 @@ let formController = (function () {
     /* for non-radio non-checkbox, non-select elements, the loaded value when DOM is ready before changed */
     let defaultValue: string = $thisPersistable[0].defaultValue ? $thisPersistable[0].defaultValue : '';
     let CRUD: enumCRUD;
-
-    switch ($thisPersistable.prop('type')) {
+    let thisInputType: string = $thisPersistable.prop('type');
+    switch (thisInputType) {
       case 'select-one': {
         /* current value is the selected option value, so we use data-codesetid as the default value to compare */
         defaultValue = $thisPersistable.data('codesetid');
@@ -286,17 +286,16 @@ let formController = (function () {
       /* the currently selected stage name*/
       thisAnswer.StageName = stage;
 
-      let thisInputType: string = $thisPersistable.prop('type');
-      thisAnswer.AnswerCodeSetID = +currentValue;
+      thisAnswer.AnswerCodeSetID = $thisPersistable.data('codesetid');
       thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
 
       switch (thisInputType) {
         case 'select-one':
-        case 'radio':
-        case 'checkbox':
+          /* select element may be on the first option which doesn't have codesetid so use current value*/
+          thisAnswer.AnswerCodeSetID = +currentValue;
           break;
         default:
-          /* all other input are text based, so in addition to the answer codesetID we need to save the current control text in the .Descrition field  */
+          /* all other input are text based, so in addition to the answer codesetID we need to save the current text value in the .Descrition field  */
           /* number type is only used in therapy minutes (O0401 series) and number of wound (M series)] */
           thisAnswer.Description = currentValue;
           break;
