@@ -14,19 +14,21 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, string measureCodeSetDescription)
     {
       QuestionDTO questionDTO = new();
       questionDTO.FormName = questionStage;
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
-      questionDTO.Required = q.tblQuestionStage.Where(x =>
+      questionDTO.Required = q.tblQuestionMeasure.Where(x =>
           x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
-      //use tblQuestionStage.StageGroupTitle if it is not null or empty else use tblQuestion.GroupTitle
-      questionDTO.GroupTitle = GetGroupTitle(q, questionStage);
+
+      //use question measures
+      questionDTO.Measure = measureCodeSetDescription; //GetGroupTitle(q, questionStage);
+
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
@@ -75,21 +77,6 @@ namespace IPRehabWebAPI2.Helpers
         ByUser = a.AnswerByUserID
       };
       return answerDTO;
-    }
-
-    private static string GetGroupTitle(tblQuestion q, string questionStage)
-    {
-      var alternateTitle = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID &&
-          (x.StageFKNavigation.CodeValue.ToUpper() == questionStage));
-      if (!alternateTitle.Any())
-        return q.GroupTitle;
-      else
-      {
-        if (!string.IsNullOrEmpty(alternateTitle.First().StageGroupTitle))
-          return alternateTitle.First().StageGroupTitle;
-        else
-          return q.GroupTitle;
-      }
     }
 
     public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)

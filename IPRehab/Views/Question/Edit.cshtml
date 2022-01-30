@@ -46,7 +46,7 @@
 </aside>
 <article class="paddingTop">
   <div class="flex-container-evenly-justified fixedTop">
-    <div class="pageTitle">@Model.StageTitle</div>
+    <div class="pageTitle" data-stagecode="@Model.StageCode">@Model.StageTitle</div>
     <div class="flex-container-evenly-justified">
 
       @*/*the old partial view*/ @await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons)*@
@@ -209,12 +209,10 @@
                @{ string controlId = string.Empty; }
                 @foreach (var q in thisGroup.Questions)
                 {
-                  if(q.QuestionKey + q.StageTitle == controlId)
+                  if(q.QuestionKey + q.Measure == controlId)
                     controlCounter++;
 
                   aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
-                  if (string.IsNullOrEmpty(q.StageTitle))
-                    q.StageTitle = Model.StageTitle;
 
                   <div>
                     @{

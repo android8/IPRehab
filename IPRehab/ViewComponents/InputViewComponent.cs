@@ -21,27 +21,35 @@ namespace IPRehab.ViewComponents
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
 
-      string source = QWS.StageTitle;
-      string result = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
-      if (source.IndexOf(" ") == -1 && result.Length > 1)
+      if (QWS.Measure != string.Empty)
       {
-        string middleCapLeter = result.Substring(1,1);
-        string newWords = source.Replace(middleCapLeter, $" {middleCapLeter}");
+        string source = QWS.Measure;
+        if (source.IndexOf(" ") != -1)
+        {
+          thisVCVM.Measure = source.Replace(" ", "_");
+          thisVCVM.MeasureTitleNormalized = QWS.Measure;
+        }
+        else
+        {
+          /* break camel case in Measure type then joined with "_" to create id property in the DOM */
+          string midCaps = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
+          if (midCaps.Length > 1)
+          {
+            string middleCapLeter = midCaps.Substring(1, 1);
+
+            string spacedSeparated = source.Replace(middleCapLeter, $" {middleCapLeter}");
+            thisVCVM.MeasureTitleNormalized = spacedSeparated;
+
+            string underlineSeparated = source.Replace(middleCapLeter, $"_{middleCapLeter}");
+            thisVCVM.Measure = underlineSeparated;
+          }
+        }
       }
 
-      thisVCVM.StageTitle = QWS.StageTitle.Replace(" ", "_");
-      thisVCVM.StageTitleNormalized = "";
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
-      thisVCVM.DisplayStageHeader = false;
-      thisVCVM.DisplayStageHeader = QWS.QuestionKey.Contains("Q43") ||
-                                    QWS.QuestionKey.Contains("D0150") ||
-                                    QWS.QuestionKey.Contains("GG0130") || QWS.QuestionKey.Contains("GG0170") ||
-                                    QWS.QuestionKey.Contains("M0210") || QWS.QuestionKey.Contains("M0300") ||
-                                    QWS.QuestionKey.Contains("N0415") ||
-                                    QWS.QuestionKey.Contains("O0110");
-
+      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") ? false: (QWS.Measure != string.Empty ? true : false);
       thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoBottomBorder";
       thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
@@ -56,13 +64,13 @@ namespace IPRehab.ViewComponents
 
             if (QWS.QuestionKey.Contains("O0401"))
             {
-              /* default codeset id 430 for wk1 therapy, changed by javascript with thearpy type changes, */
+              /* default codeset id 430 for wk1 therapy, will change by javascript with thearpy type changes, */
               thisVCVM.TherapyHoursCodeSetID = 430;
               thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
             }
             else
             {
-              /* default codeset id 442 for wk2 threapy, changed by javascript with thearpy type changes, */
+              /* default codeset id 442 for wk2 threapy, will change by javascript with thearpy type changes, */
               thisVCVM.TherapyHoursCodeSetID = 442;
               thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
             }
@@ -94,15 +102,17 @@ namespace IPRehab.ViewComponents
           switch (QWS.AnswerCodeCategory)
           {
             case "Checked":
-              viewName = "MaterialChkboxBoxAfterHeader";
+              viewName = "MaterialChkboxBoxBeforeHeader";
+              thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
+              thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
 
-              if (QWS.QuestionKey.Contains("N0415") ||
-                QWS.QuestionKey.Contains("O0110"))
-              {
-                viewName = "MaterialChkboxBoxBeforeHeader";
-                thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-                thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
-              }
+              //if (QWS.QuestionKey.Contains("N0415") ||
+              //  QWS.QuestionKey.Contains("O0110"))
+              //{
+              //  viewName = "MaterialChkboxBoxBeforeHeader";
+              //  thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
+              //  thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+              //}
               break;
             case "Date":
               viewName = "MaterialInputDate";

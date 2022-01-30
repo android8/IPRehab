@@ -24,13 +24,15 @@ namespace IPRehabWebAPI2.Controllers
     private readonly IEpisodeOfCareRepository _episodeRepository;
     private readonly ICodeSetRepository _codeSetRepository;
     private readonly IAnswerRepository _answerRepository;
+    private readonly IQuestionMeasureRepository _questionMeasureRepository;
 
-    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository)
+    public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository, IQuestionMeasureRepository questionMeasureRepository)
     {
       _questionRepository = questionRepository;
       _episodeRepository = episodeRepository;
       _codeSetRepository = codeSetRepository;
       _answerRepository = answerRepository;
+      _questionMeasureRepository = questionMeasureRepository;
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,7 +45,7 @@ namespace IPRehabWebAPI2.Controllers
       int stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == "All").FirstOrDefault().CodeSetID;
       var questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
         .OrderBy(x => x.Order).ThenBy(x => x.QuestionKey).ThenBy(x => x.QuestionKey)
-        .Select(q => HydrateDTO.HydrateQuestion(q, "All", stageID)
+        .Select(q => HydrateDTO.HydrateQuestion(q, "All", stageID, string.Empty)
       ).ToList();
       if (includeAnswer)
       {
@@ -94,14 +96,14 @@ namespace IPRehabWebAPI2.Controllers
 
       stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == stageName).FirstOrDefault().CodeSetID;
 
-      List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
-        q.Active.Value != false &&
-        q.tblQuestionStage.Any(s =>
-          s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
-      ) //.OrderBy(x => x.FormFkNavigation.SortOrder).ThenBy(x => x.Order).ThenBy(x => x.QuestionKey)
-      .Select(q => HydrateDTO.HydrateQuestion(q, stageName, stageID))
-      .ToList().OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey)
-      .ToList();
+      //List<QuestionDTO> questions = _questionRepository.FindByCondition(q =>
+      //  q.Active.Value != false &&
+      //  q.tblQuestionStage.Any(s =>
+      //    s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
+      //) 
+      List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(m => m.StageFKNavigation.CodeSetID == stageID)
+       .OrderBy(o => o.QuestionIDFKNavigation.Order).ThenBy(o => o.QuestionIDFKNavigation.QuestionKey)
+     .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureFKNavigation.CodeDescription)).ToList();
 
       List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
       if (keyQuestions.Any())
@@ -135,7 +137,7 @@ namespace IPRehabWebAPI2.Controllers
     {
       int stageIrrelevant = -1;
       var question = _questionRepository.FindByCondition(x => x.QuestionID == ID)
-                        .Select(q => HydrateDTO.HydrateQuestion(q, "Specific Question", stageIrrelevant)).FirstOrDefault();
+                        .Select(q => HydrateDTO.HydrateQuestion(q, "Specific Question", stageIrrelevant, string.Empty)).FirstOrDefault();
       return Ok(question);
     }
 

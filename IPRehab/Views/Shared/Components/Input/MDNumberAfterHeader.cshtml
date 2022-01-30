@@ -6,7 +6,7 @@
   if (originalAnswer == null)
     originalAnswer = new AnswerDTO { Description = "0" }; //needed so TryParse yields truthy
 
-  bool displayStageHeader = (bool)Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageTitle);
+  bool displayStageHeader = (bool)Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
   bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 <div class="@Model.ViewComponentViewModel.ContainerCssClass">
@@ -15,19 +15,19 @@
   @if (int.TryParse(originalAnswer.Description, out int numericDescriptor))
   {
     <label class="mdc-text-field mdc-text-field--outlined"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")">
+           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">
       <span class="mdc-notched-outline">
         <span class="mdc-notched-outline__leading"></span>
         <span class="mdc-notched-outline__notch">
-          <span class="mdc-floating-label" id="my-label-id"></span>
+          <span class="mdc-floating-label" id="my-label-id@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}")"></span>
         </span>
         <span class="mdc-notched-outline__trailing"></span>
       </span>
       <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
              class="mdc-text-field__input numeric-text inputContainer persistable"
              name="@(Model.ViewComponentViewModel.QuestionKey)"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
              title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -42,7 +42,7 @@
              data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
              data-placement="left"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
     </label>
 
     @if (displayStageHeader)
@@ -51,7 +51,7 @@
       <div class="flex-start-row-nowrap number-wrapper">
         <div class="arrow-left"></div>
         <div class='@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)'>
-          @($"{Model.ViewComponentViewModel.StageTitle.Replace("_"," ")}")
+          @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
         </div>
       </div>
     }

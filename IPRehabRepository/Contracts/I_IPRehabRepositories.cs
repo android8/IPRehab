@@ -43,7 +43,7 @@ namespace IPRehabRepository.Contracts
    {
    }
 
-   public interface IQuestionStageRepository : IRepositoryBase<tblQuestionStage>
+   public interface IQuestionMeasureRepository : IRepositoryBase<tblQuestionMeasure>
    {
    }
 }

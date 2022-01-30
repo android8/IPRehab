@@ -11,7 +11,7 @@
     answeredBy = $"Answered by {originalAnswer.ByUser}";
   }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader;
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
   string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
   bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
@@ -25,14 +25,14 @@
     {
       @*prevent the next inner div to be flexed*@
       <div>
-        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.StageTitle.Replace("_"," ")}")</div>
+        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.Measure}")</div>
       </div>
     }
     <div class="flex-start-row-nowrap">
       <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
              class="persistable"
              name="@Model.ViewComponentViewModel.QuestionKey"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
              required="@(Model.ViewComponentViewModel.Required)"
              value="@(thisHtmlDate)"
              title="@(answeredBy)"
@@ -47,9 +47,9 @@
              data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
              data-toggle="tooltip"
              data-placement="left"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
  />
-      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageTitle}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
+      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
     </div>
   </div>
 </div>
