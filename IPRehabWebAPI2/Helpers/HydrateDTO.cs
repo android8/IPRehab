@@ -21,7 +21,7 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
       questionDTO.Required = q.tblQuestionMeasure.Where(x =>
-          x.QuestionIDFK == q.QuestionID && x.StageFKNavigation.CodeValue.ToUpper() == questionStage).SingleOrDefault()?.Required;
+          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).FirstOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;

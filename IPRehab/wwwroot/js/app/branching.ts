@@ -171,27 +171,30 @@ let branchingController = (function () {
 
   /* private function */
   function Q14B_enabled_if_Q14A_is_86(stage: string): void {
-    let Q14AYes: any = $('#Q14A_' + stage + '_86');//codeset id 86 == yes
-    let Q14ANo: any = $('#Q14A_' + stage + '_87');//codeset id 87 = no
-    let Q14Bs: any = $('input[id^=Q14B]');
-    if ((Q14AYes.length > 0 && !Q14AYes.prop('checked')) && (Q14ANo.length > 0 && !Q14ANo.prop('checked'))) {
-      if (Q14Bs.length > 0) {
-        Q14Bs.each(function () {
-          $(this).prop('checked', false);
-          $(this).prop('disabled', true);
-        });
-      }
-    }
+    let Q14Achecked: boolean = false;
+    let Q14Avalue: number;
 
-    if (Q14AYes.length > 0 && Q14AYes.prop('checked')) {
-      if (Q14Bs.length > 0) {
+    $('input[id^=Q14A]').each(function () {
+     if ($(this).prop('checked')) {
+       Q14Achecked = true;
+       Q14Avalue = parseInt($(this).prop('value'));
+      }
+    });
+
+    let Q14Bs: any = $('input[id^=Q14B]');
+    if (!Q14Achecked && Q14Bs.length > 0) {
+      Q14Bs.each(function () {
+        $(this).prop('checked', false).prop('disabled', true);
+      });
+    }
+    else {
+      //codeset id 86 == yes
+      //codeset id 87 = no
+      if (Q14Avalue == 86) {
         Q14Bs.removeAttr('disabled');
         Q14Bs[0].focus();
       }
-    }
-
-    if (Q14ANo.length > 0 && Q14ANo.prop('checked')) {
-      if (Q14Bs.length > 0) {
+      else {
         Q14Bs.each(function () {
           $(this).prop("checked", false).prop('disabled', true);
         });
