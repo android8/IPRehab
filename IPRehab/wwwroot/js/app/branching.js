@@ -1,11 +1,9 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-import { formController } from '../app/form.js';
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
-    //const stage: string = $('.pageTitle').text().replace(/\s/g, '_');
-    const stage = $('.pageTitle').data('systitle');
+    const stage = $('.pageTitle').data('stagecode').replace(/\s/g, '_');
     /* on ready */
     if (stage == 'Full') {
         $('.persistable').prop("disabled", true);
@@ -21,11 +19,11 @@ $(function () {
         });
     });
     /* on change */
-    $("input[id^=Q12_" + stage + "], input[id ^= Q23_" + stage + "]").each(function () {
+    $("input[id^=Q12], input[id^=Q23]").each(function () {
         let $this = $(this);
         $this.change(function () {
-            let Q12 = $("input[id^=Q12_" + stage + "]");
-            let Q23 = $("input[id^=Q23_" + stage + "]");
+            let Q12 = $("input[id^=Q12]");
+            let Q23 = $("input[id^=Q23]");
             if (branchingController.isEmpty(Q12) && branchingController.isEmpty(Q23)) {
                 alert('Q12 and Q23 can not be empty');
             }
@@ -34,19 +32,19 @@ $(function () {
         });
     });
     /* on change */
-    $('input[id^=Q14A_' + stage + ']').each(function () {
+    $('input[id^=Q14A]').each(function () {
         $(this).change(function () {
             branchingController.Q14B_enabled_if_Q14A_is_86(stage);
         });
     });
     /* on change of dropdown Q16A*/
-    $("select[id^=Q16A_" + stage + "]").each(function () {
+    $("select[id^=Q16A]").each(function () {
         $(this).change(function () {
             branchingController.Q16A_is_Home_then_Q17(stage);
         });
     });
     /* on change */
-    $('input[id^=Q42_' + stage + ']').each(function () {
+    $('input[id^=Q42]').each(function () {
         $(this).change(function () {
             branchingController.Q42_Interrupted_then_Q43(stage);
         });
@@ -123,12 +121,12 @@ let branchingController = (function () {
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_315'));
         H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_314'));
         J1750_depends_on_J0510($('#J0510_' + stage + '_0'));
-        $("input[id^=Q12_" + stage + "]").focus();
+        $("input[id^=Q12]")[0].focus();
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All(stage) {
-        let Q12 = $("input[id^=Q12_" + stage + "]");
-        let Q23 = $("input[id^=Q23_" + stage + "]");
+        let Q12 = $("input[id^=Q12]");
+        let Q23 = $("input[id^=Q23]");
         if (isEmpty(Q12) || isEmpty(Q23)) {
             $('.persistable').each(function () {
                 let $this = $(this);
@@ -146,25 +144,28 @@ let branchingController = (function () {
     }
     /* private function */
     function Q14B_enabled_if_Q14A_is_86(stage) {
-        let Q14AYes = $('#Q14A_' + stage + '_86'); //codeset id 86 == yes
-        let Q14ANo = $('#Q14A_' + stage + '_87'); //codeset id 87 = no
-        let Q14Bs = $('input[id^=Q14B_' + stage + ']');
-        if ((Q14AYes.length > 0 && !Q14AYes.prop('checked')) && (Q14ANo.length > 0 && !Q14ANo.prop('checked'))) {
-            if (Q14Bs.length > 0) {
-                Q14Bs.each(function () {
-                    $(this).prop('checked', false);
-                    $(this).prop('disabled', true);
-                });
+        let Q14Achecked = false;
+        let Q14Avalue;
+        $('input[id^=Q14A]').each(function () {
+            if ($(this).prop('checked')) {
+                Q14Achecked = true;
+                Q14Avalue = parseInt($(this).prop('value'));
             }
+        });
+        let Q14Bs = $('input[id^=Q14B]');
+        if (!Q14Achecked && Q14Bs.length > 0) {
+            Q14Bs.each(function () {
+                $(this).prop('checked', false).prop('disabled', true);
+            });
         }
-        if (Q14AYes.length > 0 && Q14AYes.prop('checked')) {
-            if (Q14Bs.length > 0) {
+        else {
+            //codeset id 86 == yes
+            //codeset id 87 = no
+            if (Q14Avalue == 86) {
                 Q14Bs.removeAttr('disabled');
                 Q14Bs[0].focus();
             }
-        }
-        if (Q14ANo.length > 0 && Q14ANo.prop('checked')) {
-            if (Q14Bs.length > 0) {
+            else {
                 Q14Bs.each(function () {
                     $(this).prop("checked", false).prop('disabled', true);
                 });
@@ -173,8 +174,8 @@ let branchingController = (function () {
     }
     /* private function */
     function Q16A_is_Home_then_Q17(stage) {
-        const Q16A = $("select[id^=Q16A_" + stage + "]");
-        const Q17 = $("select[id^=Q17_" + stage + "]");
+        const Q16A = $("select[id^=Q16A]");
+        const Q17 = $("select[id^=Q17]");
         // if (Q16A.length > 0 && Q16A.val() == '94') { /*1. Home */
         if (Q16A.length > 0 && !isEmpty(Q16A) && Q16A.val() == '94') {
             if (Q17.length > 0) {
@@ -267,9 +268,7 @@ let branchingController = (function () {
                         /* lock and clear J K L, advance to M */
                         if (GG0170JKLs.length > 0) {
                             GG0170JKLs.each(function () {
-                                console.log('GG0170JKL changed because I >= 7 triggering breakLongSentence from branching.ts');
-                                $(this).prop('disabled', true).val(-1); //don't use .change() since we are in a change event will cause infinite loop
-                                formController.breakLongSentence($(this));
+                                $(this).prop('disabled', true).val(-1).change();
                             });
                         }
                         if (GG0170Ms.length > 0) {
@@ -282,9 +281,7 @@ let branchingController = (function () {
                         /* unlock and clear J K L, skip to J */
                         if (GG0170JKLs.length > 0) {
                             GG0170JKLs.each(function () {
-                                console.log('GG0170JKL changed because I <= 6 triggering breakLongSentence from branching.ts');
-                                $(this).prop('disabled', false).val(-1); //don't use .change() since we are in a change event will cause infinite loop
-                                formController.breakLongSentence($(this));
+                                $(this).prop('disabled', false).val(-1).change();
                             });
                             GG0170Js[0].focus();
                         }
@@ -296,9 +293,7 @@ let branchingController = (function () {
             /* lock and clear J K L M */
             if (GG0170JKLs.length > 0) {
                 GG0170JKLs.each(function () {
-                    console.log('GG0170JKL are reset because I has no answer triggering breakLongSentence from branching.ts');
-                    $(this).prop('disabled', true).val(-1); //don't use .change() since we are in a change event will cause infinite loop
-                    formController.breakLongSentence($(this));
+                    $(this).prop('disabled', true).val(-1).change();
                 });
             }
         }

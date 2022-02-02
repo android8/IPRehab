@@ -79,9 +79,9 @@ namespace IPRehabRepository
       }
    }
 
-   public class QuestionStageRepository : RepositoryBase<tblQuestionStage>, IQuestionStageRepository
-   {
-      public QuestionStageRepository(IPRehabContext repositoryContext)
+   public class QuestionMeasureRepository : RepositoryBase<tblQuestionMeasure>, IQuestionMeasureRepository
+  {
+      public QuestionMeasureRepository(IPRehabContext repositoryContext)
           : base(repositoryContext)
       {
       }

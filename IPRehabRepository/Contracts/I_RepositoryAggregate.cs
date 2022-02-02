@@ -11,7 +11,7 @@
       ICodeSetRepository CodeSetRepository { get; }
       IQuestionInstructionRepository QuestionInstructionRepository { get; }
       ISignatureRepository SignatureRepository { get; }
-
+      IQuestionMeasureRepository QuestionMeasureRepository { get; }
       void Save();
    }
 }

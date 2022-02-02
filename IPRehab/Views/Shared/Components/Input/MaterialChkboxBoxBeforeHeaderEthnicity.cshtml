@@ -1,7 +1,7 @@
 ﻿@model InputViewComponentTemplateModel
 @* create multiple checkboxes and set checked if any *@
 @{
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayStageHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.StageSysTitle);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
 }
 
 <div class="flex-item">
@@ -17,7 +17,7 @@
         <input type="checkbox" 
                class="mdc-checkbox__native-control persistable"
                name="@Model.ViewComponentViewModel.QuestionKey"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"
                required="@(Model.ViewComponentViewModel.Required)"
                value="@item.SelectListItem.Value"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -34,9 +34,9 @@
                data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
 
-        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}")"></span>
+        <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"></span>
 
         <div class="mdc-checkbox__background">
           <svg class="mdc-checkbox__checkmark"
@@ -49,8 +49,8 @@
         <div class="mdc-checkbox__ripple"></div>
       </div>
 
-      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.StageSysTitle}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
+      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}")"
+             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
         @*strip the code value *@
         @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
         {
@@ -69,7 +69,7 @@
     @*prevent the next inner div to be flexed*@
     <div>
       <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
-        @($"{Model.ViewComponentViewModel.StageTitle.Replace("_"," ")}")
+        @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
       </div>
     </div>
   }

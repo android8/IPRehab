@@ -70,6 +70,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[app].[tblQuestionMeasure]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[app].[tblQuestionStage]",
          "ObjectType": 0
       },
@@ -86,7 +90,7 @@
          "ObjectType": 3
       }
    ],
-   "UiHint": "VHAAUSDB9.RehabAssessmentCareTool",
+   "UiHint": "vhaausdb9.RehabAssessmentCareTool",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,
    "UseDbContextSplitting": false,
@@ -94,6 +98,7 @@
    "UseHandleBars": false,
    "UseInflector": false,
    "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
    "UseNoConstructor": false,
    "UseNoDefaultConstructor": false,
    "UseNoNavigations": false,

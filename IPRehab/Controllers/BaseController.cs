@@ -134,7 +134,8 @@ namespace IPRehab.Controllers
 
       var routeData = this.RouteData;
       var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-      UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress); //don't await the external audit result
+      //don't await the external audit result
+      UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress); 
       await next();
     }
   }

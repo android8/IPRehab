@@ -1,0 +1,106 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "IPRehabContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "ProjectRootNamespace": "IPRehabModel",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[app].[AspNetRoleClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserLogins]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUsers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[AspNetUserTokens]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblAnswer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblBranching]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblCodeSet]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblEpisodeOfCare]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblPatient]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblQuestion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblQuestionInstruction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblQuestionMeasure]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblSignature]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[app].[tblUser]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[shared].[vFSODPatientDetail]",
+         "ObjectType": 3
+      }
+   ],
+   "UiHint": "vhaausdb9.RehabAssessmentCareTool",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}

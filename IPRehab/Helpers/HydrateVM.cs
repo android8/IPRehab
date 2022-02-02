@@ -31,8 +31,6 @@ namespace IPRehab.Helpers
         Question = questionDTO.Question,
 
         StageID = questionDTO.StageID,
-        StageTitle = questionDTO.GroupTitle, /* contains words separated by spaces */ 
-        StageSysTitle = stage, /* contains no space to be used by javascript selector */
 
         AnswerCodeSetID = questionDTO.AnswerCodeSetID,
         AnswerCodeCategory = questionDTO.AnswerCodeCategory,
@@ -44,11 +42,14 @@ namespace IPRehab.Helpers
 
         Instructions = questionDTO.QuestionInsructions
       };
-      //qws.StageTitle = questionDTO.QuestionStageCustomTitles.Where(x => x.StageID == questionDTO.StageID).FirstOrDefault().Title;
+
+      qws.Measure = string.IsNullOrEmpty(questionDTO.Measure) ?
+          string.Empty : Regex.IsMatch(questionDTO.Measure, @"^\d") ? questionDTO.Measure.Remove(0, 3) : questionDTO.Measure;
+
       return qws;
     }
 
-    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions, string stage)
+    public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
     {
       QuestionHierarchy qh = new();
       
@@ -70,7 +71,7 @@ namespace IPRehab.Helpers
       {
         var questionInTheSection = qwsList.Where(q => q.SectionTitle == thisSection.SectionTitle).ToList();
 
-        var questionWithHeaderInstruction = questionInTheSection.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "SectionHeader")).FirstOrDefault();
+        var questionWithHeaderInstruction = questionInTheSection.Where(q => q.Instructions.Any(i => i.DisplayLocation == "SectionHeader")).FirstOrDefault();
 
         if (questionWithHeaderInstruction != null)
         {
@@ -81,7 +82,7 @@ namespace IPRehab.Helpers
           thisSection.SectionInstruction = thisSection.SectionInstruction.Trim();
         }
 
-        var questionWithAggregateInstruction = questionInTheSection.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "SectionFooter")).FirstOrDefault();
+        var questionWithAggregateInstruction = questionInTheSection.Where(q => q.Instructions.Any(i => i.DisplayLocation == "SectionFooter")).FirstOrDefault();
 
         if (questionWithAggregateInstruction != null)
         {

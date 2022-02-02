@@ -14,19 +14,21 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, string measureCodeSetDescription)
     {
       QuestionDTO questionDTO = new();
       questionDTO.FormName = questionStage;
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
-      questionDTO.Required = q.tblQuestionStage.Where(x =>
-          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).SingleOrDefault()?.Required;
+      questionDTO.Required = q.tblQuestionMeasure.Where(x =>
+          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).FirstOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
-      //use tblQuestionStage.StageGroupTitle
-      questionDTO.GroupTitle = q.tblQuestionStage.Where(s=>s.QuestionIDFK == q.QuestionID && s.StageFK == stageID).FirstOrDefault()?.StageGroupTitle; //GetStageTitles(q);  
+
+      //use question measures
+      questionDTO.Measure = measureCodeSetDescription; //GetGroupTitle(q, questionStage);
+
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
@@ -75,15 +77,6 @@ namespace IPRehabWebAPI2.Helpers
         ByUser = a.AnswerByUserID
       };
       return answerDTO;
-    }
-
-    private static List<QuestionStageCustomTitle> GetStageTitles(tblQuestion q)
-    {
-      var stageTitles = q.tblQuestionStage.Where(x => x.QuestionIDFK == q.QuestionID)
-        .Select(x => new QuestionStageCustomTitle (){
-            StageID= x.StageFK, Title= x.StageFKNavigation.CodeDescription }).ToList();
-
-      return stageTitles;
     }
 
     public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)

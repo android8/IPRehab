@@ -5,23 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Backup\IPRehabContext.cs" />
-    <Compile Remove="Backup\tblAnswer.cs" />
-    <Compile Remove="Backup\tblCodeSet.cs" />
-    <Compile Remove="Backup\tblEpisodeOfCare.cs" />
-    <Compile Remove="Backup\tblPatient.cs" />
-    <Compile Remove="Backup\tblQuestion.cs" />
-    <Compile Remove="Backup\tblQuestionInstruction.cs" />
-    <Compile Remove="Backup\tblQuestionStage.cs" />
-    <Compile Remove="Backup\tblSignature.cs" />
-    <Compile Remove="Backup\tblUser.cs" />
-    <Compile Remove="Backup\VCodeSetHierarchy.cs" />
-    <Compile Remove="Backup\VFSODPatientDetail.cs" />
-    <Compile Remove="Backup\VQuestionStandardChoices.cs" />
-    <Compile Remove="Backup\VQuestionStandardChoicesCondensed.cs" />
+    <Compile Remove="Backup\**" />
+    <EmbeddedResource Remove="Backup\**" />
+    <None Remove="Backup\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Custom Partials\IPRehabContext.cs" />
     <Compile Remove="Migrations\IPRehabContextModelSnapshot - 1.cs" />
     <Compile Remove="Migrations\IPRehabContextModelSnapshot - Copy.cs" />
+    <Compile Remove="TblQuestionStage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Backup\efpt.config.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,10 +28,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Backup\" />
   </ItemGroup>
 
 </Project>

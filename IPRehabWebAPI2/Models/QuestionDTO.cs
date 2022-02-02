@@ -15,7 +15,7 @@ namespace IPRehabWebAPI2.Models
     public string QuestionKey { get; set; }
     public string QuestionSection { get; set; }
     public string Question { get; set; }
-    public string GroupTitle { get; set; }
+    public string Measure { get; set; }
     public int AnswerCodeSetID { get; set; }
     public string AnswerCodeCategory { get; set; }
     public int? DisplayOrder { get; set; }

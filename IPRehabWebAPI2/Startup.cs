@@ -59,7 +59,7 @@ namespace IPRehabWebAPI2
       services.AddScoped<IQuestionInstructionRepository, QuestionInstructionRepository>();
       services.AddScoped<IUserRepository, UserRepository>();
       services.AddScoped<ISignatureRepository, SignatureRepository>();
-      services.AddScoped<IQuestionStageRepository, QuestionStageRepository>();
+      services.AddScoped<IQuestionMeasureRepository, QuestionMeasureRepository>();
       services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
       services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
 
