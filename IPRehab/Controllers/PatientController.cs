@@ -129,12 +129,14 @@ namespace IPRehab.Controllers
               //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
 
               PatientEpisodeAndCommandVM thisEpisodeAndCommands = new() {
-                EpisodeOfCareID= episode.EpisodeOfCareID,
+                EpisodeOfCareID = episode.EpisodeOfCareID,
                 OnsetDate = episode.OnsetDate,
                 AdmissionDate = episode.AdmissionDate,
-                PatientIcnFK = episode.PatientIcnFK
+                PatientIcnFK = episode.PatientIcnFK,
+                FormIsComplete = episode.FormIsComplete,
+                ActionButtonVM = episodeCommandBtn
               };
-              thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+
               thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
             }
           }

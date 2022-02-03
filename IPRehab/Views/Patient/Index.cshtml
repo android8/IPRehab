@@ -118,6 +118,9 @@
                       <th>
                         @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
                       </th>
+                      <th>
+                        Completed
+                      </th>
                       <th>@* stage command buttons view component controller *@</th>
                     </tr>
                   </thead>
@@ -172,6 +175,14 @@
                           </td>
                           <td>
                             @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
+                          </td>
+                          <td>
+                            @{
+                                if (thisEpisodeConfig.FormIsComplete)
+                                {
+                                    <span>Yes</span>
+                                }
+                            }
                           </td>
                           <td>
                             @*<div class="mdc-touch-target-wrapper">

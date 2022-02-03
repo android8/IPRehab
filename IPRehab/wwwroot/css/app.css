@@ -967,3 +967,8 @@ i.score {
 #Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
   animation: heart-beat 0.1s;
 }
+
+.formCompleteFlag {
+  color: black;
+  background-color: white;
+}
