@@ -101,9 +101,9 @@ namespace IPRehabWebAPI2.Controllers
       //  q.tblQuestionStage.Any(s =>
       //    s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
       //) 
-      List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(m => m.StageFKNavigation.CodeSetID == stageID)
+      List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(m => m.StageFK == stageID || (m.QuestionIDFKNavigation.QuestionKey == "Q12" || m.QuestionIDFKNavigation.QuestionKey == "Q23"))
        .OrderBy(o => o.QuestionIDFKNavigation.Order).ThenBy(o => o.QuestionIDFKNavigation.QuestionKey)
-     .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureFKNavigation.CodeDescription)).ToList();
+     .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureCodeSetIDFKNavigation.CodeDescription)).ToList();
 
       List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
       if (keyQuestions.Any())
@@ -122,7 +122,7 @@ namespace IPRehabWebAPI2.Controllers
           q.Enabled = true;
 
           List<AnswerDTO> thisQuestionAnswers = await _answerRepository
-            .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK==episodeID & a.StageIDFKNavigation.CodeValue==stageName)
+            .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK==episodeID && a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeDescription == q.Measure)
             .Select(a=>HydrateDTO.HydrateAnswer(a, thisEpisode)).ToListAsync();
           if (thisQuestionAnswers.Any())
             q.Answers = thisQuestionAnswers;

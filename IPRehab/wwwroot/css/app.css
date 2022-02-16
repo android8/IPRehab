@@ -754,6 +754,13 @@ div.questionRow {
   /*align-items: center;*/
 }
 
+.flex-space-between-column-nowrap {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
 .flex-end-row-nowrap {
   display: flex;
   flex-direction: row;
@@ -854,6 +861,10 @@ div.questionRow:last-child {
   align-items: center;
   /*horizontal aligment evenly*/
   justify-content: space-between;
+}
+
+.flex-alignment-normal {
+  align-items: normal;
 }
 
 .flex-item-left-justify {
@@ -964,7 +975,8 @@ i.score {
   animation: fly-in-font 0.1s;
 }
 
-#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
+#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score,
+#Mobility_Aggregate_Score_Admission_Performance, #Self_Care_Aggregate_Score_Discharge_Performance {
   animation: heart-beat 0.1s;
 }
 

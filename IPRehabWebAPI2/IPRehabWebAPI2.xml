@@ -202,12 +202,12 @@
             not peristable, for inspection only
             </summary>
         </member>
-        <member name="P:IPRehabWebAPI2.Models.UserAnswer.StageID">
+        <member name="P:IPRehabWebAPI2.Models.UserAnswer.MeasureID">
             <summary>
             peristable, foreign key to stage identifier for inspection only
             </summary>
         </member>
-        <member name="P:IPRehabWebAPI2.Models.UserAnswer.StageName">
+        <member name="P:IPRehabWebAPI2.Models.UserAnswer.MeasureName">
             <summary>
             not peristable, for inspection only
             </summary>

@@ -83,7 +83,7 @@ namespace IPRehabModel
                 entity.Property(e => e.Description).IsUnicode(false);
 
                 entity.HasOne(d => d.AnswerCodeSetFKNavigation)
-                    .WithMany(p => p.tblAnswerAnswerCodeSetFKNavigation)
+                    .WithMany(p => p.tblAnswer)
                     .HasForeignKey(d => d.AnswerCodeSetFK)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblAnswer_tblCodeSet_AnswerCodeSet");
@@ -94,17 +94,17 @@ namespace IPRehabModel
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblAnswer_tblEpisodeOfCare");
 
+                entity.HasOne(d => d.MeasureIDFKNavigation)
+                    .WithMany(p => p.tblAnswer)
+                    .HasForeignKey(d => d.MeasureIDFK)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_tblAnswer_tblQuestionMeasure");
+
                 entity.HasOne(d => d.QuestionIDFKNavigation)
                     .WithMany(p => p.tblAnswer)
                     .HasForeignKey(d => d.QuestionIDFK)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_tblAnswer_tblQuestion");
-
-                entity.HasOne(d => d.StageIDFKNavigation)
-                    .WithMany(p => p.tblAnswerStageIDFKNavigation)
-                    .HasForeignKey(d => d.StageIDFK)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblAnswer_tblCodeSet_StageCodeSet");
             });
 
             modelBuilder.Entity<tblBranching>(entity =>
@@ -220,9 +220,9 @@ namespace IPRehabModel
 
                 entity.Property(e => e.Required).HasDefaultValueSql("(CONVERT([bit],(0)))");
 
-                entity.HasOne(d => d.MeasureFKNavigation)
-                    .WithMany(p => p.tblQuestionMeasureMeasureFKNavigation)
-                    .HasForeignKey(d => d.MeasureFK)
+                entity.HasOne(d => d.MeasureCodeSetIDFKNavigation)
+                    .WithMany(p => p.tblQuestionMeasureMeasureCodeSetIDFKNavigation)
+                    .HasForeignKey(d => d.MeasureCodeSetIDFK)
                     .HasConstraintName("FK_tblQuestionMeasure_tblCodeSet1");
 
                 entity.HasOne(d => d.QuestionIDFKNavigation)

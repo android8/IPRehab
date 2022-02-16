@@ -759,6 +759,13 @@ div.questionRow {
   /*align-items: center;*/
 }
 
+.flex-space-between-column-nowrap {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
 .flex-end-row-nowrap {
   display: flex;
   flex-direction: row;
@@ -858,6 +865,10 @@ div.questionRow:last-child {
   align-items: center;
   /*horizontal aligment evenly*/
   justify-content: space-between;
+}
+
+.flex-alignment-normal {
+  align-items:normal;
 }
 
 .flex-item-left-justify {
@@ -972,7 +983,10 @@ i.score {
   animation: heart-beat .1s;
 }
 
-.formCompleteFlag{
-  color:black;
-  background-color:white;
+,
+#Mobility_Aggregate_Score_Admission_Performance, #Self_Care_Aggregate_Score_Admission_Performance,
+#Mobility_Aggregate_Score_Discharge_Performance, #Self_Care_Aggregate_Score_Discharge_Performance
+.formCompleteFlag {
+  font-size: 5rem;
+  font-weight: 400;
 }

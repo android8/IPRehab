@@ -186,13 +186,6 @@ namespace IPRehab.Controllers
         List<UserAnswer> newAnswers = postbackModel.NewAnswers;
         List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
         List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
-        UserAnswer thisAnswer = new();
-        if (newAnswers != null)
-          thisAnswer = newAnswers.Find(x => x.StageName != string.Empty);
-        else if (oldAnswers != null)
-          thisAnswer = oldAnswers.Find(x => x.StageName != string.Empty);
-        else if (updatedAnswers != null)
-          thisAnswer = updatedAnswers.Find(x => x.StageName != string.Empty);
 
         //forward the postbackModel to web api Answer controller
         Uri uri = new Uri($"{_apiBaseUrl}/api/Answer/Post");

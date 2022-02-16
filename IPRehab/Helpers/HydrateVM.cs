@@ -40,11 +40,10 @@ namespace IPRehab.Helpers
 
         ChoicesAnswers = SetChoicesAnswers(questionDTO),
 
-        Instructions = questionDTO.QuestionInsructions
+        Instructions = questionDTO.QuestionInsructions,
+        Measure = string.IsNullOrEmpty(questionDTO.Measure) ?
+          string.Empty : Regex.IsMatch(questionDTO.Measure, @"^\d") ? questionDTO.Measure.Remove(0, 3) : questionDTO.Measure
       };
-
-      qws.Measure = string.IsNullOrEmpty(questionDTO.Measure) ?
-          string.Empty : Regex.IsMatch(questionDTO.Measure, @"^\d") ? questionDTO.Measure.Remove(0, 3) : questionDTO.Measure;
 
       return qws;
     }
@@ -250,16 +249,15 @@ namespace IPRehab.Helpers
     private static List<SelectListItem> SetSelectedChoice(QuestionDTO questionDTO)
     {
       List<SelectListItem> selectedChoices = new();
-      string text = string.Empty, value = string.Empty ;
+      string text = string.Empty;
 
       /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
       foreach (var c in questionDTO.ChoiceList)
       {
-        text = c.CodeDescription;
         SelectListItem thisChiceItem = new () { 
-          Text = text, 
+          Text = c.CodeDescription, 
           Value = c.CodeSetID.ToString(), 
-          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.StageID == questionDTO.StageID)
+          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.Measure == questionDTO.Measure)
         };
         selectedChoices.Add(thisChiceItem);
       }
@@ -273,7 +271,7 @@ namespace IPRehab.Helpers
 
       if (questionDTO.ChoiceList.Count == 0)
       {
-        var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == questionDTO.AnswerCodeSetID && a.StageID == questionDTO.StageID);
+        var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == questionDTO.AnswerCodeSetID);
 
         /* make choice list with only one codeset id */
         SelectListItem thisChice = new()
@@ -283,9 +281,11 @@ namespace IPRehab.Helpers
           Selected = (thisAnswer != null)
         };
 
-        ChoiceAndAnswer thisChoiceAndAnswer = new();
-        thisChoiceAndAnswer.SelectListItem = thisChice;
-        thisChoiceAndAnswer.Answer = thisAnswer;
+        ChoiceAndAnswer thisChoiceAndAnswer = new()
+        {
+          SelectListItem = thisChice,
+          Answer = thisAnswer
+        };
 
         choiceAndAnswers.Add(thisChoiceAndAnswer);
       }
@@ -293,7 +293,7 @@ namespace IPRehab.Helpers
       {
         foreach (var c in questionDTO.ChoiceList)
         {
-          var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.StageID == questionDTO.StageID);
+          var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID);
 
           SelectListItem thisChice = new()
           {

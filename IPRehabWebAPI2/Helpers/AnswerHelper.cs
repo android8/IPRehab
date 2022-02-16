@@ -55,12 +55,12 @@ namespace IPRehabWebAPI2.Helpers
           tblAnswer thisAnswer = new()
           {
             EpsideOfCareIDFK = thisEpisode.EpisodeOfCareID, //new Episode
-            AnswerByUserID = ans.AnswerByUserID,
+            QuestionIDFK = ans.QuestionID,
+            MeasureIDFK = ans.MeasureID,
             AnswerCodeSetFK = ans.AnswerCodeSetID,
             AnswerSequenceNumber = ans.AnswerSequenceNumber,
             Description = ans.Description,
-            QuestionIDFK = ans.QuestionID,
-            StageIDFK = ans.StageID,
+            AnswerByUserID = ans.AnswerByUserID,
             LastUpdate = ans.LastUpdate
           };
           _ipRehabContext.tblAnswer.Add(thisAnswer);
@@ -93,12 +93,12 @@ namespace IPRehabWebAPI2.Helpers
           tblAnswer thisAnswer = new()
           {
             EpsideOfCareIDFK = thisEpisodeID, //existing Episode ID
-            AnswerByUserID = ans.AnswerByUserID,
+            QuestionIDFK = ans.QuestionID,
+            MeasureIDFK = ans.MeasureID,
             AnswerCodeSetFK = ans.AnswerCodeSetID,
             AnswerSequenceNumber = ans.AnswerSequenceNumber,
             Description = ans.Description,
-            QuestionIDFK = ans.QuestionID,
-            StageIDFK = ans.StageID,
+            AnswerByUserID = ans.AnswerByUserID,
             LastUpdate = ans.LastUpdate
           };
           _ipRehabContext.tblAnswer.Add(thisAnswer);
@@ -140,12 +140,12 @@ namespace IPRehabWebAPI2.Helpers
           var thisAnswer = _answerRepository.FindByCondition(x => x.AnswerID == ans.AnswerID).FirstOrDefault();
           if (thisAnswer != null)
           {
-            thisAnswer.AnswerByUserID = ans.AnswerByUserID;
+            thisAnswer.QuestionIDFK = ans.QuestionID;
+            thisAnswer.MeasureIDFK = ans.MeasureID;
             thisAnswer.AnswerCodeSetFK = ans.AnswerCodeSetID;
             thisAnswer.AnswerSequenceNumber = ans.AnswerSequenceNumber;
             thisAnswer.Description = ans.Description;
-            thisAnswer.QuestionIDFK = ans.QuestionID;
-            thisAnswer.StageIDFK = ans.StageID;
+            thisAnswer.AnswerByUserID = ans.AnswerByUserID;
             thisAnswer.LastUpdate = ans.LastUpdate;
           }
           _ipRehabContext.tblAnswer.Update(thisAnswer);
