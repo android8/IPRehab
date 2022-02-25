@@ -334,6 +334,9 @@ svg {
   border: 1px solid #c8cab7;
   border-radius: 10px 10px 0 0;
 }
+.section-title:hover{
+  cursor: pointer;
+}
 
 div.questionText2 {
   width: 40%;
@@ -979,14 +982,28 @@ i.score {
   animation: fly-in-font .1s;
 }
 
-#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
+.aggregate_score {
+  font-weight: bolder;
+  font-size: 3em;
   animation: heart-beat .1s;
 }
 
-,
-#Mobility_Aggregate_Score_Admission_Performance, #Self_Care_Aggregate_Score_Admission_Performance,
-#Mobility_Aggregate_Score_Discharge_Performance, #Self_Care_Aggregate_Score_Discharge_Performance
-.formCompleteFlag {
-  font-size: 5rem;
-  font-weight: 400;
+/*#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
+  animation: heart-beat .1s;
+}*/
+
+.questionRow > .child1 {
+  width: 10%;
+  margin:0 5px 0 2px ;
+}
+.questionRow > .child2 {
+  width: 90%;
+}
+
+.questionRow > .child1:hover {
+  cursor: pointer;
+}
+
+.footerInstruction > div{
+  width: 40%;
 }

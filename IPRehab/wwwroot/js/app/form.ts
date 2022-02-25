@@ -12,8 +12,8 @@ import { InteractionTrigger } from "../../node_modules/@material/chips/deprecate
 
 $(function () {
   $('.persistable').change(function () {
-    let onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
-    let admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+    const onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
+    const admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
     if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
       $('#ajaxPost').removeAttr('disabled');
       //$('#mvcPost').removeAttr('disabled');
@@ -21,7 +21,7 @@ $(function () {
   });
 
   $('select').each(function () {
-    let $this = $(this);
+    const $this = $(this);
     $this.change(function () {
       formController.breakLongSentence($this);
     });
@@ -39,10 +39,32 @@ $(function () {
 
   /* jump to section anchor */
   $('.gotoSection').each(function () {
-    let $this = $(this);
+    const $this = $(this);
     $this.click(function () {
-      let anchorId: string = $this.data("anchorid");
+      const anchorId: string = $this.data("anchorid");
       formController.scrollToAnchor(anchorId);
+    });
+  });
+
+  /* show hide section */
+  $('.section-title').each(function () {
+    const thisTitle: any = $(this);
+    thisTitle.click(function () {
+      let sectionContent: any = thisTitle.next();
+      let sectionContentHidden: boolean = sectionContent.attr('hidden');
+      sectionContent.attr('hidden', !sectionContentHidden);
+    });
+  });
+
+  /* show hide individual question */
+  $('.child1').each(function () {
+    const thisKey: any = $(this);
+    thisKey.click(function () {
+      const thisQuestion: any = thisKey.next();
+      console.log('thisQuestion', thisQuestion);
+      const thisQuestionHidden: boolean = thisQuestion.attr('hidden');
+      console.log('thisQuestion hidden', thisQuestionHidden);
+      thisQuestion.attr('hidden', !thisQuestionHidden);
     });
   });
 
@@ -56,8 +78,8 @@ $(function () {
     if (formController.validate) {
       const thisPostBtn: any = $(this);
       $('.spinnerContainer').show();
-      let theScope: any = $('#userAnswerForm');
-      let stageName: string = $('#stage', theScope).val().toString();
+      const theScope: any = $('#userAnswerForm');
+      const stageName: string = $('#stage', theScope).val().toString();
       const patientID: string = $('#patientID', theScope).val().toString();
       const patientName: string = $('#patientName', theScope).val().toString();
       let episodeID: number = +$('#episodeID', theScope).val();
@@ -68,14 +90,15 @@ $(function () {
     }
   });
 
-  /* on load */
+  /* self care score on load */
   formController.selfCareScore();
 
-  /* on change */
+  /* self care scorce on change */
   $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
     const $this: any = $(this);
     $this.change(function () {
       formController.selfCareScore();
+      formController.grandTotal();
     });
   });
 
@@ -86,8 +109,12 @@ $(function () {
   $('.persistable[id^=GG0170]:not([id*=Discharge_Goal])').each(function () {
     $(this).change(function () {
       formController.mobilityScore();
+      formController.grandTotal();
     })
   });
+
+  /* grand total on load */
+  formController.grandTotal();
 });
 
 /****************************************************************************
@@ -110,8 +137,7 @@ let formController = (function () {
 
   /* private function */
   function scrollToAnchor(anchorId: string) {
-    console.log('scroll to ' + anchorId);
-    let anchor: any = $('#' + anchorId);
+   let anchor: any = $('#' + anchorId);
     $('html,body').animate({ scrollTop: anchor.offset().top }, 'fast');
   }
 
@@ -507,22 +533,36 @@ let formController = (function () {
 
   /* private function */
   function selfCareScore(): void {
-    let GG0130_Admission_Performance: number = 0;
-    let GG0130_Discharge_Performance: number = 0;
-    $('.persistable[id^=GG0130]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal])').each(function () {
+    let selfCareAdmissionPerformance: number = 0,
+      selfCareDischargePerformance: number = 0,
+      selfCarePerformance: number = 0 /* Interim Performance or Discharge Performance */;
+
+    $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
       const $this = $(this);
+      const $thisID = $(this).prop('id');
       const $thisValue = getControlValue($this);
+
       switch (true) {
         case ($thisValue >= 7): // greater than 7,9,10,88
           {
             updateScore($this, 1);
-            GG0130_Admission_Performance += 1;
+            if ($thisID.indexOf('Admission') >= 0)
+              selfCareAdmissionPerformance += 1;
+            else if ($thisID.indexOf('Discharge') >= 0)
+              selfCareDischargePerformance += 1;
+            else 
+              selfCarePerformance += 1;
             break;
           }
         case ($thisValue > 0 && $thisValue <= 6): // between 1 and 6
           {
             updateScore($this, $thisValue);
-            GG0130_Admission_Performance += $thisValue;
+            if ($thisID.indexOf('Admission') >= 0)
+              selfCareAdmissionPerformance += $thisValue;
+            else if ($thisID.indexOf('Discharge') >= 0)
+              selfCareDischargePerformance += $thisValue;
+            else
+              selfCarePerformance += $thisValue;
             break;
           }
         default:
@@ -533,53 +573,88 @@ let formController = (function () {
       }
     });
 
-    $('.persistable[id^=GG0130]:not([id*=Admission_Performance]):not([id*=Discharge_Goal])').each(function () {
-      const $this = $(this);
-      const $thisValue = getControlValue($this);
-      switch (true) {
-        case ($thisValue >= 7): // greater than 7,9,10,88
-          {
-            updateScore($this, 1);
-            GG0130_Discharge_Performance += 1;
-            break;
-          }
-        case ($thisValue > 0 && $thisValue <= 6): // between 1 and 6
-          {
-            updateScore($this, $thisValue);
-            GG0130_Discharge_Performance += $thisValue;
-            break;
-          }
-        default:
-          {
-            updateScore($this, 0);
-            break;
-          }
-      }
-    });
-
-    $('#Self_Care_Aggregate_Score_Admission_Performance').text(GG0130_Admission_Performance);
-    $('#Self_Care_Aggregate_Score_Discharge_Performance').text(GG0130_Discharge_Performance);
-    $('#Self_Care_Aggregate_Score').text(GG0130_Admission_Performance + GG0130_Discharge_Performance);
-  }
+    if ($('#Self_Care_Aggregate_Score_Admission_Performance').length > 0 && $('#Self_Care_Aggregate_Score_Discharge_Performance').length > 0) {
+      $('#Self_Care_Aggregate_Score_Admission_Performance').text(selfCareAdmissionPerformance);
+      $('#Self_Care_Aggregate_Score_Discharge_Performance').text(selfCareDischargePerformance);
+      $('#Self_Care_Aggregate_Score_Total_Change').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
+    }
+    else {
+      /* interim performance or follow up performance */
+      $('#Self_Care_Aggregate_Score').text(selfCarePerformance);
+    }
+ }
 
   /* private function */
   function mobilityScore(): void {
-    let mobilityScore_Admission_Performance: number = 0, mobilityScore_Discharge_Performance: number = 0;
 
-    mobilityScore_Admission_Performance += Score_GG0170AtoP_Admission_Performance();
-    mobilityScore_Admission_Performance += Score_GG0170RandS_Admission_Performance();
+    if ($('#Mobility_Aggregate_Score_Admission_Performance').length > 0 && $('#Mobility_Aggregate_Score_Discharge_Performance').length > 0) {
 
-    mobilityScore_Discharge_Performance += Score_GG0170AtoP_Discharge_Performance();
-    mobilityScore_Discharge_Performance += Score_GG0170RandS_Discharge_Performance();
+      let mobilityAdmissionPerformance: number = 0,
+        mobilityDischargePerformance: number = 0;
 
-    $('#Self_Care_Aggregate_Score_Admission_Performance').text(mobilityScore_Admission_Performance);
-    $('#Self_Care_Aggregate_Score_Discharge_Performance').text(mobilityScore_Discharge_Performance);
-    $('#Mobility_Aggregate_Score').text(mobilityScore_Admission_Performance + mobilityScore_Discharge_Performance);
+      mobilityAdmissionPerformance += Score_GG0170AtoP_Performance();
+      mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Base');
+
+      mobilityDischargePerformance += Score_GG0170AtoP_Discharge_Performance();
+      mobilityDischargePerformance += Score_GG0170RandS_Discharge_Performance();
+
+      $('#Mobility_Aggregate_Score_Admission_Performance').text(mobilityAdmissionPerformance);
+      $('#Mobility_Aggregate_Score_Discharge_Performance').text(mobilityDischargePerformance);
+      $('#Mobility_Aggregate_Score_Total_Change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+    }
+    else {
+
+      let mobilityPerformance: number = 0;
+
+      /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
+      mobilityPerformance += Score_GG0170AtoP_Performance();
+      mobilityPerformance += Score_GG0170RandS_Performance('Interim or Follow Up');
+      $('#Mobility_Aggregate_Score').text(mobilityPerformance);
+    }
+  }
+
+  /* private function */
+  function grandTotal(): void {
+    let grandTotal: number = 0;
+    if ($('#Self_Care_Aggregate_Score_Admission_Performance').length > 0 && $('#Mobility_Aggregate_Score_Admission_Performance').length > 0) {
+      /* Admission Performance */
+      const Self_Care_Admission_Performance: string = $('#Self_Care_Aggregate_Score_Admission_Performance').text();
+      const selfCareAdmissionPerformance: number = parseInt(Self_Care_Admission_Performance);
+      const Mobility_Admission_Performance: string = $('#Mobility_Aggregate_Score_Admission_Performance').text();
+      const mobilityAdmissionPerformance: number = parseInt(Mobility_Admission_Performance);
+      const admissionPerformanceGrandTotal: number = selfCareAdmissionPerformance + mobilityAdmissionPerformance
+      if ($('#Admission_Performance_Grand_Total').length > 0)
+        $('#Admission_Performance_Grand_Total').text(admissionPerformanceGrandTotal);
+
+      /* Discharge Performance */
+      const Self_Care_Discharge_Performance: string = $('#Self_Care_Aggregate_Score_Discharge_Performance').text();
+      const selfCareDischargePerformance: number = parseInt(Self_Care_Discharge_Performance);
+      const Mobility_Discharge_Performance: string = $('#Mobility_Aggregate_Score_Discharge_Performance').text();
+      const mobilityDischargePerformance: number = parseInt(Mobility_Discharge_Performance);
+      const dischargePerformanceGrandTotal: number = selfCareDischargePerformance + mobilityDischargePerformance;
+      if ($('#Discharge_Performance_Grand_Total').length > 0)
+        $('#Discharge_Performance_Grand_Total').text(dischargePerformanceGrandTotal);
+
+      grandTotal = dischargePerformanceGrandTotal - admissionPerformanceGrandTotal;
+    }
+    else {
+      /* Interim Performance or Follow Up Performance */
+      const Self_Care_Aggregate: string = $('#Self_Care_Aggregate_Score').text();
+      const selfCareAggregate: number = parseInt(Self_Care_Aggregate);
+      const Mobility_Aggregate: string = $('#Mobility_Aggregate_Score').text();
+      const mobilityAggregate: number = parseInt(Mobility_Aggregate);
+
+      grandTotal = selfCareAggregate + mobilityAggregate;
+    }
+
+    if ($('#Grand_Total').length > 0)
+      $('#Grand_Total').text(grandTotal);
   }
 
   /* internal function */
-  function Score_GG0170AtoP_Admission_Performance(): number {
-    let GG0170_AtoP_Admission_Performance: number = 0;
+  function Score_GG0170AtoP_Performance(): number {
+    let GG0170_AtoP_Performance: number = 0;
+
     /* select only GG0170 Admission Performance excluding Q, R and S */
     $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
       let $thisControl = $(this);
@@ -594,14 +669,14 @@ let formController = (function () {
           }
           else {
             updateScore($thisControl, 1);
-            GG0170_AtoP_Admission_Performance += 1;
+            GG0170_AtoP_Performance += 1;
           }
           break;
         }
         case (thisControlScore > 0 && thisControlScore <= 6): {
           //btw 1 and 6 add value point 
           updateScore($thisControl, thisControlScore);
-          GG0170_AtoP_Admission_Performance += thisControlScore;
+          GG0170_AtoP_Performance += thisControlScore;
           break;
         }
         default: {
@@ -611,49 +686,64 @@ let formController = (function () {
       }
     });
 
-    return GG0170_AtoP_Admission_Performance;
+    return GG0170_AtoP_Performance;
   }
 
   /* internal function */
-  function Score_GG0170RandS_Admission_Performance(): number {
-    let admissionMultiplier: number = 1;
+  function Score_GG0170RandS_Performance(stage: string): number {
+    let multiplier: number = 1,
+      R_Performance: number = 0,
+      S_Performance: number = 0;
 
-    /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
-    let GG0170I_Admission_Performance: any = $('.persistable[id^=GG0170I_Admission_Performance]');
-    let GG0170I_Admission_Performance_Value: number = getControlValue(GG0170I_Admission_Performance);
+    let GG0170I: any, GG0170R: any, GG0170S: any;
+    let GG0170I_Value: number = 0, GG0170R_Value: number = 0, GG0170S_Value: number = 0;
 
-    if (GG0170I_Admission_Performance_Value >= 7)
-      admissionMultiplier = 2;
-    else
-      admissionMultiplier = 0;
+    if (stage == 'Base') {
+      /* GG0170I determines the multiplier for GG0170R and GG0170S */
+      GG0170I = $('.persistable[id^=GG0170I_Admission_Performance]');
+      GG0170R = $('.persistable[id^=GG0170R_Admission_Performance]');
+      GG0170S = $('.persistable[id^=GG0170S_Admission_Performance]');
+    }
+    else {
+      GG0170I = $('.persistable[id^=GG0170I_Interim_Performance], .persistable[id^=GG0170I_Follow_Up_Performance]');
+      GG0170R = $('.persistable[id^=GG0170R_Interim_Performance], .persistable[id^=GG0170R_Follow_Up_Performance]');
+      GG0170S = $('.persistable[id^=GG0170S_Interim_Performance], .persistable[id^=GG0170S_Follow_Up_Performance]');
+    }
 
-    let R_Admission_Performance: number = 0;
-    let S_Admission_Performance: number = 0;
+    GG0170I_Value = getControlValue(GG0170I);
 
-    let GG0170R_Admission_Performance: any = $('.persistable[id^=GG0170R_Admission_Performance]');
-    let GG0170R_Admission_Performance_Value: number = getControlValue(GG0170R_Admission_Performance);
-    if (GG0170R_Admission_Performance_Value > 0) {
-      updateScore(GG0170R_Admission_Performance, GG0170R_Admission_Performance_Value * admissionMultiplier);
-      R_Admission_Performance += GG0170R_Admission_Performance_Value * admissionMultiplier;
+    if (GG0170I_Value >= 7)
+      multiplier = 2;
+    if (GG0170I_Value < 0)
+      multiplier = 0;
+    if (isNaN(GG0170I_Value))
+      multiplier = 1; //when GG0170I is not answered score R and S as is
+
+    GG0170R_Value = getControlValue(GG0170R);
+
+    if (GG0170R_Value > 0) {
+      updateScore(GG0170R, GG0170R_Value * multiplier);
+      R_Performance += GG0170R_Value * multiplier;
     }
     else
-      updateScore(GG0170R_Admission_Performance, 0);
+      updateScore(GG0170R, 0);
 
-    let GG0170S_Admission_Performance: any = $('.persistable[id^=GG0170S_Admission_Performance]');
-    let GG0170S_Admission_Performance_Value: number = getControlValue(GG0170S_Admission_Performance);
-    if (GG0170S_Admission_Performance_Value > 0) {
-      updateScore(GG0170S_Admission_Performance, GG0170S_Admission_Performance_Value * admissionMultiplier);
-      S_Admission_Performance += GG0170S_Admission_Performance_Value * admissionMultiplier;
+    GG0170S_Value = getControlValue(GG0170S);
+
+    if (GG0170S_Value > 0) {
+      updateScore(GG0170S, GG0170S_Value * multiplier);
+      S_Performance += GG0170S_Value * multiplier;
     }
     else
-      updateScore(GG0170S_Admission_Performance, 0);
+      updateScore(GG0170S, 0);
 
-    return R_Admission_Performance +  S_Admission_Performance;
+    return R_Performance +  S_Performance;
   }
 
   /* internal function */
   function Score_GG0170AtoP_Discharge_Performance(): number {
     let GG0170_AtoP_Discharge_Performance: number = 0;
+
     /* select only GG0170 Discharge Performance excluding Q, R and S */
     $('.persistable[id^=GG0170]:not([id*=Admission_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
       let $thisControl = $(this);
@@ -687,7 +777,9 @@ let formController = (function () {
 
   /* internal function */
   function Score_GG0170RandS_Discharge_Performance(): number {
-    let dischargeMultiplier: number = 1;
+    let dischargeMultiplier: number = 1,
+        R_Discharge_Performance: number = 0,
+        S_Discharge_Performance: number = 0;
 
     /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
     let GG0170I_Discharge_Performance: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
@@ -695,11 +787,8 @@ let formController = (function () {
 
     if (GG0170I_Discharge_Performance_Value >= 7)
       dischargeMultiplier = 2;
-    else
+    if (!isNaN(GG0170I_Discharge_Performance_Value) || GG0170I_Discharge_Performance_Value < 0)
       dischargeMultiplier = 0;
-
-    let R_Discharge_Performance: number = 0;
-    let S_Discharge_Performance: number = 0;
 
     let GG0170R_Discharge_Performance: any = $('.persistable[id^=GG0170R_Discharge_Performance]');
     let GG0170R_Discharge_Performance_Value: number = getControlValue(GG0170R_Discharge_Performance);
@@ -737,6 +826,7 @@ let formController = (function () {
     'validate': validateForm,
     'selfCareScore': selfCareScore,
     'mobilityScore': mobilityScore,
-    'updateScore': updateScore
+    'updateScore': updateScore,
+    'grandTotal': grandTotal
   }
 })();

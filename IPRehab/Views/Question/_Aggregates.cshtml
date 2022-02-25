@@ -1,0 +1,8 @@
+﻿@model SectionInfo
+
+<div class="flex-container-evenly-justified flex-alignment-normal">
+  <div class="flex-space-between-column-nowrap border border-dark">
+    <div class="text-wrap">@($"{Model.AggregateType}")</div>
+    <div id="@($"{Model.AggregateType.Replace(" ","_")}")" class="text-center aggregate_score">0</div>
+  </div>
+</div>

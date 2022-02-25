@@ -6,7 +6,7 @@
   if (originalAnswer == null)
     originalAnswer = new AnswerDTO { Description = "0" }; //needed so TryParse yields truthy
 
-  bool displayStageHeader = (bool)Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
+  bool displayStageHeader = (bool)Model.ViewComponentViewModel.DisplayMeasureHeader;
   bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 <div class="@Model.ViewComponentViewModel.ContainerCssClass">

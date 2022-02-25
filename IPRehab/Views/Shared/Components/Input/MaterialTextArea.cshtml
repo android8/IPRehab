@@ -2,7 +2,7 @@
 @{
   var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
   var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
   bool isMultipleChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 <div class="flex-start-row-nowrap">

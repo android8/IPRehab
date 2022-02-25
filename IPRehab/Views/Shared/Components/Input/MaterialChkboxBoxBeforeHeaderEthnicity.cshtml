@@ -1,7 +1,7 @@
 ﻿@model InputViewComponentTemplateModel
 @* create multiple checkboxes and set checked if any *@
 @{
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
 }
 
 <div class="flex-item">
