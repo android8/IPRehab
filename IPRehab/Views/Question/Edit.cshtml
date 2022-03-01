@@ -122,7 +122,7 @@
                             int controlCounter = 0;
 
                             @*question*@
-                            <div class="flex-start-row-nowrap questionRow accordion">
+                            <div class="flex-start-row-nowrap questionRow">
                                 <div class="child1 btn btn-secondary" title="click to expand/collapse" @*accordion header*@>
                                     @thisGroup.SharedQuestionKey
                                 </div>
@@ -177,10 +177,9 @@
                                         </div>
                                     </div>
 
-                                    @*cell for adding morebutton*@
+                                    @*cell for adding morebutton
                                     <div class="questionKey" title="question key">
 
-                                        @*  *@
                                         @if (thisGroup.Questions.Any(q => q.MultipleChoices))
                                         {
                                             string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
@@ -195,7 +194,7 @@
                                                 </button>
                                             </div>
                                         }
-                                    </div>
+                                    </div>*@
 
                                     @* cell for view components *@
                                     @{
@@ -205,7 +204,7 @@
                                         bool showoGradTotal = false;
                                     }
 
-                                    <div class="answer2">
+                                    <div class="@(thisGroup.Questions.Any(q=>q.QuestionKey =="Q43")? "answer2date": "answer2")">
                                         @foreach (var q in thisGroup.Questions)
                                         {
                                             aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
@@ -242,6 +241,7 @@
                                         @* aggregate total by type*@
                                         @switch (Model.StageCode)
                                         {
+                                            case "New":
                                             case "Base":
                                                 await Html.RenderPartialAsync("_Aggregates_Base", si);
                                                 break;

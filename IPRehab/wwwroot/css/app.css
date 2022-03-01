@@ -337,7 +337,7 @@ svg {
 }
 
 div.questionText2 {
-  width: 40%;
+  width: 50%;
 }
 
 div.questionKey {
@@ -347,6 +347,16 @@ div.questionKey {
 
 div.answer2 {
   width: 50%;
+}
+
+div.answer2date {
+  width: 50%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+div.answer2date > * {
+  flex: 1 1 50%;
 }
 
 .questionText {
