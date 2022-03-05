@@ -16,9 +16,11 @@
   @*<script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true" async></script>*@
   @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>*@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-<script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/appModels/IUserAnswer.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/utility.js" asp-append-version="true" async></script>
 <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
 }
 
 @* save button *@
@@ -26,7 +28,8 @@
 {
     <div>
         <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
-            <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
+            <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn"
+                id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
                 data-controller="answer" data-action="post">
                 <div class="mdc-button__ripple"></div>
                 <span class="mdc-button__label">Save</span>
@@ -36,7 +39,7 @@
         </div>
     </div>
 }
-<nav>
+<nav class="sidebar-nav">
     @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
     { "sectionInfo", Model.Sections },
     { "readOnly", Model.ReadOnly }
@@ -178,23 +181,23 @@
                                     </div>
 
                                     @*cell for adding morebutton
-                                    <div class="questionKey" title="question key">
+                                        <div class="questionKey" title="question key">
 
                                         @if (thisGroup.Questions.Any(q => q.MultipleChoices))
                                         {
-                                            string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
-                                            <div class="mdc-touch-target-wrapper">
-                                                <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
-                                                    <div class="mdc-button__ripple"></div>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                                                        <title>Add more answers</title>
-                                                    </svg>
-                                                    <div class="mdc-button__touch"></div>
-                                                </button>
-                                            </div>
+                                        string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
+                                        <div class="mdc-touch-target-wrapper">
+                                        <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
+                                        <div class="mdc-button__ripple"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add more answers</title>
+                                        </svg>
+                                        <div class="mdc-button__touch"></div>
+                                        </button>
+                                        </div>
                                         }
-                                    </div>*@
+                                        </div>*@
 
                                     @* cell for view components *@
                                     @{
@@ -245,8 +248,7 @@
                                             case "Base":
                                                 await Html.RenderPartialAsync("_Aggregates_Base", si);
                                                 break;
-                                            case "Interim":
-                                            case "Followup":
+                                            default:
                                                 await Html.RenderPartialAsync("_Aggregates", si);
                                                 break;
                                         }
@@ -255,18 +257,20 @@
                             }
                             @if (showoGradTotal)
                             {
-                              <div class="scoreSection flex-start-column-nowrap border border-dark">
-                                @switch (Model.StageCode)
-                                {
-                                  case "Base":
-                                    await Html.RenderPartialAsync("_Aggregates_GrandTotal_Base");
-                                    break;
-                                  default:
-                                    await Html.RenderPartialAsync("_Aggregates_GrandTotal");
-                                    break;
-                                }
-                              </div>
-                            }                        }
+                                <div class="scoreSection flex-start-column-nowrap border border-dark">
+                                    @switch (Model.StageCode)
+                                    {
+                                        case "New":
+                                        case "Base":
+                                            await Html.RenderPartialAsync("_Aggregates_GrandTotal_Base");
+                                            break;
+                                        default:
+                                            await Html.RenderPartialAsync("_Aggregates_GrandTotal");
+                                            break;
+                                    }
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
             }

@@ -4,12 +4,12 @@
   PatientID: string;
   AnswerID: number;
   EpisodeID: number;
-  OnsetDate: string;
-  AdmissionDate: string;
+  OnsetDate: Date;
+  AdmissionDate: Date;
   QuestionID: number;
   QuestionKey: string;
-  StageID: number;
-  StageName: string;
+  MeasureID: number;
+  MeasureName: string;
   AnswerCodeSetID: number;
   AnswerCodeSetDescription: string;
   AnswerSequenceNumber: number;

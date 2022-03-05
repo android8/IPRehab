@@ -1,15 +1,17 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+import { Utility } from "./utility.js";
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
+    const commonUtility = new Utility();
     const stage = $('.pageTitle').data('stagecode').replace(/\s/g, '_');
     /* on ready */
     if (stage == 'Full') {
         $('.persistable').prop("disabled", true);
     }
     else {
-        branchingController.CommonUnlock(stage);
+        branchingController.CommonUnlock();
     }
     /* on click */
     $('button[id^=btnMore]').each(function () {
@@ -19,74 +21,55 @@ $(function () {
         });
     });
     /* on change */
-    $("input[id^=Q12], input[id^=Q23]").each(function () {
+    $('.persistable[id^=Q12], .persistable[id^=Q23]').each(function () {
         let $this = $(this);
         $this.change(function () {
-            let Q12 = $("input[id^=Q12]");
-            let Q23 = $("input[id^=Q23]");
-            if (branchingController.isEmpty(Q12) && branchingController.isEmpty(Q23)) {
-                alert('Q12 and Q23 can not be empty');
-            }
-            //branchingController.Q12_Q23_blank_then_Lock_All(stage);
-            branchingController.CommonUnlock(stage);
+            branchingController.CommonUnlock();
         });
     });
     /* on change */
-    $('input[id^=Q14A]').each(function () {
+    $('.persistable[id^=Q14A]').each(function () {
         $(this).change(function () {
-            branchingController.Q14B_enabled_if_Q14A_is_86(stage);
+            branchingController.Q14B_enabled_if_Q14A_is_Yes();
         });
     });
     /* on change of dropdown Q16A*/
-    $("select[id^=Q16A]").each(function () {
+    $('.persistable[id^=Q16A]').each(function () {
         $(this).change(function () {
-            branchingController.Q16A_is_Home_then_Q17(stage);
+            branchingController.Q16A_is_Home_then_Q17();
         });
     });
     /* on change */
-    $('input[id^=Q42]').each(function () {
+    $('.persistable[id^=Q42]').each(function () {
         $(this).change(function () {
-            branchingController.Q42_Interrupted_then_Q43(stage);
+            branchingController.Q42_Interrupted_then_Q43();
+        });
+    });
+    $('.persistable[id^=Q44C]').each(function () {
+        $(this).change(function () {
+            branchingController.Q44C_Affect_Q44D_Q46($(this));
         });
     });
     /* on change */
-    $('input[id^=Q44C_' + stage + '_86]').each(function () {
-        $(this).change(function () {
-            branchingController.Q44C_is_Y_then_Q44D($(this));
-        });
-    });
-    /* on change */
-    $('input[id^=Q44C_' + stage + '_87]').each(function () {
-        $(this).change(function () {
-            branchingController.Q44C_is_N_then_Q46($(this));
-        });
-    });
-    /* on change */
-    $('select[id^=GG0170I_]').each(function () {
+    $('.persistable[id^=GG0170I]').each(function () {
         $(this).change(function () {
             branchingController.GG0170JKLMN_depends_on_GG0170I($(this));
         });
     });
     /* on change */
-    $('select[id^=GG0170M_]').each(function () {
+    $('.persistable[id^=GG0170M], .persistable[id^=GG0170N]').each(function () {
         $(this).change(function () {
-            branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
+            branchingController.GG0170P_depends_on_GG0170M_and_GG0170N($(this));
         });
     });
     /* on change */
-    $('select[id^=GG0170N_]').each(function () {
-        $(this).change(function () {
-            branchingController.GG0170P_depends_on_GG0170M_and_GG0170N();
-        });
-    });
-    /* on change */
-    $('input[id^=GG0170Q_]').each(function () {
+    $('.persistable[id^=GG0170Q]').each(function () {
         $(this).change(function () {
             branchingController.H0350_depends_on_GG0170Q($(this));
         });
     });
     /* on change */
-    $('select[id^=J0510_]').each(function () {
+    $('.persistable[id^=J0510]').each(function () {
         $(this).change(function () {
             branchingController.J1750_depends_on_J0510($(this));
         });
@@ -96,76 +79,70 @@ $(function () {
  * javaScript closure
  ***************************************************************************/
 let branchingController = (function () {
-    function isEmpty($this) {
-        if ((typeof $this.val() !== 'undefined') && $this.val())
-            return false;
-        else
-            return true;
+    const commonUtility = new Utility();
+    /* private function */
+    function CommonUnlock() {
+        Q12_Q23_blank_then_Lock_All();
+        Q14B_enabled_if_Q14A_is_Yes();
+        Q16A_is_Home_then_Q17();
+        $('.persistable[id^=Q42]').each(function () {
+            Q42_Interrupted_then_Q43();
+        });
+        $('.persistable[id^=Q44C]').each(function () {
+            Q44C_Affect_Q44D_Q46($(this));
+        });
+        $('.persistable[id^=GG0170I]').each(function () {
+            GG0170JKLMN_depends_on_GG0170I($(this));
+        });
+        $('.persistable[id^=GG0170M]').each(function () {
+            GG0170P_depends_on_GG0170M_and_GG0170N($(this));
+        });
+        H0350_depends_on_GG0170Q($('.persistable[id^=GG0170Q]:not([id*=Discharge_Goal])'));
+        J1750_depends_on_J0510($('.persistable[id^=J0510]:not("Discharge_Goal")'));
+        $(".persistable[id^=Q12]")[0].focus();
     }
     /* private function */
-    function CommonUnlock(stage) {
-        Q12_Q23_blank_then_Lock_All(stage);
-        Q14B_enabled_if_Q14A_is_86(stage);
-        Q16A_is_Home_then_Q17(stage);
-        $('input[id^=Q42_' + stage + ']').each(function () {
-            Q42_Interrupted_then_Q43(stage);
-        });
-        $('input[id^=Q44C_' + stage + '_86]').each(function () {
-            Q44C_is_Y_then_Q44D($(this));
-        });
-        $('input[id^=Q44C_' + stage + '_87]').each(function () {
-            Q44C_is_N_then_Q46($(this));
-        });
-        GG0170JKLMN_depends_on_GG0170I($('#GG0170I_Admission_Performance_0'));
-        GG0170P_depends_on_GG0170M_and_GG0170N();
-        H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_315'));
-        H0350_depends_on_GG0170Q($('#GG0170Q_Admission_Performance_314'));
-        J1750_depends_on_J0510($('#J0510_' + stage + '_0'));
-        $("input[id^=Q12]")[0].focus();
-    }
-    /* private function */
-    function Q12_Q23_blank_then_Lock_All(stage) {
-        let Q12 = $("input[id^=Q12]");
-        let Q23 = $("input[id^=Q23]");
-        if (isEmpty(Q12) || isEmpty(Q23)) {
-            $('.persistable').each(function () {
-                let $this = $(this);
-                if ($this.prop("id").indexOf('Q12') < 0 && $this.prop("id").indexOf('Q23') < 0) {
-                    $this.prop("disabled", true);
-                }
+    function Q12_Q23_blank_then_Lock_All() {
+        let Q12 = $('.persistable[id^=Q12]');
+        let Q23 = $('.persistable[id^=Q23]');
+        let otherPersistables = $('.persistable:not("[id^=Q12]"):not([id^=Q23])');
+        if (commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23)) {
+            otherPersistables.each(function () {
+                $(this).prop("disabled", true);
             });
         }
         else {
             $('.persistable').each(function () {
-                let $this = $(this);
-                $this.prop("disabled", false);
+                $(this).prop("disabled", false);
             });
         }
     }
     /* private function */
-    function Q14B_enabled_if_Q14A_is_86(stage) {
-        let Q14Achecked = false;
-        let Q14Avalue;
-        $('input[id^=Q14A]').each(function () {
+    function Q14B_enabled_if_Q14A_is_Yes() {
+        let Q14AYes = false, Q14ANo = false;
+        let Q14AYesChecked = false, Q14ANoChecked = false;
+        $('.persistable[id^=Q14A]').each(function () {
             if ($(this).prop('checked')) {
-                Q14Achecked = true;
-                Q14Avalue = parseInt($(this).prop('value'));
+                Q14AYes = $(this).prop('id').indexOf('Yes') != -1;
+                if (Q14AYes)
+                    Q14AYesChecked = true;
+                Q14ANo = $(this).prop('id').indexOf('No') != -1;
+                if (Q14ANo)
+                    Q14ANoChecked = true;
             }
         });
-        let Q14Bs = $('input[id^=Q14B]');
-        if (!Q14Achecked && Q14Bs.length > 0) {
+        let Q14Bs = $('.persistable[id^=Q14B]');
+        if (!Q14AYesChecked && !Q14ANoChecked && Q14Bs.length > 0) {
             Q14Bs.each(function () {
                 $(this).prop('checked', false).prop('disabled', true);
             });
         }
         else {
-            //codeset id 86 == yes
-            //codeset id 87 = no
-            if (Q14Avalue == 86) {
+            if (Q14AYes && Q14Bs.length > 0) {
                 Q14Bs.removeAttr('disabled');
                 Q14Bs[0].focus();
             }
-            else {
+            if (Q14ANo && Q14Bs.length > 0) {
                 Q14Bs.each(function () {
                     $(this).prop("checked", false).prop('disabled', true);
                 });
@@ -173,11 +150,10 @@ let branchingController = (function () {
         }
     }
     /* private function */
-    function Q16A_is_Home_then_Q17(stage) {
-        const Q16A = $("select[id^=Q16A]");
-        const Q17 = $("select[id^=Q17]");
-        // if (Q16A.length > 0 && Q16A.val() == '94') { /*1. Home */
-        if (Q16A.length > 0 && !isEmpty(Q16A) && Q16A.val() == '94') {
+    function Q16A_is_Home_then_Q17() {
+        const Q16A = $(".persistable[id^=Q16A]");
+        const Q17 = $(".persistable[id^=Q17]");
+        if (Q16A.length > 0 && !commonUtility.isEmpty(Q16A) && commonUtility.getControlValue(Q16A) == 1 /* 1. Home */) {
             if (Q17.length > 0) {
                 Q17.val(-1).prop('disabled', false).focus();
             }
@@ -189,193 +165,180 @@ let branchingController = (function () {
         }
     }
     /* private function, not used per stakeholder request */
-    function Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A(stage) {
+    function Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A() {
         let Q24A_is_set = false;
-        $('[id ^= Q21A_],[id ^= Q21B_],[id ^= Q22_],[id ^= Q24_]').each(function () {
-            if (!isEmpty($(this)) && $(this).val() == '123.45') { //ICD for diabetes
-                $('input[id^=Q24A_' + stage + '_86]').prop('checked', true);
+        $('.persistable[id ^= Q21A_], .persistable[id ^= Q21B_], .persistable[id ^= Q22_], .persistable[id ^= Q24_]').each(function () {
+            if (!commonUtility.isEmpty($(this)) && $(this).val() == '123.45') { //ICD for diabetes
+                $('.persistable[id^=Q44C][id*=86]').prop('checked', true);
             }
         });
     }
     /* private function */
-    function Q42_Interrupted_then_Q43(stage) {
-        let Q42sInterrupts = $('input[id^=Q42_' + stage + ']');
-        let Q43_Resumes = $('input[id^=Q43_' + stage + ']');
-        let Q43sCount = Q43_Resumes.length;
-        if (Q42sInterrupts.length > 0) {
-            Q42sInterrupts.each(function () {
-                const thisInterrupt = $(this);
-                if (!isEmpty(thisInterrupt)) {
-                    if (Q43sCount > 0) {
-                        //clone last Q43
-                        let newResume = Q43_Resumes[Q43sCount - 1];
-                        newResume.prop('id', 'Q43_' + stage + '_' + Q43sCount);
-                        newResume.val(null);
-                        Q43_Resumes[Q43sCount - 1].append(newResume);
-                        newResume.focus();
-                    }
-                }
-            });
-        }
-        else {
-            if (Q43sCount != 1) {
-                Q43_Resumes.each(function () {
-                    let $this = $(this);
-                    if ($this.prop('id').indexOf('_0') >= 0) {
-                        $this.val(''); //reset date 
-                    }
-                    else {
-                        $this.remove(); //remove until _0 is found in the ID
-                    }
-                });
+    function Q42_Interrupted_then_Q43() {
+        const Q42Yes = $('.persistable[id^=Q42][id*=Yes]').prop('checked') == true;
+        const Q42No = $('.persistable[id^=Q42][id*=No]').prop('checked') == true;
+        const Q43 = $('.persistable[id^=Q43]');
+        switch (true) {
+            case Q42No: {
+                /* no interruption so clear all Q43 dates */
+                Q43.val('');
+                Q43.prop('disabled', true);
+                break;
             }
+            case Q42Yes: {
+                if (Q43.length > 0)
+                    Q43.prop('disabled', false);
+                Q43.first().focus();
+                break;
+            }
+            default:
+                Q43.prop('disabled', true);
+                break;
         }
     }
-    /* private function */
-    function Q44C_is_Y_then_Q44D(Q44C_is_Y) {
+    function Q44C_Affect_Q44D_Q46(Q44C) {
         /*codeset ID 86(Y) 87(N)*/
-        let Q44D = $('select[id^=Q44D]');
-        let Q45 = $('select[id^=Q45]');
-        if (Q44C_is_Y.prop('checked')) {
+        const Q44D = $('.persistable[id^=Q44D]');
+        const Q45 = $('.persistable[id^=Q45]');
+        const Q46 = $('.persistable[id^=Q46]');
+        let Q44C_is_Yes = Q44C.prop('checked') == true && Q44C.prop('id').indexOf('Yes') != -1;
+        let Q44C_is_No = Q44C.prop('checked') == true && Q44C.prop('id').indexOf('No') != -1;
+        if (Q44C_is_Yes) {
             Q44D.prop('disabled', false).focus();
             Q45.prop('disabled', false);
         }
-    }
-    /* private function */
-    function Q44C_is_N_then_Q46(Q44C_is_N) {
-        /*codeset ID 87(N)*/
-        let Q44D = $('select[id^=Q44D]');
-        let Q46 = $('select[id^=Q46]');
-        if (Q44C_is_N.prop('checked')) {
-            if (confirm('Q44D will be resetted')) {
-                Q44D.val(-1);
-                Q44D.prop('disabled', true);
-                Q46.prop('disabled', false).focus();
-            }
+        if (Q44C_is_No) {
+            Q44D.val(-1);
+            Q44D.prop('disabled', true);
+            Q46.prop('disabled', false).focus();
         }
     }
     /* private function */
     function GG0170JKLMN_depends_on_GG0170I(GG0170I) {
-        const GG0170Js = $('select[id^=GG0170J]');
-        const GG0170JKLs = $('select[id^=GG0170J], select[id^=GG0170K], select[id^=GG0170L]');
-        const GG0170Ms = $('select[id^=GG0170M]');
-        let GG0170ISelectedOption = $('#' + GG0170I.prop('id') + ' option:selected').text();
-        let GG0170ISelectedOptionInt = parseInt(GG0170ISelectedOption);
-        if (!isNaN(GG0170ISelectedOptionInt) && GG0170ISelectedOptionInt > 0) {
-            switch (true) {
-                case (GG0170ISelectedOptionInt >= 7):
-                    {
-                        /* lock and clear J K L, advance to M */
-                        if (GG0170JKLs.length > 0) {
-                            GG0170JKLs.each(function () {
-                                $(this).prop('disabled', true).val(-1).change();
-                            });
-                        }
-                        if (GG0170Ms.length > 0) {
-                            GG0170Ms[0].focus();
-                        }
-                    }
-                    break;
-                case (GG0170ISelectedOptionInt <= 6):
-                    {
-                        /* unlock and clear J K L, skip to J */
-                        if (GG0170JKLs.length > 0) {
-                            GG0170JKLs.each(function () {
-                                $(this).prop('disabled', false).val(-1).change();
-                            });
-                            GG0170Js[0].focus();
-                        }
-                    }
-                    break;
-            }
+        let GG0170IInt, GG0170J, GG0170JKL, GG0170M;
+        GG0170IInt = commonUtility.getControlValue(GG0170I);
+        if (GG0170I.prop('id').indexOf('Admission_Performance') != -1) {
+            GG0170JKL = $('.persistable[id^=GG0170J_Admission_Performance], .persistable[id^=GG0170K_Admission_Performance], .persistable[id^=GG0170L_Admission_Performance]');
+            GG0170M = $('.persistable[id^=GG0170M_Admission_Performance]');
         }
         else {
-            /* lock and clear J K L M */
-            if (GG0170JKLs.length > 0) {
-                GG0170JKLs.each(function () {
-                    $(this).prop('disabled', true).val(-1).change();
+            GG0170JKL = $('.persistable[id^=GG0170J_Discharge_Performance], .persistable[id^=GG0170K_Discharge_Performance], .persistable[id^=GG0170L_Discharge_Performance]');
+            GG0170M = $('.persistable[id^=GG0170M_Discharge_Performance]');
+        }
+        switch (true) {
+            case (GG0170IInt >= 7):
+                {
+                    /* lock and clear J K L, advance to M */
+                    if (GG0170JKL.length > 0) {
+                        GG0170JKL.each(function () {
+                            $(this).prop('disabled', true).val(-1).change(); //need .change() to automatically calculate the score
+                        });
+                    }
+                    if (GG0170M.length > 0) {
+                        GG0170M[0].focus();
+                    }
+                }
+                break;
+            case (GG0170IInt > 0 && GG0170IInt <= 6):
+                {
+                    /* unlock and clear J K L, skip to J */
+                    if (GG0170JKL.length > 0) {
+                        GG0170JKL.each(function () {
+                            $(this).prop('disabled', false).val(-1).change(); //need .change() to automatically calculate the score
+                        });
+                        GG0170J[0].focus();
+                    }
+                }
+                break;
+            default: {
+                /* GG0170I is not selected, clear and lock J K L */
+                GG0170JKL.each(function () {
+                    $(this).prop('disabled', true).val(-1).change(); //need .change() to automatically calculate the score
                 });
             }
         }
     }
     /* private function */
-    function GG0170P_depends_on_GG0170M_and_GG0170N() {
-        let GG0170MSelectedOption = $('#GG0170M_Admission_Performance_0 option:selected').text();
-        let GG0170MSelectedOptionInt = parseInt(GG0170MSelectedOption);
-        let GG0170NSelectedOption = $('#GG0170N_Admission_Performance_0 option:selected').text();
-        let GG0170NSelectedOptionInt = parseInt(GG0170NSelectedOption);
-        let GG0170Ns = $('select[id^=GG0170N]');
-        let GG0170Os = $('select[id^=GG0170O]');
-        let GG0170Ps = $('select[id^=GG0170P]');
-        if ((!isNaN(GG0170MSelectedOptionInt) && GG0170MSelectedOptionInt > 0)) {
-            switch (true) {
-                case (GG0170MSelectedOptionInt <= 6):
-                    /* skip to N */
-                    if (GG0170Ns.length > 0)
-                        GG0170Ns[0].focus();
-                    break;
-                case (GG0170MSelectedOptionInt >= 7):
-                    /* skp to P */
-                    if (GG0170Ps.length > 0) {
-                        GG0170Ps[0].focus();
-                    }
-                    break;
-            }
+    function GG0170P_depends_on_GG0170M_and_GG0170N(GG0170M) {
+        let GG0170MInt, GG0170N, GG0170NInt, GG0170O, GG0170P;
+        GG0170MInt = commonUtility.getControlValue(GG0170M);
+        if (GG0170M.prop('id').indexOf('Admission_Performance') != -1) {
+            GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]');
+            GG0170NInt = commonUtility.getControlValue(GG0170N);
+            GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
+            GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
         }
-        if (!isNaN(GG0170NSelectedOptionInt) && GG0170NSelectedOptionInt > 0) {
-            switch (true) {
-                case (GG0170NSelectedOptionInt <= 6):
-                    /* skip to O */
-                    if (GG0170Os.length > 0)
-                        GG0170Os[0].focus();
-                    break;
-                case (GG0170NSelectedOptionInt >= 7):
-                    /* skp to P */
-                    if (GG0170Ps.length > 0) {
-                        GG0170Ps[0].focus();
-                    }
-                    break;
-            }
+        else {
+            GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]');
+            GG0170NInt = commonUtility.getControlValue(GG0170N);
+            GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
+            GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
+        }
+        switch (true) {
+            case (GG0170MInt >= 7):
+                /* skp to P */
+                if (GG0170P.length > 0) {
+                    GG0170P[0].focus();
+                }
+                break;
+            case (GG0170MInt > 0 && GG0170MInt <= 6):
+                /* skip to N */
+                if (GG0170N.length > 0)
+                    GG0170N[0].focus();
+                break;
+        }
+        switch (true) {
+            case (GG0170NInt >= 7):
+                /* skp to P */
+                if (GG0170P.length > 0) {
+                    GG0170P[0].focus();
+                }
+                break;
+            case (GG0170NInt > 0 && GG0170NInt <= 6):
+                /* skip to O */
+                if (GG0170O.length > 0)
+                    GG0170O[0].focus();
+                break;
         }
     }
     /* private function */
-    function H0350_depends_on_GG0170Q(GG0170QAdmPerformance) {
-        switch (GG0170QAdmPerformance.prop('id')) {
-            /* 315 = No */
-            case 'GG0170Q_Admission_Performance_315':
-                {
-                    let H0350s = $('select[id^=H0350_]');
-                    if (GG0170QAdmPerformance.prop('checked')) {
-                        H0350s.each(function () {
-                            $(this).prop('disabled', false);
-                        });
-                        H0350s[0].focus();
-                    }
-                    else {
-                        H0350s.each(function () {
-                            $(this).prop('disabled', true).val(-1);
-                        });
-                    }
-                }
-                break;
-            /* 314 = Yes */
-            case 'GG0170Q_Admission_Performance_314':
-                {
-                    let GG0170Rs = $('select[id^=GG0170R_');
-                    if (GG0170QAdmPerformance.prop('checked')) {
-                        GG0170Rs.each(function () {
-                            $(this).prop('disabled', false);
-                        });
-                        GG0170Rs[0].focus();
-                    }
-                }
-                break;
+    function H0350_depends_on_GG0170Q(GG0170Q) {
+        /* 314 = yes, 315 = no */
+        let H0350s, GG0170Rs;
+        const GG0170Q_Admission_Performance_Yes = GG0170Q.prop('id').indexOf('Admission_Performance') != -1 && GG0170Q.prop('id').indexOf('314') != -1 && GG0170Q.prop('checked');
+        const GG0170Q_Admission_Performance_No = GG0170Q.prop('id').indexOf('Admission_Performance') != -1 && GG0170Q.prop('id').indexOf('315') != -1 && GG0170Q.prop('checked');
+        const GG0170Q_Discharge_Performance_Yes = GG0170Q.prop('id').indexOf('Discharge_Performance') != -1 && GG0170Q.prop('id').indexOf('314') != -1 && GG0170Q.prop('checked');
+        const GG0170Q_Discharge_Performance_No = GG0170Q.prop('id').indexOf('Discharge_Performance') != -1 && GG0170Q.prop('id').indexOf('315') != -1 && GG0170Q.prop('checked');
+        if (GG0170Q_Admission_Performance_Yes) {
+            GG0170Rs = $('.persistable[id^=GG0170R][id*=Admission]');
+            GG0170Rs.each(function () {
+                $(this).prop('disabled', false);
+            });
+            GG0170Rs[0].focus();
+        }
+        if (GG0170Q_Discharge_Performance_Yes) {
+            GG0170Rs = $('.persistable[id^=GG0170R][id*=Discharge]');
+            GG0170Rs.each(function () {
+                $(this).prop('disabled', false);
+            });
+            GG0170Rs[0].focus();
+        }
+        if (GG0170Q_Admission_Performance_No || GG0170Q_Discharge_Performance_No) {
+            H0350s = $('.persistable[id^=H0350]');
+            H0350s.each(function () {
+                $(this).prop('disabled', false);
+            });
+            H0350s[0].focus();
         }
     }
     /* private function */
     function J1750_depends_on_J0510(J0510) {
-        let J1750s = $('input[id^=J1750]');
-        if (J0510.val() == '345') { /*345 == 0. Does not apply */
+        let J1750s;
+        if (J0510.prop('id').indexOf('Admission_Performance') != -1)
+            J1750s = $('.persistable[id^=J1750][id*=Admission_Performance]');
+        else
+            J1750s = $('.persistable[id^=J1750][id*=Discharge_Performance]');
+        if (commonUtility.getControlValue(J0510) == 0) { /* 0. Does not apply */
             J1750s.each(function () {
                 $(this).prop('disabled', false);
             });
@@ -389,8 +352,8 @@ let branchingController = (function () {
     }
     /*private function*/
     function AddMore(stage, questionKey) {
-        let lastInputIdx = $('input[id^=' + questionKey + '_' + stage + ']').length;
-        let lastInputDate = $('#' + questionKey + '_' + stage + '_' + lastInputIdx);
+        let lastInputIdx = $('.persistable[id^=' + questionKey + '_' + stage + ']').length;
+        let lastInputDate = $('.persistable[id^=' + questionKey + '_' + stage + '_' + lastInputIdx + ']');
         let dateClone = lastInputDate.clone();
         dateClone.val('').focus();
         lastInputDate.append(dateClone);
@@ -399,15 +362,13 @@ let branchingController = (function () {
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
     return {
-        'isEmpty': isEmpty,
         'CommonUnlock': CommonUnlock,
         'Q12_Q23_blank_then_Lock_All': Q12_Q23_blank_then_Lock_All,
-        'Q14B_enabled_if_Q14A_is_86': Q14B_enabled_if_Q14A_is_86,
+        'Q14B_enabled_if_Q14A_is_Yes': Q14B_enabled_if_Q14A_is_Yes,
         'Q16A_is_Home_then_Q17': Q16A_is_Home_then_Q17,
         'Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A': Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A,
         'Q42_Interrupted_then_Q43': Q42_Interrupted_then_Q43,
-        'Q44C_is_Y_then_Q44D': Q44C_is_Y_then_Q44D,
-        'Q44C_is_N_then_Q46': Q44C_is_N_then_Q46,
+        'Q44C_Affect_Q44D_Q46': Q44C_Affect_Q44D_Q46,
         'GG0170JKLMN_depends_on_GG0170I': GG0170JKLMN_depends_on_GG0170I,
         'GG0170P_depends_on_GG0170M_and_GG0170N': GG0170P_depends_on_GG0170M_and_GG0170N,
         'H0350_depends_on_GG0170Q': H0350_depends_on_GG0170Q,

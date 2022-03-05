@@ -103,8 +103,8 @@ html {
 
 body {
   /*  display: flex;
-    justify-items: center;
-    align-content: center;*/
+  justify-items: center;
+  align-content: center;*/
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
@@ -704,8 +704,13 @@ div.questionRow {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.roate2 {
-  transform: rotate(-90deg) translate(0px, -40px);
+.rotate2 {
+  transform: rotate(-90deg) translate(10px, -20px);
+  color: #fff;
+  position: fixed;
+  padding: 5px;
+  top: 60px;
+  font-weight: bolder;
 }
 
 .flex-start-row-nowrap {
@@ -825,10 +830,11 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-items: stretch;
   align-content: stretch;
   flex-wrap: nowrap;
-  background-color: white;
+  background-color: #0e2640;
+  background-image: linear-gradient(#0e2640, #000);
   position: fixed;
   margin-bottom: 21vh;
-  top: 0px;
+  top: 10px;
   left: -230px;
   width: 250px;
   height: 100%;
@@ -846,17 +852,32 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+#questionTab .nav-title {
+  position: fixed;
+  background-color: #0e2640;
+  color: #FFE;
+  width: 195px;
+}
+
+#questionTab ul {
+  list-style-type: none;
+}
+
 #questionTab .nav-item {
   flex: 1 1 auto;
-  color: black !important;
+  color: #fff !important;
   border: 1px solid #808080 !important;
   padding: 1px 2px;
   text-decoration-color: white !important;
-  /*font-size: smaller;*/
 }
 
-#questionTab > .nav-item:nth-child(2) {
-  margin-top: 30px;
+#questionTab .nav-item:hover {
+  color: black;
+  background-color: #0094ff;
+}
+
+#uestionTab > ul .nav-item:nth-child(2) {
+  padding-top: 60px;
 }
 
 div.questionRow:last-child {

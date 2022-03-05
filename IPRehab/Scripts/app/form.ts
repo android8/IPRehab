@@ -1,6 +1,5 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
-/// <reference path="../appModels/IUseranswer.ts" />
 
 import { IUserAnswer, AjaxPostbackModel } from "../appModels/IUserAnswer";
 import { MDCTextField } from "../../node_modules/@material/textfield/index";
@@ -8,13 +7,18 @@ import { isNumeric, post } from "jquery";
 import { InteractionTrigger } from "../../node_modules/@material/chips/deprecated/trailingaction/constants";
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 
+import { Utility } from "./utility.js";
+
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 $(function () {
   $('.persistable').change(function () {
     const onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
     const admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
-    if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
+    const commonUtility: Utility = new Utility();
+
+    //if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
+    if (commonUtility.isDate(onsetDate) && commonUtility.isDate(admissionDate)) {
       $('#ajaxPost').removeAttr('disabled');
       //$('#mvcPost').removeAttr('disabled');
     }
@@ -122,18 +126,7 @@ $(function () {
  ***************************************************************************/
 
 let formController = (function () {
-  /* private function */
-  function isEmpty($this: any): boolean {
-    if (typeof $this.val() !== 'undefined' && $this.val())
-      return false;
-    else
-      return true;
-  }
-
-  /* internal function */
-  function isDate(aDate: Date): boolean {
-    return aDate instanceof Date && !isNaN(aDate.valueOf());
-  }
+  const commonUtility: Utility = new Utility();
 
   /* private function */
   function scrollToAnchor(anchorId: string) {
@@ -192,7 +185,8 @@ let formController = (function () {
         let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g")
         let oldText: string = $thisOption.text();
         let font = $thisOption.css('font');
-        let oldTextInPixel = getTextPixels(oldText, font);
+
+        let oldTextInPixel = commonUtility.getTextPixels(oldText, font);
 
         console.log('oldTextInPixel', oldTextInPixel);
         console.log('thisSelectWidth', thisSelectWidth);
@@ -211,15 +205,6 @@ let formController = (function () {
         }
       });
     }
-  }
-
-  /* private function */
-  function getTextPixels(someText: string, font: any) {
-    let canvas = document.createElement('canvas');
-    let context = canvas.getContext("2d");
-    context.font = font;
-    let width = context.measureText(someText).width;
-    return Math.ceil(width);
   }
 
   /* private function */
@@ -478,37 +463,6 @@ let formController = (function () {
     theForm.validate();
   }
 
-  /* internal function */
-  function getControlValue($this: any): number {
-    let thisControlType: string = $this.prop('type');
-    let thisValue: number = 0;
-    switch (thisControlType) {
-      case "select-one": {
-        //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-        let selectedOption: string = $('#' + $this.prop('id') + ' option:selected').text();
-        thisValue = parseInt(selectedOption);
-        break;
-      }
-
-      case "checkbox":
-      case "radio": {
-        if ($this.prop('checked')) {
-          thisValue = 1;
-        }
-        break;
-      }
-
-      case "text": {
-        let thisInputValue: string = $this.val().toString();
-        if (parseInt(thisInputValue) > 0) {
-          thisValue = 1;
-        }
-        break;
-      }
-    }
-    return thisValue;
-  }
-
   /* private function */
   function updateScore(thisControl: any, newScore: number) {
     let theScoreEl: any;
@@ -540,7 +494,7 @@ let formController = (function () {
     $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
       const $this = $(this);
       const $thisID = $(this).prop('id');
-      const $thisValue = getControlValue($this);
+      const $thisValue = commonUtility.getControlValue($this);
 
       switch (true) {
         case ($thisValue >= 7): // greater than 7,9,10,88
@@ -658,7 +612,7 @@ let formController = (function () {
     /* select only GG0170 Admission Performance excluding Q, R and S */
     $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
       let $thisControl = $(this);
-      let thisControlScore: number = getControlValue($thisControl);
+      let thisControlScore: number = commonUtility.getControlValue($thisControl);
       let thisControlID: string = $thisControl.prop('id');
 
       switch (true) {
@@ -710,16 +664,16 @@ let formController = (function () {
       GG0170S = $('.persistable[id^=GG0170S_Interim_Performance], .persistable[id^=GG0170S_Follow_Up_Performance]');
     }
 
-    GG0170I_Value = getControlValue(GG0170I);
+    GG0170I_Value = commonUtility.getControlValue(GG0170I);
 
     if (GG0170I_Value >= 7)
       multiplier = 2;
-    if (GG0170I_Value < 0)
+    if (GG0170I_Value <= 6)
       multiplier = 0;
     if (isNaN(GG0170I_Value))
       multiplier = 1; //when GG0170I is not answered score R and S as is
 
-    GG0170R_Value = getControlValue(GG0170R);
+    GG0170R_Value = commonUtility.getControlValue(GG0170R);
 
     if (GG0170R_Value > 0) {
       updateScore(GG0170R, GG0170R_Value * multiplier);
@@ -728,7 +682,7 @@ let formController = (function () {
     else
       updateScore(GG0170R, 0);
 
-    GG0170S_Value = getControlValue(GG0170S);
+    GG0170S_Value = commonUtility.getControlValue(GG0170S);
 
     if (GG0170S_Value > 0) {
       updateScore(GG0170S, GG0170S_Value * multiplier);
@@ -747,7 +701,7 @@ let formController = (function () {
     /* select only GG0170 Discharge Performance excluding Q, R and S */
     $('.persistable[id^=GG0170]:not([id*=Admission_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
       let $thisControl = $(this);
-      let thisControlScore: number = getControlValue($thisControl);
+      let thisControlScore: number = commonUtility.getControlValue($thisControl);
       let thisControlID: string = $thisControl.prop('id');
 
       switch (true) {
@@ -777,51 +731,50 @@ let formController = (function () {
 
   /* internal function */
   function Score_GG0170RandS_Discharge_Performance(): number {
-    let dischargeMultiplier: number = 1,
-        R_Discharge_Performance: number = 0,
-        S_Discharge_Performance: number = 0;
+    let multiplier: number = 1,
+        R_Performance: number = 0,
+        S_Performance: number = 0;
 
     /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
-    let GG0170I_Discharge_Performance: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
-    let GG0170I_Discharge_Performance_Value: number = getControlValue(GG0170I_Discharge_Performance);
+    let GG0170I: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
+    let GG0170I_Value: number = commonUtility.getControlValue(GG0170I);
 
-    if (GG0170I_Discharge_Performance_Value >= 7)
-      dischargeMultiplier = 2;
-    if (!isNaN(GG0170I_Discharge_Performance_Value) || GG0170I_Discharge_Performance_Value < 0)
-      dischargeMultiplier = 0;
+    if (GG0170I_Value >= 7)
+      multiplier = 2;
+    if (GG0170I_Value <= 6)
+      multiplier = 0;
+    if (isNaN(GG0170I_Value))
+      multiplier = 1; //when GG0170I is not answered score R and S as is
 
-    let GG0170R_Discharge_Performance: any = $('.persistable[id^=GG0170R_Discharge_Performance]');
-    let GG0170R_Discharge_Performance_Value: number = getControlValue(GG0170R_Discharge_Performance);
-    if (GG0170R_Discharge_Performance_Value > 0) {
-      updateScore(GG0170R_Discharge_Performance, GG0170R_Discharge_Performance_Value * dischargeMultiplier);
-      R_Discharge_Performance += GG0170R_Discharge_Performance_Value * dischargeMultiplier;
+    let GG0170R: any = $('.persistable[id^=GG0170R_Discharge_Performance]');
+    let GG0170R_Value: number = commonUtility.getControlValue(GG0170R);
+    if (GG0170R_Value > 0) {
+      updateScore(GG0170R, GG0170R_Value * multiplier);
+      R_Performance += GG0170R_Value * multiplier;
     }
     else
-      updateScore(GG0170R_Discharge_Performance, 0);
+      updateScore(GG0170R, 0);
 
-    let GG0170S_Discharge_Performance: any = $('.persistable[id^=GG0170S_Discharge_Performance]');
-    let GG0170S_Discharge_Performance_Value: number = getControlValue(GG0170S_Discharge_Performance);
-    if (GG0170S_Discharge_Performance_Value > 0) {
-      updateScore(GG0170S_Discharge_Performance, GG0170S_Discharge_Performance_Value * dischargeMultiplier);
-      S_Discharge_Performance += GG0170S_Discharge_Performance_Value * dischargeMultiplier;
+    let GG0170S: any = $('.persistable[id^=GG0170S_Discharge_Performance]');
+    let GG0170S_Value: number = commonUtility.getControlValue(GG0170S);
+    if (GG0170S_Value > 0) {
+      updateScore(GG0170S, GG0170S_Value * multiplier);
+      S_Performance += GG0170S_Value * multiplier;
     }
     else
-      updateScore(GG0170S_Discharge_Performance, 0);
+      updateScore(GG0170S, 0);
 
-    return R_Discharge_Performance + S_Discharge_Performance;
+    return R_Performance + S_Performance;
   }
 
   /****************************************************************************
    * public functions exposing the private functions to outside of the closure
   ***************************************************************************/
   return {
-    'isEmpty': isEmpty,
-    'isDate': isDate,
     'scrollToAnchor': scrollToAnchor,
     'setRehabBtns': setRehabBtns,
     'resetRehabBtns': resetRehabBtns,
     'breakLongSentence': breakLongSentence,
-    'getTextPixels': getTextPixels,
     'submitTheForm': submitTheForm,
     'validate': validateForm,
     'selfCareScore': selfCareScore,

@@ -1,48 +1,49 @@
 ﻿@model InputViewComponentTemplateModel
 @{
-  var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
-  var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
-  string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
-  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
-  bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
+    var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+    var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+    bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+    string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
+    string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
+    bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 
 <div class="@(ContainerCssClass)">
-  @if (displayStageHeader)
-  {
-    @*prevent the next inner div from being flexed*@
-    <div>
-      <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
-    </div>
-  }
+    @if (displayStageHeader)
+    {
+        @*prevent the next inner div from being flexed*@
+        <div>
+            <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+        </div>
+    }
 
-  @*Material Design outlined text *@
-  <div class="flex-start-row-nowrap">
-    <label class="mdc-text-field mdc-text-field--filled"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">
-      <span class="mdc-line-ripple"></span>
-      <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")"></span>
-      <input type="text" placeholder="enter some text"
-             class="mdc-text-field__input persistable"
-             name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-             required="@(Model.ViewComponentViewModel.Required)"
-             value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-             data-stageid="@(Model.ViewComponentViewModel.StageID)"
-             data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-             data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-             data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-             data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-             data-codesetid="@(thisItem.Value)"
-             data-codesetdescription="@(thisItem.Text)"
-             data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-             data-toggle="tooltip"
-             data-placement="left"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
-    </label>
-  </div>
+    @*Material Design outlined text *@
+    <div class="flex-start-row-nowrap">
+        <label class="mdc-text-field mdc-text-field--filled"
+               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+               aria-label="@($"a text box for {Model.ViewComponentViewModel.QuestionKey}")">
+            <span class="mdc-line-ripple"></span>
+            <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")"></span>
+            <input type="text" placeholder="enter some text"
+                   class="mdc-text-field__input persistable"
+                   name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   required="@(Model.ViewComponentViewModel.Required)"
+                   value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                   data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                   data-userid="@(Model.ViewComponentViewModel.UserID)"
+                   data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+                   data-codesetid="@(thisItem.Value)"
+                   data-codesetdescription="@(thisItem.Text)"
+                   data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-toggle="tooltip"
+                   data-placement="left"
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+        </label>
+    </div>
 </div>

@@ -17,7 +17,7 @@
   @*the labe is required by HTML5 specification*@
   <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
          id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-         class="nullLabel"></label>
+         class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
 
   @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
   @if (displayStageHeader)

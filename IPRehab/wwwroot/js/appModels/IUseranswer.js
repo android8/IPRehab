@@ -1,2 +1,2 @@
 export {};
-//# sourceMappingURL=IUseranswer.js.map
+//# sourceMappingURL=IUserAnswer.js.map

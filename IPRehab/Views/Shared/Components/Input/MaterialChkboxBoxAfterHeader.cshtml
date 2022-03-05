@@ -64,7 +64,7 @@
       @*the labe is required by HTML5 specification*@
       <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}")"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}_label")"
-             class="nullLabel"></label>
+             class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
     </div>
   }
 </div>

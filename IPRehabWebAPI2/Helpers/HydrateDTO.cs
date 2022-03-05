@@ -14,7 +14,7 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, string measureCodeSetDescription)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, tblCodeSet measureCodeSet)
     {
       QuestionDTO questionDTO = new();
       questionDTO.FormName = questionStage;
@@ -27,8 +27,11 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.Question = q.Question;
 
       //use question measures
-      questionDTO.Measure = measureCodeSetDescription; //GetGroupTitle(q, questionStage);
-
+      if (measureCodeSet != null)
+      {
+        questionDTO.Measure = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
+      }
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
