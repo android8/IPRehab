@@ -9,7 +9,7 @@
     originalAnswer = thisChoiceAndAnswer.Answer;
   }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
 
   string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in minutes";
 }
@@ -30,11 +30,6 @@
     </div>
   }
   <div class="flex-start-row-nowrap">
-    @*the labe is required by HTML5 specification*@
-    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-           class="nullLabel"></label>
-
     @if (displayStageHeader)
     {
       @*prevent the next inner div to be flexed*@
@@ -45,10 +40,10 @@
 
     <div class="flex-start-column-nowrap">
 
-      @*the labe is required by HTML5 specification*@
-      <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-             class="nullLabel"></label>
+    @*the labe is required by HTML5 specification*@
+    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+           class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
 
       @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
       @if (displayStageHeader)
@@ -107,7 +102,7 @@
       <label class="mdc-text-field mdc-text-field--outlined"
              for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
-             aria-label="enter a number">
+             aria-label="@($"a number box for {Model.ViewComponentViewModel.QuestionKey}")">
         <span class="mdc-notched-outline">
           <span class="mdc-notched-outline__leading"></span>
           <span class="mdc-notched-outline__notch">

@@ -1,41 +1,43 @@
 ﻿@model InputViewComponentTemplateModel
 @{
-  var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
-  var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
-  bool isMultipleChoices = Model.ViewComponentViewModel.MultipleChoices;
+    var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+    var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+    bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+    bool isMultipleChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 <div class="flex-start-row-nowrap">
-  @if (displayStageHeader)
-  {
-    @*prevent the next inner div to be flexed*@
-    <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
-    </div>
-  }
+    @if (displayStageHeader)
+    {
+        @*prevent the next inner div to be flexed*@
+        <div>
+            <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+        </div>
+    }
 
-  <label id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
-    <span class="mdc-text-field__ripple"></span>
-    <span class="mdc-text-field__resizer">
-      <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40"
-                name="@Model.ViewComponentViewModel.QuestionKey"
-                id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-                required="@(Model.ViewComponentViewModel.Required)"
-                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-                placeholder="enter some text"
-                data-stageid="@(Model.ViewComponentViewModel.StageID)"
-                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                data-userid="@(Model.ViewComponentViewModel.UserID)"
-                data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-                data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.Description)"
-                data-codesetid="@(thisItem.Value)"
-                data-codesetdescription="@(thisItem.Text)"
-                data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                data-toggle="tooltip"
-                data-placement="left"
-                aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">@(originalAnswer?.Description)
+    <label id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+           class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label"
+           aria-label="@($"a text area for {Model.ViewComponentViewModel.QuestionKey}")">
+        <span class="mdc-text-field__ripple"></span>
+        <span class="mdc-text-field__resizer">
+            <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40"
+                      name="@Model.ViewComponentViewModel.QuestionKey"
+                      id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                      required="@(Model.ViewComponentViewModel.Required)"
+                      title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                      placeholder="enter some text"
+                      data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                      data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                      data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                      data-userid="@(Model.ViewComponentViewModel.UserID)"
+                      data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                      data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.Description)"
+                      data-codesetid="@(thisItem.Value)"
+                      data-codesetdescription="@(thisItem.Text)"
+                      data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                      data-toggle="tooltip"
+                      data-placement="left"
+                      aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">@(originalAnswer?.Description)
       </textarea>
-    </span>
-  </label>
+        </span>
+    </label>
 </div>

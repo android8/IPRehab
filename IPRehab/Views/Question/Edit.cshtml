@@ -1,257 +1,281 @@
 ﻿@model QuestionHierarchy
 
 @{
-  /* data for title in _layout.cs */
-  ViewData["Title"] = Model.PageTitle;
-  Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = $"{Model.StageTitle}";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section Links{
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 }
 
 @section Scripts {
-  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
   @*<script type="module" src="~/lib/select2/js/select2.js" asp-append-version="true" async></script>*@
   @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js" integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i" crossorigin="anonymous"></script>*@
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-  <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
-  <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="module" src="~/js/appModels/IUserAnswer.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/utility.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+<script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
 }
 
 @* save button *@
 @if (!Model.ReadOnly)
 {
-  <div>
-    <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
-      <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn" id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
-              data-controller="answer" data-action="post">
-        <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">Save</span>
-        <div class="mdc-button__touch"></div>
-      </button>
-      @*<input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>*@
+    <div>
+        <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
+            <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn"
+                id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
+                data-controller="answer" data-action="post">
+                <div class="mdc-button__ripple"></div>
+                <span class="mdc-button__label">Save</span>
+                <div class="mdc-button__touch"></div>
+            </button>
+            @*<input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>*@
+        </div>
     </div>
-  </div>
 }
-<nav>
-  @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
+<nav class="sidebar-nav">
+    @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
     { "sectionInfo", Model.Sections },
     { "readOnly", Model.ReadOnly }
-  })
+    })
 </nav>
 
 <aside>
-  <div id="dialog"></div>
+    <div id="dialog"></div>
 </aside>
 <article class="paddingTop">
-  <div class="flex-container-evenly-justified fixedTop">
-    <div class="pageTitle" data-stagecode="@Model.StageCode">@Model.StageTitle</div>
+    <div class="flex-container-evenly-justified fixedTop">
+        <div class="pageTitle" data-stagecode="@Model.StageCode">@Model.StageTitle</div>
+        <div class="flex-container-evenly-justified">
+            @{
+                string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                PatientEpisodeAndCommandVM thisEpisodeBtnConfig = Model.EpisodeBtnConfig.First();
+
+                /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+            }
+            @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeBtnConfig })
+        </div>
+        <div class="text-center patientName">@Model.PatientName</div>
+        <div class=""></div>
+    </div>
+
+    @* icon legend *@
     <div class="flex-container-evenly-justified">
-
-      @*/*the old partial view*/ @await Html.RenderPartialAsync("_RehabActionBtns", Model.ActionButtons)*@
-
-      @{
-        string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-        PatientEpisodeAndCommandVM thisEpisodeBtnConfig = Model.EpisodeBtnConfig.First();
-
-        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-      }
-
-      @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeBtnConfig })
-
-    </div>
-    <div class="text-center patientName">@Model.PatientName</div>
-    <div class=""></div>
-  </div>
-
-  @* icon legend *@
-  <div class="flex-container-evenly-justified">
-    <div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-        <title>Anser is required</title>
-      </svg> Answer is required for this form to be complete;
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
-        <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-        <title>Key question</title>
-      </svg> Key question
-    </div>
-    <div>@(Model.PageSysTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
-  </div>
-
-  <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
-    <input type="hidden" id="stage" name="stage" value="@(Model.PageSysTitle)" />
-    <input type="hidden" id="patientID" name="patientID" value="@(Model.PatientID)" />
-    <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
-    <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
-    <div class="flex-start-column-nowrap">
-      @if (Model.PageSysTitle == "Full" || Model.PageSysTitle == "All")
-      {
-        @*form name row*@
-        <div id="nonPaddinRow">
-          <div class="flex-end-row-nowrap formName">@Model.PageTitle</div>
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                <title>Anser is required</title>
+            </svg> Answer is required for this form to be complete;
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+                <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                <title>Key question</title>
+            </svg> Key question
         </div>
-      }
-
-      @foreach (SectionInfo si in Model.Sections)
-      {
-        List<QuestionGroup> theseGroups = si.QuestionGroups;
-
-        @*section*@
-        <div class="questionSection">
-          <div class="section-title">
-            <a name="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))" 
-              id="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"></a>
-            @si.SectionTitle
-            @if (!string.IsNullOrEmpty(si.SectionInstruction))
-            {
-              <div class="sectionInstruction">
-                @* instruction icon*@
-                <div class="sectionInstruction">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                    <title>Section Instruction</title>
-                  </svg>
-                  @si.SectionInstruction
-                </div>
-              </div>
-            }
-          </div>
-
-          @foreach (var thisGroup in theseGroups)
-          {
-            bool hasKeyQuestions = thisGroup.Questions.Any(q => q.KeyQuestion.HasValue && q.KeyQuestion.Value == true);
-            bool hasRequiredQuestions = thisGroup.Questions.Any(q => q.Required.HasValue && q.Required.Value == true);
-            bool aggregateAfterThis = false;
-            string aggregateType = string.Empty;
-            int controlCounter = 0;
-
-            @*question*@
-            <div class="flex-start-row-nowrap questionRow">
-              @* cell for question text *@
-              <div class="questionText2">
-                <div class="flex-start-column-nowrap">
-                  @* flex columnwise for question text and question instruction *@
-                  @if (hasKeyQuestions)
-                  {
-                    <div>
-                      @* key question icon *@
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
-                        <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                        <title>Record key</title>
-                      </svg>
-                      @thisGroup.SharedQuestionText
-                    </div>
-                  }
-                  else
-                  {
-                    if (hasRequiredQuestions)
-                    {
-                      <div>
-                        @* required question star icon *@
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-                          <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                          <title>Answer is required</title>
-                        </svg>
-                        @thisGroup.SharedQuestionText
-                      </div>
-                    }
-                    else
-                    {
-                      @thisGroup.SharedQuestionText
-                    }
-                  }
-                  @if (!string.IsNullOrEmpty(thisGroup.SharedQuestionInstruction))
-                  {
-                    <div>
-                      @* instruction icon*@
-                      <div class="questionInstruction">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
-                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                          <title>Instruction</title>
-                        </svg>
-                        @thisGroup.SharedQuestionInstruction
-                      </div>
-                    </div>
-                  }
-                </div>
-              </div>
-
-              @*cell for question key *@
-              <div class="questionKey" title="question key">
-                @if (thisGroup.SharedQuestionKey != "AssessmentCompleted")
-                {
-                  @thisGroup.SharedQuestionKey
-                }
-
-                @* add morebutton *@
-                @if (thisGroup.Questions.Any(q => q.MultipleChoices))
-                {
-                  string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
-                  <div class="mdc-touch-target-wrapper">
-                    <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
-                      <div class="mdc-button__ripple"></div>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                        <title>Add more answers</title>
-                      </svg>
-                      <div class="mdc-button__touch"></div>
-                    </button>
-                  </div>
-                }
-              </div>
-
-              @* cell for question key and stage group*@
-              <div class="answer2">
-               @{ string controlId = string.Empty; }
-                @foreach (var q in thisGroup.Questions)
-                {
-                  if(q.QuestionKey + q.Measure == controlId)
-                    controlCounter++;
-
-                  aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
-
-                  <div>
-                    @{
-                      string inputViewComponent = typeof(IPRehab.ViewComponents.InputViewComponent).Name.Replace("ViewComponent", string.Empty);
-
-                      /* don't put the next next component invocationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                    }
-
-                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
-                  </div>
-                }
-              </div>
-            </div>
-
-            @if (aggregateAfterThis)
-            {
-              @*aggregate row*@
-              <div class="scoreSection flex-start-column-nowrap">
-                <div class="font-weight-bold">@si.AggregateType</div>
-                <div class="footerInstruction flex-container-evenly-justified">
-                  <div>
-                    @* instruction icon *@
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
-                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                      <title>Instruction</title>
-                    </svg>
-                    @si.AggregateInstruction
-                  </div>
-                  <div id="@(si.AggregateType.Replace(" ","_"))" class="display-4 text-nowrap">0</div>
-                </div>
-              </div>
-            }
-          }
-        </div>
-      }
+        <div>@(Model.StageTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
     </div>
-  </form>
+
+    <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">
+        <input type="hidden" id="stage" name="stage" value="@(Model.StageTitle)" />
+        <input type="hidden" id="patientID" name="patientID" value="@(Model.PatientID)" />
+        <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
+        <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
+        <div class="flex-start-column-nowrap">
+            @if (Model.StageTitle == "Full" || Model.StageTitle == "All")
+            {
+                @*form name row*@
+                <div id="nonPaddinRow">
+                    <div class="flex-end-row-nowrap formName">@Model.StageTitle</div>
+                </div>
+            }
+
+            @foreach (SectionInfo si in Model.Sections)
+            {
+                List<QuestionGroup> GroupsInThisSection = si.QuestionGroups;
+
+                @*section*@
+                <div class="questionSection">
+                    <div class="section-title" title="click to expand/collapse">
+                        <a name="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"
+                       id="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"></a>
+                        @si.SectionTitle
+                        @if (!string.IsNullOrEmpty(si.SectionInstruction))
+                        {
+                            @* instruction icon*@
+                            <div class="sectionInstruction">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                    <title>Section Instruction</title>
+                                </svg>
+                                @si.SectionInstruction
+                            </div>
+                        }
+                    </div>
+                    <div class="section-content">
+                        @foreach (var thisGroup in GroupsInThisSection)
+                        {
+                            bool hasKeyQuestions = thisGroup.Questions.Any(q => q.KeyQuestion.HasValue && q.KeyQuestion.Value == true);
+                            bool hasRequiredQuestions = thisGroup.Questions.Any(q => q.Required.HasValue && q.Required.Value == true);
+                            int controlCounter = 0;
+
+                            @*question*@
+                            <div class="flex-start-row-nowrap questionRow">
+                                <div class="child1 btn btn-secondary" title="click to expand/collapse" @*accordion header*@>
+                                    @thisGroup.SharedQuestionKey
+                                </div>
+                                <div class="child2 flex-start-row-nowrap" @*accordion content*@>
+                                    @* cell for question text *@
+                                    <div class="questionText2">
+                                        <div class="flex-start-column-nowrap">
+                                            @* flex columnwise for question text and question instruction *@
+                                            @if (hasKeyQuestions)
+                                            {
+                                                <div>
+                                                    @* key question icon *@
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+                                                        <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                                        <title>Record key</title>
+                                                    </svg>
+                                                    @thisGroup.SharedQuestionText
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                if (hasRequiredQuestions)
+                                                {
+                                                    <div>
+                                                        @* required question star icon *@
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                                                            <title>Answer is required</title>
+                                                        </svg>
+                                                        @thisGroup.SharedQuestionText
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    @thisGroup.SharedQuestionText
+                                                }
+                                            }
+                                            @if (!string.IsNullOrEmpty(thisGroup.SharedQuestionInstruction))
+                                            {
+                                                <div>
+                                                    @* instruction icon*@
+                                                    <div class="questionInstruction">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                                            <title>Instruction</title>
+                                                        </svg>
+                                                        @thisGroup.SharedQuestionInstruction
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    @*cell for adding morebutton
+                                        <div class="questionKey" title="question key">
+
+                                        @if (thisGroup.Questions.Any(q => q.MultipleChoices))
+                                        {
+                                        string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
+                                        <div class="mdc-touch-target-wrapper">
+                                        <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
+                                        <div class="mdc-button__ripple"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                        <title>Add more answers</title>
+                                        </svg>
+                                        <div class="mdc-button__touch"></div>
+                                        </button>
+                                        </div>
+                                        }
+                                        </div>*@
+
+                                    @* cell for view components *@
+                                    @{
+                                        string controlId = string.Empty;
+                                        string inputViewComponent = typeof(IPRehab.ViewComponents.InputViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                        bool aggregateAfterThis = false;
+                                        bool showoGradTotal = false;
+                                    }
+
+                                    <div class="@(thisGroup.Questions.Any(q=>q.QuestionKey =="Q43")? "answer2date": "answer2")">
+                                        @foreach (var q in thisGroup.Questions)
+                                        {
+                                            aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
+                                            showoGradTotal = aggregateAfterThis && q.QuestionKey == "GG0170SS";
+
+                                            if (q.QuestionKey + q.Measure == controlId)
+                                            {
+                                                controlCounter++;
+                                            }
+
+                                            <div>
+                                                @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (aggregateAfterThis)
+                            {
+                                @*aggregate row*@
+                                <div class="scoreSection flex-start-column-nowrap border border-dark">
+                                    <div class="footerInstruction flex-container-evenly-justified">
+                                        <div>
+                                            @* instruction icon *@
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                                <title>Instruction</title>
+                                            </svg>
+                                            @si.AggregateInstruction
+                                        </div>
+
+                                        @* aggregate total by type*@
+                                        @switch (Model.StageCode)
+                                        {
+                                            case "New":
+                                            case "Base":
+                                                await Html.RenderPartialAsync("_Aggregates_Base", si);
+                                                break;
+                                            default:
+                                                await Html.RenderPartialAsync("_Aggregates", si);
+                                                break;
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            @if (showoGradTotal)
+                            {
+                                <div class="scoreSection flex-start-column-nowrap border border-dark">
+                                    @switch (Model.StageCode)
+                                    {
+                                        case "New":
+                                        case "Base":
+                                            await Html.RenderPartialAsync("_Aggregates_GrandTotal_Base");
+                                            break;
+                                        default:
+                                            await Html.RenderPartialAsync("_Aggregates_GrandTotal");
+                                            break;
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
 </article>
 <partial name="_CookieConsentPartial" />
 

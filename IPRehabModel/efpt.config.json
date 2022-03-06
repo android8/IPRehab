@@ -74,10 +74,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[app].[tblQuestionStage]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[app].[tblSignature]",
          "ObjectType": 0
       },

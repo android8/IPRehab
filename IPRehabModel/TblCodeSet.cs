@@ -15,12 +15,11 @@ namespace IPRehabModel
         public tblCodeSet()
         {
             InverseCodeSetParentNavigation = new HashSet<tblCodeSet>();
-            tblAnswerAnswerCodeSetFKNavigation = new HashSet<tblAnswer>();
-            tblAnswerStageIDFKNavigation = new HashSet<tblAnswer>();
+            tblAnswer = new HashSet<tblAnswer>();
             tblQuestion = new HashSet<tblQuestion>();
             tblQuestionInstructionDisplayLocationFKNavigation = new HashSet<tblQuestionInstruction>();
             tblQuestionInstructionStageCodeSetIDFKNavigation = new HashSet<tblQuestionInstruction>();
-            tblQuestionMeasureMeasureFKNavigation = new HashSet<tblQuestionMeasure>();
+            tblQuestionMeasureMeasureCodeSetIDFKNavigation = new HashSet<tblQuestionMeasure>();
             tblQuestionMeasureStageFKNavigation = new HashSet<tblQuestionMeasure>();
         }
 
@@ -47,18 +46,16 @@ namespace IPRehabModel
         public virtual tblCodeSet CodeSetParentNavigation { get; set; }
         [InverseProperty(nameof(tblCodeSet.CodeSetParentNavigation))]
         public virtual ICollection<tblCodeSet> InverseCodeSetParentNavigation { get; set; }
-        [InverseProperty(nameof(tblAnswer.AnswerCodeSetFKNavigation))]
-        public virtual ICollection<tblAnswer> tblAnswerAnswerCodeSetFKNavigation { get; set; }
-        [InverseProperty(nameof(tblAnswer.StageIDFKNavigation))]
-        public virtual ICollection<tblAnswer> tblAnswerStageIDFKNavigation { get; set; }
+        [InverseProperty("AnswerCodeSetFKNavigation")]
+        public virtual ICollection<tblAnswer> tblAnswer { get; set; }
         [InverseProperty("AnswerCodeSetFKNavigation")]
         public virtual ICollection<tblQuestion> tblQuestion { get; set; }
         [InverseProperty(nameof(tblQuestionInstruction.DisplayLocationFKNavigation))]
         public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionDisplayLocationFKNavigation { get; set; }
         [InverseProperty(nameof(tblQuestionInstruction.StageCodeSetIDFKNavigation))]
         public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionStageCodeSetIDFKNavigation { get; set; }
-        [InverseProperty(nameof(tblQuestionMeasure.MeasureFKNavigation))]
-        public virtual ICollection<tblQuestionMeasure> tblQuestionMeasureMeasureFKNavigation { get; set; }
+        [InverseProperty(nameof(tblQuestionMeasure.MeasureCodeSetIDFKNavigation))]
+        public virtual ICollection<tblQuestionMeasure> tblQuestionMeasureMeasureCodeSetIDFKNavigation { get; set; }
         [InverseProperty(nameof(tblQuestionMeasure.StageFKNavigation))]
         public virtual ICollection<tblQuestionMeasure> tblQuestionMeasureStageFKNavigation { get; set; }
     }

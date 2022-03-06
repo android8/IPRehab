@@ -42,6 +42,7 @@ namespace IPRehabWebAPI2.Models
     /// peristable, e[ospde admission date
     /// </summary>
     public DateTime AdmissionDate { get; set; }
+    
     /// <summary>
     /// peristable, foreign key to question identifier 
     /// </summary>
@@ -55,12 +56,12 @@ namespace IPRehabWebAPI2.Models
     /// <summary>
     /// peristable, foreign key to stage identifier for inspection only
     /// </summary>
-    public int StageID { get; set; }
+    public int MeasureID { get; set; }
 
     /// <summary>
     /// not peristable, for inspection only
     /// </summary>
-    public string StageName { get; set; }
+    public string MeasureName { get; set; }
 
     /// <summary>
     /// peristable, foreign key to codeset id  

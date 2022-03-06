@@ -13,6 +13,15 @@ namespace IPRehabWebAPI2
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            //.ConfigureLogging(loggingBuilder =>
+            //{
+            //  loggingBuilder.ClearProviders();
+            //  loggingBuilder.AddConsole();
+            //})
+            //.ConfigureAppConfiguration(appConfig =>
+            //{
+            //  appConfig.AddIniFile("appsettings.ini");
+            //})
             .ConfigureWebHostDefaults(webBuilder =>
             {
               webBuilder.UseKestrel();

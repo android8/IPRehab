@@ -1,56 +1,57 @@
 ﻿@model InputViewComponentTemplateModel
 @{
-  var thisStage = Model.ViewComponentViewModel.StageSysTitle;
-  var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
+    var thisItem = Model.ChoiceAndAnswerList.FirstOrDefault().SelectListItem;
 
-  var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
-  string thisHtmlDate = string.Empty;
-  string answeredBy = string.Empty;
-  if (originalAnswer != null)
-  {
-    thisHtmlDate = $"{DateTime.Parse(originalAnswer.Description).ToString("yyyy-MM-dd")}";
-    answeredBy = $"Answered by {originalAnswer.ByUser}";
-  }
+    var originalAnswer = Model.ChoiceAndAnswerList.FirstOrDefault().Answer;
+    string thisHtmlDate = string.Empty;
+    string answeredBy = string.Empty;
+    if (originalAnswer != null)
+    {
+        thisHtmlDate = $"{DateTime.Parse(originalAnswer.Description).ToString("yyyy-MM-dd")}";
+        answeredBy = $"Answered by {originalAnswer.ByUser}";
+    }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
-  string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
-  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
-  bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
+    bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+    string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
+    string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
+    bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
 
 @* flex row for multi dates *@
 <div class="@ContainerCssClass">
-  @* flex column for each date header and date input pair *@
-  <div class="flex-start-column-nowrap">
-    @if (displayStageHeader)
-    {
-      @*prevent the next inner div to be flexed*@
-      <div>
-        <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.Measure}")</div>
-      </div>
-    }
-    <div class="flex-start-row-nowrap">
-      <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
-             class="persistable"
-             name="@Model.ViewComponentViewModel.QuestionKey"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-             required="@(Model.ViewComponentViewModel.Required)"
-             value="@(thisHtmlDate)"
-             title="@(answeredBy)"
-             data-stageid="@(Model.ViewComponentViewModel.StageID)"
-             data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-             data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-             data-userid="@(Model.ViewComponentViewModel.UserID)"
-             data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-             data-oldvalue="@(thisHtmlDate)"
-             data-codesetid="@(thisItem.Value)"
-             data-codesetdescription="@(thisItem.Text)"
-             data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-             data-toggle="tooltip"
-             data-placement="left"
-             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
- />
-      <label class="" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"></label>
+    @* flex column for each date header and date input pair *@
+    <div class="flex-start-column-nowrap">
+        @if (displayStageHeader)
+        {
+            @*prevent the next inner div to be flexed*@
+            <div>
+                <div class="@(stageHeaderCssClass)">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+            </div>
+        }
+        <div class="flex-start-row-nowrap">
+            <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
+                   class="persistable"
+                   name="@Model.ViewComponentViewModel.QuestionKey"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   required="@(Model.ViewComponentViewModel.Required)"
+                   value="@(thisHtmlDate)"
+                   title="@(answeredBy)"
+                   data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                   data-userid="@(Model.ViewComponentViewModel.UserID)"
+                   data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                   data-oldvalue="@(thisHtmlDate)"
+                   data-codesetid="@(thisItem.Value)"
+                   data-codesetdescription="@(thisItem.Text)"
+                   data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-toggle="tooltip"
+                   data-placement="left"
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+            <label class=""
+                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+                   aria-label="@($"a date for {Model.ViewComponentViewModel.QuestionKey}")"></label>
+        </div>
     </div>
-  </div>
 </div>

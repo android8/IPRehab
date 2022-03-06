@@ -20,5 +20,8 @@ namespace IPRehabWebAPI2.Models
 
     [DisplayName("Patient ICN")]
     public string PatientIcnFK { get; set; }
+
+    [DisplayName("Form is Complete")]
+    public bool FormIsComplete { get; set; }
   }
 }

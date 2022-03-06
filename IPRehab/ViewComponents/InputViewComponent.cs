@@ -49,7 +49,7 @@ namespace IPRehab.ViewComponents
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
-      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") ? false: (QWS.StageID == 421 && QWS.Measure != string.Empty ? true : false);
+      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43")? false: (QWS.Measure != string.Empty ? true : false);
       thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoBottomBorder";
       thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
@@ -115,7 +115,7 @@ namespace IPRehab.ViewComponents
               //}
               break;
             case "Date":
-              viewName = "MaterialInputDate";
+              viewName = "MaterialInputDate"; 
               thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
               break;
             case "Number":

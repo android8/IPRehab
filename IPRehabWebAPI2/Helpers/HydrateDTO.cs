@@ -14,7 +14,7 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, string measureCodeSetDescription)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, tblCodeSet measureCodeSet)
     {
       QuestionDTO questionDTO = new();
       questionDTO.FormName = questionStage;
@@ -27,8 +27,11 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.Question = q.Question;
 
       //use question measures
-      questionDTO.Measure = measureCodeSetDescription; //GetGroupTitle(q, questionStage);
-
+      if (measureCodeSet != null)
+      {
+        questionDTO.Measure = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
+      }
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
       questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
       questionDTO.DisplayOrder = q.Order;
@@ -69,8 +72,8 @@ namespace IPRehabWebAPI2.Helpers
         AnswerID = a.AnswerID,
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
-        CareStage = a.StageIDFKNavigation.CodeDescription,
-        StageID = a.StageIDFK,
+        Measure = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation?.CodeDescription,
+        MeasureID = a.MeasureIDFK,
         AnswerCodeSet = answerCodeSet,
         AnswerSequenceNumber = a.AnswerSequenceNumber,
         Description = a.Description,
@@ -114,19 +117,30 @@ namespace IPRehabWebAPI2.Helpers
     {
       DateTime admissionDate = new(DateTime.MinValue.Ticks);
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
+      bool formIsCompeted = false;
+      var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted");
+      foreach(var complete in completed)
+      {
+        //the Assessment Completed may be entered in any form so it's necessary to enumerate the collection to find if any exist and the CodeDescription is "Yes"
+        if (complete?.AnswerCodeSetFKNavigation.CodeDescription == "Yes")
+        {
+          formIsCompeted = true;
+          break;
+        }
+      }
 
       EpisodeOfCareDTO thisDTO = new EpisodeOfCareDTO
       {
         EpisodeOfCareID = e.EpisodeOfCareID,
         AdmissionDate = admissionDate,
         OnsetDate = onsetDate,
-        PatientIcnFK = e.PatientICNFK
+        PatientIcnFK = e.PatientICNFK,
+        FormIsComplete = formIsCompeted
       };
 
-      /* check if Q12 and Q23 have answers and, it yes, trump the episode dates */
+      /* check if Q12 and Q23 have answers and, if yes, trump the episode dates */
       IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
-        a.EpsideOfCareIDFK == e.EpisodeOfCareID &&
-          (a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23"))
+         a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23")
         .OrderBy(a => a.QuestionIDFKNavigation.QuestionKey);
 
       if (keyDates.Any())

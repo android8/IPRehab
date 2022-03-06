@@ -7,7 +7,7 @@
     originalAnswer = thisChoiceAndAnswer.Answer;
   }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader && !string.IsNullOrEmpty(Model.ViewComponentViewModel.Measure);
+  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
@@ -30,7 +30,7 @@
         <input type="radio"
                class="mdc-radio__native-control persistable"
                name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}")"
                required="@(Model.ViewComponentViewModel.Required)"
                value="@(item.SelectListItem.Value)"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -47,7 +47,7 @@
                data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_label")" />
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")" />
 
         <div class="mdc-radio__background">
           <div class="mdc-radio__outer-circle"></div>
@@ -58,8 +58,8 @@
     </div>
     <div class="arrow-left-radio"></div>
     <label class="radioLabel"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_label")">
+           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")">
 
       @*strip the code value *@
       @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
