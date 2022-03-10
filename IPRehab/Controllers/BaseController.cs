@@ -20,6 +20,7 @@ namespace IPRehab.Controllers
     protected readonly IConfiguration _configuration;
     protected readonly string _apiBaseUrl;
     protected readonly string _appVersion;
+    protected readonly string _impersonated;
     protected readonly JsonSerializerOptions _options;
     protected readonly ILogger _logger;
     protected readonly int _pageSize;
@@ -35,13 +36,12 @@ namespace IPRehab.Controllers
       _logger = logger;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
       _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
+      _impersonated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
 
-      string impersonnated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
-
-      if (!string.IsNullOrEmpty(impersonnated))
+      if (!string.IsNullOrEmpty(_impersonated))
       {
         //get impersonated user from appSettings.json
-        _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(impersonnated));
+        _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(_impersonated));
       }
 
       _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
@@ -60,8 +60,8 @@ namespace IPRehab.Controllers
     {
       string userAccessLevelSessionKey = "UserAccessLevel";
       List<MastUserDTO> accessLevels = new();
-      string viewBagCurrentUserName = string.Empty;
-      string sourceOfCredential;
+      string viewBagCurrentUserName = "Sun, Jonathan";
+      string sourceOfCredential = "Master Report";
       CancellationToken cancellationToken = new();
       await HttpContext.Session.LoadAsync(cancellationToken);
 
@@ -74,69 +74,91 @@ namespace IPRehab.Controllers
       //get userAccessLevels from session
       string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
 
-      //get userAccessLevel from web API, if not in the HttpContext.Session
-      if (string.IsNullOrEmpty(jsonStringFromSession))
+      if (sourceOfCredential == "Master Report")
       {
-        string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
-        accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_userID}", _options);
-        if (accessLevels == null && !accessLevels.Any())
+
+        //get userAccessLevel from web API, if not in the HttpContext.Session
+        if (string.IsNullOrEmpty(jsonStringFromSession))
         {
-          sourceOfCredential = "(WebAPI: access level is null)";
-          viewBagCurrentUserName = "Unknown";
-        }
-        else
-        {
-          MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-          if (thisUser == null)
+          string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
+          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_userID}", _options);
+          if (accessLevels == null && !accessLevels.Any())
           {
-            sourceOfCredential = "(WebAPI: user not contained in access level)";
+            sourceOfCredential = "(WebAPI: access level is null)";
             viewBagCurrentUserName = "Unknown";
           }
           else
           {
-            sourceOfCredential = "(WebAPI)";
-            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
-            //update session key UserAccessLevels value
-            string serializedString = JsonSerializer.Serialize(accessLevels);
-            HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
+            MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
+            if (thisUser == null)
+            {
+              sourceOfCredential = "(WebAPI: user not contained in access level)";
+              viewBagCurrentUserName = "Unknown";
+            }
+            else
+            {
+              sourceOfCredential = "(WebAPI)";
+              viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+              //update session key UserAccessLevels value
+              string serializedString = JsonSerializer.Serialize(accessLevels);
+              HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
+            }
           }
         }
+        //user in HttpContext.Session then don't call web API
+        else
+        {
+          accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
+          if (accessLevels == null || accessLevels.Count == 0)
+          {
+            sourceOfCredential = "(Session: deserialization issue)";
+            viewBagCurrentUserName = "Unknown";
+          }
+          else
+          {
+            MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
+            if (thisUser == null)
+            {
+              sourceOfCredential = "(Session: has no user information)";
+              viewBagCurrentUserName = "Unknown";
+            }
+            else
+            {
+              sourceOfCredential = "(Session)";
+              viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+            }
+          }
+        }
+
       }
-      //user in HttpContext.Session then don't call web API
+
+      if (viewBagCurrentUserName == "Unknown")
+      {
+        //string thisContent = "Access Denied";
+        var viewResult = new ViewResult() { ViewName="AccessDenied"};
+        context.Result = viewResult;
+        //context.Result = Content($"<div class='accessDenied'>{thisContent}</div>");
+        //context.Result = new BadRequestObjectResult("Access Denied!");
+      }
       else
       {
-        accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
-        if (accessLevels == null || accessLevels.Count == 0)
-        {
-          sourceOfCredential = "(Session: deserialization issue)";
-          viewBagCurrentUserName = "Unknown";
-        }
-        else
-        {
-          MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-          if (thisUser == null)
-          {
-            sourceOfCredential = "(Session: has no user information)";
-            viewBagCurrentUserName = "Unknown";
-          }
-          else
-          {
-            sourceOfCredential = "(Session)";
-            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
-          }
-        }
-      }
-      ViewBag.SourceOfCredential = sourceOfCredential;
-      ViewBag.CurrentUserID = $"{_userID}";
-      ViewBag.CurrentUserName = viewBagCurrentUserName;
-      ViewBag.AppVersion = $"Version {_appVersion}";
-      ViewBag.Office = _office;
+        ViewBag.SourceOfCredential = sourceOfCredential;
+        ViewBag.CurrentUserID = $"{_userID}";
+        ViewBag.CurrentUserName = viewBagCurrentUserName;
+        ViewBag.AppVersion = $"Version {_appVersion}";
+        ViewBag.Office = _office;
 
-      var routeData = this.RouteData;
-      var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-      //don't await the external audit result
-      UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress); 
-      await next();
+        var routeData = this.RouteData;
+        var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
+        //don't await the external audit result
+        UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress);
+        await next();
+      }
+    }
+
+    public IActionResult AccessDenied()
+    {
+      return View();
     }
   }
 }

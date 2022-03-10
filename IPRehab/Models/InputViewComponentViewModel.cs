@@ -17,7 +17,7 @@ namespace IPRehab.Models
     public bool MultipleChoices { get; set; }
     public bool Required { get; set; }
     public bool DisplayMeasureHeader { get; set; }
-    public string StageHeaderBorderCssClass { get; set; }
+    public string MeasureHeaderBorderCssClass { get; set; }
     public string ContainerCssClass { get; set; }
 
     /// <summary>

@@ -10,28 +10,45 @@ export class Utility {
         else
             return true;
     }
-    getControlValue($this) {
+    getControlValue($this, valueSource = 'other') {
         //throw new Error("Method not implemented.");
         let thisControlType = $this.prop('type');
-        let thisValue = 0;
-        switch (thisControlType) {
-            case "select-one": {
-                //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-                let selectedOption = $('#' + $this.prop('id') + ' option:selected').text();
-                thisValue = parseInt(selectedOption);
-                break;
-            }
-            case "checkbox":
-            case "radio": {
-                if ($this.prop('checked')) {
-                    thisValue = 1;
+        let thisValue;
+        switch (valueSource) {
+            case "other": {
+                switch (thisControlType) {
+                    case "select-one": {
+                        //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
+                        let selectedOption = $('#' + $this.prop('id') + ' option:selected').text();
+                        thisValue = parseInt(selectedOption);
+                        break;
+                    }
+                    case "radio":
+                    case "checkbox":
+                        if ($this.prop('checked'))
+                            thisValue = 1;
+                        break;
+                    case "text": {
+                        let numberString = parseInt($this.val());
+                        if (!isNaN(numberString))
+                            thisValue = $this.val();
+                        else
+                            thisValue = numberString;
+                        break;
+                    }
+                    default: {
+                        thisValue = $this.val();
+                        break;
+                    }
                 }
                 break;
             }
-            case "text": {
-                let thisInputValue = $this.val().toString();
-                if (parseInt(thisInputValue) > 0) {
-                    thisValue = 1;
+            default: {
+                if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $this.prop('checked')) {
+                    thisValue = $this.val();
+                }
+                else {
+                    thisValue = $this.val();
                 }
                 break;
             }

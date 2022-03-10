@@ -24,7 +24,7 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+      <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
     </div>
   }
   <select class="browser-default custom-select select2 dropdown persistable"
@@ -37,7 +37,7 @@
           data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
           data-userid="@(Model.ViewComponentViewModel.UserID)"
           data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-          data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+          data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeSetID)"
           data-codesetid="irrelevant"
           data-codesetdescription="irrelevant"
           data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"

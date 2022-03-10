@@ -33,7 +33,7 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     /// <param name="newAnswers"></param>
     /// <returns></returns>
-    public async Task<int> TransactionalInsertAsync(List<UserAnswer> newAnswers)
+    public async Task<int> TransactionalInsertNewEpisodeAsync(List<UserAnswer> newAnswers)
     {
       using var transaction = _ipRehabContext.Database.BeginTransaction();
       try
@@ -54,7 +54,7 @@ namespace IPRehabWebAPI2.Helpers
         {
           tblAnswer thisAnswer = new()
           {
-            EpsideOfCareIDFK = thisEpisode.EpisodeOfCareID, //new Episode
+            EpsideOfCareIDFK = thisEpisode.EpisodeOfCareID, //new Episode ID
             QuestionIDFK = ans.QuestionID,
             MeasureIDFK = ans.MeasureID,
             AnswerCodeSetFK = ans.AnswerCodeSetID,
@@ -83,23 +83,23 @@ namespace IPRehabWebAPI2.Helpers
     /// <param name="thisEpisodeID"></param>
     /// <param name="newAnswers"></param>
     /// <returns></returns>
-    public async Task TransactionalInsertAnswerOnlyAsync(int thisEpisodeID, List<UserAnswer> newAnswers)
+    public async Task TransactionalInsertNewAnswerOnlyAsync(int thisEpisodeID, List<UserAnswer> newAnswers)
     {
       using var transaction = _ipRehabContext.Database.BeginTransaction();
       try
       {
-        foreach (UserAnswer ans in newAnswers)
+        foreach (UserAnswer newAans in newAnswers)
         {
           tblAnswer thisAnswer = new()
           {
             EpsideOfCareIDFK = thisEpisodeID, //existing Episode ID
-            QuestionIDFK = ans.QuestionID,
-            MeasureIDFK = ans.MeasureID,
-            AnswerCodeSetFK = ans.AnswerCodeSetID,
-            AnswerSequenceNumber = ans.AnswerSequenceNumber,
-            Description = ans.Description,
-            AnswerByUserID = ans.AnswerByUserID,
-            LastUpdate = ans.LastUpdate
+            QuestionIDFK = newAans.QuestionID,
+            MeasureIDFK = newAans.MeasureID,
+            AnswerCodeSetFK = newAans.AnswerCodeSetID,
+            AnswerSequenceNumber = newAans.AnswerSequenceNumber,
+            Description = newAans.Description,
+            AnswerByUserID = newAans.AnswerByUserID,
+            LastUpdate = newAans.LastUpdate
           };
           _ipRehabContext.tblAnswer.Add(thisAnswer);
           await _ipRehabContext.SaveChangesAsync();
@@ -135,18 +135,18 @@ namespace IPRehabWebAPI2.Helpers
         _ipRehabContext.tblEpisodeOfCare.Update(thisEpisode);
         await _ipRehabContext.SaveChangesAsync();
 
-        foreach (UserAnswer ans in udatedAnswers)
+        foreach (UserAnswer updAns in udatedAnswers)
         {
-          var thisAnswer = _answerRepository.FindByCondition(x => x.AnswerID == ans.AnswerID).FirstOrDefault();
+          var thisAnswer = _answerRepository.FindByCondition(x => x.AnswerID == updAns.AnswerID).FirstOrDefault();
           if (thisAnswer != null)
           {
-            thisAnswer.QuestionIDFK = ans.QuestionID;
-            thisAnswer.MeasureIDFK = ans.MeasureID;
-            thisAnswer.AnswerCodeSetFK = ans.AnswerCodeSetID;
-            thisAnswer.AnswerSequenceNumber = ans.AnswerSequenceNumber;
-            thisAnswer.Description = ans.Description;
-            thisAnswer.AnswerByUserID = ans.AnswerByUserID;
-            thisAnswer.LastUpdate = ans.LastUpdate;
+            thisAnswer.QuestionIDFK = updAns.QuestionID;
+            thisAnswer.MeasureIDFK = updAns.MeasureID;
+            thisAnswer.AnswerCodeSetFK = updAns.AnswerCodeSetID;
+            thisAnswer.AnswerSequenceNumber = updAns.AnswerSequenceNumber;
+            thisAnswer.Description = updAns.Description;
+            thisAnswer.AnswerByUserID = updAns.AnswerByUserID;
+            thisAnswer.LastUpdate = updAns.LastUpdate;
           }
           _ipRehabContext.tblAnswer.Update(thisAnswer);
           await _ipRehabContext.SaveChangesAsync();
@@ -172,9 +172,10 @@ namespace IPRehabWebAPI2.Helpers
       using var transaction = _ipRehabContext.Database.BeginTransaction();
       try
       {
-        foreach (UserAnswer ans in oldAnswers)
+        foreach (UserAnswer oldAns in oldAnswers)
         {
-          var thisAnswer = _answerRepository.FindByCondition(x => x.AnswerID == ans.AnswerID).FirstOrDefault();
+          //remove answer
+          var thisAnswer = _answerRepository.FindByCondition(x => x.AnswerID == oldAns.AnswerID).FirstOrDefault();
           if (thisAnswer != null)
           {
             _ipRehabContext.tblAnswer.Remove(thisAnswer);
@@ -182,6 +183,7 @@ namespace IPRehabWebAPI2.Helpers
           }
         }
 
+        //if no answer associated with an episode, then remove the episode
         if (!_answerRepository.FindByCondition(x => x.EpsideOfCareIDFK == thisEpisodeID).Any())
         {
           var thisEpisode = await _ipRehabContext.tblEpisodeOfCare.FindAsync(thisEpisodeID);

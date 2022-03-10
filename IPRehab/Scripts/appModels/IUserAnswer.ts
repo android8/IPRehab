@@ -22,11 +22,4 @@
   LastUpdate: Date;
 }
 
-export interface AjaxPostbackModel {
-  EpisodeID: number
-  OldAnswers: Array<IUserAnswer>
-  UpdatedAnswers: Array<IUserAnswer>
-  NewAnswers: Array<IUserAnswer>
-}
-
 

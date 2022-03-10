@@ -4,6 +4,13 @@
     /*    margin-right: 20px;*/
   }
 }
+.accessDenied {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 .splashscreen {
   /*  position: absolute;
   top: 0;
@@ -497,7 +504,7 @@ div .radioContainer {
   border-right: 13px solid whitesmoke;
 }
 
-.stageHeaderNoBottomBorder {
+.measureHeaderNoBottomBorder {
   z-index: 5;
   display: inline-block;
   position: relative;
@@ -514,7 +521,7 @@ div .radioContainer {
   border-radius: 5px 5px 0 0;
 }
 
-.stageHeaderNoBottomBorder.number {
+.measureHeaderNoBottomBorder.number {
   z-index: 5;
   display: inline-block;
   position: relative;
@@ -530,7 +537,7 @@ div .radioContainer {
   border-radius: 5px 5px 0 0;
 }
 
-.stageHeaderNoRightBorder {
+.measureHeaderNoRightBorder {
   position: relative;
   top: 0px;
   margin-top: 0px;
@@ -545,7 +552,7 @@ div .radioContainer {
   border-radius: 5px 0 0 5px;
 }
 
-.stageHeaderNoLeftBorder {
+.measureHeaderNoLeftBorder {
   position: relative;
   top: 0px;
   margin-top: 0px;
@@ -560,8 +567,8 @@ div .radioContainer {
   border-radius: 0 5px 5px 0;
 }
 
-td.questionText .stageHeaderNoBottomBorder,
-td.questionKey .stageHeaderNoBottomBorder,
+td.questionText .measureHeaderNoBottomBorder,
+td.questionKey .measureHeaderNoBottomBorder,
 div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }
@@ -706,9 +713,9 @@ div.questionRow {
 
 .rotate2 {
   transform: rotate(-90deg) translate(10px, -20px);
-  color: #fff;
+  color: gold;
   position: fixed;
-  padding: 5px;
+  padding: 10px 6px;
   top: 60px;
   font-weight: bolder;
 }
@@ -830,7 +837,6 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-items: stretch;
   align-content: stretch;
   flex-wrap: nowrap;
-  background-color: #0e2640;
   background-image: linear-gradient(#0e2640, #000);
   position: fixed;
   margin-bottom: 21vh;
@@ -852,6 +858,10 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+#questionTab ul {
+  list-style-type: none;
+}
+
 #questionTab .nav-title {
   position: fixed;
   background-color: #0e2640;
@@ -859,34 +869,35 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   width: 195px;
 }
 
-#questionTab ul {
-  list-style-type: none;
+/* nav title*/
+#uestionTab > ul .nav-item:nth-child(2) {
+  padding-top: 60px;
 }
 
 #questionTab .nav-item {
   flex: 1 1 auto;
-  color: #fff !important;
   border: 1px solid #808080 !important;
   padding: 1px 2px;
-  text-decoration-color: white !important;
+  color: #000 !important;
+  background-color: white;
+  /*  text-decoration-color: white !important;*/
 }
 
 #questionTab .nav-item:hover {
-  color: black;
-  background-color: #0094ff;
-}
-
-#uestionTab > ul .nav-item:nth-child(2) {
-  padding-top: 60px;
+  color: black !important;
+  background-color: #0094ff !important;
+  cursor: pointer;
 }
 
 div.questionRow:last-child {
   border-radius: 0 0 5px 5px;
 }
 
-#questionTab .nav-item:hover {
-  cursor: pointer;
-  background-color: lightgray;
+li.nav-item .sectionKey {
+  color: gold;
+  background-color: #0e2640;
+  margin: 0 5px 0 0;
+  padding: 0 3px;
 }
 
 .flex-container-evenly-justified {

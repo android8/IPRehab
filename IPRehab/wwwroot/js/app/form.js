@@ -2,6 +2,8 @@
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 import { Utility } from "./utility.js";
+import { UserAnswer } from "./userAnswer.js";
+import { AjaxPostbackModel } from "./AjaxPostbackModel.js";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
     $('.persistable').change(function () {
@@ -30,8 +32,10 @@ $(function () {
     $('.gotoSection').each(function () {
         const $this = $(this);
         $this.click(function () {
-            const anchorId = $this.data("anchorid");
-            formController.scrollToAnchor(anchorId);
+            const $fromThis = $(this);
+            const toAnchor = $('#' + $this.data("anchorid"));
+            if (toAnchor != null)
+                formController.scrollToAnchor($fromThis, toAnchor);
         });
     });
     /* show hide section */
@@ -61,16 +65,7 @@ $(function () {
     /* ajax post form */
     $('#ajaxPost').click(function () {
         if (formController.validate) {
-            const thisPostBtn = $(this);
-            $('.spinnerContainer').show();
-            const theScope = $('#userAnswerForm');
-            const stageName = $('#stage', theScope).val().toString();
-            const patientID = $('#patientID', theScope).val().toString();
-            const patientName = $('#patientName', theScope).val().toString();
-            let episodeID = +$('#episodeID', theScope).val();
-            if (stageName.toLowerCase() == "new")
-                episodeID = -1;
-            formController.submitTheForm($('.persistable', theScope), stageName, patientID, patientName, episodeID, thisPostBtn);
+            formController.submitTheForm($(this));
         }
     });
     /* self care score on load */
@@ -101,9 +96,13 @@ $(function () {
 let formController = (function () {
     const commonUtility = new Utility();
     /* private function */
-    function scrollToAnchor(anchorId) {
-        let anchor = $('#' + anchorId);
-        $('html,body').animate({ scrollTop: anchor.offset().top }, 'fast');
+    function scrollToAnchor(from, to) {
+        /* https://arnavzedion.medium.com/the-difference-between-offsettop-scrolltop-clienttop-36cf52b733ca#:~:text=offsetTop%20is%20read-only%2C%20while%20scrollTop%20is%20read%2Fwrite.%20As,dependent%20variable%20or%20offset%20position%20to%20scroll%20independently
+         */
+        var position = to.offset().top
+            - from.offset().top
+            + from.scrollTop();
+        $('html,body').animate({ scrollTop: position }, 'fast');
     }
     /* private function */
     function setRehabBtns(targetScope) {
@@ -137,10 +136,10 @@ let formController = (function () {
     }
     /* private function */
     function breakLongSentence(thisSelectElement) {
-        console.log('thisSelectElement', thisSelectElement);
+        //console.log('thisSelectElement', thisSelectElement);
         let maxLength = 50;
         let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
-        console.log('longTextOptionDIV', longTextOptionDIV);
+        //console.log('longTextOptionDIV', longTextOptionDIV);
         let thisSelectWidth = thisSelectElement[0].clientWidth;
         let thisScope = thisSelectElement;
         let selectedValue = parseInt(thisSelectElement.prop('value'));
@@ -154,8 +153,8 @@ let formController = (function () {
                 let oldText = $thisOption.text();
                 let font = $thisOption.css('font');
                 let oldTextInPixel = commonUtility.getTextPixels(oldText, font);
-                console.log('oldTextInPixel', oldTextInPixel);
-                console.log('thisSelectWidth', thisSelectWidth);
+                //console.log('oldTextInPixel', oldTextInPixel);
+                //console.log('thisSelectWidth', thisSelectWidth);
                 longTextOptionDIV.text('');
                 if (oldTextInPixel > thisSelectWidth) {
                     let newStr = oldText.replace(regX, "$1\n");
@@ -164,8 +163,8 @@ let formController = (function () {
                     if (startWithNumber) {
                         newStr = newStr.substring(newStr.indexOf(" ") + 1);
                     }
-                    console.log('old ->', oldText);
-                    console.log('new ->', newStr);
+                    //console.log('old ->', oldText);
+                    //console.log('new ->', newStr);
                     longTextOptionDIV.text(newStr);
                     longTextOptionDIV.removeClass("invisible");
                 }
@@ -173,84 +172,97 @@ let formController = (function () {
         }
     }
     /* private function */
-    function submitTheForm(persistables, stageName, patientID, patientName, episodeID, thisPostBtn) {
-        //const inputAnswerArray: any[] = $('input[value!=""].persistable', theForm).serializeArray();
-        //console.log("serialized input", inputAnswerArray);
-        //const selectAnswerArray: any[] = [];
-        //$.map($('select', theForm), function () {
-        //  let $thisDropdown = $(this);
-        //  $('option', $thisDropdown).each(function () {
-        //    let $thisOption = $(this);
-        //    if ($thisOption.is(':selected')) {
-        //    }
-        //  })
-        //});
-        let thisAnswer = {};
+    function submitTheForm(thisPostBtn) {
+        $('.spinnerContainer').show();
         const oldAnswers = new Array();
         const newAnswers = new Array();
         const updatedAnswers = new Array();
+        const theScope = $('#userAnswerForm');
+        const stageName = $('#stage', theScope).val().toString();
+        const patientID = $('#patientID', theScope).val().toString();
+        const patientName = $('#patientName', theScope).val().toString();
+        let episodeID = +($('#episodeID', theScope).val());
         //get the key answers. these must be done outside of the .map() 
         //because each answer in .map() will use the same episode onset date and admission date
-        let onsetDate = $(".persistable[data-questionkey^='Q23']").val();
-        let admissionDate = $(".persistable[data-questionkey^='Q12']").val();
+        let onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
+        let admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
-        persistables.map(function () {
+        const persistables = $('.persistable');
+        let counter = 0;
+        if (stageName.toLowerCase() == "new")
+            episodeID = -1;
+        persistables.each(function () {
+            counter++;
+            console.log('persiable ' + counter);
+            let thisAnswer = new UserAnswer();
             let $thisPersistable = $(this);
+            let questionId = +$thisPersistable.data('questionid');
+            let questionKey = $thisPersistable.data('questionkey');
+            let controlType = $thisPersistable.prop('type');
             let currentValue = $thisPersistable.val();
             let oldValue = $thisPersistable.data('oldvalue');
-            let answerID = $thisPersistable.data('answerid');
-            let CRUD;
-            //return false doesn't break the .map, but skips the current item and continues mapping the next persistable
-            // !oldValue yields true only when the value is undefined or NaN, then skip the current item and exit the map() 
-            if ($thisPersistable.prop('type') == 'select-one' && (!(+currentValue) && !oldValue)) {
-                return false;
-            }
-            // !oldValue yields true only when the value is not acceptible, then skip the current item and exit the map() 
-            if (($thisPersistable.prop('type') == 'checkbox' || $thisPersistable.prop('type') == 'radio')
-                && (!$thisPersistable.prop('checked') && !oldValue)) {
-                return false;
-            }
-            if (currentValue === oldValue) {
-                return false;
+            let answerId = $thisPersistable.data('answerid');
+            let CRUD = '';
+            thisAnswer.PatientName = patientName;
+            thisAnswer.PatientID = patientID;
+            thisAnswer.EpisodeID = episodeID;
+            thisAnswer.AdmissionDate = admissionDate;
+            thisAnswer.OnsetDate = onsetDate;
+            thisAnswer.QuestionID = questionId;
+            thisAnswer.QuestionKey = questionKey;
+            //possible problem with stage id or measure id
+            thisAnswer.MeasureID = +$thisPersistable.data('stageid');
+            thisAnswer.MeasureName = stageName;
+            thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
+            if ($thisPersistable.data('answersequencenumber'))
+                thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
+            thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
+            thisAnswer.LastUpdate = new Date();
+            //!undefined or !NaN yield true
+            if (+currentValue === -1)
+                currentValue = '';
+            switch (controlType) {
+                case 'select-one':
+                    if (currentValue === '' && !oldValue)
+                        return false; //skip the current item and exit each()
+                    break;
+                case 'checkbox':
+                case 'radio':
+                    if ((!$thisPersistable.prop('checked') && !oldValue))
+                        return false; //skip the current item and exit each()
+                    break;
+                default: {
+                    if (!currentValue && !oldValue) //both are blank
+                        return false;
+                    break;
+                }
             }
             //determine CRUD operation
             switch (true) {
-                case (+currentValue > 0 && +oldValue <= 0):
-                    console.log('Insert currentValue ' + (+currentValue).toString() + 'oldValue ' + (+oldValue).toString());
+                case ((currentValue !== '') && oldValue === ''):
+                    console.log('(' + questionKey + ') Create new value ' + currentValue + ' since old value is blank and current value is not blank');
                     CRUD = 'C';
                     break;
-                case (+currentValue <= 0 && +oldValue > 0):
-                    console.log('Delete oldValue ' + (+oldValue).toString());
+                case ((currentValue === '') && oldValue !== ''):
+                    console.log('(' + questionKey + ') Delete oldValue ' + oldValue + ' since old value is not blank and current value is blank');
                     CRUD = 'D';
-                    thisAnswer.AnswerID = +answerID;
+                    thisAnswer.AnswerID = +answerId;
                     break;
-                default:
-                    console.log('Update oldValue ' + (+oldValue).toString() + ' whith currentValue ' + (+currentValue));
-                    CRUD = "U";
-                    thisAnswer.AnswerID = +answerID;
+                case ((currentValue !== '' && oldValue !== '') && currentValue !== oldValue):
+                    console.log('(' + questionKey + ') Update oldValue ' + oldValue + ' whith current value ' + currentValue);
+                    CRUD = 'U';
+                    thisAnswer.AnswerID = +answerId;
                     break;
             }
-            thisAnswer.PatientName = patientName.toString();
-            thisAnswer.PatientID = patientID;
-            thisAnswer.EpisodeID = episodeID;
-            //both of admission date and onset date are rendered with MaterialInputDate view template with the same class
-            //so use id to determine to which the data-codesetdescription property belong
-            thisAnswer.AdmissionDate = admissionDate;
-            thisAnswer.OnsetDate = onsetDate;
-            //+ in front of string convert it to number
-            thisAnswer.QuestionID = +$thisPersistable.data('questionid');
-            thisAnswer.QuestionKey = $thisPersistable.data('questionkey');
             //a question may show several input fields for multiple stages,
             //so we have to use the data-stagid at the field level, not the stage hidden input set at the form level
-            thisAnswer.StageID = +$thisPersistable.data('stageid');
-            thisAnswer.StageName = stageName;
             let thisInputType = $thisPersistable.prop('type');
             switch (thisInputType) {
                 case 'text':
                 case 'date':
                 case 'textarea':
-                case 'number': /* only used for therapy minutes */
-                    /* save extra description */
+                case 'number':
+                    /* store in the description the free text because all inputs derived from text type have the same codeset id */
                     thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
                     thisAnswer.Description = currentValue;
                     break;
@@ -258,11 +270,6 @@ let formController = (function () {
                     thisAnswer.AnswerCodeSetID = +currentValue;
                     break;
             }
-            thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
-            if ($thisPersistable.data('answersequencenumber'))
-                thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
-            thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
-            thisAnswer.LastUpdate = new Date();
             switch (CRUD) {
                 case 'C':
                     newAnswers.push(thisAnswer);
@@ -289,7 +296,7 @@ let formController = (function () {
                     //    "Save": function () {
                     //      //do something here
                     //      let thisUrl: string = $('form').prop('action');
-                    //      let postBackModel: AjaxPostbackModel = <AjaxPostbackModel>{};
+                    //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
                     //      postBackModel.NewAnswers = newAnswers;
                     //      postBackModel.OldAnswers = oldAnswers;
                     //      postBackModel.UpdatedAnswers = updatedAnswers;
@@ -302,11 +309,12 @@ let formController = (function () {
                     }
                 }]
         };
-        let postBackModel = {};
+        let postBackModel = new AjaxPostbackModel();
         postBackModel.EpisodeID = episodeID;
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;
+        console.log('postBackModel', postBackModel);
         thisPostBtn.attr('disabled', 'false');
         let apiBaseUrl = thisPostBtn.data('apibaseurl');
         let apiController = thisPostBtn.data('controller');
@@ -332,7 +340,8 @@ let formController = (function () {
                 //xhrFields: {
                 //  withCredentials: true
                 //}
-            }).done(function (result) {
+            })
+                .done(function (result) {
                 thisPostBtn.attr('disabled', 'true');
                 $('.spinnerContainer').hide();
                 console.log('postback result', result.message);
@@ -342,7 +351,8 @@ let formController = (function () {
                     .text('Data is saved.')
                     .dialog(dialogOptions);
                 $('.rehabAction').removeAttr('disabled');
-            }).fail(function (error) {
+            })
+                .fail(function (error) {
                 thisPostBtn.attr('disabled', 'false');
                 console.log('postback error', error);
                 $('.spinnerContainer').hide();

@@ -7,19 +7,19 @@
     originalAnswer = thisChoiceAndAnswer.Answer;
   }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+  bool displayMeasureHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
   string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
-@if (displayStageHeader)
+@if (displayMeasureHeader)
 {
   @*prevent the next inner div to be flexed*@
   <div>
-    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+    <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
   </div>
 }
 
-<div class="@(ContainerCssClass) @(displayStageHeader? "radioContainer": string.Empty)">
+<div class="@(ContainerCssClass) @(displayMeasureHeader? "radioContainer": string.Empty)">
   @foreach (var item in Model.ChoiceAndAnswerList)
   {
     var isChecked = item.SelectListItem.Selected;

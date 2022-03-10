@@ -55,14 +55,14 @@
             <param name="iPRehabContext"></param>
             <param name="answerRepository"></param>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertAsync(System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
+        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewEpisodeAsync(System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
             add new episode and new answers
             </summary>
             <param name="newAnswers"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertAnswerOnlyAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
+        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewAnswerOnlyAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
             add only new answers to exisitng episode
             </summary>
@@ -124,11 +124,12 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(UserModel.MasterreportsContext)">
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(Microsoft.Extensions.Configuration.IConfiguration,UserModel.MasterreportsContext)">
             <summary>
             constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
             </summary>
             <param name="context"></param>
+            <param name="configuration"></param>
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetUserAccessLevels(System.String)">
             <summary>

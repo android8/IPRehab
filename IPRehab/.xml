@@ -9,12 +9,44 @@
             https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-5.0
             </summary>
         </member>
-        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.String,System.Int32)">
+        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.Int32,System.String,System.Int32,System.String)">
             <summary>
             https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
             </summary>
             <param name="id"></param>
             <returns></returns> 
+        </member>
+        <member name="M:IPRehab.Helpers.NewtonSoftSerializationGeneric`1.DeserializeAsync(System.String)">
+            <summary>
+            make webapi call through httpClient then deserialize the returned JSON string
+            </summary>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehab.Helpers.UserAudit.AuditUserAsync(Microsoft.Extensions.Configuration.IConfiguration,System.String,Microsoft.AspNetCore.Routing.RouteData,System.Net.IPAddress)">
+            <summary>
+            send audit data to Centurion
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.InputViewComponenViewModel.TherapyHoursCodeSetID">
+            <summary>
+            default code set id for therapy length in hours only used for DropDownPT view component template  
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.QuestionGroup.SharedQuestionText">
+            <summary>
+            Each group of question will only show the text once
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.QuestionGroup.Questions">
+            <summary>
+            questions in the group have one shared question text, but may have many form input controls model bound to QuestionWithSelectItems
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.RehabActionViewModel.PatientID">
+            <summary>
+            encryption should be used, without it and protect PHI/PII, set the value when no existing episode for this patient
+            </summary>
         </member>
     </members>
 </doc>

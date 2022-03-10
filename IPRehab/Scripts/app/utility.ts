@@ -14,30 +14,48 @@ export class Utility implements ICommonUtility {
       return true;
   }
 
-  getControlValue($this: any): number {
+  getControlValue($this: any, valueSource: string = 'other'): any {
     //throw new Error("Method not implemented.");
     let thisControlType: string = $this.prop('type');
-    let thisValue: number = 0;
-    switch (thisControlType) {
-      case "select-one": {
-        //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-        let selectedOption: string = $('#' + $this.prop('id') + ' option:selected').text();
-        thisValue = parseInt(selectedOption);
-        break;
-      }
+    let thisValue: any;
+    switch (valueSource) {
+      case "other": {
+        switch (thisControlType) {
+          case "select-one": {
+            //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
+            let selectedOption: string = $('#' + $this.prop('id') + ' option:selected').text();
+            thisValue = parseInt(selectedOption);
+            break;
+          }
 
-      case "checkbox":
-      case "radio": {
-        if ($this.prop('checked')) {
-          thisValue = 1;
+          case "radio":
+          case "checkbox":
+            if ($this.prop('checked'))
+              thisValue = 1;
+            break;
+
+          case "text": {
+            let numberString: number = parseInt($this.val());
+            if (!isNaN(numberString))
+              thisValue = $this.val();
+            else
+              thisValue = numberString;
+            break;
+          }
+
+          default: {
+            thisValue = $this.val();
+            break;
+          }
         }
         break;
       }
-
-      case "text": {
-        let thisInputValue: string = $this.val().toString();
-        if (parseInt(thisInputValue) > 0) {
-          thisValue = 1;
+      default: {
+        if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $this.prop('checked')) {
+          thisValue = $this.val();
+        }
+        else {
+          thisValue = $this.val();
         }
         break;
       }

@@ -64,6 +64,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\app\userAnswer.js" />
+    <None Remove="Scripts\app\userAnswer.js.map" />
     <None Remove="Scripts\app\validationRules.js" />
     <None Remove="Scripts\app\validationRules.js.map" />
     <None Remove="Scripts\cascadeDropdown\cascadeDropdown.js" />
@@ -78,6 +80,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Scripts\app\userAnswer.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Scripts\app\userAnswer.js.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Scripts\TypeScriptSupport.md" />
   </ItemGroup>
 
