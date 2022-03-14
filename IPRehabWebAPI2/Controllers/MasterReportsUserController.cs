@@ -21,12 +21,12 @@ namespace IPRehabWebAPI2.Controllers
       _userPatientCacheHelper = userPatientCacheHelper;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
     /// <summary>
     /// get user by executing stored procedure at MasterReports.uspVSSCMain_SelectAccessInformationFromNSSD
     /// </summary>
     /// <param name="networkID"></param>
     /// <returns></returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Route("{*networkID}")]
     [HttpGet()]
     public async Task<ActionResult<IEnumerable<MastUserDTO>>> GetUserPermission(string networkID)

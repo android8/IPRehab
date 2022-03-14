@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\EpisodeCommand.cs" />
     <Compile Remove="Helpers\HydrateHierarchically1.cs" />
     <Compile Remove="Helpers\StateManager.cs" />
     <Compile Remove="ViewComponents\Checkbox2ViewComponent.cs" />

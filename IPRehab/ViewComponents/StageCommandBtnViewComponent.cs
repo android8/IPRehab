@@ -1,4 +1,5 @@
-﻿using IPRehab.Models;
+﻿using IPRehab.Helpers;
+using IPRehab.Models;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -14,46 +15,34 @@ namespace IPRehab.ViewComponents
 
     public Task<IViewComponentResult> InvokeAsync(PatientEpisodeAndCommandVM EpisodeBtnConfig)
     {
-      Dictionary<string, string> stageType = IPRehab.Helpers.EpisodeCommandButtonSettings.stageType;
-      Dictionary<string, string> actionBtnClass = IPRehab.Helpers.EpisodeCommandButtonSettings.actionBtnColor;
+      Dictionary<string, CommandBtnConfig> commandBtnConfig = EpisodeCommandButtonSettings.CommandBtnConfigDictionary;
       List<StageCommandViewComponentTemplateModel> cmdButtonVMList = new();
-
-      PatientEpisodeAndCommandVM episodeVM = new()
-      {
-        ActionButtonVM = EpisodeBtnConfig.ActionButtonVM,
-        EpisodeOfCareID = EpisodeBtnConfig.EpisodeOfCareID,
-        OnsetDate = EpisodeBtnConfig.OnsetDate,
-        AdmissionDate = EpisodeBtnConfig.AdmissionDate
-      };
 
       if (EpisodeBtnConfig.EpisodeOfCareID > 0)
       {
-        episodeVM.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK.Substring(EpisodeBtnConfig.PatientIcnFK.Length - 4, 4);
+        EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK.Substring(EpisodeBtnConfig.PatientIcnFK.Length - 4, 4);
       }
       else
       {
-        episodeVM.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK;
+        EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK;
       }
 
       /* iterate 8 stage types */
-      foreach (KeyValuePair<string, string> entry in stageType)
+      foreach (KeyValuePair<string, CommandBtnConfig> entry in commandBtnConfig)
       {
         StageCommandViewComponentTemplateModel cmdBtnTemplateVM = new();
-        cmdBtnTemplateVM.ShowThisButton = false;
+        cmdBtnTemplateVM.Title = entry.Value.ButtonTitle;
+        cmdBtnTemplateVM.Stage = entry.Key;
+        cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
 
         if (entry.Key == "Patient")
         {
           if (EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
-          {
             cmdBtnTemplateVM.ShowThisButton = true;
-          }
 
           cmdBtnTemplateVM.TextNode = "Patient List";
-          cmdBtnTemplateVM.Title = entry.Value;
-          cmdBtnTemplateVM.Stage = entry.Key;
-          cmdBtnTemplateVM.ActionBtnCssClass = actionBtnClass[entry.Key];
 
-          RehabActionViewModel clonedPatientActionVM = episodeVM.ActionButtonVM.Clone() as RehabActionViewModel;
+          RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
           clonedPatientActionVM.ControllerName = "Patient";
           clonedPatientActionVM.ActionName = "Index";
           clonedPatientActionVM.PatientID = string.Empty;
@@ -63,11 +52,9 @@ namespace IPRehab.ViewComponents
         }
         else
         {
-          cmdBtnTemplateVM.TextNode = entry.Key;
-          cmdBtnTemplateVM.Title = entry.Value;
-          cmdBtnTemplateVM.Stage = entry.Key;
-          cmdBtnTemplateVM.ActionBtnCssClass = actionBtnClass[entry.Key];
-          cmdBtnTemplateVM.ShowThisButton = true;
+          if (entry.Key == "New" || EpisodeBtnConfig.EpisodeOfCareID > 0 || EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
+            cmdBtnTemplateVM.ShowThisButton = true;
+
           // use invoked parameter
           cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;
 
@@ -82,15 +69,15 @@ namespace IPRehab.ViewComponents
             case "Base":
               cmdBtnTemplateVM.TextNode = "Episode of Care";
               break;
+            default:
+              cmdBtnTemplateVM.TextNode = entry.Key;
+              break;
           }
         }
 
         if (cmdBtnTemplateVM.ShowThisButton)
         {
-          if (episodeVM.ActionButtonVM.EpisodeID == -1 && cmdBtnTemplateVM.Stage != "Base" && cmdBtnTemplateVM.Stage != "Patient")
-            cmdBtnTemplateVM.DisableThisButton = true;
-
-          if (episodeVM.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")
+          if (EpisodeBtnConfig.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")
             cmdBtnTemplateVM.Title = cmdBtnTemplateVM.Title.Replace("Create new", "Edit existing");
           
           cmdButtonVMList.Add(cmdBtnTemplateVM);

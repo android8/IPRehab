@@ -135,8 +135,7 @@ namespace IPRehab.Controllers
       if (viewBagCurrentUserName == "Unknown")
       {
         //string thisContent = "Access Denied";
-        var viewResult = new ViewResult() { ViewName="AccessDenied"};
-        context.Result = viewResult;
+        context.Result = new ViewResult() { ViewName = "AccessDenied" };
         //context.Result = Content($"<div class='accessDenied'>{thisContent}</div>");
         //context.Result = new BadRequestObjectResult("Access Denied!");
       }
@@ -156,7 +155,7 @@ namespace IPRehab.Controllers
       }
     }
 
-    public IActionResult AccessDenied()
+    protected IActionResult AccessDenied()
     {
       return View();
     }

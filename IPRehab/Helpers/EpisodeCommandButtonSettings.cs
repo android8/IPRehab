@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace IPRehab.Helpers
 {
   public static class EpisodeCommandButtonSettings
   {
-    public static Dictionary<string, string> stageType = new Dictionary<string, string>() {
-      { "New", "Create new episode with Base form"},
-      //{ "Full", "Create new episode with Full IRF-PAI form"},
-      { "Base", "Create new episode with Base questions"},
-      //{ "Initial", "Create new episode with Initial questions"},
-      { "Interim", "Create new episode with Interim questions"},
-      //{ "Discharge", "Create new episode with Discharge questions"},
-      { "Followup", "Create new episode with Follow up questions"},
-      { "Patient", "Patient List"}
-    };
-
-    public static Dictionary<string, string> actionBtnColor = new Dictionary<string, string>()
+    public static Dictionary<string, CommandBtnConfig> CommandBtnConfigDictionary = new Dictionary<string, CommandBtnConfig>()
     {
-      { "New", "actionBtnNew"},
+      { "New", new(){ ButtonTitle="New", ButtonCss="actionBtnNew", ButtonTooltip="Create new episode with Base form"} },
       //{ "Full", "actionBtnFull"},
-      { "Base", "actionBtnBase"},
+      { "Base", new(){ ButtonTitle="Base", ButtonCss="actionBtnBase", ButtonTooltip="Create Base questions"}},
       //{ "Initial", "actionBtnInitial"},
-      { "Interim", "actionBtnInterim"},
+      { "Interim", new(){ ButtonTitle="Interim", ButtonCss="actionBtnInterim", ButtonTooltip="Create Interim questions"}},
       //{ "Discharge", "actionBtnDischarge"},
-      { "Followup", "actionBtnFollowup"},
-      { "Patient", "actionBtnPatientList"},
+      { "Followup", new(){ ButtonTitle="Follow Up", ButtonCss="actionBtnFollowup", ButtonTooltip="Create Follow Up questions"}},
+      { "Patient", new(){ ButtonTitle="Patient", ButtonCss="actionBtnPatientList", ButtonTooltip="Patient List"}}
     };
+  }
+
+  public class CommandBtnConfig {
+    public string ButtonTitle { get; set; }
+    public string ButtonCss { get; set; }
+    public string ButtonTooltip { get; set;}
   }
 }

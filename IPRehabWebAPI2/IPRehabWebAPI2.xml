@@ -10,6 +10,19 @@
             </summary>
             <param name="answerHelper"></param>
         </member>
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatients(System.String,System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get patients matching the search criteria with visibility by the user facility level
+            </summary>
+            <param name="patientID"></param>
+            <param name="networkID"></param>
+            <param name="criteria"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
             <summary>
             get only meta data of an individual patient by id
@@ -27,6 +40,25 @@
             get individual patient by episode since patient ID and patient name cannot be used in querystring
             </summary>
             <param name="episodeID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
+            <summary>
+            get user by executing stored procedure at MasterReports.uspVSSCMain_SelectAccessInformationFromNSSD
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatients(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get patients matching the search criteria with visibility by the user facility level
+            </summary>
+            <param name="patientID"></param>
+            <param name="criteria"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
@@ -109,7 +141,6 @@
             use generic IFODPatientRepository to get patient filtered by quarter and criteria
             </summary>
             <param name="_patientRepository"></param>
-            <param name="networkName">optional</param>
             <param name="criteria">optional</param>
             <param name="orderBy">optional</param>
             <param name="pageNumber">optional</param>

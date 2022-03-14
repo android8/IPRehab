@@ -145,7 +145,7 @@ namespace IPRehab.Controllers
 
       questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", _options);
 
-      string actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+      string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
 
       RehabActionViewModel episodeCommandBtn = new()
       {
