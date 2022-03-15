@@ -14,23 +14,25 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, tblCodeSet measureCodeSet)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
     {
       QuestionDTO questionDTO = new();
-      questionDTO.FormName = questionStage;
+      questionDTO.FormName = stageName;
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
-      questionDTO.Required = q.tblQuestionMeasure.Where(x =>
-          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).FirstOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
+      questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
+          m.QuestionIDFK == q.QuestionID && m.StageFK == stageID)?.Required;
+      questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
+          m.QuestionIDFK==q.QuestionID && m.StageFK==stageID).Id;
 
       //use question measures
       if (measureCodeSet != null)
       {
-        questionDTO.Measure = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
-        questionDTO.MeasureID = measureCodeSet.CodeSetID;
+        questionDTO.MeasureDescription = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureCodeSetID = measureCodeSet.CodeSetID;
         questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
       }
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
@@ -57,8 +59,19 @@ namespace IPRehabWebAPI2.Helpers
         EpisodeOfCareID = thisEpisode.EpisodeOfCareID,
         OnsetDate = thisEpisode.OnsetDate,
         AdmissionDate = thisEpisode.AdmissionDate,
-        PatientIcnFK = thisEpisode.PatientICNFK
+        PatientIcnFK = thisEpisode.PatientICNFK,
+        FacilityID6 = thisEpisode.FacilityID6
       };
+
+      CodeSetDTO measureCodeSet = new();
+
+      if (a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation !=null)
+      {
+        measureCodeSet.CodeSetID = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeSetID;
+        measureCodeSet.CodeValue = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeValue;
+        measureCodeSet.CodeDescription = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeDescription;
+        measureCodeSet.Comment = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.Comment;
+      }
 
       CodeSetDTO answerCodeSet = new()
       {
@@ -73,7 +86,7 @@ namespace IPRehabWebAPI2.Helpers
         AnswerID = a.AnswerID,
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
-        Measure = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation?.CodeDescription,
+        MeasureCodeSet = measureCodeSet,
         MeasureID = a.MeasureIDFK,
         AnswerCodeSet = answerCodeSet,
         AnswerSequenceNumber = a.AnswerSequenceNumber,

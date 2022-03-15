@@ -32,7 +32,7 @@
             <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
                    class="persistable"
                    name="@Model.ViewComponentViewModel.QuestionKey"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
                    required="@(Model.ViewComponentViewModel.Required)"
                    value="@(thisHtmlDate)"
                    title="@(answeredBy)"
@@ -44,16 +44,15 @@
                    data-oldvalue="@(thisHtmlDate)"
                    data-codesetid="@(thisItem.Value)"
                    data-codesetdescription="@(thisItem.Text)"
-                   data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-                   data-measure="@(Model.ViewComponentViewModel.Measure)"
+                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
                    data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
                    data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
             <label class=""
-                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
                    aria-label="@($"a date for {Model.ViewComponentViewModel.QuestionKey}")"></label>
         </div>
     </div>

@@ -11,7 +11,7 @@ namespace IPRehab.Models
     public int EpisodeID { get; set; }
     public int QuestionID { get; set; }
     public string QuestionKey { get; set; }
-    public string Measure { get; set; }
+    public string MeasureDescription { get; set; }
     public string MeasureID { get; set; }
     public string MeasureTitleNormalized { get; set; }
     public int StageID { get; set; }

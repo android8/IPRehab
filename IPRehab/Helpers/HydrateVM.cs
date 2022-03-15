@@ -41,8 +41,8 @@ namespace IPRehab.Helpers
         ChoicesAnswers = SetChoicesAnswers(questionDto),
 
         Instructions = questionDto.QuestionInsructions,
-        Measure = string.IsNullOrEmpty(questionDto.Measure) ?
-          string.Empty : Regex.IsMatch(questionDto.Measure, @"^\d") ? questionDto.Measure.Remove(0, 3) : questionDto.Measure,
+        MeasureDescription = string.IsNullOrEmpty(questionDto.MeasureDescription) ?
+          string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
         MeasureID = questionDto.MeasureID
       };
 
@@ -52,7 +52,12 @@ namespace IPRehab.Helpers
     public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
     {
       QuestionHierarchy qh = new();
-      
+
+      var answeredQ = questions.Where(q => q.Answers.Any()).First();
+      var firstAnswer = answeredQ.Answers.First();
+      var facilityID = firstAnswer.EpisodeOfCare.FacilityID6;
+      qh.FacilityID = facilityID;
+
       List<QuestionWithSelectItems> qwsList = new();
       foreach(var questionDto in questions)
       {
@@ -258,7 +263,7 @@ namespace IPRehab.Helpers
         SelectListItem thisChiceItem = new () { 
           Text = c.CodeDescription, 
           Value = c.CodeSetID.ToString(), 
-          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.Measure == questionDTO.Measure)
+          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.MeasureCodeSet.CodeDescription == questionDTO.MeasureDescription)
         };
         selectedChoices.Add(thisChiceItem);
       }

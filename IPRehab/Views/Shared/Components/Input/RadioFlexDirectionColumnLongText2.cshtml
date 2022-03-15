@@ -29,8 +29,8 @@
                 <div class="mdc-radio mdc-radio--touch">
                     <input type="radio"
                        class="mdc-radio__native-control persistable"
-                       name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}")"
-                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}")"
+                       name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}")"
+                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}")"
                        required="@(Model.ViewComponentViewModel.Required)"
                        value="@(item.SelectListItem.Value)"
                        title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -39,16 +39,16 @@
                        data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                        data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                        data-userid="@(Model.ViewComponentViewModel.UserID)"
-                       data-answerid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerID)"
-                       data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeSetID)"
+                       data-answerid="@(originalAnswer?.AnswerID)"
+                       data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
                        data-codesetid="@(item.SelectListItem.Value)"
                        data-codesetdescription="@(item.SelectListItem.Text)"
-                       data-measure="@(Model.ViewComponentViewModel.Measure)"
+                       data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
                        data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
-                       data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                       data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                        data-toggle="tooltip"
                        data-placement="left"
-                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")" />
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}_label")" />
 
                     <div class="mdc-radio__background">
                         <div class="mdc-radio__outer-circle"></div>
@@ -59,8 +59,8 @@
             </div>
             <div class="arrow-left-radio"></div>
             <label class="radioLabel"
-               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")">
+               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}_label")">
 
                 @*strip the code value *@
                 @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)

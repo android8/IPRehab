@@ -20,15 +20,16 @@ namespace IPRehab.ViewComponents
       thisVCVM.EpisodeID = EpisodeID;
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
+      thisVCVM.MeasureID = QWS.MeasureID.ToString();
+      thisVCVM.MeasureDescription = QWS.MeasureDescription;
+      thisVCVM.MeasureTitleNormalized = QWS.MeasureDescription;
 
-      if (QWS.Measure != string.Empty)
+      if (QWS.MeasureDescription != string.Empty)
       {
-        string source = QWS.Measure;
+        string source = QWS.MeasureDescription;
         if (source.IndexOf(" ") != -1)
         {
-          thisVCVM.Measure = source.Replace(" ", "_");
-          thisVCVM.MeasureID = QWS.MeasureID.ToString();
-          thisVCVM.MeasureTitleNormalized = QWS.Measure;
+          thisVCVM.MeasureDescription = source.Replace(" ", "_");
         }
         else
         {
@@ -37,12 +38,8 @@ namespace IPRehab.ViewComponents
           if (midCaps.Length > 1)
           {
             string middleCapLeter = midCaps.Substring(1, 1);
-
-            string spacedSeparated = source.Replace(middleCapLeter, $" {middleCapLeter}");
-            thisVCVM.MeasureTitleNormalized = spacedSeparated;
-
             string underlineSeparated = source.Replace(middleCapLeter, $"_{middleCapLeter}");
-            thisVCVM.Measure = underlineSeparated;
+            thisVCVM.MeasureDescription = underlineSeparated;
           }
         }
       }
@@ -50,7 +47,7 @@ namespace IPRehab.ViewComponents
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
-      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43")? false: (QWS.Measure != string.Empty ? true : false);
+      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43") ? false : (QWS.MeasureDescription != string.Empty ? true : false);
       thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
       thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
@@ -116,7 +113,7 @@ namespace IPRehab.ViewComponents
               //}
               break;
             case "Date":
-              viewName = "MaterialInputDate"; 
+              viewName = "MaterialInputDate";
               thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
               break;
             case "Number":

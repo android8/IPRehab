@@ -14,7 +14,7 @@
         @*prevent the next inner div to be flexed*@
         <div>
             <div class="@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)">
-                @($"{Model.ViewComponentViewModel.Measure}")
+                @($"{Model.ViewComponentViewModel.MeasureDescription}")
             </div>
         </div>
     }
@@ -30,7 +30,7 @@
                 <input type="checkbox"
                    class="mdc-checkbox__native-control persistable"
                    name="@(Model.ViewComponentViewModel.QuestionKey)"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{thisItem.SelectListItem.Value}")"
                    required="@(Model.ViewComponentViewModel.Required)"
                    value="@(thisItem.SelectListItem.Value)"
                    title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -43,14 +43,14 @@
                    data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
                    data-codesetid="@thisItem.SelectListItem.Value"
                    data-codesetdescription="@(thisItem.SelectListItem.Text)"
-                   data-measure="@(Model.ViewComponentViewModel.Measure)"
+                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
                    data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
                    data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}_label")">
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{thisItem.SelectListItem.Value}_label")">
 
-                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}")"></span>
+                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{thisItem.SelectListItem.Value}")"></span>
 
                 <div class="mdc-checkbox__background">
                     <svg class="mdc-checkbox__checkmark"
@@ -64,8 +64,8 @@
             </div>
 
             @*the labe is required by HTML5 specification*@
-            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{thisItem.SelectListItem.Value}_label")"
+            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{thisItem.SelectListItem.Value}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{thisItem.SelectListItem.Value}_label")"
                class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
         </div>
     }

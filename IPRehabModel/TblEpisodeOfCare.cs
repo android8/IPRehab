@@ -25,6 +25,8 @@ namespace IPRehabModel
         [Required]
         [StringLength(10)]
         public string PatientICNFK { get; set; }
+        [StringLength(6)]
+        public string FacilityID6 { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 

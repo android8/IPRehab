@@ -85,6 +85,8 @@
         <input type="hidden" id="patientID" name="patientID" value="@(Model.PatientID)" />
         <input type="hidden" id="patientName" name="patientName" value="@(Model.PatientName)" />
         <input type="hidden" id="episodeID" name="episodeID" value="@Model.EpisodeID" />
+        <input type="hidden" id="facilityID" name="facilityID" value="@Model.FacilityID" />
+
         <div class="flex-start-column-nowrap">
             @if (Model.StageTitle == "Full" || Model.StageTitle == "All")
             {
@@ -213,7 +215,7 @@
                                             aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
                                             showoGradTotal = aggregateAfterThis && q.QuestionKey == "GG0170SS";
 
-                                            if (q.QuestionKey + q.Measure == controlId)
+                                            if (q.QuestionKey + q.MeasureDescription == controlId)
                                             {
                                                 controlCounter++;
                                             }
