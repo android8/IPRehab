@@ -30,6 +30,7 @@ namespace IPRehabWebAPI2.Helpers
       if (measureCodeSet != null)
       {
         questionDTO.Measure = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureID = measureCodeSet.CodeSetID;
         questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
       }
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
@@ -119,7 +120,7 @@ namespace IPRehabWebAPI2.Helpers
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
       bool formIsCompeted = false;
       var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted");
-      foreach(var complete in completed)
+      foreach (var complete in completed)
       {
         //the Assessment Completed may be entered in any form so it's necessary to enumerate the collection to find if any exist and the CodeDescription is "Yes"
         if (complete?.AnswerCodeSetFKNavigation.CodeDescription == "Yes")

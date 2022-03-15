@@ -104,7 +104,7 @@ namespace IPRehabWebAPI2.Controllers
       List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(
         m => m.StageFK == stageID || (m.QuestionIDFKNavigation.QuestionKey == "Q12" || m.QuestionIDFKNavigation.QuestionKey == "Q23"))
         .OrderBy(o => o.QuestionIDFKNavigation.Order)
-        .ThenBy(o => o.QuestionIDFKNavigation.QuestionKey)
+        .ThenBy(q => q.QuestionIDFKNavigation.QuestionKey)
         .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureCodeSetIDFKNavigation)).ToList();
 
       List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
@@ -115,6 +115,7 @@ namespace IPRehabWebAPI2.Controllers
         /* hoist OnsetDate question to the top of the list */
         questions.InsertRange(0, keyQuestions);
       }
+
       if (includeAnswer && episodeID > 0 && stageName != "NEW")
       {
         tblEpisodeOfCare thisEpisode = _episodeRepository.FindByCondition(e => e.EpisodeOfCareID == episodeID).Single();

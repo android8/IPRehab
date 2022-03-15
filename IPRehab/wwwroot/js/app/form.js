@@ -192,8 +192,6 @@ let formController = (function () {
         if (stageName.toLowerCase() == "new")
             episodeID = -1;
         persistables.each(function () {
-            counter++;
-            console.log('persiable ' + counter);
             let thisAnswer = new UserAnswer();
             let $thisPersistable = $(this);
             let questionId = +$thisPersistable.data('questionid');
@@ -203,6 +201,9 @@ let formController = (function () {
             let oldValue = $thisPersistable.data('oldvalue');
             let answerId = $thisPersistable.data('answerid');
             let CRUD = '';
+            counter++;
+            console.log('thisPersistable', $thisPersistable);
+            console.log('(' + counter + ') ' + questionKey, thisAnswer);
             thisAnswer.PatientName = patientName;
             thisAnswer.PatientID = patientID;
             thisAnswer.EpisodeID = episodeID;
@@ -221,22 +222,21 @@ let formController = (function () {
             //!undefined or !NaN yield true
             if (+currentValue === -1)
                 currentValue = '';
+            if (!currentValue && !oldValue) //both are blank
+                return;
+            if (currentValue === oldValue) //both are equal
+                return;
             switch (controlType) {
                 case 'select-one':
                     if (currentValue === '' && !oldValue)
-                        return false; //skip the current item and exit each()
-                    break;
+                        return; //skip the current item and continue next each()
                 case 'checkbox':
                 case 'radio':
-                    if ((!$thisPersistable.prop('checked') && !oldValue))
-                        return false; //skip the current item and exit each()
-                    break;
-                default: {
-                    if (!currentValue && !oldValue) //both are blank
-                        return false;
-                    break;
-                }
+                    if (!$thisPersistable.prop('checked') && !oldValue)
+                        return; //skip the current item and continue next each()
+                default:
             }
+            console.log('continue');
             //determine CRUD operation
             switch (true) {
                 case ((currentValue !== '') && oldValue === ''):

@@ -27,11 +27,12 @@ namespace IPRehab.ViewComponents
         if (source.IndexOf(" ") != -1)
         {
           thisVCVM.Measure = source.Replace(" ", "_");
+          thisVCVM.MeasureID = QWS.MeasureID.ToString();
           thisVCVM.MeasureTitleNormalized = QWS.Measure;
         }
         else
         {
-          /* break camel case in Measure type then joined with "_" to create id property in the DOM */
+          /* separate camel case in Measure type with "_" to create id property in the DOM */
           string midCaps = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
           if (midCaps.Length > 1)
           {

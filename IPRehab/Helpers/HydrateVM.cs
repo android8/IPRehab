@@ -10,39 +10,40 @@ namespace IPRehab.Helpers
 {
   public class HydrateVM
   {
-    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDTO)
+    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDto)
     {
       QuestionWithSelectItems qws = new()
       {
-        Form = questionDTO.FormName,
+        Form = questionDto.FormName,
 
-        Section = GetSection(questionDTO),
+        Section = GetSection(questionDto),
 
-        Required = questionDTO.Required,
-        QuestionID = questionDTO.QuestionID,
+        Required = questionDto.Required,
+        QuestionID = questionDto.QuestionID,
 
         /* turn on key question */
-        KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
+        KeyQuestion = questionDto.QuestionKey == "Q12" || questionDto.QuestionKey == "Q23",
         
         /* do not show key for AssessmentCompleted */
-        QuestionKey = questionDTO.QuestionKey,
+        QuestionKey = questionDto.QuestionKey,
 
-        SectionTitle = questionDTO.QuestionSection,
-        Question = questionDTO.Question,
+        SectionTitle = questionDto.QuestionSection,
+        Question = questionDto.Question,
 
-        StageID = questionDTO.StageID,
+        StageID = questionDto.StageID,
 
-        AnswerCodeSetID = questionDTO.AnswerCodeSetID,
-        AnswerCodeCategory = questionDTO.AnswerCodeCategory,
-        MultipleChoices = questionDTO.MultipleChoices,
+        AnswerCodeSetID = questionDto.AnswerCodeSetID,
+        AnswerCodeCategory = questionDto.AnswerCodeCategory,
+        MultipleChoices = questionDto.MultipleChoices,
 
-        ChoiceList = SetSelectedChoice(questionDTO),
+        ChoiceList = SetSelectedChoice(questionDto),
 
-        ChoicesAnswers = SetChoicesAnswers(questionDTO),
+        ChoicesAnswers = SetChoicesAnswers(questionDto),
 
-        Instructions = questionDTO.QuestionInsructions,
-        Measure = string.IsNullOrEmpty(questionDTO.Measure) ?
-          string.Empty : Regex.IsMatch(questionDTO.Measure, @"^\d") ? questionDTO.Measure.Remove(0, 3) : questionDTO.Measure
+        Instructions = questionDto.QuestionInsructions,
+        Measure = string.IsNullOrEmpty(questionDto.Measure) ?
+          string.Empty : Regex.IsMatch(questionDto.Measure, @"^\d") ? questionDto.Measure.Remove(0, 3) : questionDto.Measure,
+        MeasureID = questionDto.MeasureID
       };
 
       return qws;
@@ -53,9 +54,9 @@ namespace IPRehab.Helpers
       QuestionHierarchy qh = new();
       
       List<QuestionWithSelectItems> qwsList = new();
-      foreach(var q in questions)
+      foreach(var questionDto in questions)
       {
-        QuestionWithSelectItems qws = Hydrate(q);
+        QuestionWithSelectItems qws = Hydrate(questionDto);
         qwsList.Add(qws);
       }
 

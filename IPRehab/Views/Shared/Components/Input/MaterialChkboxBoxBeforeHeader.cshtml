@@ -31,7 +31,9 @@
                    data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
                    data-codesetid="@item.SelectListItem.Value"
                    data-codesetdescription="@(item.SelectListItem.Text)"
-                   data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                   data-measure="@(Model.ViewComponentViewModel.Measure)"
+                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                   data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)" 
                    data-toggle="tooltip"
                    data-placement="left"
                    aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_label")">

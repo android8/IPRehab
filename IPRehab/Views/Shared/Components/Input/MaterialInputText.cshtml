@@ -40,7 +40,9 @@
                    data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
                    data-codesetid="@(thisItem.Value)"
                    data-codesetdescription="@(thisItem.Text)"
-                   data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-measure="@(Model.ViewComponentViewModel.Measure)"
+                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                   data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
                    aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
