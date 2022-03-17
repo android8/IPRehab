@@ -7,7 +7,7 @@ import { InteractionTrigger } from "../../node_modules/@material/chips/deprecate
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 
 import { Utility } from "./utility.js";
-import { UserAnswer} from "./userAnswer.js"
+import { UserAnswer } from "./userAnswer.js"
 import { AjaxPostbackModel } from "./AjaxPostbackModel.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
@@ -47,7 +47,7 @@ $(function () {
     const $this = $(this);
     $this.click(function () {
       const $fromThis: any = $(this);
-      const toAnchor: any = $('#'+$this.data("anchorid"));
+      const toAnchor: any = $('#' + $this.data("anchorid"));
       if (toAnchor != null)
         formController.scrollToAnchor($fromThis, toAnchor);
     });
@@ -214,6 +214,7 @@ let formController = (function () {
 
     const theScope: any = $('#userAnswerForm');
     const stageName: string = $('#stage', theScope).val().toString();
+    const facilityID: string = $('#facilityID', theScope).val().toString();
     const patientID: string = $('#patientID', theScope).val().toString();
     const patientName: string = $('#patientName', theScope).val().toString();
     let episodeID: number = +($('#episodeID', theScope).val());
@@ -229,87 +230,59 @@ let formController = (function () {
       episodeID = -1;
 
     persistables.each(function () {
-      let thisAnswer: UserAnswer = new UserAnswer();
-      let $thisPersistable: any = $(this);
-      let questionId: number = +$thisPersistable.data('questionid');
-      let questionKey: string = $thisPersistable.data('questionkey');
-      let controlType: any = $thisPersistable.prop('type');
-      let currentValue: string = $thisPersistable.val();
-      let oldValue: string = $thisPersistable.data('oldvalue');
-      let answerId: string = $thisPersistable.data('answerid');
-      let CRUD: string = '';
-
       counter++;
-      console.log('thisPersistable', $thisPersistable);
-      console.log('(' + counter + ') ' + questionKey, thisAnswer);
+
+      const $thisPersistable: any = $(this);
+      const questionKey: string = $thisPersistable.data('questionkey');
+      let thisAnswer: UserAnswer = new UserAnswer();
+      let oldValue: string = $thisPersistable.data('oldvalue');
+      let currentValue: string = '';
+
+      currentValue = commonUtility.getControlValue($thisPersistable, 'default');
+
+      //!undefined or !NaN yield true
+      if (+currentValue <= 0)
+        currentValue = '';
+
+      let equalityResult: string = commonUtility.isSameAnswer($thisPersistable, oldValue, currentValue);
+      if (equalityResult != '') {
+        console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
+        return;
+      }
+
+      console.log('--------- continue ---------');
+      const questionId: number = +$thisPersistable.data('questionid');
+      const controlType: any = $thisPersistable.prop('type');
+      const answerId: string = $thisPersistable.data('answerid');
+      const measureId: number = +$thisPersistable.data('measureid');
+      const measureDescription: string = $thisPersistable.data('measuredescription');
+      const codesetDescription: string = $thisPersistable.data('codesetdescription');
+      const answerSequence: number = +$thisPersistable.data('answersequence');
+      const userID: string = $thisPersistable.data('userid');
 
       thisAnswer.PatientName = patientName;
       thisAnswer.PatientID = patientID;
+
       thisAnswer.EpisodeID = episodeID;
-      thisAnswer.AdmissionDate = admissionDate;
       thisAnswer.OnsetDate = onsetDate;
+      thisAnswer.AdmissionDate = admissionDate;
       thisAnswer.QuestionID = questionId;
       thisAnswer.QuestionKey = questionKey;
 
       //possible problem with stage id or measure id
-      thisAnswer.MeasureID = +$thisPersistable.data('stageid');
+      thisAnswer.MeasureID = measureId;
+      thisAnswer.MeasureName = measureDescription;
+      thisAnswer.OldAnswerCodeSetID = +oldValue;
+      thisAnswer.AnswerCodeSetDescription = codesetDescription;
 
-      thisAnswer.MeasureName = stageName;
-      thisAnswer.AnswerCodeSetDescription = $thisPersistable.data('codesetdescription');
+      if (answerSequence)
+        thisAnswer.AnswerSequenceNumber = answerSequence;
 
-      if ($thisPersistable.data('answersequencenumber'))
-        thisAnswer.AnswerSequenceNumber = +$thisPersistable.data('answersequencenumber');
-
-      thisAnswer.AnswerByUserID = $thisPersistable.data('userid');
+      thisAnswer.AnswerByUserID = userID;
       thisAnswer.LastUpdate = new Date();
 
-      //!undefined or !NaN yield true
-      if (+currentValue === -1)
-        currentValue = '';
-
-      if (!currentValue && !oldValue) //both are blank
-        return;
-      if (currentValue === oldValue) //both are equal
-        return;
 
       switch (controlType) {
-        case 'select-one':
-          if (currentValue === '' && !oldValue)
-            return; //skip the current item and continue next each()
-        case 'checkbox':
-        case 'radio':
-          if (!$thisPersistable.prop('checked') && !oldValue)
-            return; //skip the current item and continue next each()
-        default: 
-      }
-
-      console.log('continue');
-      //determine CRUD operation
-      switch (true) {
-        case ((currentValue !== '') && oldValue === ''):
-          console.log('(' + questionKey + ') Create new value ' + currentValue + ' since old value is blank and current value is not blank');
-          CRUD = 'C';
-          break;
-        case ((currentValue === '') && oldValue !== ''):
-          console.log('(' + questionKey + ') Delete oldValue ' + oldValue + ' since old value is not blank and current value is blank');
-          CRUD = 'D';
-          thisAnswer.AnswerID = +answerId;
-          break;
-        case ((currentValue !== '' && oldValue !== '') && currentValue !== oldValue):
-          console.log('(' + questionKey + ') Update oldValue ' + oldValue + ' whith current value ' + currentValue);
-          CRUD = 'U';
-          thisAnswer.AnswerID = +answerId;
-          break;
-      }
-
-
-
-      //a question may show several input fields for multiple stages,
-      //so we have to use the data-stagid at the field level, not the stage hidden input set at the form level
-
-
-      let thisInputType: string = $thisPersistable.prop('type');
-      switch (thisInputType) {
         case 'text':
         case 'date':
         case 'textarea':
@@ -323,17 +296,22 @@ let formController = (function () {
           break;
       }
 
+      console.log('(' + counter + ') ' + questionKey, thisAnswer);
 
-
-      switch (CRUD) {
-        case 'C':
+      switch (true) {
+        case (currentValue && !oldValue):
+          console.log('(C)reate new value = ' + currentValue + ', old value = blank');
           newAnswers.push(thisAnswer);
           break;
-        case 'U':
-          updatedAnswers.push(thisAnswer);
-          break;
-        case 'D':
+        case (oldValue && !currentValue):
+          console.log('(D)elete old value = ' + oldValue + ', new value = blank');
+          thisAnswer.AnswerID = +answerId;
           oldAnswers.push(thisAnswer);
+          break;
+        case ((currentValue && oldValue) && (currentValue !== oldValue)):
+          console.log('(U)pdate old value = ' + oldValue + ', new value = ' + currentValue);
+          thisAnswer.AnswerID = +answerId;
+          updatedAnswers.push(thisAnswer);
           break;
       }
     });

@@ -31,9 +31,10 @@ namespace IPRehabWebAPI2.Helpers
     /// <summary>
     /// add new episode and new answers
     /// </summary>
+    /// <param name="FacilityID"></param>
     /// <param name="newAnswers"></param>
     /// <returns></returns>
-    public async Task<int> TransactionalInsertNewEpisodeAsync(List<UserAnswer> newAnswers)
+    public async Task<int> TransactionalInsertNewEpisodeAsync(string FacilityID, List<UserAnswer> newAnswers)
     {
       using var transaction = _ipRehabContext.Database.BeginTransaction();
       try
@@ -44,6 +45,7 @@ namespace IPRehabWebAPI2.Helpers
           OnsetDate = firstNewAnswer.OnsetDate,
           AdmissionDate = firstNewAnswer.AdmissionDate,
           PatientICNFK = firstNewAnswer.PatientID,
+          FacilityID6 = FacilityID,
           LastUpdate = firstNewAnswer.LastUpdate
         };
 

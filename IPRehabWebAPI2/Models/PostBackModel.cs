@@ -6,6 +6,7 @@ namespace IPRehabWebAPI2.Models
   public class PostbackModel
   {
     public int EpisodeID { get; set; }
+    public string FacilityID { get; set; }
     public List<UserAnswer> OldAnswers { get; set; }
     public List<UserAnswer> NewAnswers { get; set; }
     public List<UserAnswer> UpdatedAnswers { get; set; }
@@ -62,6 +63,8 @@ namespace IPRehabWebAPI2.Models
     /// not peristable, for inspection only
     /// </summary>
     public string MeasureName { get; set; }
+
+    public int OldAnswerCodeSetID { get; set; }
 
     /// <summary>
     /// peristable, foreign key to codeset id  

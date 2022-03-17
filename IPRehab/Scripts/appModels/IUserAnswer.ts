@@ -10,6 +10,7 @@
   QuestionKey: string;
   MeasureID: number;
   MeasureName: string;
+  OldAnswerCodeSetID: number;
   AnswerCodeSetID: number;
   AnswerCodeSetDescription: string;
   AnswerSequenceNumber: number;

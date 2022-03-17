@@ -23,10 +23,21 @@ namespace IPRehabWebAPI2.Helpers
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
-      questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
-          m.QuestionIDFK == q.QuestionID && m.StageFK == stageID)?.Required;
-      questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
-          m.QuestionIDFK==q.QuestionID && m.StageFK==stageID).Id;
+
+      if (measureCodeSet == null)
+      {
+        questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID)?.Required;
+        questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).Id;
+      }
+      else
+      {
+        questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID)?.Required;
+        questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID).Id;
+      }
 
       //use question measures
       if (measureCodeSet != null)
@@ -65,7 +76,7 @@ namespace IPRehabWebAPI2.Helpers
 
       CodeSetDTO measureCodeSet = new();
 
-      if (a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation !=null)
+      if (a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation != null)
       {
         measureCodeSet.CodeSetID = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeSetID;
         measureCodeSet.CodeValue = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeValue;

@@ -14,48 +14,77 @@ export class Utility implements ICommonUtility {
       return true;
   }
 
-  getControlValue($this: any, valueSource: string = 'other'): any {
+  isSameAnswer($this: any, oldAnswer: string, newAnswer: string): string {
     //throw new Error("Method not implemented.");
-    let thisControlType: string = $this.prop('type');
+    const controlType = $this.prop('type');
+    let rtnMsg: string = '';
+    //!undefined or !NaN yield true
+    if (+newAnswer <= 0)
+      newAnswer = '';
+
+    if ((controlType == 'radio' || controlType == 'checkbox') &&
+        (newAnswer === oldAnswer && $this.prop('checked'))) {
+      rtnMsg= 'radio/checkbox checked equal';
+    }
+    if ((controlType == 'radio' || controlType == 'checkbox') &&
+        (newAnswer !== oldAnswer && !$this.prop('checked'))) {
+      rtnMsg = 'radio/checkbox unchecked unequal';
+    }
+    if (!newAnswer && !oldAnswer && +newAnswer === +oldAnswer) {
+      rtnMsg= 'both values are blank';
+    }
+    if (newAnswer === oldAnswer || +newAnswer === +oldAnswer) {
+      rtnMsg= 'both non-blank values are equal';
+    }
+    if (newAnswer === undefined && oldAnswer === undefined) {
+      rtnMsg= 'both are undefined';
+    }
+    return rtnMsg;
+  }
+
+  getControlValue($thisControl: any, valueSource: string = 'other'): any {
+    //throw new Error("Method not implemented.");
+    //console.log('$thisControl', $thisControl);
+    let thisControlType: string = $thisControl.prop('type');
     let thisValue: any;
     switch (valueSource) {
       case "other": {
         switch (thisControlType) {
           case "select-one": {
             //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-            let selectedOption: string = $('#' + $this.prop('id') + ' option:selected').text();
+            let selectedOption: string = $('#' + $thisControl.prop('id') + ' option:selected').text();
             thisValue = parseInt(selectedOption);
             break;
           }
 
           case "radio":
           case "checkbox":
-            if ($this.prop('checked'))
+            if ($thisControl.prop('checked'))
               thisValue = 1;
             break;
 
           case "text": {
-            let numberString: number = parseInt($this.val());
+            let numberString: number = parseInt($thisControl.val());
             if (!isNaN(numberString))
-              thisValue = $this.val();
+              thisValue = $thisControl.val();
             else
               thisValue = numberString;
             break;
           }
 
           default: {
-            thisValue = $this.val();
+            thisValue = $thisControl.val();
             break;
           }
         }
         break;
       }
       default: {
-        if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $this.prop('checked')) {
-          thisValue = $this.val();
+        if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $thisControl.prop('checked')) {
+          thisValue = $thisControl.val();
         }
         else {
-          thisValue = $this.val();
+          thisValue = $thisControl.val();
         }
         break;
       }
@@ -65,6 +94,7 @@ export class Utility implements ICommonUtility {
 
   resetControlValue($thisControl: any, newValue: string) {
     //throw new Error("Method not implemented.");
+    //console.log('$thisControl', $thisControl);
     let thisControlType: string = $thisControl.prop('type');
     switch (thisControlType) {
       case "select-one": {

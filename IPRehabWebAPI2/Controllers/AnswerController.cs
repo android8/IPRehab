@@ -51,7 +51,7 @@ namespace IPRehabWebAPI2.Controllers
           if (postbackModel.EpisodeID <= 0)
           {
             //both episode and answers are new
-            int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.NewAnswers);
+            int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.FacilityID, postbackModel.NewAnswers);
           }
           else
           {
