@@ -1,4 +1,5 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+
 $(function () {
   let url: string = '';
   if (window.location.host.indexOf('localhost') == -1

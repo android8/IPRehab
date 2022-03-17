@@ -53,11 +53,6 @@ namespace IPRehab.Helpers
     {
       QuestionHierarchy qh = new();
 
-      var answeredQ = questions.Where(q => q.Answers.Any()).First();
-      var firstAnswer = answeredQ.Answers.First();
-      var facilityID = firstAnswer.EpisodeOfCare.FacilityID6;
-      qh.FacilityID = facilityID;
-
       List<QuestionWithSelectItems> qwsList = new();
       foreach(var questionDto in questions)
       {

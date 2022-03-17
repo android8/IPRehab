@@ -39,6 +39,8 @@
         </div>
     </div>
 }
+
+@* section tabs *@
 <nav class="sidebar-nav">
     @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
     { "sectionInfo", Model.Sections },
@@ -49,7 +51,9 @@
 <aside>
     <div id="dialog"></div>
 </aside>
+
 <article class="paddingTop">
+    @* command buttons *@
     <div class="flex-container-evenly-justified fixedTop">
         <div class="pageTitle" data-stagecode="@Model.StageCode">@Model.StageTitle</div>
         <div class="flex-container-evenly-justified">

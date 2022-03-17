@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 export class Utility {
     isDate(aDate) {
         //throw new Error("Method not implemented.");
@@ -10,7 +11,7 @@ export class Utility {
         else
             return true;
     }
-    isSameAnswer($this, oldAnswer, newAnswer) {
+    isSame($this, oldAnswer, newAnswer) {
         //throw new Error("Method not implemented.");
         const controlType = $this.prop('type');
         let rtnMsg = '';

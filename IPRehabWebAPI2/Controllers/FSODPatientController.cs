@@ -122,7 +122,9 @@ namespace IPRehabWebAPI2.Controllers
     }
 
     /// <summary>
-    /// get individual patient by episode since patient ID and patient name cannot be used in querystring
+    /// Get individual patient by episode since patient ID and patient name cannot be used in querystring
+    /// For new episode use [HttpGet("{patientID}")] endpoint.
+    /// This endpoint should not be used since the episodeID would be -1 which will not be found and  error out.
     /// </summary>
     /// <param name="episodeID"></param>
     /// <returns></returns>

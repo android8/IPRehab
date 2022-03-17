@@ -1,4 +1,6 @@
-﻿import { ICommonUtility } from "../appModels/ICommonUtility.js";
+﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+
+import { ICommonUtility } from "../appModels/ICommonUtility.js";
 
 export class Utility implements ICommonUtility {
   isDate(aDate: Date): boolean {
@@ -14,7 +16,7 @@ export class Utility implements ICommonUtility {
       return true;
   }
 
-  isSameAnswer($this: any, oldAnswer: string, newAnswer: string): string {
+  isSame($this: any, oldAnswer: string, newAnswer: string): string {
     //throw new Error("Method not implemented.");
     const controlType = $this.prop('type');
     let rtnMsg: string = '';

@@ -244,9 +244,9 @@ let formController = (function () {
       if (+currentValue <= 0)
         currentValue = '';
 
-      let equalityResult: string = commonUtility.isSameAnswer($thisPersistable, oldValue, currentValue);
+      let equalityResult: string = commonUtility.isSame($thisPersistable, oldValue, currentValue);
       if (equalityResult != '') {
-        console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
+        //console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
         return;
       }
 

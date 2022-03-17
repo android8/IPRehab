@@ -203,9 +203,9 @@ let formController = (function () {
             //!undefined or !NaN yield true
             if (+currentValue <= 0)
                 currentValue = '';
-            let equalityResult = commonUtility.isSameAnswer($thisPersistable, oldValue, currentValue);
+            let equalityResult = commonUtility.isSame($thisPersistable, oldValue, currentValue);
             if (equalityResult != '') {
-                console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
+                //console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
                 return;
             }
             console.log('--------- continue ---------');
