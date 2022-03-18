@@ -40,7 +40,7 @@
                    data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                    data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                    data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                   data-answerid="@(originalAnswer?.AnswerID)"
                    data-oldvalue="@(thisHtmlDate)"
                    data-codesetid="@(thisItem.Value)"
                    data-codesetdescription="@(thisItem.Text)"
