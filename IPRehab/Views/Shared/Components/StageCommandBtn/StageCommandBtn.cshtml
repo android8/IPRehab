@@ -10,7 +10,7 @@
               title="@(thisStageBtnModel.Title)"
               data-stage="@(thisStageBtnModel.Stage /*important*/)"
               disabled="@(thisStageBtnModel.DisableThisButton)"
-              value="@(thisStageBtnModel.Stage)"
+              aria-disabled="@(thisStageBtnModel.DisableThisButton? true : false)"
               asp-controller="@(thisStageBtnModel.ActionVM.ControllerName)"
               asp-action="@(thisStageBtnModel.ActionVM.ActionName)"
               asp-route-stage="@(thisStageBtnModel.Stage)"

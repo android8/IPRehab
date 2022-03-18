@@ -1,76 +1,77 @@
 ﻿@model InputViewComponentTemplateModel
 @{
-  AnswerDTO originalAnswer = null;
-  var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
-  if (thisChoiceAndAnswer != null)
-  {
-    originalAnswer = thisChoiceAndAnswer.Answer;
-  }
+    AnswerDTO originalAnswer = null;
+    var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
+    if (thisChoiceAndAnswer != null)
+    {
+        originalAnswer = thisChoiceAndAnswer.Answer;
+    }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
-  string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
+    bool displayMeasureHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+    string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
 }
 
-@if (displayStageHeader)
+@if (displayMeasureHeader)
 {
-  @*prevent the next inner div to be flexed*@
-  <div>
-    <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
-  </div>
+    @*prevent the next inner div to be flexed*@
+    <div>
+        <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+    </div>
 }
 
-<div class="@(ContainerCssClass) @(displayStageHeader? "radioContainer": string.Empty)">
-  @foreach (var item in Model.ChoiceAndAnswerList)
-  {
-    var isChecked = item.SelectListItem.Selected;
+<div class="@(ContainerCssClass) @(displayMeasureHeader? "radioContainer": string.Empty)">
+    @foreach (var item in Model.ChoiceAndAnswerList)
+    {
+        var isChecked = item.SelectListItem.Selected;
 
-  <div class="flex-start-row-nowrap">
-    <div class="mdc-touch-target-wrapper">
-      <div class="mdc-radio mdc-radio--touch">
-        <input type="radio"
-               class="mdc-radio__native-control persistable"
-               name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}")"
-               required="@(Model.ViewComponentViewModel.Required)"
-               value="@(item.SelectListItem.Value)"
-               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-               checked="@(isChecked)"
-               data-oldchecked="@(isChecked)"
-               data-stageid="@(Model.ViewComponentViewModel.StageID)"
-               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-               data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-answerid="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerID)"
-               data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-               data-codesetid="@(item.SelectListItem.Value)"
-               data-codesetdescription="@(item.SelectListItem.Text)"
-               data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
-               data-toggle="tooltip"
-               data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")" />
+        <div class="flex-start-row-nowrap">
+            <div class="mdc-touch-target-wrapper">
+                <div class="mdc-radio mdc-radio--touch">
+                    <input type="radio"
+                       class="mdc-radio__native-control persistable"
+                       name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}")"
+                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}")"
+                       required="@(Model.ViewComponentViewModel.Required)"
+                       value="@(item.SelectListItem.Value)"
+                       title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                       checked="@(isChecked)"
+                       data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                       data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                       data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                       data-userid="@(Model.ViewComponentViewModel.UserID)"
+                       data-answerid="@(originalAnswer?.AnswerID)"
+                       data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
+                       data-codesetid="@(item.SelectListItem.Value)"
+                       data-codesetdescription="@(item.SelectListItem.Text)"
+                       data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
+                       data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                       data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
+                       data-toggle="tooltip"
+                       data-placement="left"
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}_label")" />
 
-        <div class="mdc-radio__background">
-          <div class="mdc-radio__outer-circle"></div>
-          <div class="mdc-radio__inner-circle"></div>
+                    <div class="mdc-radio__background">
+                        <div class="mdc-radio__outer-circle"></div>
+                        <div class="mdc-radio__inner-circle"></div>
+                    </div>
+                    <div class="mdc-radio__ripple"></div>
+                </div>
+            </div>
+            <div class="arrow-left-radio"></div>
+            <label class="radioLabel"
+               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_")}_label")">
+
+                @*strip the code value *@
+                @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
+                {
+                    @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".")+1))
+                }
+                else
+                {
+                    @(item.SelectListItem.Text)
+                }
+            </label>
         </div>
-        <div class="mdc-radio__ripple"></div>
-      </div>
-    </div>
-    <div class="arrow-left-radio"></div>
-    <label class="radioLabel"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Text.Replace(" ", "_")}_label")">
-
-      @*strip the code value *@
-      @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
-      {
-        @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".")+1))
-      }
-      else
-      {
-        @(item.SelectListItem.Text)
-      }
-    </label>
-  </div>
-  }
+    }
 </div>

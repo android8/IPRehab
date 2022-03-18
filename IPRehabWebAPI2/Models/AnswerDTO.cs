@@ -14,8 +14,8 @@ namespace IPRehabWebAPI2.Models
     public int QuestionIDFK { get; set; }
 
     //Initial, Interim, Discharge, Followup, Base, IPA 
-    public string Measure { get; set; }
     public int MeasureID { get; set; }
+    public CodeSetDTO MeasureCodeSet { get; set; }
     public CodeSetDTO AnswerCodeSet { get; set; }
     public int? AnswerSequenceNumber { get; set; }
     public string Description { get; set; }

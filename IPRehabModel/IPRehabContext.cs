@@ -145,6 +145,8 @@ namespace IPRehabModel
                 entity.HasKey(e => e.EpisodeOfCareID)
                     .HasName("PK_app.tblEpisodeOfCare");
 
+                entity.Property(e => e.FacilityID6).IsFixedLength(true);
+
                 entity.Property(e => e.PatientICNFK).IsUnicode(false);
             });
 

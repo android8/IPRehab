@@ -12,7 +12,7 @@
     }
 
     bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
-    string stageHeaderCssClass = Model.ViewComponentViewModel.StageHeaderBorderCssClass;
+    string stageHeaderCssClass = Model.ViewComponentViewModel.MeasureHeaderBorderCssClass;
     string ContainerCssClass = Model.ViewComponentViewModel.ContainerCssClass;
     bool isMultiplChoices = Model.ViewComponentViewModel.MultipleChoices;
 }
@@ -32,7 +32,7 @@
             <input type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
                    class="persistable"
                    name="@Model.ViewComponentViewModel.QuestionKey"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
                    required="@(Model.ViewComponentViewModel.Required)"
                    value="@(thisHtmlDate)"
                    title="@(answeredBy)"
@@ -40,17 +40,19 @@
                    data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                    data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                    data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                   data-answerid="@(originalAnswer?.AnswerID)"
                    data-oldvalue="@(thisHtmlDate)"
                    data-codesetid="@(thisItem.Value)"
                    data-codesetdescription="@(thisItem.Text)"
-                   data-answersequencenumber="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
+                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                   data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
             <label class=""
-                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
                    aria-label="@($"a date for {Model.ViewComponentViewModel.QuestionKey}")"></label>
         </div>
     </div>

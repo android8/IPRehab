@@ -14,22 +14,36 @@ namespace IPRehabWebAPI2.Helpers
   public class HydrateDTO
   {
     //ToDo: should use AutoMapper
-    public static QuestionDTO HydrateQuestion(tblQuestion q, string questionStage, int stageID, tblCodeSet measureCodeSet)
+    public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
     {
       QuestionDTO questionDTO = new();
-      questionDTO.FormName = questionStage;
+      questionDTO.FormName = stageName;
       questionDTO.StageID = stageID;
       questionDTO.QuestionID = q.QuestionID;
-      questionDTO.Required = q.tblQuestionMeasure.Where(x =>
-          x.QuestionIDFK == q.QuestionID && x.StageFK == stageID).FirstOrDefault()?.Required;
       questionDTO.QuestionKey = q.QuestionKey;
       questionDTO.QuestionSection = q.QuestionSection;
       questionDTO.Question = q.Question;
 
+      if (measureCodeSet == null)
+      {
+        questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID)?.Required;
+        questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).Id;
+      }
+      else
+      {
+        questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID)?.Required;
+        questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
+            m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID).Id;
+      }
+
       //use question measures
       if (measureCodeSet != null)
       {
-        questionDTO.Measure = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureDescription = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
+        questionDTO.MeasureCodeSetID = measureCodeSet.CodeSetID;
         questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
       }
       questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
@@ -56,8 +70,19 @@ namespace IPRehabWebAPI2.Helpers
         EpisodeOfCareID = thisEpisode.EpisodeOfCareID,
         OnsetDate = thisEpisode.OnsetDate,
         AdmissionDate = thisEpisode.AdmissionDate,
-        PatientIcnFK = thisEpisode.PatientICNFK
+        PatientIcnFK = thisEpisode.PatientICNFK,
+        FacilityID6 = thisEpisode.FacilityID6
       };
+
+      CodeSetDTO measureCodeSet = new();
+
+      if (a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation != null)
+      {
+        measureCodeSet.CodeSetID = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeSetID;
+        measureCodeSet.CodeValue = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeValue;
+        measureCodeSet.CodeDescription = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeDescription;
+        measureCodeSet.Comment = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.Comment;
+      }
 
       CodeSetDTO answerCodeSet = new()
       {
@@ -72,7 +97,7 @@ namespace IPRehabWebAPI2.Helpers
         AnswerID = a.AnswerID,
         EpisodeOfCare = episode,
         QuestionIDFK = a.QuestionIDFK,
-        Measure = a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation?.CodeDescription,
+        MeasureCodeSet = measureCodeSet,
         MeasureID = a.MeasureIDFK,
         AnswerCodeSet = answerCodeSet,
         AnswerSequenceNumber = a.AnswerSequenceNumber,
@@ -119,7 +144,7 @@ namespace IPRehabWebAPI2.Helpers
       DateTime onsetDate = new(DateTime.MinValue.Ticks);
       bool formIsCompeted = false;
       var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted");
-      foreach(var complete in completed)
+      foreach (var complete in completed)
       {
         //the Assessment Completed may be entered in any form so it's necessary to enumerate the collection to find if any exist and the CodeDescription is "Yes"
         if (complete?.AnswerCodeSetFKNavigation.CodeDescription == "Yes")

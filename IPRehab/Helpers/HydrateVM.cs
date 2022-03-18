@@ -10,39 +10,40 @@ namespace IPRehab.Helpers
 {
   public class HydrateVM
   {
-    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDTO, string stage)
+    public static QuestionWithSelectItems Hydrate(QuestionDTO questionDto)
     {
       QuestionWithSelectItems qws = new()
       {
-        Form = questionDTO.FormName,
+        Form = questionDto.FormName,
 
-        Section = GetSection(questionDTO),
+        Section = GetSection(questionDto),
 
-        Required = questionDTO.Required,
-        QuestionID = questionDTO.QuestionID,
+        Required = questionDto.Required,
+        QuestionID = questionDto.QuestionID,
 
         /* turn on key question */
-        KeyQuestion = questionDTO.QuestionKey == "Q12" || questionDTO.QuestionKey == "Q23",
-
+        KeyQuestion = questionDto.QuestionKey == "Q12" || questionDto.QuestionKey == "Q23",
+        
         /* do not show key for AssessmentCompleted */
-        QuestionKey = questionDTO.QuestionKey,
+        QuestionKey = questionDto.QuestionKey,
 
-        SectionTitle = questionDTO.QuestionSection,
-        Question = questionDTO.Question,
+        SectionTitle = questionDto.QuestionSection,
+        Question = questionDto.Question,
 
-        StageID = questionDTO.StageID,
+        StageID = questionDto.StageID,
 
-        AnswerCodeSetID = questionDTO.AnswerCodeSetID,
-        AnswerCodeCategory = questionDTO.AnswerCodeCategory,
-        MultipleChoices = questionDTO.MultipleChoices,
+        AnswerCodeSetID = questionDto.AnswerCodeSetID,
+        AnswerCodeCategory = questionDto.AnswerCodeCategory,
+        MultipleChoices = questionDto.MultipleChoices,
 
-        ChoiceList = SetSelectedChoice(questionDTO),
+        ChoiceList = SetSelectedChoice(questionDto),
 
-        ChoicesAnswers = SetChoicesAnswers(questionDTO),
+        ChoicesAnswers = SetChoicesAnswers(questionDto),
 
-        Instructions = questionDTO.QuestionInsructions,
-        Measure = string.IsNullOrEmpty(questionDTO.Measure) ?
-          string.Empty : Regex.IsMatch(questionDTO.Measure, @"^\d") ? questionDTO.Measure.Remove(0, 3) : questionDTO.Measure
+        Instructions = questionDto.QuestionInsructions,
+        MeasureDescription = string.IsNullOrEmpty(questionDto.MeasureDescription) ?
+          string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
+        MeasureID = questionDto.MeasureID
       };
 
       return qws;
@@ -51,11 +52,11 @@ namespace IPRehab.Helpers
     public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
     {
       QuestionHierarchy qh = new();
-      
+
       List<QuestionWithSelectItems> qwsList = new();
-      foreach(var q in questions)
+      foreach(var questionDto in questions)
       {
-        QuestionWithSelectItems qws = Hydrate(q, stage);
+        QuestionWithSelectItems qws = Hydrate(questionDto);
         qwsList.Add(qws);
       }
 
@@ -120,30 +121,18 @@ namespace IPRehab.Helpers
               if (qGG0170SS != null)
               {
                 questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
-                  .Except(qGG0170SS).ToList();
+                  .Except(qGG0170SS)
+                  .OrderBy(q => q.QuestionKey).ToList();
               }
               else
               {
-                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText).ToList();
+                questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
+                  .OrderBy(q => q.QuestionKey).ToList();
               }
               break;
             default:
-              questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText).ToList();
-              if (questionInTheGroup.First().QuestionKey.StartsWith("GG0130") || questionInTheGroup.First().QuestionKey.StartsWith("GG0170"))
-              {
-                List<QuestionWithSelectItems> QuestionInTheGroupByDesiredOrder = new ();
-                var EpisodeQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Episode")).FirstOrDefault();
-                var InterimQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Interim")).FirstOrDefault();
-                var FollowUpQ = questionInTheGroup.Where(q => q.StageTitle.StartsWith("Follow Up")).FirstOrDefault();
-                if (EpisodeQ != null)
-                  QuestionInTheGroupByDesiredOrder.Add(EpisodeQ);
-                if(InterimQ != null)
-                  QuestionInTheGroupByDesiredOrder.Add(InterimQ);
-                if(FollowUpQ != null)
-                  QuestionInTheGroupByDesiredOrder.Add(FollowUpQ);
-
-                questionInTheGroup = QuestionInTheGroupByDesiredOrder;
-              }
+              questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
+                .OrderBy(q=>q.QuestionKey).ToList();     
               break;
           }
          
@@ -263,13 +252,13 @@ namespace IPRehab.Helpers
       List<SelectListItem> selectedChoices = new();
       string text = string.Empty;
 
-      /* text(CodesetID 153), date(CodeSetID 92), checkbox, textarea, and number have only one item in the choices list */
+      /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
       foreach (var c in questionDTO.ChoiceList)
       {
         SelectListItem thisChiceItem = new () { 
           Text = c.CodeDescription, 
           Value = c.CodeSetID.ToString(), 
-          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.Measure == questionDTO.Measure)
+          Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.MeasureCodeSet.CodeDescription == questionDTO.MeasureDescription)
         };
         selectedChoices.Add(thisChiceItem);
       }

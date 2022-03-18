@@ -20,28 +20,26 @@ namespace IPRehab.ViewComponents
       thisVCVM.EpisodeID = EpisodeID;
       thisVCVM.QuestionID = QWS.QuestionID;
       thisVCVM.QuestionKey = QWS.QuestionKey;
+      thisVCVM.MeasureID = QWS.MeasureID.ToString();
+      thisVCVM.MeasureDescription = QWS.MeasureDescription;
+      thisVCVM.MeasureTitleNormalized = QWS.MeasureDescription;
 
-      if (QWS.Measure != string.Empty)
+      if (QWS.MeasureDescription != string.Empty)
       {
-        string source = QWS.Measure;
+        string source = QWS.MeasureDescription;
         if (source.IndexOf(" ") != -1)
         {
-          thisVCVM.Measure = source.Replace(" ", "_");
-          thisVCVM.MeasureTitleNormalized = QWS.Measure;
+          thisVCVM.MeasureDescription = source.Replace(" ", "_");
         }
         else
         {
-          /* break camel case in Measure type then joined with "_" to create id property in the DOM */
+          /* separate camel case in Measure type with "_" to create id property in the DOM */
           string midCaps = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
           if (midCaps.Length > 1)
           {
             string middleCapLeter = midCaps.Substring(1, 1);
-
-            string spacedSeparated = source.Replace(middleCapLeter, $" {middleCapLeter}");
-            thisVCVM.MeasureTitleNormalized = spacedSeparated;
-
             string underlineSeparated = source.Replace(middleCapLeter, $"_{middleCapLeter}");
-            thisVCVM.Measure = underlineSeparated;
+            thisVCVM.MeasureDescription = underlineSeparated;
           }
         }
       }
@@ -49,8 +47,8 @@ namespace IPRehab.ViewComponents
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
-      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43")? false: (QWS.Measure != string.Empty ? true : false);
-      thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoBottomBorder";
+      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43") ? false : (QWS.MeasureDescription != string.Empty ? true : false);
+      thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
       thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
       string viewName = string.Empty;
@@ -80,7 +78,7 @@ namespace IPRehab.ViewComponents
           {
             viewName = "MaterialChkboxBoxBeforeHeaderEthnicity";
             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-            thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+            thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
           }
           break;
         case int n when n >= 2 && n <= 3:
@@ -104,22 +102,22 @@ namespace IPRehab.ViewComponents
             case "Checked":
               viewName = "MaterialChkboxBoxBeforeHeader";
               thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-              thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+              thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
 
               //if (QWS.QuestionKey.Contains("N0415") ||
               //  QWS.QuestionKey.Contains("O0110"))
               //{
               //  viewName = "MaterialChkboxBoxBeforeHeader";
               //  thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-              //  thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+              //  thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
               //}
               break;
             case "Date":
-              viewName = "MaterialInputDate"; 
+              viewName = "MaterialInputDate";
               thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
               break;
             case "Number":
-              thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoBottomBorder";
+              thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
               viewName = "MDNumberAfterHeader";
               break;
             case "TextArea":
@@ -131,7 +129,7 @@ namespace IPRehab.ViewComponents
               if (QWS.QuestionKey.Contains("M0300"))
               {
                 thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-                thisVCVM.StageHeaderBorderCssClass = "stageHeaderNoLeftBorder";
+                thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
                 viewName = "MDNumberAfterHeader";
               }
               break;

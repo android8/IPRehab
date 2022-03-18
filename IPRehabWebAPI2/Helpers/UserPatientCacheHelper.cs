@@ -2,6 +2,7 @@
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,18 @@ namespace IPRehabWebAPI2.Helpers
 {
   public class UserPatientCacheHelper : IUserPatientCacheHelper
   {
-    readonly MasterreportsContext _context;
+    protected readonly MasterreportsContext _context;
+    protected readonly IConfiguration _configuration;
 
     /// <summary>
     /// constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
     /// </summary>
     /// <param name="context"></param>
-    public UserPatientCacheHelper(MasterreportsContext context)
+    /// <param name="configuration"></param>
+    public UserPatientCacheHelper(IConfiguration configuration, MasterreportsContext context)
     {
       _context = context;
+      _configuration = configuration;
     }
 
     /// <summary>
@@ -67,8 +71,18 @@ namespace IPRehabWebAPI2.Helpers
     /// <returns></returns>
     public async Task<List<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria, string orderBy, int pageNumber, int PageSize, string patientID)
     {
-      //get user access level from external stored proc
-      var distinctUserFacilities = await GetUserAccessLevels(networkName);
+      List<MastUserDTO> distinctUserFacilities = new List<MastUserDTO>{
+        new()
+        {
+          Facility = _configuration.GetSection("AppSettings").GetValue<string>("TestSite")
+        }
+      };
+
+      if (string.IsNullOrEmpty(distinctUserFacilities.First().Facility))
+      {
+        //get user access level from external stored proc
+        distinctUserFacilities = await GetUserAccessLevels(networkName);
+      }
 
       if (!distinctUserFacilities.Any())
       {

@@ -3,7 +3,10 @@
 <div class="flex-start-row-nowrap fixedTop">
   <div class="pageTitle" data-systitle=@(Model.PageSysTitle)>
     @(Model.PageTitle)
-    <select>
+      <label for="dataSetSelector"
+         id="dataSetSelector_label")"
+         class="nullLabel" aria-label="a dropdown for data set selector"></label>
+    <select id="dataSetSelector" aria-labelledby="dataSetSelector_label">
       <option></option>
     </select>
     <input id="searchCriteria" type="search" name="searchCriteria"

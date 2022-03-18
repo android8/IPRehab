@@ -10,6 +10,19 @@
             </summary>
             <param name="answerHelper"></param>
         </member>
+        <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatients(System.String,System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get patients matching the search criteria with visibility by the user facility level
+            </summary>
+            <param name="patientID"></param>
+            <param name="networkID"></param>
+            <param name="criteria"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
             <summary>
             get only meta data of an individual patient by id
@@ -24,9 +37,30 @@
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatient(System.Int32)">
             <summary>
-            get individual patient by episode since patient ID and patient name cannot be used in querystring
+            Get individual patient by episode since patient ID and patient name cannot be used in querystring
+            For new episode use [HttpGet("{patientID}")] endpoint.
+            This endpoint should not be used since the episodeID would be -1 which will not be found and  error out.
             </summary>
             <param name="episodeID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.MasterReportsUserController.GetUserPermission(System.String)">
+            <summary>
+            get user by executing stored procedure at MasterReports.uspVSSCMain_SelectAccessInformationFromNSSD
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatients(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get patients matching the search criteria with visibility by the user facility level
+            </summary>
+            <param name="patientID"></param>
+            <param name="criteria"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.TestFSODPatientController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
@@ -55,14 +89,15 @@
             <param name="iPRehabContext"></param>
             <param name="answerRepository"></param>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertAsync(System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
+        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewEpisodeAsync(System.String,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
             add new episode and new answers
             </summary>
+            <param name="FacilityID"></param>
             <param name="newAnswers"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertAnswerOnlyAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
+        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewAnswerOnlyAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
             add only new answers to exisitng episode
             </summary>
@@ -109,7 +144,6 @@
             use generic IFODPatientRepository to get patient filtered by quarter and criteria
             </summary>
             <param name="_patientRepository"></param>
-            <param name="networkName">optional</param>
             <param name="criteria">optional</param>
             <param name="orderBy">optional</param>
             <param name="pageNumber">optional</param>
@@ -124,11 +158,12 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(UserModel.MasterreportsContext)">
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(Microsoft.Extensions.Configuration.IConfiguration,UserModel.MasterreportsContext)">
             <summary>
             constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
             </summary>
             <param name="context"></param>
+            <param name="configuration"></param>
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetUserAccessLevels(System.String)">
             <summary>

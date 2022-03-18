@@ -84,6 +84,7 @@ namespace IPRehab.Controllers
     {
       string patientApiEndpoint = string.Empty;
       string questionApiEndpoint = string.Empty;
+      string facilityID = string.Empty;
       string currentUserID = ViewBag.CurrentUserID;
       string patientName = string.Empty;
       stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
@@ -94,11 +95,11 @@ namespace IPRehab.Controllers
       switch (stage)
       {
         case "New":
-          //get patient by episodeID of -1
-          patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
-          /* ToDo: to be deleted after test */
-          //patientApiEndpoint = $"{_apiBaseUrl}/api/TestFSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
-          break;
+          if (episodeID == -1)
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
+          else
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={_pageSize}";
+            break;
         default:
           if (episodeID == -1)
           {
@@ -120,18 +121,13 @@ namespace IPRehab.Controllers
       thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", _options);
       patientID = thisPatient.PTFSSN;
       patientName = thisPatient.Name;
-
-      string stageTitle = stage;
+      facilityID = thisPatient.Facility;
+      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
-      switch (stage)
+      if (stage == "New")
       {
-        case "Followup":
-          stageTitle = "Follow Up";
-          break;
-        case "Base":
-          stageTitle = "Episode of Care";
-          break;
+        includeAnswer = false;
       }
 
       List<QuestionDTO> questions = new();
@@ -150,7 +146,7 @@ namespace IPRehab.Controllers
 
       questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", _options);
 
-      string actionBtnColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+      string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
 
       RehabActionViewModel episodeCommandBtn = new()
       {
@@ -161,8 +157,10 @@ namespace IPRehab.Controllers
       };
 
       if (stage == "New")
+      {
         episodeCommandBtn.EnableThisPatient = false;
-
+        episodeCommandBtn.PatientID = patientID;
+      }
       PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
       //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
       thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
@@ -172,6 +170,7 @@ namespace IPRehab.Controllers
       qh.EpisodeID = episodeID;
       qh.StageTitle = stageTitle;
       qh.StageCode = stage;
+      qh.FacilityID = facilityID;
       qh.PatientID = patientID;
       qh.PatientName = patientName;
       qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);

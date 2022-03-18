@@ -529,7 +529,7 @@ div .radioContainer {
   border-right: 13px solid whitesmoke;
 }
 
-.stageHeaderNoBottomBorder {
+.measureHeaderNoBottomBorder {
   z-index: 5;
   display: inline-block;
   position: relative;
@@ -546,7 +546,7 @@ div .radioContainer {
   border-radius: 5px 5px 0 0;
 }
 
-.stageHeaderNoBottomBorder.number {
+.measureHeaderNoBottomBorder.number {
   z-index: 5;
   display: inline-block;
   position: relative;
@@ -562,7 +562,7 @@ div .radioContainer {
   border-radius: 5px 5px 0 0;
 }
 
-.stageHeaderNoRightBorder {
+.measureHeaderNoRightBorder {
   position: relative;
   top: 0px;
   margin-top: 0px;
@@ -577,7 +577,7 @@ div .radioContainer {
   border-radius: 5px 0 0 5px;
 }
 
-.stageHeaderNoLeftBorder {
+.measureHeaderNoLeftBorder {
   position: relative;
   top: 0px;
   margin-top: 0px;
@@ -592,8 +592,8 @@ div .radioContainer {
   border-radius: 0 5px 5px 0;
 }
 
-td.questionText .stageHeaderNoBottomBorder,
-td.questionKey .stageHeaderNoBottomBorder,
+td.questionText .measureHeaderNoBottomBorder,
+td.questionKey .measureHeaderNoBottomBorder,
 div.answer .dropdown option .textWhiteOnWhite {
   opacity: 0;
 }

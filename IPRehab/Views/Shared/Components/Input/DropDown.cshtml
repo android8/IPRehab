@@ -15,8 +15,8 @@
 <div class="flex-start-column-nowrap">
 
   @*the labe is required by HTML5 specification*@
-  <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-         id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+  <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+         id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
          class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
 
   @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
@@ -24,26 +24,28 @@
   {
     @*prevent the next inner div to be flexed*@
     <div>
-      <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+      <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
     </div>
   }
   <select class="browser-default custom-select select2 dropdown persistable"
           name="@(Model.ViewComponentViewModel.QuestionKey)"
-          id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+          id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
           required="@(Model.ViewComponentViewModel.Required)"
           title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
           data-stageid="@(Model.ViewComponentViewModel.StageID)"
           data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
           data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
           data-userid="@(Model.ViewComponentViewModel.UserID)"
-          data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-          data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-          data-codesetid="@(originalAnswer == null ? string.Empty :originalAnswer.AnswerCodeSet.CodeSetID)"
-          data-codesetdescription="irrelevant"
-          data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+          data-answerid="@(originalAnswer?.AnswerID)"
+          data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
+          data-codesetid="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
+          data-codesetdescription="@(originalAnswer?.AnswerCodeSet.CodeDescription)"
+          data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
+          data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+          data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
           data-toggle="tooltip"
           data-placement="left"
-          aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">
+          aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
     @*text white on wite background to reduce clutter but is required*@
     <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>

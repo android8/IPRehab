@@ -1,140 +1,143 @@
 ﻿@model InputViewComponentTemplateModel
 
 @{
-  AnswerDTO originalAnswer = null;
-  ChoiceAndAnswer selectedItem = null;
-  var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
-  if (thisChoiceAndAnswer != null)
-  {
-    originalAnswer = thisChoiceAndAnswer.Answer;
-  }
+    AnswerDTO originalAnswer = null;
+    ChoiceAndAnswer selectedItem = null;
+    var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
+    if (thisChoiceAndAnswer != null)
+    {
+        originalAnswer = thisChoiceAndAnswer.Answer;
+    }
 
-  bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+    bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
 
-  string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in minutes";
+    string therapyInstruction = "Select a therapy type from the dropdown then enter the therapy length in minutes";
 }
 
 <div class="flex-start-column-nowrap">
-  @if (Model.ViewComponentViewModel.QuestionKey == "O0401A")
-  {
-    <div class="therapy-instruction">
-      @* instruction icon*@
-      <div class="sectionInstruction">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
-          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-          <title>Instruction for therapy type and length</title>
-        </svg>
-        @therapyInstruction
-      </div>
-    </div>
-  }
-  <div class="flex-start-row-nowrap">
-    @if (displayStageHeader)
+    @if (Model.ViewComponentViewModel.QuestionKey == "O0401A")
     {
-      @*prevent the next inner div to be flexed*@
-      <div>
-        <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
-      </div>
-    }
-
-    <div class="flex-start-column-nowrap">
-
-    @*the labe is required by HTML5 specification*@
-    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-           class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
-
-      @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
-      @if (displayStageHeader)
-      {
-        @*prevent the next inner div to be flexed*@
-        <div>
-          <div class="stageHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+        <div class="therapy-instruction">
+            @* instruction icon*@
+            <div class="sectionInstruction">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                    <title>Instruction for therapy type and length</title>
+                </svg>
+                @therapyInstruction
+            </div>
         </div>
-      }
-      <select class="browser-default custom-select select2 dropdown persistable"
-              name="@(Model.ViewComponentViewModel.QuestionKey)"
-              id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-              required="@(Model.ViewComponentViewModel.Required)"
-              title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
-              data-stageid="@(Model.ViewComponentViewModel.StageID)"
-              data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-              data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-              data-userid="@(Model.ViewComponentViewModel.UserID)"
-              data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-              data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
-              data-codesetid="irrelevant"
-              data-codesetdescription="irrelevant"
-              data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
-              data-toggle="tooltip"
-              data-placement="left"
-              aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")">
-
-        @*text white on wite background to reduce clutter but is required*@
-        <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
-
-        @foreach (var item in Model.ChoiceAndAnswerList)
+    }
+    <div class="flex-start-row-nowrap">
+        @if (displayStageHeader)
         {
-          if (item.SelectListItem.Selected)
-          {
-            selectedItem = item;
-          }
-          /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
-          <option value="@(item.SelectListItem.Value)"
-                  selected="@(item.SelectListItem.Selected)">
-            @(item.SelectListItem.Text)
-          </option>
+            @*prevent the next inner div to be flexed*@
+            <div>
+                <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+            </div>
         }
-      </select>
-      @if (selectedItem != null)
-      {
-        <div class="longTextOption">@(selectedItem.SelectListItem.Text)</div>
-      }
-      else
-      {
-        <div class="longTextOption invisible"></div>
-      }
-    </div>
 
-    @**************** Minutes of Therapy ****************@
-    <div class="flex-start-row-nowrap pt-number-wrapper">
-      <label class="mdc-text-field mdc-text-field--outlined"
-             for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
-             id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
-             aria-label="@($"a number box for {Model.ViewComponentViewModel.QuestionKey}")">
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="my-label-id"></span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-        <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
-               class="mdc-text-field__input numeric-text inputContainer persistable"
-               name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
-               required="@(Model.ViewComponentViewModel.Required)"
-               value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
-               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-               data-stageid="@(Model.ViewComponentViewModel.StageID)"
-               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-               data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-               data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
-               data-codesetid="@(Model.ViewComponentViewModel.TherapyHoursCodeSetID /*changed by TypeScript when the therapy type changes*/)"
-               data-codesetdescription="@(Model.ViewComponentViewModel.TherapyHoursCodeSetValue /*changed by TypeScript when the therapy type changes*/)"
-               data-episodeid="@(originalAnswer == null ? "" : originalAnswer.EpisodeOfCare.EpisodeOfCareID)"
-               data-answerSequence="@(originalAnswer == null ? "" : originalAnswer.AnswerSequenceNumber)"
-               data-toggle="tooltip"
-               data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")" />
-      </label>
-      <div class="flex-start-row-nowrap number-wrapper">
-        <div class="arrow-left"></div>
-        <div class="stageHeaderNoLeftBorder number">Minutes</div>
-      </div>
+        <div class="flex-start-column-nowrap">
+
+            @*the labe is required by HTML5 specification*@
+            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+                   class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
+
+            @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
+            @if (displayStageHeader)
+            {
+                @*prevent the next inner div to be flexed*@
+                <div>
+                    <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
+                </div>
+            }
+            <select class="browser-default custom-select select2 dropdown persistable"
+                    name="@(Model.ViewComponentViewModel.QuestionKey)"
+                    id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+                    required="@(Model.ViewComponentViewModel.Required)"
+                    title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
+                    data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                    data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                    data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                    data-userid="@(Model.ViewComponentViewModel.UserID)"
+                    data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                    data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeSetID)"
+                    data-codesetid="irrelevant"
+                    data-codesetdescription="irrelevant"
+                    data-measuredescription="@(Model.ViewComponentViewModel.MeasureDescription)"
+                    data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                    data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")">
+
+                @*text white on wite background to reduce clutter but is required*@
+                <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
+
+                @foreach (var item in Model.ChoiceAndAnswerList)
+                {
+                    if (item.SelectListItem.Selected)
+                    {
+                        selectedItem = item;
+                    }
+                    /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
+                    <option value="@(item.SelectListItem.Value)"
+                        selected="@(item.SelectListItem.Selected)">
+                        @(item.SelectListItem.Text)
+                    </option>
+                }
+            </select>
+            @if (selectedItem != null)
+            {
+                <div class="longTextOption">@(selectedItem.SelectListItem.Text)</div>
+            }
+            else
+            {
+                <div class="longTextOption invisible"></div>
+            }
+        </div>
+
+        @**************** Minutes of Therapy ****************@
+        <div class="flex-start-row-nowrap pt-number-wrapper">
+            <label class="mdc-text-field mdc-text-field--outlined"
+                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")"
+                   aria-label="@($"a number box for {Model.ViewComponentViewModel.QuestionKey}")">
+                <span class="mdc-notched-outline">
+                    <span class="mdc-notched-outline__leading"></span>
+                    <span class="mdc-notched-outline__notch">
+                        <span class="mdc-floating-label" id="my-label-id"></span>
+                    </span>
+                    <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
+                       class="mdc-text-field__input numeric-text inputContainer persistable"
+                       name="@(Model.ViewComponentViewModel.QuestionKey)"
+                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_Hours")"
+                       required="@(Model.ViewComponentViewModel.Required)"
+                       value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+                       title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                       data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                       data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                       data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                       data-userid="@(Model.ViewComponentViewModel.UserID)"
+                       data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
+                       data-oldvalue="@(originalAnswer == null ? "" : originalAnswer?.Description)"
+                       data-codesetid="@(Model.ViewComponentViewModel.TherapyHoursCodeSetID /*changed by TypeScript when the therapy type changes*/)"
+                       data-codesetdescription="@(Model.ViewComponentViewModel.TherapyHoursCodeSetValue /*changed by TypeScript when the therapy type changes*/)"
+                       data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
+                       data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                       data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                       data-toggle="tooltip"
+                       data-placement="left"
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_Hours_label")" />
+            </label>
+            <div class="flex-start-row-nowrap number-wrapper">
+                <div class="arrow-left"></div>
+                <div class="measureHeaderNoLeftBorder number">Minutes</div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

@@ -51,12 +51,12 @@ namespace IPRehabWebAPI2.Controllers
           if (postbackModel.EpisodeID <= 0)
           {
             //both episode and answers are new
-            int newEpisodeID = await _answerHelper.TransactionalInsertAsync(postbackModel.NewAnswers);
+            int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.FacilityID, postbackModel.NewAnswers);
           }
           else
           {
             //existing episode but new answers
-            await _answerHelper.TransactionalInsertAnswerOnlyAsync(postbackModel.EpisodeID, postbackModel.NewAnswers);
+            await _answerHelper.TransactionalInsertNewAnswerOnlyAsync(postbackModel.EpisodeID, postbackModel.NewAnswers);
           }
         }
         catch (Exception ex)

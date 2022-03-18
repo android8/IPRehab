@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 export class Utility {
     isDate(aDate) {
         //throw new Error("Method not implemented.");
@@ -10,28 +11,72 @@ export class Utility {
         else
             return true;
     }
-    getControlValue($this) {
+    isSame($this, oldAnswer, newAnswer) {
         //throw new Error("Method not implemented.");
-        let thisControlType = $this.prop('type');
-        let thisValue = 0;
-        switch (thisControlType) {
-            case "select-one": {
-                //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-                let selectedOption = $('#' + $this.prop('id') + ' option:selected').text();
-                thisValue = parseInt(selectedOption);
-                break;
-            }
-            case "checkbox":
-            case "radio": {
-                if ($this.prop('checked')) {
-                    thisValue = 1;
+        const controlType = $this.prop('type');
+        let rtnMsg = '';
+        //!undefined or !NaN yield true
+        if (+newAnswer <= 0)
+            newAnswer = '';
+        if ((controlType == 'radio' || controlType == 'checkbox') &&
+            (newAnswer === oldAnswer && $this.prop('checked'))) {
+            rtnMsg = 'radio/checkbox checked equal';
+        }
+        if ((controlType == 'radio' || controlType == 'checkbox') &&
+            (newAnswer !== oldAnswer && !$this.prop('checked'))) {
+            rtnMsg = 'radio/checkbox unchecked unequal';
+        }
+        if (!newAnswer && !oldAnswer && +newAnswer === +oldAnswer) {
+            rtnMsg = 'both values are blank';
+        }
+        if (newAnswer === oldAnswer || +newAnswer === +oldAnswer) {
+            rtnMsg = 'both non-blank values are equal';
+        }
+        if (newAnswer === undefined && oldAnswer === undefined) {
+            rtnMsg = 'both are undefined';
+        }
+        return rtnMsg;
+    }
+    getControlValue($thisControl, valueSource = 'other') {
+        //throw new Error("Method not implemented.");
+        //console.log('$thisControl', $thisControl);
+        let thisControlType = $thisControl.prop('type');
+        let thisValue;
+        switch (valueSource) {
+            case "other": {
+                switch (thisControlType) {
+                    case "select-one": {
+                        //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
+                        let selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
+                        thisValue = parseInt(selectedOption);
+                        break;
+                    }
+                    case "radio":
+                    case "checkbox":
+                        if ($thisControl.prop('checked'))
+                            thisValue = 1;
+                        break;
+                    case "text": {
+                        let numberString = parseInt($thisControl.val());
+                        if (!isNaN(numberString))
+                            thisValue = $thisControl.val();
+                        else
+                            thisValue = numberString;
+                        break;
+                    }
+                    default: {
+                        thisValue = $thisControl.val();
+                        break;
+                    }
                 }
                 break;
             }
-            case "text": {
-                let thisInputValue = $this.val().toString();
-                if (parseInt(thisInputValue) > 0) {
-                    thisValue = 1;
+            default: {
+                if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $thisControl.prop('checked')) {
+                    thisValue = $thisControl.val();
+                }
+                else {
+                    thisValue = $thisControl.val();
                 }
                 break;
             }
@@ -40,6 +85,7 @@ export class Utility {
     }
     resetControlValue($thisControl, newValue) {
         //throw new Error("Method not implemented.");
+        //console.log('$thisControl', $thisControl);
         let thisControlType = $thisControl.prop('type');
         switch (thisControlType) {
             case "select-one": {

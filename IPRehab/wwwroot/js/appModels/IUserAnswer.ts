@@ -4,12 +4,13 @@ export interface IUserAnswer {
   PatientID: string;
   AnswerID: number;
   EpisodeID: number;
-  OnsetDate: string;
-  AdmissionDate: string;
+  OnsetDate: Date;
+  AdmissionDate: Date;
   QuestionID: number;
   QuestionKey: string;
-  StageID: number;
-  StageName: string;
+  MeasureID: number;
+  MeasureName: string;
+  OldAnswerCodeSetID: number;
   AnswerCodeSetID: number;
   AnswerCodeSetDescription: string;
   AnswerSequenceNumber: number;
@@ -20,13 +21,6 @@ export interface IUserAnswer {
   //user network ID
   AnswerByUserID: string; //user network ID
   LastUpdate: Date;
-}
-
-export interface AjaxPostbackModel {
-  EpisodeID: number
-  OldAnswers: Array<IUserAnswer>
-  UpdatedAnswers: Array<IUserAnswer>
-  NewAnswers: Array<IUserAnswer>
 }
 
 

@@ -17,7 +17,7 @@
                 <input type="checkbox"
                    class="mdc-checkbox__native-control persistable"
                    name="@Model.ViewComponentViewModel.QuestionKey"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}")"
                    required="@(Model.ViewComponentViewModel.Required)"
                    value="@item.SelectListItem.Value"
                    title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -26,16 +26,18 @@
                    data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                    data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                    data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-                   data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerCodeSet.CodeValue)"
+                   data-answerid="@(originalAnswer?.AnswerID)"
+                   data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
                    data-codesetid="@item.SelectListItem.Value"
                    data-codesetdescription="@(item.SelectListItem.Text)"
-                   data-answersequencenumber="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureDescription)"
+                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                   data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")">
 
-                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}")"></span>
+                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}")"></span>
 
                 <div class="mdc-checkbox__background">
                     <svg class="mdc-checkbox__checkmark"
@@ -48,8 +50,8 @@
                 <div class="mdc-checkbox__ripple"></div>
             </div>
 
-            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")"
+            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}_{item.SelectListItem.Value}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}_{item.SelectListItem.Value}_label")"
                aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")">
                 @*strip the code value *@
                 @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
@@ -68,7 +70,7 @@
     {
         @*prevent the next inner div to be flexed*@
         <div>
-            <div class="@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)">
+            <div class="@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)">
                 @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
             </div>
         </div>

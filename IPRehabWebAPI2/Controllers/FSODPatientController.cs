@@ -27,17 +27,21 @@ namespace IPRehabWebAPI2.Controllers
       _cacheHelper = cacheHelper;
     }
 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     /// <summary>
     /// get patients matching the search criteria with visibility by the user facility level
     /// </summary>
+    /// <param name="patientID"></param>
+    /// <param name="networkID"></param>
     /// <param name="criteria"></param>
     /// <param name="withEpisode"></param>
-    /// /// <param name="currentUser"></param>
+    /// <param name="orderBy"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
     /// <returns></returns>
     // GET: api/Patients
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients(string patientID, string networkID, string criteria, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 50)
     {
@@ -118,7 +122,9 @@ namespace IPRehabWebAPI2.Controllers
     }
 
     /// <summary>
-    /// get individual patient by episode since patient ID and patient name cannot be used in querystring
+    /// Get individual patient by episode since patient ID and patient name cannot be used in querystring
+    /// For new episode use [HttpGet("{patientID}")] endpoint.
+    /// This endpoint should not be used since the episodeID would be -1 which will not be found and  error out.
     /// </summary>
     /// <param name="episodeID"></param>
     /// <returns></returns>

@@ -58,7 +58,6 @@ namespace IPRehabWebAPI2.Helpers
     /// use generic IFODPatientRepository to get patient filtered by quarter and criteria
     /// </summary>
     /// <param name="_patientRepository"></param>
-    /// <param name="networkName">optional</param>
     /// <param name="criteria">optional</param>
     /// <param name="orderBy">optional</param>
     /// <param name="pageNumber">optional</param>

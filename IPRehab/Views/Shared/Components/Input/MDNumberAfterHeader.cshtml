@@ -15,35 +15,37 @@
     @if (int.TryParse(originalAnswer.Description, out int numericDescriptor))
     {
         <label class="mdc-text-field mdc-text-field--outlined"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
+           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
            aria-label="@($"a number input box for {Model.ViewComponentViewModel.QuestionKey}")">
             <span class="mdc-notched-outline">
                 <span class="mdc-notched-outline__leading"></span>
                 <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="my-label-id@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}")"></span>
+                    <span class="mdc-floating-label" id="my-label-id@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}")"></span>
                 </span>
                 <span class="mdc-notched-outline__trailing"></span>
             </span>
             <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
                class="mdc-text-field__input numeric-text inputContainer persistable"
                name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
                required="@(Model.ViewComponentViewModel.Required)"
-               value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+               value="@(originalAnswer?.Description)"
                title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                data-stageid="@(Model.ViewComponentViewModel.StageID)"
                data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
                data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-answerid="@(originalAnswer == null ? -1 : originalAnswer.AnswerID)"
-               data-oldvalue="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"
+               data-answerid="@(originalAnswer?.AnswerID)"
+               data-oldvalue="@(originalAnswer?.Description)"
                data-codesetid="@(thisItem.Value)"
                data-codesetdescription="@(thisItem.Text)"
-               data-answerSequence="@(originalAnswer == null ? string.Empty : originalAnswer.AnswerSequenceNumber)"
+               data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
+               data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+               data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                data-toggle="tooltip"
                data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.Measure}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
         </label>
 
         @if (displayStageHeader)
@@ -51,7 +53,7 @@
             @*prevent the next inner div to be flexed*@
             <div class="flex-start-row-nowrap number-wrapper">
                 <div class="arrow-left"></div>
-                <div class='@(Model.ViewComponentViewModel.StageHeaderBorderCssClass)'>
+                <div class='@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)'>
                     @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
                 </div>
             </div>
