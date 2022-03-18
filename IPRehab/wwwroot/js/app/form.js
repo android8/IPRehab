@@ -32,10 +32,11 @@ $(function () {
     $('.gotoSection').each(function () {
         const $this = $(this);
         $this.click(function () {
-            const $fromThis = $(this);
-            const toAnchor = $('#' + $this.data("anchorid"));
-            if (toAnchor != null)
-                formController.scrollToAnchor($fromThis, toAnchor);
+            //const $container: any = $('article');
+            const $to = $('#' + $this.data("anchorid"));
+            if ($to != null) {
+                formController.scrollToAnchor($to);
+            }
         });
     });
     /* show hide section */
@@ -96,14 +97,12 @@ $(function () {
 let formController = (function () {
     const commonUtility = new Utility();
     /* private function */
-    function scrollToAnchor(from, to) {
+    function scrollToAnchor(to) {
         /* https://arnavzedion.medium.com/the-difference-between-offsettop-scrolltop-clienttop-36cf52b733ca#:~:text=offsetTop%20is%20read-only%2C%20while%20scrollTop%20is%20read%2Fwrite.%20As,dependent%20variable%20or%20offset%20position%20to%20scroll%20independently
          */
-        var position = to.offset().top
-            - pageYOffset;
-        //- from.offset().top
-        //+ from.scrollTop();
-        console.log('to.offset().top: ' + to.offset().top + ' pageYOffset: ' + pageYOffset);
+        var position = to.offset().top;
+        -to.offsetParent().top
+            + to.offsetParent().scrollTop();
         $('html,body').animate({ scrollTop: position }, 'fast');
     }
     /* private function */
@@ -181,14 +180,19 @@ let formController = (function () {
         const updatedAnswers = new Array();
         const theScope = $('#userAnswerForm');
         const stageName = $('#stage', theScope).val().toString();
-        const facilityID = $('#facilityID', theScope).val().toString();
         const patientID = $('#patientID', theScope).val().toString();
         const patientName = $('#patientName', theScope).val().toString();
+        let facilityID = $('#facilityID', theScope).val().toString();
         let episodeID = +($('#episodeID', theScope).val());
         //get the key answers. these must be done outside of the .map() 
         //because each answer in .map() will use the same episode onset date and admission date
         let onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
         let admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+        if (facilityID) {
+            let tmp = facilityID.split('(')[2];
+            let tmp2pos = tmp.indexOf(')');
+            facilityID = tmp.substr(0, tmp2pos);
+        }
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         const persistables = $('.persistable');
         let counter = 0;
@@ -229,7 +233,6 @@ let formController = (function () {
             //possible problem with stage id or measure id
             thisAnswer.MeasureID = measureId;
             thisAnswer.MeasureName = measureDescription;
-            thisAnswer.OldAnswerCodeSetID = +oldValue;
             thisAnswer.AnswerCodeSetDescription = codesetDescription;
             if (answerSequence)
                 thisAnswer.AnswerSequenceNumber = answerSequence;
@@ -242,10 +245,14 @@ let formController = (function () {
                 case 'number':
                     /* store in the description the free text because all inputs derived from text type have the same codeset id */
                     thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
+                    /* AnswerCodeSetID and OldAnswerCodeSetID don't change for these control types */
+                    thisAnswer.OldAnswerCodeSetID = +$thisPersistable.data('codesetid');
+                    ;
                     thisAnswer.Description = currentValue;
                     break;
                 default: /* dropdown and radio */
                     thisAnswer.AnswerCodeSetID = +currentValue;
+                    thisAnswer.OldAnswerCodeSetID = +oldValue;
                     break;
             }
             console.log('(' + counter + ') ' + questionKey, thisAnswer);
@@ -295,6 +302,7 @@ let formController = (function () {
         };
         let postBackModel = new AjaxPostbackModel();
         postBackModel.EpisodeID = episodeID;
+        postBackModel.FacilityID = facilityID;
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;

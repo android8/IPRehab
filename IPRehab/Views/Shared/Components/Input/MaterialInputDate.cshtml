@@ -46,7 +46,7 @@
                    data-codesetdescription="@(thisItem.Text)"
                    data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
                    data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
-                   data-answersequence="@(originalAnswer == null ? 1 : originalAnswer.AnswerSequenceNumber)"
+                   data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
                    aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
