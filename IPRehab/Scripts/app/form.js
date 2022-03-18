@@ -102,6 +102,7 @@ let formController = (function () {
         var position = to.offset().top
             - from.offset().top
             + from.scrollTop();
+        console.log('to.offset().top: ' + to.offset().top + ' from.offset().top: ' + from.offset().top + ' from.scrollTop(): ' + from.scrollTop());
         $('html,body').animate({ scrollTop: position }, 'fast');
     }
     /* private function */

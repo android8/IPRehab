@@ -126,8 +126,10 @@ let formController = (function () {
     /* https://arnavzedion.medium.com/the-difference-between-offsettop-scrolltop-clienttop-36cf52b733ca#:~:text=offsetTop%20is%20read-only%2C%20while%20scrollTop%20is%20read%2Fwrite.%20As,dependent%20variable%20or%20offset%20position%20to%20scroll%20independently
      */
     var position = to.offset().top
-      - from.offset().top
-      + from.scrollTop();
+      - pageYOffset;
+      //- from.offset().top
+      //+ from.scrollTop();
+    console.log('to.offset().top: ' + to.offset().top + ' pageYOffset: ' + pageYOffset);
     $('html,body').animate({ scrollTop: position }, 'fast');
   }
 

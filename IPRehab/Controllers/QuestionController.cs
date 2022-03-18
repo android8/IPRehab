@@ -95,10 +95,11 @@ namespace IPRehab.Controllers
       switch (stage)
       {
         case "New":
-          patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
-          //get patient by episodeID of -1
-          //patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={_pageSize}";
-          break;
+          if (episodeID == -1)
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
+          else
+            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={_pageSize}";
+            break;
         default:
           if (episodeID == -1)
           {
@@ -121,7 +122,7 @@ namespace IPRehab.Controllers
       patientID = thisPatient.PTFSSN;
       patientName = thisPatient.Name;
       facilityID = thisPatient.Facility;
-      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" :$"{stage}"));
+      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
       string action = nameof(Edit);
       bool includeAnswer = (action == "Edit");
       if (stage == "New")
