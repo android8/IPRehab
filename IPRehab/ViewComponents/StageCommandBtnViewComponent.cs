@@ -31,14 +31,18 @@ namespace IPRehab.ViewComponents
       foreach (KeyValuePair<string, CommandBtnConfig> entry in commandBtnConfig)
       {
         StageCommandViewComponentTemplateModel cmdBtnTemplateVM = new();
-        cmdBtnTemplateVM.Title = entry.Value.ButtonTitle;
+        if (EpisodeBtnConfig.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")
+          cmdBtnTemplateVM.Title = entry.Value.ButtonTitle.Replace("Create new", "Edit existing");
+        else
+          cmdBtnTemplateVM.Title = entry.Value.ButtonTitle;
+
         cmdBtnTemplateVM.Stage = entry.Key;
         cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
 
-        if (entry.Key == "Patient")
+        if (entry.Key == "Patient" && EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
         {
-          if (EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
-            cmdBtnTemplateVM.ShowThisButton = true;
+          //only visible when in Question stage form
+          cmdBtnTemplateVM.ShowThisButton = true;
 
           cmdBtnTemplateVM.TextNode = "Patient List";
 
@@ -49,37 +53,20 @@ namespace IPRehab.ViewComponents
           clonedPatientActionVM.EpisodeID = -1;
           //use cloned
           cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
+          cmdButtonVMList.Add(cmdBtnTemplateVM);
         }
         else
         {
           if (entry.Key == "New" || EpisodeBtnConfig.EpisodeOfCareID > 0 || EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
+
             cmdBtnTemplateVM.ShowThisButton = true;
 
           // use invoked parameter
           cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;
-
-          switch (entry.Key)
-          {
-            case "Full":
-              cmdBtnTemplateVM.TextNode = "IRF-PAI";
-              break;
-            case "Followup":
-              cmdBtnTemplateVM.TextNode = "Follow Up";
-              break;
-            case "Base":
-              cmdBtnTemplateVM.TextNode = "Episode of Care";
-              break;
-            default:
-              cmdBtnTemplateVM.TextNode = entry.Key;
-              break;
-          }
-        }
-
-        if (cmdBtnTemplateVM.ShowThisButton)
-        {
-          if (EpisodeBtnConfig.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")
-            cmdBtnTemplateVM.Title = cmdBtnTemplateVM.Title.Replace("Create new", "Edit existing");
-          
+          if (entry.Value.ButtonTitle == "Base")
+            cmdBtnTemplateVM.TextNode = "Episode of Care";
+          else
+            cmdBtnTemplateVM.TextNode = entry.Value.ButtonTitle;
           cmdButtonVMList.Add(cmdBtnTemplateVM);
         }
       }

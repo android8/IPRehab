@@ -8,7 +8,7 @@ import { Utility } from "./utility.js";
 
 $(function () {
   const commonUtility: Utility = new Utility();
-  const stage: string = $('.pageTitle').data('stagecode').replace(/\s/g, '_');
+  const stage: string = $('.pageTitle').data('systitle').replace(/\s/g, '_');
 
   /* on ready */
   if (stage == 'Full') {

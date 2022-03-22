@@ -11,31 +11,61 @@ export class Utility {
         else
             return true;
     }
-    isSame($this, oldAnswer, newAnswer) {
+    isTheSame($this, oldValue, currentValue) {
         //throw new Error("Method not implemented.");
         const controlType = $this.prop('type');
-        let rtnMsg = '';
+        const controlID = $this.prop('id');
+        let equalMsg = '';
         //!undefined or !NaN yield true
-        if (+newAnswer <= 0)
-            newAnswer = '';
-        if ((controlType == 'radio' || controlType == 'checkbox') &&
-            (newAnswer === oldAnswer && $this.prop('checked'))) {
-            rtnMsg = 'radio/checkbox checked equal';
+        switch (controlType) {
+            case "radio":
+            case "checkbox":
+                if (currentValue === oldValue && $this.prop('checked')) {
+                    equalMsg = controlType + ' ' + controlID + ' checked equal';
+                }
+                if (currentValue !== oldValue && !$this.prop('checked')) {
+                    equalMsg = controlType + ' ' + controlID + ' unchecked unequal';
+                }
+                break;
+            default:
+                if (!currentValue && !oldValue && +currentValue === +oldValue) {
+                    equalMsg = controlType + ' ' + controlID + 'both values are blank';
+                }
+                if (currentValue === oldValue || +currentValue === +oldValue) {
+                    equalMsg = ' ' + controlID + 'both non-blank values are equal';
+                }
+                if (currentValue === undefined && oldValue === undefined) {
+                    equalMsg = controlType + ' ' + controlID + 'both are undefined';
+                }
+                break;
         }
-        if ((controlType == 'radio' || controlType == 'checkbox') &&
-            (newAnswer !== oldAnswer && !$this.prop('checked'))) {
-            rtnMsg = 'radio/checkbox unchecked unequal';
+        if (controlID.indexOf('K0520B') != -1 && equalMsg != '')
+            console.log(equalMsg);
+        if (equalMsg !== '') {
+            return true;
         }
-        if (!newAnswer && !oldAnswer && +newAnswer === +oldAnswer) {
-            rtnMsg = 'both values are blank';
+        else {
+            return false;
         }
-        if (newAnswer === oldAnswer || +newAnswer === +oldAnswer) {
-            rtnMsg = 'both non-blank values are equal';
+    }
+    getCRUD($this, oldValue, currentValue) {
+        const controlType = $this.prop('type');
+        const checked = $this.prop('checked');
+        switch (true) {
+            case (currentValue && !oldValue):
+                console.log('(C)reate current value = ' + currentValue + ' because old value = blank');
+                return 'C';
+            case (oldValue && !currentValue):
+                console.log('(D)elete old value = ' + oldValue + ' because current value = blank');
+                return 'D1';
+            case (oldValue == currentValue && controlType == 'checkbox' && !checked):
+                console.log('(D)elete old value = ' + oldValue + ', current value = ' + currentValue + ' but unchecked');
+                return 'D2';
+            case ((currentValue && oldValue) && (currentValue !== oldValue)):
+                console.log('(U)pdate old value = ' + oldValue + ' because new value = ' + currentValue);
+                return 'U';
+                break;
         }
-        if (newAnswer === undefined && oldAnswer === undefined) {
-            rtnMsg = 'both are undefined';
-        }
-        return rtnMsg;
     }
     getControlValue($thisControl, valueSource = 'other') {
         //throw new Error("Method not implemented.");

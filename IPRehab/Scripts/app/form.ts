@@ -46,10 +46,9 @@ $(function () {
   $('.gotoSection').each(function () {
     const $this = $(this);
     $this.click(function () {
-      //const $container: any = $('article');
-      const $to: any = $('#' + $this.data("anchorid"));
-      if ($to != null) {
-        formController.scrollToAnchor($to);
+      const anchorID: string = $this.data("anchorid");
+      if (anchorID != '') {
+        formController.scrollToAnchor(anchorID);
       }
     });
   });
@@ -123,14 +122,16 @@ let formController = (function () {
   const commonUtility: Utility = new Utility();
 
   /* private function */
-  function scrollToAnchor(to: any) {
+  function scrollToAnchor(anchorID: string) {
     /* https://arnavzedion.medium.com/the-difference-between-offsettop-scrolltop-clienttop-36cf52b733ca#:~:text=offsetTop%20is%20read-only%2C%20while%20scrollTop%20is%20read%2Fwrite.%20As,dependent%20variable%20or%20offset%20position%20to%20scroll%20independently
+     * 
+     * https://www.w3schools.com/jquery/css_scrolltop.asp
      */
-    var position = to.offset().top;
-      - to.offsetParent().top
-      + to.offsetParent().scrollTop();
-
-    $('html,body').animate({ scrollTop: position }, 'fast');
+    let thisElement: any = $('#' + anchorID);
+    console.log('scroll to ' + anchorID + '.prop("offsetTop"): ' + thisElement.prop('offsetTop'), thisElement);
+    console.log(anchorID + '.offset().top = ' + thisElement.offset().top);
+    let scrollAmount: number = thisElement.prop('offsetTop');
+    $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
   }
 
   /* private function */
@@ -243,22 +244,18 @@ let formController = (function () {
       const $thisPersistable: any = $(this);
       const questionKey: string = $thisPersistable.data('questionkey');
       let thisAnswer: UserAnswer = new UserAnswer();
-      let oldValue: string = $thisPersistable.data('oldvalue');
+      let oldValue: string = $thisPersistable.data('oldvalue')?.toString();
       let currentValue: string = '';
 
-      currentValue = commonUtility.getControlValue($thisPersistable, 'default');
+      currentValue = commonUtility.getControlValue($thisPersistable, 'default')?.toString();
 
       //!undefined or !NaN yield true
-      if (+currentValue <= 0)
-        currentValue = '';
-
-      let equalityResult: string = commonUtility.isSame($thisPersistable, oldValue, currentValue);
-      if (equalityResult != '') {
-        //console.log('(' + counter + ') exit ' + questionKey + ' ' + equalityResult);
+      if (+currentValue == -1) currentValue = '';
+      if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
         return;
       }
 
-      console.log('--------- continue ---------');
+      console.log('--------- continue (not equal) ---------');
       const questionId: number = +$thisPersistable.data('questionid');
       const controlType: any = $thisPersistable.prop('type');
       const answerId: string = $thisPersistable.data('answerid');
@@ -289,7 +286,6 @@ let formController = (function () {
       thisAnswer.AnswerByUserID = userID;
       thisAnswer.LastUpdate = new Date();
 
-
       switch (controlType) {
         case 'text':
         case 'date':
@@ -309,18 +305,20 @@ let formController = (function () {
 
       console.log('(' + counter + ') ' + questionKey, thisAnswer);
 
-      switch (true) {
-        case (currentValue && !oldValue):
-          console.log('(C)reate new value = ' + currentValue + ', old value = blank');
+      let CRUD: string = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
+      switch (CRUD) {
+        case 'C':
           newAnswers.push(thisAnswer);
           break;
-        case (oldValue && !currentValue):
-          console.log('(D)elete old value = ' + oldValue + ', new value = blank');
+        case 'D1':
           thisAnswer.AnswerID = +answerId;
           oldAnswers.push(thisAnswer);
           break;
-        case ((currentValue && oldValue) && (currentValue !== oldValue)):
-          console.log('(U)pdate old value = ' + oldValue + ', new value = ' + currentValue);
+        case 'D2':
+          thisAnswer.AnswerID = +answerId;
+          oldAnswers.push(thisAnswer);
+          break;
+        case 'U':
           thisAnswer.AnswerID = +answerId;
           updatedAnswers.push(thisAnswer);
           break;

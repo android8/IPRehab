@@ -156,7 +156,7 @@ namespace IPRehab.Controllers
         EpisodeID = episodeID,
       };
 
-      if (stage == "New")
+      if (episodeID == -1)
       {
         episodeCommandBtn.EnableThisPatient = false;
         episodeCommandBtn.PatientID = patientID;

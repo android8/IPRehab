@@ -5,7 +5,7 @@ import { Utility } from "./utility.js";
 /* http://emranahmed.github.io/Form-Field-Dependency */
 $(function () {
     const commonUtility = new Utility();
-    const stage = $('.pageTitle').data('stagecode').replace(/\s/g, '_');
+    const stage = $('.pageTitle').data('systitle').replace(/\s/g, '_');
     /* on ready */
     if (stage == 'Full') {
         $('.persistable').prop("disabled", true);
