@@ -1,0 +1,44 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/siteBundle.min.css",
+    "inputFiles": [
+      "wwwroot/css/app.css",
+      "wwwroot/css/site.css",
+      "wwwroot/css/transition.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/patientBundle.min.js",
+    "inputFiles": [
+      "wwwroot/js/app/animateBanner.js",
+      "wwwroot/js/app/commandBtns.js",
+      "wwwroot/js/app/cookieConsent.js",
+      "wwwroot/js/app/utility.js",
+      "wwwroot/js/app/patientDataTable.js",
+      "wwwroot/js/app/patientList.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/questionBundle.min.js",
+    "inputFiles": [
+      "wwwroot/js/app/animateBanner.js",
+      "wwwroot/js/app/commandBtns.js",
+      "wwwroot/js/app/cookieConsent.js",
+      "wwwroot/js/app/utility.js",
+      "wwwroot/js/app/AjaxPostbackModel.js",
+      "wwwroot/js/app/branching.js",
+      "wwwroot/js/app/form.js",
+      "wwwroot/js/app/userAnswer.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+] 
