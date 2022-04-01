@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using IPRehab.Helpers;
-using IPRehab.Models;
+﻿using IPRehab.Helpers;
 using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
   public class TestColorController : BaseController
   {
-    public TestColorController(ILogger<TestColorController> logger, IConfiguration configuration) 
-      : base(configuration, logger)
+    public TestColorController(IWebHostEnvironment environment, ILogger<TestColorController> logger, IConfiguration configuration) 
+      : base(environment, configuration, logger)
     {
     }
 
     public async Task<ActionResult> IndexAsync()
     {
       ViewBag.Title = "Color Test";
-      List<TestColor> colors = new List<TestColor>();
+      List<TestColor> colors = new();
       //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-      HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{_apiBaseUrl}/api/TestColor"));
+      HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri($"{ApiBaseUrl}/api/TestColor"));
 
       string httpMsgContentReadMethod = "ReadAsStringAsync";
-      if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+      if (Res.Content?.Headers.ContentType.MediaType == "application/json")
       {
         switch (httpMsgContentReadMethod)
         {
@@ -45,7 +44,7 @@ namespace IPRehab.Controllers
           //use .Net 5 built-in deserializer
           case "ReadAsStreamAsync":
             var contentStream = await Res.Content.ReadAsStreamAsync();
-            colors = await JsonSerializer.DeserializeAsync<List<TestColor>>(contentStream, _options);
+            colors = await JsonSerializer.DeserializeAsync<List<TestColor>>(contentStream, base.BaseOptions);
             break;
         }
 

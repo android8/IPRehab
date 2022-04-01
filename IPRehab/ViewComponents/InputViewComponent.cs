@@ -47,7 +47,7 @@ namespace IPRehab.ViewComponents
       thisVCVM.StageID = QWS.StageID;
       thisVCVM.MultipleChoices = QWS.MultipleChoices;
       thisVCVM.Required = QWS.Required.HasValue;
-      thisVCVM.DisplayMeasureHeader = QWS.QuestionKey.StartsWith("Q") && !QWS.QuestionKey.StartsWith("Q43") ? false : (QWS.MeasureDescription != string.Empty ? true : false);
+      thisVCVM.DisplayMeasureHeader = (!QWS.QuestionKey.StartsWith("Q") || QWS.QuestionKey.StartsWith("Q43")) && (QWS.MeasureDescription != string.Empty);
       thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
       thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 

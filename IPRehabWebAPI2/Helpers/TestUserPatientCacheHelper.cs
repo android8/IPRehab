@@ -32,7 +32,7 @@ namespace IPRehabWebAPI2.Helpers
     public async Task<List<MastUserDTO>> GetUserAccessLevels(string networkID)
     {
       string userName = CleanUserName(networkID); //use network ID without domain
-      List<MastUserDTO> userAccessLevels = new List<MastUserDTO>();
+      List<MastUserDTO> userAccessLevels = new();
 
       SqlParameter[] paramNetworkID = new SqlParameter[]
       {
@@ -216,7 +216,7 @@ namespace IPRehabWebAPI2.Helpers
       return patients.FirstOrDefault();
     }
 
-    private List<int> GetQuarterOfInterest() {
+    private static List<int> GetQuarterOfInterest() {
       int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
       DateTime today = DateTime.Today;
       int currentFY = today.Year;
@@ -243,7 +243,7 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     /// <param name="networkID"></param>
     /// <returns></returns>
-    private string CleanUserName(string networkID)
+    private static string CleanUserName(string networkID)
     {
       string networkName = networkID;
       if (string.IsNullOrEmpty(networkName))

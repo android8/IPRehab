@@ -1,5 +1,6 @@
 ﻿using IPRehab.Helpers;
 using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -8,15 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
   public class EpisodeController : BaseController
   {
-    public EpisodeController(IConfiguration configuration, ILogger<EpisodeController> logger) 
-      : base(configuration, logger)
+    public EpisodeController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<EpisodeController> logger) 
+      : base(environment, configuration, logger)
     {
     }
     // GET: EpisodeController
@@ -27,12 +27,12 @@ namespace IPRehab.Controllers
       HttpResponseMessage Res;
 
       //Sending request to find web api REST service resource Episode using HttpClient in the APIAgent
-      string url = $"{_apiBaseUrl}/api/Episode";
+      string url = $"{ApiBaseUrl}/api/Episode";
       Res = await APIAgent.GetDataAsync(new Uri(url));
 
 
       string httpMsgContentReadMethod = "ReadAsStreamAsync";
-      if (Res.Content is object && Res.Content.Headers.ContentType.MediaType == "application/json")
+      if (Res.Content?.Headers.ContentType.MediaType == "application/json")
       {
         switch (httpMsgContentReadMethod)
         {
@@ -49,7 +49,7 @@ namespace IPRehab.Controllers
           //use .Net 5 built-in deserializer
           case "ReadAsStreamAsync":
             System.IO.Stream contentStream = await Res.Content.ReadAsStreamAsync();
-            episodes = await JsonSerializer.DeserializeAsync<List<EpisodeOfCareDTO>>(contentStream, _options);
+            episodes = await JsonSerializer.DeserializeAsync<List<EpisodeOfCareDTO>>(contentStream, base.BaseOptions);
             break;
         }
 
@@ -68,10 +68,10 @@ namespace IPRehab.Controllers
     }
 
     // GET: EpisodeController/Details/5
-    public ActionResult Details(int id)
-    {
-      return View();
-    }
+    //public ActionResult Details(int id)
+    //{
+    //  return View();
+    //}
 
     // GET: EpisodeController/Create
     public ActionResult Create()
@@ -88,10 +88,10 @@ namespace IPRehab.Controllers
     }
 
     // GET: EpisodeController/Edit/5
-    public ActionResult Edit(int id)
-    {
-      return View();
-    }
+    //public ActionResult Edit(int id)
+    //{
+    //  return View();
+    //}
 
     // POST: EpisodeController/Edit/5
     [HttpPost]
@@ -102,10 +102,10 @@ namespace IPRehab.Controllers
     }
 
     // GET: EpisodeController/Delete/5
-    public ActionResult Delete(int id)
-    {
-      return View();
-    }
+    //public ActionResult Delete(int id)
+    //{
+    //  return View();
+    //}
 
     // POST: EpisodeController/Delete/5
     [HttpPost]

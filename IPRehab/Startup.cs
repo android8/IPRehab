@@ -2,19 +2,26 @@ using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
+using IEmailSender = Mailer.IEmailSender;
 
 namespace IPRehab
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration)
+    public IConfiguration Configuration { get; }
+    public IWebHostEnvironment env { get; }
+
+    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
       Configuration = configuration;
+      env = environment;
     }
 
     public IConfiguration Configuration { get; }
@@ -47,8 +54,55 @@ namespace IPRehab
       {
         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; //preserve circular reference
       });
+
+      // https://github.com/ligershark/WebOptimizer
+      if (env.IsDevelopment())
+      {
+        /* no minification */
+        services.AddWebOptimizer(minifyJavaScript: false, minifyCss: false);
+      }
+      else
+      {
+        services.AddWebOptimizer(pipeline =>
+        {
+          // Creates a CSS and a JS bundle. Globbing patterns supported.
+          pipeline.AddScssBundle("/css/siteCssBundle.css", 
+            new string[] { "css/**/site.css", "css/**/transition.css", "css/**/app.css" });
+
+          pipeline.AddJavaScriptBundle("/js/siteJsBundle.js", 
+            new string[] { "js/**/animateBanner.js", "js/**/cookieConsent.js"});
+
+          pipeline.AddJavaScriptBundle("/js/patientBundle", 
+            new string[] { "js/**/js/app/commandBtns.js", "js/**/patientList.js"});
+
+          pipeline.AddJavaScriptBundle("/js/questionBundle.js", 
+            new string[] { "js/**/ICommonUtility.js", "js/**/utility.js", "js/**/IAjaxPostbackModel.js", "js/**/ajaxPostbackModel.js", "js/**/IUserAnswer.js", "js/**/userAnswer.js", "js/**/branching.js", "js/**/form.js" });
+
+          // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
+          //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")
+          //        .UseContentRoot()
+          //        .PrependHeader("My custom header")
+          //        .AddResponseHeader("x-test", "value");
+
+          // This will minify any JS and CSS file that isn't part of any bundle
+          pipeline.MinifyCssFiles();
+          pipeline.MinifyJsFiles();
+
+          // This will automatically compile any referenced .scss files
+          pipeline.CompileScssFiles();
+
+          // AddFiles/AddBundle allow for custom pipelines
+          pipeline.AddBundle("/text.txt", "text/plain", "random/*.txt")
+                  .AdjustRelativePaths()
+                  .Concatenate()
+                  .FingerprintUrls()
+                  .MinifyCss();
+        });
+      }
+
       services.AddResponseCaching();
       services.AddRazorPages();
+
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
       services.AddSingleton<Mailer.IEmailSender, EmailSender>();
 
@@ -83,14 +137,20 @@ namespace IPRehab
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
       }
+      
       app.UseHttpsRedirection();
+      
+      app.UseWebOptimizer();/* must be before UseStaticFiles() */
+      
       app.UseStaticFiles();
 
       //https://docs.microsoft.com/en-us/aspnet/core/security/gdpr?view=aspnetcore-5.0
       app.UseCookiePolicy();
 
       app.UseRouting();
+
       //DB connection and Identty is handled in Areas.Identity.IdentityHostingStartup.cs
+      
       app.UseAuthentication();
       app.UseAuthorization();
 

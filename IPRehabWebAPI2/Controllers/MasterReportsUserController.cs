@@ -12,12 +12,10 @@ namespace IPRehabWebAPI2.Controllers
   [ApiController]
   public class MasterReportsUserController : ControllerBase
   {
-    private readonly MasterreportsContext _masterReportsContext;
     private readonly IUserPatientCacheHelper _userPatientCacheHelper;
 
-    public MasterReportsUserController(MasterreportsContext context, IUserPatientCacheHelper userPatientCacheHelper)
+    public MasterReportsUserController(IUserPatientCacheHelper userPatientCacheHelper)
     {
-      _masterReportsContext = context;
       _userPatientCacheHelper = userPatientCacheHelper;
     }
 

@@ -155,7 +155,13 @@ let branchingController = (function () {
       }
     );
 
-    $('.persistable[id^=GG0170M]').each(
+    $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal])').each(
+      function () {
+        GG0170P_depends_on_GG0170M_and_GG0170N($(this));
+      }
+    );
+
+    $('.persistable[id^=GG0170N]:not([id*=Discharge_Goal])').each(
       function () {
         GG0170P_depends_on_GG0170M_and_GG0170N($(this));
       }
@@ -233,7 +239,7 @@ let branchingController = (function () {
 
     if (Q16A.length > 0 && !commonUtility.isEmpty(Q16A) && commonUtility.getControlValue(Q16A) == 1 /* 1. Home */) {
       if (Q17.length > 0) {
-        Q17.val(-1).prop('disabled', false).focus();
+        Q17.prop('disabled', false).focus();
       }
     }
     else {
@@ -358,50 +364,64 @@ let branchingController = (function () {
   }
 
   /* private function */
-  function GG0170P_depends_on_GG0170M_and_GG0170N(GG0170M: any): void {
-    let GG0170MInt: number, GG0170N: any, GG0170NInt: number, GG0170O: any, GG0170P: any;
+  function GG0170P_depends_on_GG0170M_and_GG0170N(thisGG0170: any): void {
+    let GG0170Int: number;
+    let GG0170N: any;
+    let GG0170O: any;
+    let GG0170P: any;
 
-    GG0170MInt = commonUtility.getControlValue(GG0170M);
+    if (thisGG0170.prop('id').indexOf('GG0170M') != -1) {
+      /* GG0170M */
+      GG0170Int = commonUtility.getControlValue(thisGG0170);
+      if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
+        GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]');
+        GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
+        GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
+      }
+      else {
+        GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]');
+        GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
+        GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
+      }
 
-    if (GG0170M.prop('id').indexOf('Admission_Performance') != -1) {
-      GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]');
-      GG0170NInt = commonUtility.getControlValue(GG0170N);
-      GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
-      GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
+      switch (true) {
+        case (GG0170Int >= 7):
+          /* skp to P */
+          if (GG0170P.length > 0) {
+            GG0170P[0].focus();
+          }
+          break;
+        case (GG0170Int > 0 && GG0170Int <= 6):
+          /* skip to N */
+          if (GG0170N.length > 0)
+            GG0170N[0].focus();
+          break;
+      }
     }
-    else {
-      GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]');
-      GG0170NInt = commonUtility.getControlValue(GG0170N);
-      GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
-      GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
-    }
-
-    switch (true) {
-      case (GG0170MInt >= 7):
+    else { 
+      /* GG0170N */
+      GG0170Int = commonUtility.getControlValue(thisGG0170);
+      if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
+        GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
+        GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
+      }
+      else {
+        GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
+        GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
+      }
+      switch (true) {
+        case (GG0170Int >= 7):
         /* skp to P */
         if (GG0170P.length > 0) {
           GG0170P[0].focus();
         }
         break;
-      case (GG0170MInt > 0 && GG0170MInt <= 6):
-        /* skip to N */
-        if (GG0170N.length > 0)
-          GG0170N[0].focus();
-        break;
-    }
-
-    switch (true) {
-      case (GG0170NInt >= 7):
-        /* skp to P */
-        if (GG0170P.length > 0) {
-          GG0170P[0].focus();
-        }
-        break;
-      case (GG0170NInt > 0 && GG0170NInt <= 6):
+        case (GG0170Int > 0 && GG0170Int <= 6):
         /* skip to O */
         if (GG0170O.length > 0)
           GG0170O[0].focus();
         break;
+      }
     }
   }
 

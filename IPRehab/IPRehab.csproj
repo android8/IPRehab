@@ -25,19 +25,14 @@
   <ItemGroup>
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
-    <Compile Remove="wwwroot\css\cube annimation\**" />
     <Content Remove="Data\**" />
     <Content Remove="Scripts\typings\**" />
-    <Content Remove="wwwroot\css\cube annimation\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Scripts\typings\**" />
-    <EmbeddedResource Remove="wwwroot\css\cube annimation\**" />
     <None Remove="Data\**" />
     <None Remove="Scripts\typings\**" />
-    <None Remove="wwwroot\css\cube annimation\**" />
     <TypeScriptCompile Remove="node_modules\**" />
     <TypeScriptCompile Remove="Scripts\typings\**" />
-    <TypeScriptCompile Remove="wwwroot\css\cube annimation\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,12 +56,12 @@
     <Content Remove="Views\Shared\Components\Input\MaterialInputDate1.cshtml" />
     <Content Remove="Views\Shared\Components\Input\MDNumberBeforeHeader.cshtml" />
     <Content Remove="Views\Shared\_RehabActionBtns.cshtml" />
-    <Content Remove="wwwroot\css\app1.css" />
-    <Content Remove="wwwroot\css\app1.scss" />
     <Content Remove="wwwroot\js\file.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\app\patientDataTable.js" />
+    <None Remove="Scripts\app\patientDataTable.js.map" />
     <None Remove="Scripts\app\userAnswer.js" />
     <None Remove="Scripts\app\userAnswer.js.map" />
     <None Remove="Scripts\app\validationRules.js" />
@@ -75,11 +70,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="Scripts\app\patientDataTable.ts" />
     <TypeScriptCompile Remove="Scripts\app\validationRules.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\css\app.min.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +89,8 @@
   <ItemGroup>
     <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
     <PackageReference Include="jquery.validation.TypeScript.DefinitelyTyped" Version="0.4.6" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.357" />
+    <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.84" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
@@ -108,7 +102,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.2">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.6.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -118,12 +112,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IPRehabWebAPI2\IPRehabWebAPI2.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Mailer">
-      <HintPath>..\..\..\CommonLibrary\Mailer\bin\Debug\net5.0\Mailer.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -152,6 +140,13 @@
 
   <ItemGroup>
     <Folder Include="logs\" />
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mailer">
+      <HintPath>..\..\..\CommonLibrary\Mailer\bin\Debug\net5.0\Mailer.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -167,9 +162,6 @@
     </Content>
     <Content Update="wwwroot\css\app - Copy - Copy.min.css">
       <DependentUpon>app - Copy.min.css</DependentUpon>
-    </Content>
-    <Content Update="wwwroot\css\app - Copy.min.css">
-      <DependentUpon>app.min.css</DependentUpon>
     </Content>
   </ItemGroup>
 

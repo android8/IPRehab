@@ -16,7 +16,7 @@ export class Utility implements ICommonUtility {
       return true;
   }
 
-  isTheSame($this: any, oldValue: string, currentValue: string): boolean {
+  public isTheSame($this: any, oldValue: string, currentValue: string): boolean {
     //throw new Error("Method not implemented.");
     const controlType: string = $this.prop('type');
     const controlID: string = $this.prop('id');
@@ -34,6 +34,7 @@ export class Utility implements ICommonUtility {
           equalMsg = controlType + ' ' + controlID + ' unchecked unequal';
         }
         break;
+       
       default:
         if (!currentValue && !oldValue && +currentValue === +oldValue) {
           equalMsg = controlType + ' ' + controlID + 'both values are blank';
@@ -58,10 +59,14 @@ export class Utility implements ICommonUtility {
     }
   }
 
-  getCRUD($this: any, oldValue: string, currentValue: string): string {
+  public getCRUD($this: any, oldValue: string, currentValue: string): string {
     const controlType: string = $this.prop('type');
     const checked: boolean = $this.prop('checked');
+
     switch (true) {
+      case (currentValue !== oldValue && +oldValue == 0 && controlType === 'number'):
+        console.log('(C)reate current value = ' + currentValue + ' because old value 0 is blank equivalent');
+        return 'C';
       case (currentValue && !oldValue):
         console.log('(C)reate current value = ' + currentValue + ' because old value = blank');
         return 'C';

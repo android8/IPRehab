@@ -4,10 +4,21 @@
   Layout = "_Layout";
 }
 
-@section Scripts {
+@section VendorScripts{
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-  <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
 }
+
+<environment exclude="Development">
+  @section MyScripts_prod {
+    <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+  }
+</environment>
+
+<environment include="Development">
+  @section MyScripts_dev {
+    <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+  }
+</environment>
 
 @{await Html.RenderPartialAsync("_SearchPartial", Model);}
 

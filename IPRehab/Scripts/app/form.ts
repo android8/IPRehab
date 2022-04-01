@@ -8,7 +8,7 @@ import { InteractionTrigger } from "../../node_modules/@material/chips/deprecate
 
 import { Utility } from "./utility.js";
 import { UserAnswer } from "./userAnswer.js"
-import { AjaxPostbackModel } from "./AjaxPostbackModel.js";
+import { AjaxPostbackModel } from "./ajaxPostbackModel.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
@@ -209,6 +209,7 @@ let formController = (function () {
 
   /* private function */
   function submitTheForm(thisPostBtn: any): void {
+    thisPostBtn.attr('disabled', 'true');
     $('.spinnerContainer').show();
 
     const oldAnswers: Array<UserAnswer> = new Array<UserAnswer>();
@@ -362,10 +363,13 @@ let formController = (function () {
     postBackModel.UpdatedAnswers = updatedAnswers;
     console.log('postBackModel', postBackModel);
 
-    thisPostBtn.attr('disabled', 'false');
     let apiBaseUrl = thisPostBtn.data('apibaseurl');
     let apiController = thisPostBtn.data('controller');
     let thisUrl: string = apiBaseUrl + '/api/' + apiController;
+    if (episodeID === -1) {
+      thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
+    }
+
     //thisUrl = $('form').prop('action');
     $('.spinnerContainer').show();
 
@@ -391,10 +395,13 @@ let formController = (function () {
         //}
       })
         .done(function (result) {
-          thisPostBtn.attr('disabled', 'true');
           $('.spinnerContainer').hide();
-          console.log('postback result', result.message);
-          console.log('inserted entities', result.insetedEntities);
+          let jsonResult: any = $.parseJSON(result);
+          if (episodeID === -1) {
+            $('#episodeID').val(result.id);
+          }
+          console.log('postback result', result);
+
           dialogOptions.title = 'Success';
           $('#dialog')
             .text('Data is saved.')
@@ -402,9 +409,9 @@ let formController = (function () {
           $('.rehabAction').removeAttr('disabled');
         })
         .fail(function (error) {
+          $('.spinnerContainer').hide();
           thisPostBtn.attr('disabled', 'false');
           console.log('postback error', error);
-          $('.spinnerContainer').hide();
           dialogOptions.title = error.statusText;
           dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
 

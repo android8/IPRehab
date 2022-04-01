@@ -1,6 +1,7 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
 using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +15,8 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class QuestionController : BaseController
   {
-    public QuestionController(IConfiguration configuration, ILogger<QuestionController> logger)
-      : base(configuration, logger)
+    public QuestionController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<QuestionController> logger)
+      : base(environment, configuration, logger)
     {
     }
 
@@ -53,17 +54,17 @@ namespace IPRehab.Controllers
     //    case null:
     //    case "":
     //    case "Full":
-    //      apiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
+    //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
     //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
     //      break;
     //    default:
-    //      apiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
+    //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
     //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
     //      break;
     //  }
     //  ViewBag.ModeColor = badgeBackgroundColor;
 
-    //  questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", _options);
+    //  questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", base.BaseOptions);
 
     //  List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
     //  foreach (var dto in questions)
@@ -96,29 +97,29 @@ namespace IPRehab.Controllers
       {
         case "New":
           if (episodeID == -1)
-            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
+            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
           else
-            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={_pageSize}";
+            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={base.PageSize}";
             break;
         default:
           if (episodeID == -1)
           {
             //get patient by patientID since no episodeID to go by
-            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
+            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
             /* ToDo: to be deleted after test */
-            //patientApiEndpoint = $"{_apiBaseUrl}/api/TestFSODPatient/{patientID}?networkID={currentUserID}&pageSize={_pageSize}";
+            //patientApiEndpoint = $"{ApiBaseUrl}/api/TestFSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
           }
           else
           {
             //get patient by episodeID
-            patientApiEndpoint = $"{_apiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
             /* ToDo: to be deleted after test */
-            //patientApiEndpoint = $"{_apiBaseUrl}/api/TestFSODPatient/Episode/{episodeID}?pageSize={_pageSize}";
+            //patientApiEndpoint = $"{ApiBaseUrl}/api/TestFSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
           }
           break;
       }
 
-      thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", _options);
+      thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", base.BaseOptions);
       patientID = thisPatient.PTFSSN;
       patientName = thisPatient.Name;
       facilityID = thisPatient.Facility;
@@ -132,19 +133,13 @@ namespace IPRehab.Controllers
 
       List<QuestionDTO> questions = new();
 
-      switch (stage)
+      questionApiEndpoint = stage switch
       {
-        case null:
-        case "":
-        case "Full":
-          questionApiEndpoint = $"{_apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-          break;
-        default:
-          questionApiEndpoint = $"{_apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
-          break;
-      }
+          null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
+          _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}",
+      };
 
-      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", _options);
+      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", base.BaseOptions);
 
       string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
 
@@ -176,7 +171,7 @@ namespace IPRehab.Controllers
       qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
       qh.CurrentAction = $"{action} Mode";
       qh.ModeColorCssClass = actionBtnColor;
-      qh.WebApiBaseUrl = _apiBaseUrl;
+      qh.WebApiBaseUrl = ApiBaseUrl;
       return View(qh);
     }
 
@@ -192,7 +187,7 @@ namespace IPRehab.Controllers
         List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
 
         //forward the postbackModel to web api Answer controller
-        Uri uri = new Uri($"{_apiBaseUrl}/api/Answer/Post");
+        Uri uri = new($"{ApiBaseUrl}/api/Answer/Post");
 
         var Res = await APIAgent.PostDataAsync(uri, postbackModel);
         if (Res.IsSuccessStatusCode)
@@ -215,10 +210,10 @@ namespace IPRehab.Controllers
     }
 
     // GET: QuestionController/Delete/5
-    public ActionResult Delete(int id)
-    {
-      return View();
-    }
+    //public ActionResult Delete(int id)
+    //{
+    //  return View();
+    //}
 
     // POST: QuestionController/Delete/5
     [HttpPost]

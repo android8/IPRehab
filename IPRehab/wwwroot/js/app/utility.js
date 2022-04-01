@@ -52,6 +52,9 @@ export class Utility {
         const controlType = $this.prop('type');
         const checked = $this.prop('checked');
         switch (true) {
+            case (currentValue !== oldValue && +oldValue == 0 && controlType === 'number'):
+                console.log('(C)reate current value = ' + currentValue + ' because old value 0 is blank equivalent');
+                return 'C';
             case (currentValue && !oldValue):
                 console.log('(C)reate current value = ' + currentValue + ' because old value = blank');
                 return 'C';

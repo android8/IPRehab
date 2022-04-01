@@ -1,22 +1,22 @@
 ﻿using IPRehab.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace IPRehab.Controllers
 {
   //ToDo: [Authorize]
   public class HomeController : BaseController
   {
-    public HomeController(ILogger<HomeController> logger, IConfiguration configuration) 
-      : base(configuration, logger)
+    public HomeController(IWebHostEnvironment environment, ILogger<HomeController> logger, IConfiguration configuration) 
+      : base(environment, configuration, logger)
     {
     }
 
     public IActionResult Splash()
     {
-      string vm = $"Sponsored by {_office}";
+      string vm = $"Sponsored by {base.Office}";
       return View("splash", vm);
     }
 

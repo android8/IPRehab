@@ -1,5 +1,6 @@
 ﻿using IPRehab.Helpers;
 using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -17,21 +17,61 @@ namespace IPRehab.Controllers
 {
   public class BaseController : Controller
   {
-    protected readonly IConfiguration _configuration;
-    protected readonly string _apiBaseUrl;
-    protected readonly string _appVersion;
-    protected readonly string _impersonated;
-    protected readonly JsonSerializerOptions _options;
-    protected readonly ILogger _logger;
-    protected readonly int _pageSize;
-    protected readonly string _office;
+    private readonly IWebHostEnvironment _environment;
+    protected IWebHostEnvironment BaseEnvironment {
+      get { return _environment; }
+    }
 
-    protected IIdentity _windowsIdentity;
-    protected List<MastUserDTO> userAccessLevels;
-    protected string _userID;
+    private readonly IConfiguration _configuration;
+    protected IConfiguration BaseConfiguration {
+      get { return _configuration; }
+    }
 
-    protected BaseController(IConfiguration configuration, ILogger logger)
+    private readonly string _apiBaseUrl;
+    protected string ApiBaseUrl {
+      get { return _apiBaseUrl; }
+    }
+
+    private readonly string _appVersion;
+    protected string AppVersion {
+      get { return _appVersion; }
+    }
+
+    private readonly string _impersonated;
+    protected string Impersonated {
+      get { return _impersonated; }
+    }
+
+    private readonly JsonSerializerOptions _options;
+    protected JsonSerializerOptions BaseOptions {
+      get { return _options; }
+    }
+
+    private readonly ILogger _logger;
+    protected ILogger Logger {
+      get { return _logger; }
+    }
+
+    private readonly int _pageSize;
+    protected int PageSize { 
+      get { return _pageSize; }
+    }
+
+    private readonly string _office;
+    protected string Office {
+      get { return _office; }}
+
+    //private readonly List<MastUserDTO> _userAccessLevels;
+    //protected List<MastUserDTO> UserAccessLevels { get { return _userAccessLevels; }}
+
+    private string _userID;
+    protected string UserID { 
+      get { return _userID; }
+    }
+
+    protected BaseController(IWebHostEnvironment environment, IConfiguration configuration, ILogger logger)
     {
+      _environment = environment;
       _configuration = configuration;
       _logger = logger;
       _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
@@ -66,9 +106,9 @@ namespace IPRehab.Controllers
       await HttpContext.Session.LoadAsync(cancellationToken);
 
       //get user ID from Windows Identity
-      if (string.IsNullOrEmpty(_userID))
+      if (string.IsNullOrEmpty(this.UserID))
       {
-        _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
+        this._userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
       }
 
       //get userAccessLevels from session
@@ -80,8 +120,8 @@ namespace IPRehab.Controllers
         //get userAccessLevel from web API, if not in the HttpContext.Session
         if (string.IsNullOrEmpty(jsonStringFromSession))
         {
-          string apiUrlBase = $"{_apiBaseUrl}/api/MasterReportsUser";
-          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{_userID}", _options);
+          string apiUrlBase = $"{ApiBaseUrl}/api/MasterReportsUser";
+          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{this.UserID}", this.BaseOptions);
           if (accessLevels == null && !accessLevels.Any())
           {
             sourceOfCredential = "(WebAPI: access level is null)";
@@ -141,11 +181,12 @@ namespace IPRehab.Controllers
       }
       else
       {
+        ViewBag.Environment = BaseEnvironment.EnvironmentName;
         ViewBag.SourceOfCredential = sourceOfCredential;
-        ViewBag.CurrentUserID = $"{_userID}";
+        ViewBag.CurrentUserID = $"{this.UserID}";
         ViewBag.CurrentUserName = viewBagCurrentUserName;
-        ViewBag.AppVersion = $"Version {_appVersion}";
-        ViewBag.Office = _office;
+        ViewBag.AppVersion = $"Version {AppVersion}";
+        ViewBag.Office = this.Office;
 
         var routeData = this.RouteData;
         var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;

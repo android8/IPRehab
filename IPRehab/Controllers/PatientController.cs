@@ -1,14 +1,13 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
 using IPRehabWebAPI2.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +17,8 @@ namespace IPRehab.Controllers
   //ToDo: [Authorize]
   public class PatientController : BaseController
   {
-    public PatientController(ILogger<PatientController> logger, IConfiguration configuration)
-      : base(configuration, logger)
+    public PatientController(IWebHostEnvironment environment, ILogger<PatientController> logger, IConfiguration configuration)
+      : base(environment, configuration, logger)
     {
     }
 
@@ -30,7 +29,7 @@ namespace IPRehab.Controllers
 
       string sessionCriteria;
       string sessionKey = "SearchCriteria";
-      CancellationToken cancellationToken = new CancellationToken();
+      CancellationToken cancellationToken = new();
       await HttpContext.Session.LoadAsync(cancellationToken);
       sessionCriteria = HttpContext.Session.GetString(sessionKey);
       if (searchCriteria != sessionCriteria)
@@ -46,22 +45,22 @@ namespace IPRehab.Controllers
       //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
       if (!string.IsNullOrEmpty(currentUserID))
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+        url = $"{ApiBaseUrl}/api/FSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
 
         /* ToDo: to be deleted after test */
-        //url = $"{_apiBaseUrl}/api/TestFSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+        //url = $"{apiBaseUrl}/api/TestFSODPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
       else
       {
-        url = $"{_apiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+        url = $"{ApiBaseUrl}/api/FSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
 
         /* ToDo: to be deleted after test */
-        //url = $"{_apiBaseUrl}/api/TestFSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
+        //url = $"{apiBaseUrl}/api/TestFSODPatient?criteria={searchCriteria}&withEpisode=true&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={_pageSize}";
       }
 
       IEnumerable<PatientDTO> patients;
 
-      //patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, _options);
+      //patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, base.BaseOptions);
       patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
       patients = patients.OrderBy(x => x.Name);
       PatientListViewModel patientListVM = new();
@@ -72,7 +71,7 @@ namespace IPRehab.Controllers
       patientListVM.PageNumber = pageNumber;
       patientListVM.OrderBy = orderBy;
 
-      if (patients == null || patients.Count() == 0)
+      if (patients == null || !patients.Any())
       {
         patientListVM.TotalPatients = 0;
         return View("_NoDataPartial", patientListVM);
@@ -150,11 +149,11 @@ namespace IPRehab.Controllers
     }
 
     // POST: PatientController/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, IFormCollection collection)
-    {
-      return View();
-    }
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public ActionResult Edit(int id, IFormCollection collection)
+    //{
+    //  return View();
+    //}
   }
 }

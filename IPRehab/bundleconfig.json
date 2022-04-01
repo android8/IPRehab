@@ -30,7 +30,7 @@
       "wwwroot/js/app/commandBtns.js",
       "wwwroot/js/app/cookieConsent.js",
       "wwwroot/js/app/utility.js",
-      "wwwroot/js/app/AjaxPostbackModel.js",
+      "wwwroot/js/app/ajaxPostbackModel.js",
       "wwwroot/js/app/branching.js",
       "wwwroot/js/app/form.js",
       "wwwroot/js/app/userAnswer.js"

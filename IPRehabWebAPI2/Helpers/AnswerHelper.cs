@@ -14,7 +14,7 @@ namespace IPRehabWebAPI2.Helpers
 {
   public class AnswerHelper
   {
-    private IPRehabContext _ipRehabContext;
+    private readonly IPRehabContext _ipRehabContext;
     private readonly IAnswerRepository _answerRepository;
 
     /// <summary>

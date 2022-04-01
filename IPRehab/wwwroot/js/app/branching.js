@@ -155,7 +155,7 @@ let branchingController = (function () {
         const Q17 = $(".persistable[id^=Q17]");
         if (Q16A.length > 0 && !commonUtility.isEmpty(Q16A) && commonUtility.getControlValue(Q16A) == 1 /* 1. Home */) {
             if (Q17.length > 0) {
-                Q17.val(-1).prop('disabled', false).focus();
+                Q17.prop('disabled', false).focus();
             }
         }
         else {

@@ -35,7 +35,7 @@ namespace IPRehabWebAPI2.Helpers
     public async Task<List<MastUserDTO>> GetUserAccessLevels(string networkID)
     {
       string userName = CleanUserName(networkID); //use network ID without domain
-      List<MastUserDTO> userAccessLevels = new List<MastUserDTO>();
+      List<MastUserDTO> userAccessLevels = new();
 
       SqlParameter[] paramNetworkID = new SqlParameter[]
       {
@@ -71,7 +71,8 @@ namespace IPRehabWebAPI2.Helpers
     /// <returns></returns>
     public async Task<List<PatientDTO>> GetPatients(IFSODPatientRepository _patientRepository, string networkName, string criteria, string orderBy, int pageNumber, int PageSize, string patientID)
     {
-      List<MastUserDTO> distinctUserFacilities = new List<MastUserDTO>{
+      List<MastUserDTO> distinctUserFacilities = new()
+      {
         new()
         {
           Facility = _configuration.GetSection("AppSettings").GetValue<string>("TestSite")
@@ -231,7 +232,7 @@ namespace IPRehabWebAPI2.Helpers
       return patients.FirstOrDefault();
     }
 
-    private List<int> GetQuarterOfInterest() {
+    private static List<int> GetQuarterOfInterest() {
       DateTime today = DateTime.Today;
 
       int currentYear = today.Year;
@@ -287,7 +288,7 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     /// <param name="networkID"></param>
     /// <returns></returns>
-    private string CleanUserName(string networkID)
+    private static string CleanUserName(string networkID)
     {
       string networkName = networkID;
       if (string.IsNullOrEmpty(networkName))

@@ -14,8 +14,7 @@ namespace IPRehab.Helpers
   {
     public static async Task<HttpResponseMessage> GetDataAsync(Uri uri)
     {
-      using (var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true }))
-      {
+        using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
         client.DefaultRequestHeaders.Clear();
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         client.Timeout = TimeSpan.FromMinutes(5);
@@ -24,31 +23,28 @@ namespace IPRehab.Helpers
 
         httpResponseMsg.EnsureSuccessStatusCode();
         return httpResponseMsg;
-      }
     }
 
     public static async Task<IEnumerable<tblQuestion>> ReadAsAsyncWithSystemTextJson(Uri uri, JsonSerializerOptions options, string contentReadMethod)
     {
-      using (var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true }))
+      using var client = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true });
+      client.DefaultRequestHeaders.Clear();
+      //Define request data format  
+      client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+      using var httpResponse = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+
+      httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
+
+      switch (contentReadMethod)
       {
-        client.DefaultRequestHeaders.Clear();
-        //Define request data format  
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        using var httpResponse = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-
-        httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
-
-        switch (contentReadMethod)
-        {
-          case "ReadAsAsync":
-            return await httpResponse.Content.ReadAsAsync<IEnumerable<tblQuestion>>();
-          case "ReadAsStreamAsync":
-            var contentStream = await httpResponse.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
-        }
-
-        return null;
+        case "ReadAsAsync":
+          return await httpResponse.Content.ReadAsAsync<IEnumerable<tblQuestion>>();
+        case "ReadAsStreamAsync":
+          var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+          return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
       }
+
+      return null;
     }
 
     public static async Task<IEnumerable<tblQuestion>> StreamWithSystemTextJson(Uri uri, JsonSerializerOptions options)
@@ -63,7 +59,7 @@ namespace IPRehab.Helpers
 
         httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
 
-        if (httpResponse.Content is object && httpResponse.Content.Headers.ContentType.MediaType == "application/json")
+        if (httpResponse.Content?.Headers.ContentType.MediaType == "application/json")
         {
           var contentStream = await httpResponse.Content.ReadAsStreamAsync();
           return await JsonSerializer.DeserializeAsync<IEnumerable<tblQuestion>>(contentStream, options);
@@ -78,31 +74,29 @@ namespace IPRehab.Helpers
 
     public static async Task<HttpResponseMessage> PostDataAsync(Uri uri, PostbackModel postbackModel)
     {
-      //method 1
-      using (var client = new HttpClient())
-      {
+        //method 1
+        using var client = new HttpClient();
         var response = await client.PostAsJsonAsync(uri, postbackModel);
         response.EnsureSuccessStatusCode();
         return response;
-      }
 
-      //method 2
-      //using (var client = new HttpClient())
-      //using (var request = new HttpRequestMessage(HttpMethod.Post, uri))
-      //{
-      //  var json = JsonSerializer.Serialize(postbackModel);
-      //  using (var stringContent = new StringContent(json, Encoding.UTF8, "application/json"))
-      //  {
-      //    request.Content = stringContent;
-      //    using (var response = await client
-      //        .SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
-      //        .ConfigureAwait(false))
-      //    {
-      //      response.EnsureSuccessStatusCode();
-      //      return response;
-      //    }
-      //  }
-      //}
+        //method 2
+        //using (var client = new HttpClient())
+        //using (var request = new HttpRequestMessage(HttpMethod.Post, uri))
+        //{
+        //  var json = JsonSerializer.Serialize(postbackModel);
+        //  using (var stringContent = new StringContent(json, Encoding.UTF8, "application/json"))
+        //  {
+        //    request.Content = stringContent;
+        //    using (var response = await client
+        //        .SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
+        //        .ConfigureAwait(false))
+        //    {
+        //      response.EnsureSuccessStatusCode();
+        //      return response;
+        //    }
+        //  }
+        //}
     }
   }
 }

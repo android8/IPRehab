@@ -10,6 +10,13 @@
             </summary>
             <param name="answerHelper"></param>
         </member>
+        <member name="M:IPRehabWebAPI2.Controllers.AnswerController.PostNewEpisodeAsync(IPRehabWebAPI2.Models.PostbackModel)">
+            <summary>
+            Create new episode when episode id is -1.  Only look into PostbackModel.NewAnswers collection.
+            </summary>
+            <param name="postbackModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Controllers.FSODPatientController.GetPatients(System.String,System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
             <summary>
             get patients matching the search criteria with visibility by the user facility level

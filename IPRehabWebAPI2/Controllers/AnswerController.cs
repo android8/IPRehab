@@ -110,5 +110,40 @@ namespace IPRehabWebAPI2.Controllers
           $"{JsonSerializer.Serialize(updatedAnswerpostBackResponse)}");
       }
     }
+
+    /// <summary>
+    /// Create new episode when episode id is -1.  Only look into PostbackModel.NewAnswers collection.
+    /// </summary>
+    /// <param name="postbackModel"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<IActionResult> PostNewEpisodeAsync([FromBody] PostbackModel postbackModel)
+    {
+      PostbackResponseDTO newAnswerpostBackResponse = new();
+
+      if (!ModelState.IsValid)
+      {
+        return BadRequest();
+      }
+      if (!postbackModel.NewAnswers.Any())
+      {
+        return BadRequest();
+      }
+
+      try
+      {
+        //both episode and answers are new
+        int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.FacilityID, postbackModel.NewAnswers);
+        return CreatedAtRoute("DefaultApi", new { id = newEpisodeID });
+      }
+      catch (Exception ex)
+      {
+        newAnswerpostBackResponse.ExecptionMsg = $"insert transaction failed and rolled back. {ex.Message}";
+        newAnswerpostBackResponse.InnerExceptionMsg = ex.InnerException.Message;
+        newAnswerpostBackResponse.OriginalAnswers = postbackModel.NewAnswers;
+        return StatusCode(StatusCodes.Status500InternalServerError, newAnswerpostBackResponse);
+      }
+    }
   }
 }

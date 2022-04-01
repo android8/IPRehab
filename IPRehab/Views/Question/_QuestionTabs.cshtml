@@ -8,7 +8,8 @@
         {
             <li role="listitem" class="nav-item gotoSection"
                 data-anchorid="@(sectionInfo.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))">
-                <span class="sectionKey">@($"{sectionInfo.SectionKey.Replace("(","").Replace(")","")}")</span>@sectionInfo.SectionTitle
+                <span class="sectionKey">@($"{sectionInfo.SectionKey.Replace("(","").Replace(")","")}")</span>
+                @sectionInfo.SectionTitle
                 <i class="fa fa-bookmark-o" aria-hidden="true"></i>
             </li>
         }

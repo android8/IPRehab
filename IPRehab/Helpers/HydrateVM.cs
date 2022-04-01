@@ -23,7 +23,7 @@ namespace IPRehab.Helpers
 
         /* turn on key question */
         KeyQuestion = questionDto.QuestionKey == "Q12" || questionDto.QuestionKey == "Q23",
-        
+
         /* do not show key for AssessmentCompleted */
         QuestionKey = questionDto.QuestionKey,
 
@@ -54,7 +54,7 @@ namespace IPRehab.Helpers
       QuestionHierarchy qh = new();
 
       List<QuestionWithSelectItems> qwsList = new();
-      foreach(var questionDto in questions)
+      foreach (var questionDto in questions)
       {
         QuestionWithSelectItems qws = Hydrate(questionDto);
         qwsList.Add(qws);
@@ -115,7 +115,7 @@ namespace IPRehab.Helpers
           List<QuestionWithSelectItems> questionInTheGroup = new();
           questionGroup.SharedQuestionText = thisQuestionText;
 
-          switch(thisQuestionText)
+          switch (thisQuestionText)
           {
             case "Indicate the type of wheelchair or scooter used.":
               if (qGG0170SS != null)
@@ -132,19 +132,19 @@ namespace IPRehab.Helpers
               break;
             default:
               questionInTheGroup = questionInTheSection.Where(q => q.Question == thisQuestionText)
-                .OrderBy(q=>q.QuestionKey).ToList();     
+                .OrderBy(q => q.QuestionKey).ToList();
               break;
           }
-         
+
           var groupKey = questionInTheGroup.First().QuestionKey;
           questionGroup.SharedQuestionKey = groupKey;
 
-          var groupInstruction = questionInTheGroup.Where(q=>q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
+          var groupInstruction = questionInTheGroup.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
           if (groupInstruction != null)
           {
             foreach (var q in groupInstruction)
             {
-              foreach(var ins in q.Instructions)
+              foreach (var ins in q.Instructions)
               {
                 questionGroup.SharedQuestionInstruction += ins.Instruction;
               }
@@ -154,9 +154,9 @@ namespace IPRehab.Helpers
           questionGroup.Questions = questionInTheGroup;
 
           thisSection.QuestionGroups.Add(questionGroup);
-          
+
           /* add GG0170SS to the bottom of the section following GG0170S */
-          if (thisSection.SectionTitle == "Mobility (3-day assessment period)" && questionGroup.SharedQuestionKey == "GG0170S" )
+          if (thisSection.SectionTitle == "Mobility (3-day assessment period)" && questionGroup.SharedQuestionKey == "GG0170S")
           {
             QuestionGroup GG0170SSBreakoutGroup = new();
             GG0170SSBreakoutGroup.SharedQuestionText = qGG0170SS.FirstOrDefault().Question;
@@ -188,15 +188,16 @@ namespace IPRehab.Helpers
       }
 
       return qh;
-    }      
+    }
 
     public static List<SectionInfo> GetDistinctSections(List<QuestionWithSelectItems> questions)
     {
       var sections = questions.Select(x => $"{x.SectionTitle} {x.Section}").AsParallel().Distinct()
-        .Select(x => new SectionInfo {
+        .Select(x => new SectionInfo
+        {
           SectionTitle = x,
           SectionKey = GetLastKeyWord(x),
-        }).OrderBy(x=>x.SectionTitle).ThenBy(x=>x.SectionKey).ToList();
+        }).OrderBy(x => x.SectionTitle).ThenBy(x => x.SectionKey).ToList();
       return sections;
     }
 
@@ -204,10 +205,10 @@ namespace IPRehab.Helpers
     {
       var sections = questions.Select(x => new { x.SectionTitle, x.Section }).AsParallel().Distinct()
         .Select(x => new SectionInfo
-        { 
+        {
           SectionTitle = x.SectionTitle,
           SectionKey = x.Section,
-        }).OrderBy(x=>x.SectionKey.StartsWith("Q") ? x.SectionKey.Substring(0,1) : x.SectionKey).ToList();
+        }).OrderBy(x => x.SectionKey.StartsWith("Q") ? x.SectionKey[..1] : x.SectionKey).ToList();
 
       var caseDetail = sections.Where(s => s.SectionTitle == "Case Detail");
       var complete = sections.Where(s => s.SectionTitle == "Complete");
@@ -225,7 +226,8 @@ namespace IPRehab.Helpers
       return sections;
     }
 
-    private static string GetLastKeyWord(string sectionKey) {
+    private static string GetLastKeyWord(string sectionKey)
+    {
       string[] keys = sectionKey.Split(' ');
       string key = keys[^1]; //new C# 8 member access operator last index
       return key;
@@ -240,10 +242,10 @@ namespace IPRehab.Helpers
       if (question.QuestionKey == "A1005" || question.QuestionKey == "A1010")
         return "(A10*)";
       if (question.QuestionKey.StartsWith("GG") || question.QuestionKey.StartsWith("BB"))
-        return $"({question.QuestionKey.Substring(0, 6)})" ;
+        return $"({question.QuestionKey[..6]})";
       else
       {
-        return $"({question.QuestionKey.Substring(0, 5).TrimEnd()})";
+        return $"({question.QuestionKey[..5]})";
       }
     }
 
@@ -255,9 +257,10 @@ namespace IPRehab.Helpers
       /* text(153), date(92), checkbox, textarea, and number have only one item in the choices list */
       foreach (var c in questionDTO.ChoiceList)
       {
-        SelectListItem thisChiceItem = new () { 
-          Text = c.CodeDescription, 
-          Value = c.CodeSetID.ToString(), 
+        SelectListItem thisChiceItem = new()
+        {
+          Text = c.CodeDescription,
+          Value = c.CodeSetID.ToString(),
           Selected = questionDTO.Answers.Any(a => a.AnswerCodeSet.CodeSetID == c.CodeSetID && a.MeasureCodeSet.CodeDescription == questionDTO.MeasureDescription)
         };
         selectedChoices.Add(thisChiceItem);
@@ -313,26 +316,26 @@ namespace IPRehab.Helpers
       return choiceAndAnswers;
     }
 
-    private static string ParseDateString(string originalString)
-    {
-      string text = string.Empty;
-      char[] delimiter = { '/', ' ', '-' };
-      string[] dateParts = originalString.Split(delimiter);
-      for (int i = 0; i < 3; i++)
-      {
-        text += $"{dateParts[i]}";
-        if (i < 2)
-          text += "/";
-      }
-      if(DateTime.TryParse(text, out DateTime aDate))
-      {
-        text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
-      }
-      else
-      {
-        text = originalString;
-      }
-      return text;
-    }
+    //private static string ParseDateString(string originalString)
+    //{
+    //  string text = string.Empty;
+    //  char[] delimiter = { '/', ' ', '-' };
+    //  string[] dateParts = originalString.Split(delimiter);
+    //  for (int i = 0; i < 3; i++)
+    //  {
+    //    text += $"{dateParts[i]}";
+    //    if (i < 2)
+    //      text += "/";
+    //  }
+    //  if(DateTime.TryParse(text, out DateTime aDate))
+    //  {
+    //    text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */
+    //  }
+    //  else
+    //  {
+    //    text = originalString;
+    //  }
+    //  return text;
+    //}
   }
 }

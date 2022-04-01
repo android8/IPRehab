@@ -1,5 +1,4 @@
-﻿/// <binding AfterBuild='cleanDestination, copyScripts, compileStyles' />
-
+/// <binding AfterBuild='cleanDestination, minifyAppJs, minifyAppModelsJs, copyScripts, compileStyles' />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 /*
@@ -7,16 +6,17 @@ This file is the main entry point for defining Gulp tasks and using Gulp plugins
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkId=518007
 */
 
+var minify = require('gulp-minify');
 var sass = require('gulp-sass')(require('sass'));
 var gulp = require('gulp');
 var del = require('del');
 
-var scriptFiles = {
-  myTypeScripts: ['./Scripts/**/*.js', './Scripts/**/*.ts', './Scripts/**/*.map'],
+var scriptSources = {
+  myTypeScripts: ['./Scripts/**/*.js', './Scripts/**/*.map'],
   destinations: ['./wwwroot/js']
 };
 
-var styleFiles = {
+var styleSources = {
   mySass: ['./wwwroot/css/**/*.scss'],
   destinations: ['./wwwroot/css']
 }
@@ -25,16 +25,40 @@ gulp.task('cleanDestination', function () {
   return del(['./wwwroot/js/**/*']);
 });
 
+gulp.task('minifyAppJs', function () {
+  return gulp.src(['./Scripts/app/*.js'], { allowEmpty: true })
+    .pipe(minify({
+      noSource: true,
+      ext: {
+        min: '.min.js'
+      } }))
+    .pipe(gulp.dest('./wwwroot/js/app'));
+});
+
+gulp.task('minifyAppModelsJs', function () {
+  return gulp.src(['./Scripts/appModels/*.js'], { allowEmpty: true })
+    .pipe(minify({
+      noSource: true,
+      ext: {
+        min: '.min.js'
+      }
+    }))
+    .pipe(gulp.dest('./wwwroot/js/appModels'));
+});
+
 gulp.task('copyScripts', function () {
-  return gulp.src(scriptFiles.myTypeScripts)
-    .pipe(gulp.dest(scriptFiles.destinations))
+  return gulp.src(scriptSources.myTypeScripts)
+    .pipe(gulp.dest(scriptSources.destinations))
 });
 
 gulp.task('compileStyles', function (done) {
-  gulp.src(styleFiles.mySass)
-    .pipe(sass().on('error', sass.logError))
+  gulp.src(styleSources.mySass)
     .pipe(
-      gulp.dest(styleFiles.destinations)
+      sass() /*compile sass */
+      .on('error', sass.logError)
+    ) 
+    .pipe(
+      gulp.dest(styleSources.destinations)
     );
   done();
 });

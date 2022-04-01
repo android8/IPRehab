@@ -2,24 +2,24 @@
 
 @{
   ViewData["Title"] = Model.PageTitle;
-  Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@section Links {
-  @* JQuery Data Table stylesheet *@
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.css" />
-}
-
-@section Scripts {
-  @* JQuery Data Table script *@
-  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/b-flash-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/fh-3.1.7/r-2.2.6/rg-1.1.2/rr-1.2.7/datatables.min.js"></script>
-
+@section VendorScripts{
   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 
-  <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
-  <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-@*  <script type="module" src="~/js/app/patientDataTable.js" asp-append-version="true" async></script>
-*@}
+<environment include="Production">
+  @section MyScripts_prod {
+    <script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>
+  }
+</environment>
+
+<environment include="Development">
+  @section MyScripts_dev {
+    <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+  }
+</environment>
 
 <div class="flex-start-column-nowrap paddingTop">
   @{await Html.RenderPartialAsync("_SearchPartial", Model);}
@@ -218,4 +218,3 @@
     </tbody>
   </table>
 </div>
-<partial name="_CookieConsentPartial" />

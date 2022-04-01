@@ -1,11 +1,12 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 $(function () {
-    let btnConsent = $("#btnConcent");
-    const cookieConsent = $('.cookieConsent');
+    const btnConsent = $("button.acceptConsent");
+    const consentContainer = $('div.cookieConsent');
     btnConsent.click(function () {
         //jquery way
-        $.cookie({ 'AspNet.Consent': btnConsent.data("data-cookie-string") });
-        cookieConsent.fadeOut("fast");
+        //($ as any).cookie({ 'AspNet.Consent': btnConsent.data("cookie-string") });
+        document.cookie = btnConsent.data("cookie-string");
+        consentContainer.fadeOut("fast");
     });
 });
 //# sourceMappingURL=cookieConsent.js.map
