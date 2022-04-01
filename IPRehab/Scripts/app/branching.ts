@@ -84,7 +84,7 @@ $(function () {
     })
 
   /* on change */
-  $('.persistable[id^=GG0170I]').each(
+  $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])').each(
     function () {
       $(this).change(
         function () {
@@ -94,7 +94,7 @@ $(function () {
     });
 
   /* on change */
-  $('.persistable[id^=GG0170M], .persistable[id^=GG0170N]').each(
+  $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])').each(
     function () {
       $(this).change(
         function () {
@@ -104,7 +104,7 @@ $(function () {
     });
 
   /* on change */
-  $('.persistable[id^=GG0170Q]').each(
+  $('.persistable[id^=GG0170Q]:not([id*=Discharge_Goal])').each(
     function () {
       $(this).change(
         function () {
@@ -114,7 +114,7 @@ $(function () {
     });
 
   /* on change */
-  $('.persistable[id^=J0510]').each(
+  $('.persistable[id^=J0510]:not([id*=Discharge_Goal])').each(
     function () {
       $(this).change(
         function () {
@@ -149,7 +149,7 @@ let branchingController = (function () {
       }
     );
 
-    $('.persistable[id^=GG0170I]').each(
+    $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])').each(
       function () {
         GG0170JKLMN_depends_on_GG0170I($(this));
       }
@@ -168,7 +168,7 @@ let branchingController = (function () {
     );
 
     H0350_depends_on_GG0170Q($('.persistable[id^=GG0170Q]:not([id*=Discharge_Goal])'));
-    J1750_depends_on_J0510($('.persistable[id^=J0510]:not("Discharge_Goal")'));
+    J1750_depends_on_J0510($('.persistable[id^=J0510]:not([id*=Discharge_Goal])'));
     $(".persistable[id^=Q12]")[0].focus();
   }
 
@@ -365,41 +365,38 @@ let branchingController = (function () {
 
   /* private function */
   function GG0170P_depends_on_GG0170M_and_GG0170N(thisGG0170: any): void {
+    /* thisGG0170 could be M or N so inspect .prop('id') to determine which */
     let GG0170Int: number;
     let GG0170N: any;
     let GG0170O: any;
     let GG0170P: any;
 
     if (thisGG0170.prop('id').indexOf('GG0170M') != -1) {
-      /* GG0170M */
+      /* GG0170M goes to N or P */
       GG0170Int = commonUtility.getControlValue(thisGG0170);
       if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
         GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]');
-        GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
       }
       else {
         GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]');
-        GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
       }
 
       switch (true) {
         case (GG0170Int >= 7):
-          /* skp to P */
           if (GG0170P.length > 0) {
-            GG0170P[0].focus();
+            GG0170P[0].focus(); /* go to P */
           }
           break;
         case (GG0170Int > 0 && GG0170Int <= 6):
-          /* skip to N */
           if (GG0170N.length > 0)
-            GG0170N[0].focus();
+            GG0170N[0].focus(); /* go to N */
           break;
       }
     }
     else { 
-      /* GG0170N */
+      /* GG0170N goes to O or P */
       GG0170Int = commonUtility.getControlValue(thisGG0170);
       if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
         GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
@@ -411,15 +408,13 @@ let branchingController = (function () {
       }
       switch (true) {
         case (GG0170Int >= 7):
-        /* skp to P */
         if (GG0170P.length > 0) {
-          GG0170P[0].focus();
+          GG0170P[0].focus(); /* go to P */
         }
         break;
         case (GG0170Int > 0 && GG0170Int <= 6):
-        /* skip to O */
         if (GG0170O.length > 0)
-          GG0170O[0].focus();
+          GG0170O[0].focus(); /* go to O */
         break;
       }
     }
