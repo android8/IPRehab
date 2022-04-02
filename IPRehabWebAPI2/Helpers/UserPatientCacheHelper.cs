@@ -232,32 +232,52 @@ namespace IPRehabWebAPI2.Helpers
     }
 
     private List<int> GetQuarterOfInterest() {
-      int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
-      DateTime today = DateTime.Today, lastQStartDate= DateTime.Today.AddMonths(-3), secondToLastQDate=DateTime.Today.AddMonths(-6);
-      int currentQTableNumber = 0, lastQTableNumber = 0, secondToLastQTableNumber = 0;
-      int currentFY = today.Year;
-      if (today.Month >= 10)
-        currentFY = today.Year + 1;
+      DateTime today = DateTime.Today;
 
-      /* use month posistion in the quarters[] for the target quarter data whichever is available */
-      currentQTableNumber = (currentFY * 10) + quarters[today.Month - 1];
-      if (quarters[today.Month - 1] == 2)
+      int currentYear = today.Year;
+      int lastYear = currentYear - 1;
+      int nextYear = currentYear + 1;
+
+      int[] quarters = new int[] { 2, 2, 2, 3, 3, 3, 4, 4, 4, 1, 1, 1 };
+      int currentQTableNumber = currentYear, minus1QTableNumber = currentYear, minus2QTableNumber = currentYear, minus3QTableNumber = currentYear;
+
+      int currentQuarter = quarters[today.Month-1];
+      switch (currentQuarter)
       {
-        lastQTableNumber = (currentFY * 10) + quarters[lastQStartDate.Month - 1];
-        secondToLastQTableNumber = ((currentFY - 1) * 10) + quarters[secondToLastQDate.Month - 1];
+        case 1:
+          currentQTableNumber = (nextYear * 10) + 1;
+          minus1QTableNumber = (currentYear * 10) + 4;
+          minus2QTableNumber = (currentYear * 10) + 3;
+          minus3QTableNumber = (currentYear * 10) + 2;
+          break;
+        case 2:
+          currentQTableNumber = (currentYear * 10) + 2;
+          minus1QTableNumber = (currentYear * 10) + 1;
+          minus2QTableNumber = (lastYear * 10) + 4;
+          minus3QTableNumber = (lastYear * 10) + 3;
+          break;
+        case 3:
+          currentQTableNumber = (currentYear * 10) + 3;
+          minus1QTableNumber = (currentYear * 10) + 2;
+          minus2QTableNumber = (currentYear * 10) + 1;
+          minus3QTableNumber = (lastYear * 10) + 4;
+          break;
+        case 4:
+          currentQTableNumber = (currentYear * 10) + 4;
+          minus1QTableNumber = (currentYear * 10) + 3;
+          minus2QTableNumber = (currentYear * 10) + 2;
+          minus3QTableNumber = (currentYear * 10) + 1;
+          break;
       }
-      else
-      {
-        lastQTableNumber = (currentFY * 10) + quarters[lastQStartDate.Month - 1];
-        secondToLastQTableNumber = (currentFY * 10) + quarters[secondToLastQDate.Month - 1];
-      }
+
       //the fiscalPeriodOfInterest is a numeric dentifier that is made up of FY and quarter in 5 digits format, thus the multiplier of 10
       //to get the base than add the quarter number
       List<int> fiscalPeriodsOfInterest = new()
       {
         currentQTableNumber,
-        lastQTableNumber,
-        secondToLastQTableNumber
+        minus1QTableNumber,
+        minus2QTableNumber,
+        minus3QTableNumber
       };
       return fiscalPeriodsOfInterest;
     }

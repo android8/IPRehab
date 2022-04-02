@@ -1,3 +1,3 @@
 export class AjaxPostbackModel {
 }
-//# sourceMappingURL=AjaxPostbackModel.js.map
+//# sourceMappingURL=ajaxPostbackModel.js.map

@@ -2,7 +2,6 @@ using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,7 +50,7 @@ namespace IPRehab
       services.AddResponseCaching();
       services.AddRazorPages();
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
-      services.AddSingleton<IEmailSender, EmailSender>();
+      services.AddSingleton<Mailer.IEmailSender, EmailSender>();
 
       /* Implement ProblemDetailsFactory
         MVC uses Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory to produce all instances of ProblemDetails and ValidationProblemDetails. This includes client error responses, validation failure error responses, and the ControllerBase.Problem and ControllerBase.ValidationProblem helper methods.
