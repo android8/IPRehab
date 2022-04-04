@@ -133,15 +133,13 @@ namespace IPRehabWebAPI2
         options.AddPolicy(MyAllowSpecificOrigins, builder =>
                           {
                             builder
-                            .AllowAnyOrigin()
+                            .WithOrigins("https://localhost:44381") // URL must have no trailing slash (/)
+                            //.AllowAnyOrigin() //comment out for testing on localhost
                             .AllowAnyHeader()
                             .AllowAnyMethod();
+                            //.AllowCredentials()
                             //.SetIsOriginAllowed(origin => true)
                             //.SetIsOriginAllowedToAllowWildcardSubdomains()
-
-                            // The specified URL must not contain a trailing slash (/)
-                            //.WithOrigins("https://localhost:44381")
-                            //.AllowCredentials();
                           });
       });
       #endregion
@@ -177,9 +175,9 @@ namespace IPRehabWebAPI2
 
       app.UseHttpsRedirection();
 
-      //The call to UseCors must be placed after UseRouting, but before UseAuthorization
       app.UseRouting();
 
+      //UseCors() must be btween UseRouting and UseAuthorization
       app.UseCors(MyAllowSpecificOrigins);
       //app.UseCors();
 

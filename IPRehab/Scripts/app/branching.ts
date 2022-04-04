@@ -317,10 +317,12 @@ let branchingController = (function () {
     if (GG0170I.prop('id').indexOf('Admission_Performance') != -1) {
       GG0170JKL = $('.persistable[id^=GG0170J_Admission_Performance], .persistable[id^=GG0170K_Admission_Performance], .persistable[id^=GG0170L_Admission_Performance]');
       GG0170M = $('.persistable[id^=GG0170M_Admission_Performance]');
+      GG0170J = $('.persistable[id^=GG0170J_Admission_Performance]');
     }
     else {
       GG0170JKL = $('.persistable[id^=GG0170J_Discharge_Performance], .persistable[id^=GG0170K_Discharge_Performance], .persistable[id^=GG0170L_Discharge_Performance]');
       GG0170M = $('.persistable[id^=GG0170M_Discharge_Performance]');
+      GG0170J = $('.persistable[id^=GG0170J_Discharge_Performance]');
     }
 
     switch (true) {

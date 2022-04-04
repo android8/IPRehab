@@ -148,14 +148,11 @@ namespace IPRehab
       app.UseRouting();
 
       //DB connection and Identty is handled in Areas.Identity.IdentityHostingStartup.cs
-      
+
       app.UseAuthentication();
       app.UseAuthorization();
 
       app.UseSession(); //must be before UseMvc or UseEndpoints
-
-      // UseCors must be called before UseResponseCaching
-      // app.UseCors("myAllowSpecificOrigins");
 
       app.UseResponseCaching();
 
