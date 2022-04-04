@@ -133,8 +133,8 @@ namespace IPRehabWebAPI2
         options.AddPolicy(MyAllowSpecificOrigins, builder =>
                           {
                             builder
-                            .WithOrigins("https://localhost:44381") // URL must have no trailing slash (/)
-                            //.AllowAnyOrigin() //comment out for testing on localhost
+                            //.WithOrigins("https://localhost:44381") // URL must have no trailing slash (/)
+                            .AllowAnyOrigin() //comment out for testing on localhost
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                             //.AllowCredentials()
