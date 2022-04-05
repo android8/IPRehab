@@ -14,7 +14,7 @@ function rehabPageLoad(): void {
   let topScrollY: string;
   const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
   //console.log('view port width', vw);
-  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
   //console.log('view port height', vw);
 
   function getMediaWidth() {
@@ -74,7 +74,7 @@ let sliderController = (function () {
     let topScrollY: string;
     const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
     //console.log('view port width', vw);
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     //console.log('view port height', vw);
 
     topScrollY = getMediaWidth();
@@ -110,7 +110,7 @@ let sliderController = (function () {
         return "-30px";
       }
 
-      x = window.matchMedia("(max-width:768px)")
+      x = window.matchMedia("(max-width:768px)");
       if (x.matches) {
         //console.log('screen is <= 768 pixels wide');
         return "-65px";

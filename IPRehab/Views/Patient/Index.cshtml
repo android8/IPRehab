@@ -10,7 +10,9 @@
 
 <environment include="Production">
   @section MyScripts_prod {
-    <script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>
+    @*<script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>*@
+    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
   }
 </environment>
 

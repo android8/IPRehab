@@ -74,7 +74,7 @@ namespace IPRehab
             new string[] { "js/**/commandBtns.js", "js/**/patientList.js"});
 
           pipeline.AddJavaScriptBundle("/js/questionBundle.js", 
-            new string[] { "js/**/ICommonUtility.js", "js/**/utility.js", "js/**/IAjaxPostbackModel.js", "js/**/ajaxPostbackModel.js", "js/**/IUserAnswer.js", "js/**/userAnswer.js", "js/**/branching.js", "js/**/form.js" });
+            new string[] { "js/**/commandBtns.js", "js/**/branching.js", "js/**/form.js" });
 
           // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
           //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")

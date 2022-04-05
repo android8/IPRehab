@@ -5,7 +5,6 @@
 
 import { MDCRipple } from "../../node_modules/@material/ripple/component";
 
-
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 $(function () {

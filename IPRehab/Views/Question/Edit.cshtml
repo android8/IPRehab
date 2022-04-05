@@ -15,19 +15,16 @@
 
 <environment include="Production">
   @section MyScripts_prod {
-    <script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>
+    @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@  
+    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
   }
 </environment>
 
 <environment include="Development">
   @section MyScripts_dev {
     <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/appModels/ICommonUtility.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/utility.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/appModels/IAjaxPostbackModel.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/ajaxPostbackModel.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/appModels/IUserAnswer.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/userAnswer.js" asp-append-version="true" async></script>
     <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
     <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
   }

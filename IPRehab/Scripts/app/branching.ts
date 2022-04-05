@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 
-import { Utility } from "./utility.js";
+import { Utility } from "./commonImport.js";
 
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
@@ -369,13 +369,12 @@ let branchingController = (function () {
   function GG0170P_depends_on_GG0170M_and_GG0170N(thisGG0170: any): void {
     /* thisGG0170 could be M or N so inspect .prop('id') to determine which */
     let GG0170Int: number;
-    let GG0170N: any;
-    let GG0170O: any;
-    let GG0170P: any;
+    let GG0170N: any, GG0170O: any, GG0170P: any;
+
+    GG0170Int = commonUtility.getControlValue(thisGG0170);
 
     if (thisGG0170.prop('id').indexOf('GG0170M') != -1) {
       /* GG0170M goes to N or P */
-      GG0170Int = commonUtility.getControlValue(thisGG0170);
       if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
         GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
@@ -384,41 +383,31 @@ let branchingController = (function () {
         GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
       }
-
-      switch (true) {
-        case (GG0170Int >= 7):
-          if (GG0170P.length > 0) {
-            GG0170P[0].focus(); /* go to P */
-          }
-          break;
-        case (GG0170Int > 0 && GG0170Int <= 6):
-          if (GG0170N.length > 0)
-            GG0170N[0].focus(); /* go to N */
-          break;
-      }
     }
     else { 
       /* GG0170N goes to O or P */
-      GG0170Int = commonUtility.getControlValue(thisGG0170);
       if (thisGG0170.prop('id').indexOf('Admission_Performance') != -1) {
+        GG0170N = $('.persistable[id^=GG0170N_Admission_Performance]'); /* required in case GG0170N is answered first */
         GG0170O = $('.persistable[id^=GG0170O_Admission_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Admission_Performance]');
       }
       else {
+        GG0170N = $('.persistable[id^=GG0170N_Discharge_Performance]'); /* required in case GG0170N is answered first */
         GG0170O = $('.persistable[id^=GG0170O_Discharge_Performance]');
         GG0170P = $('.persistable[id^=GG0170P_Discharge_Performance]');
       }
-      switch (true) {
-        case (GG0170Int >= 7):
+    }
+
+    switch (true) {
+      case (GG0170Int >= 7):
         if (GG0170P.length > 0) {
           GG0170P[0].focus(); /* go to P */
         }
         break;
-        case (GG0170Int > 0 && GG0170Int <= 6):
-        if (GG0170O.length > 0)
-          GG0170O[0].focus(); /* go to O */
+      case (GG0170Int > 0 && GG0170Int <= 6):
+        if (GG0170N.length > 0)
+          GG0170N[0].focus(); /* go to N */
         break;
-      }
     }
   }
 

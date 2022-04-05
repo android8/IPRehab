@@ -6,9 +6,7 @@ import { isNumeric, post } from "jquery";
 import { InteractionTrigger } from "../../node_modules/@material/chips/deprecated/trailingaction/constants";
 //import { MDCRipple } from "../../node_modules/@material/ripple/index";
 
-import { Utility } from "./utility.js";
-import { UserAnswer } from "./userAnswer.js"
-import { AjaxPostbackModel } from "./ajaxPostbackModel.js";
+import { Utility, UserAnswer, AjaxPostbackModel }  from "./commonImport.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
