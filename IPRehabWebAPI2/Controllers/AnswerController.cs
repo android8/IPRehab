@@ -135,7 +135,8 @@ namespace IPRehabWebAPI2.Controllers
       {
         //both episode and answers are new
         int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.FacilityID, postbackModel.NewAnswers);
-        return CreatedAtRoute("DefaultApi", new { id = newEpisodeID });
+        //return CreatedAtRoute("DefaultApi", new { id = newEpisodeID });
+        return StatusCode(StatusCodes.Status201Created, newEpisodeID);
       }
       catch (Exception ex)
       {

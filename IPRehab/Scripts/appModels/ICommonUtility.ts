@@ -4,7 +4,7 @@
   isTheSame($this: any, oldValue: string, currentValue: string): boolean;
   getCRUD($this: any, oldValue: string, currentValue: string): string;
   getControlValue($this: any): number;
-  resetControlValue($this: any, newValue: string)
+  resetControlValue($this: any, newValue: string);
   getTextPixels(someText: string, font: any);
   breakLongSentence(thisSelectElement);
 }

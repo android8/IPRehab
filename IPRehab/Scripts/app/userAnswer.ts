@@ -1,4 +1,4 @@
-import { IUserAnswer } from "../appModels/IUserAnswer.js";
+import { IUserAnswer } from "./commonImport.js"
 
 export class UserAnswer implements IUserAnswer {
   PatientName: string;

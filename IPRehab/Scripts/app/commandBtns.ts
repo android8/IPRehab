@@ -3,42 +3,15 @@
 //don't need use strict because the script is loaded as module which by default is executed in strict mode
 //'use strict';
 
-import { MDCRipple } from "../../node_modules/@material/ripple/component";
+//import { MDCRipple } from "./commonImport.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
-
-$(function () {
-  $('.rehabAction').each(function () {
-    let $thisButton = $(this);
-    //call closure
-    //commandBtnController.addRipple($this);
-
-    $thisButton.click(function () {
-      //call closure
-      //commandBtnController.makeRequest($this);
-      commandBtnController.makeRequestUsingFormAction($thisButton);
-    })
-  });
-
-  $('.commandTrigger').click(function () {
-    const $this: any = $(this);
-    const thisContainer: any = $this.parent(); //should be <div class="mdc-touch-target-wrapper">
-
-    let hidden: boolean = $this.data('hidden');
-    commandBtnController.slideCommands(thisContainer, hidden);
-    $this.data('hidden', !hidden);
-    if (hidden)
-      $this.prop('title', 'Show Commands');
-    else
-      $this.prop('title', 'Hide Commands');
-  })
-});
 
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
 
-let commandBtnController = (function () {
+const commandBtnController = (function () {
   /* private function */
   function addRipple(el) {
     /* addMaterial Design ripple effect to all .rehabAction buttons */
@@ -47,22 +20,22 @@ let commandBtnController = (function () {
   }
 
   /* private function */
-  function makeRequest($this) {
+  function makeRequest($this: any) {
     //get formaction attribute which is created by Tag Helper
 
     let thisUrl: string = $this.prop('formAction');;
 
     /* data-attribute are all in lower case by covention */
-    let controller: string = $this.data('controller');
-    let action: string = $this.data('action');
-    let stage: string = $this.data('stage');
+    const controller: string = $this.data('controller');
+    const action: string = $this.data('action');
+    const stage: string = $this.data('stage');
+    const patientID: string = $this.data('patientid');
+    const patientName: string = $this.data('patientname');
+    const episodeID: string = $this.data('episodeid');
+    const searchCriteria: string = $this.data('searchcriteria');
+    const orderBy: string = $this.data('orderby')
+    const pageNumber: string = $this.data('pagenumber')
     let stageLowerCase: string = stage.toLowerCase()
-    let patientID: string = $this.data('patientid');
-    let patientName: string = $this.data('patientname');
-    let episodeID: string = $this.data('episodeid');
-    let searchCriteria: string = $this.data('searchcriteria');
-    let orderBy: string = $this.data('orderby')
-    let pageNumber: string = $this.data('pagenumber')
 
     if (stageLowerCase.indexOf('patientlist') !== -1) {
       stageLowerCase = 'patient;'
@@ -82,7 +55,7 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    let pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
+    const pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
     if (stageLowerCase === pageTitleLowerCase)
     {
       alert('You are already in it');
@@ -97,7 +70,7 @@ let commandBtnController = (function () {
 
   function makeRequestUsingFormAction($thisButton) {
 
-    let stage: string = $thisButton.data('stage');
+    const stage: string = $thisButton.data('stage');
     let stageLowerCase: string = stage.toLowerCase();
     if (stageLowerCase.indexOf('patientlist') !== -1) {
       stageLowerCase = 'patient;'
@@ -106,7 +79,7 @@ let commandBtnController = (function () {
     if (stageLowerCase.indexOf('followup') !== -1)
       stageLowerCase = 'follow up';
 
-    if (stageLowerCase == '')
+    if (stageLowerCase === '')
       stageLowerCase = 'full';
 
     //get queryparameter. this is not suitable if the querystring is encrypted
@@ -123,7 +96,7 @@ let commandBtnController = (function () {
     //  location.href = thisUrl;
     //}
 
-    let dialogOptions: any = {
+    const dialogOptions: any = {
       resizable: true,
       height: "auto",
       width: 400,
@@ -141,7 +114,7 @@ let commandBtnController = (function () {
       }]
     };
 
-    let pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
+    const pageTitleLowerCase: string = $(".pageTitle").data('systitle').toLowerCase();
     if (stageLowerCase === pageTitleLowerCase) {
       $('.spinnerContainer').hide();
       $('#dialog')
@@ -151,11 +124,11 @@ let commandBtnController = (function () {
         });
     }
     else {
-      let submitButton: any = $('#ajaxPost');
-      if (submitButton.length == 0) {
+      const submitButton: any = $('#ajaxPost');
+      if (submitButton.length === 0) {
         //submit doesn't exist on this page
         //get formaction attribute for this button and navigate away
-        let thisUrl: string = $thisButton.prop('formAction');
+        const thisUrl: string = $thisButton.prop('formAction');
         location.href = thisUrl;
       }
       else {
@@ -173,7 +146,7 @@ let commandBtnController = (function () {
                   click: function () {
                     $(this).dialog("close");
                     $('.spinnerContainer').show();
-                    var thisUrl = $thisButton.prop('formAction');
+                    const thisUrl = $thisButton.prop('formAction');
                     $('.spinnerContainer').show();
                     //navigate away
                     location.href = thisUrl;
@@ -189,7 +162,7 @@ let commandBtnController = (function () {
             })
         }
         else {
-          let thisUrl: string = $thisButton.prop('formAction');
+          const thisUrl: string = $thisButton.prop('formAction');
           location.href = thisUrl;
         }
       }
@@ -197,19 +170,19 @@ let commandBtnController = (function () {
   }
 
   function slideCommands(triggerContainer: any, hidden: boolean) {
-    let siblingContainers: any[] = [];
+    const siblingContainers: any[] = [];
     triggerContainer.siblings().each(function () {
-      let siblingContainer = $(this); //should be <div class="mdc-touch-target-wrapper">
-      let el: any = {};
+      const siblingContainer = $(this); //should be <div class="mdc-touch-target-wrapper">
+      const el: any = {};
       el.h = siblingContainer;
       el.width = el.h.children().eq(0).width(); //should be <button>
       el.h.width(0);
       siblingContainers.push(el);
     });
 
-    for (var i = 0; i < siblingContainers.length; i++) {
-      let thisCommandbtn: any = siblingContainers[i];
-      let target: string = hidden ? thisCommandbtn.width + "px" : "0px";
+    for (let i = 0; i < siblingContainers.length; i++) {
+      const thisCommandbtn: any = siblingContainers[i];
+      const target: string = hidden ? thisCommandbtn.width + "px" : "0px";
       thisCommandbtn.h.animate({ width: target });
     }
   }
@@ -224,4 +197,30 @@ let commandBtnController = (function () {
   }
 })();
 
+$(function () {
+  $('.rehabAction').each(function () {
+    const $thisButton = $(this);
+    //call closure
+    //commandBtnController.addRipple($this);
+
+    $thisButton.click(function () {
+      //call closure
+      //commandBtnController.makeRequest($this);
+      commandBtnController.makeRequestUsingFormAction($thisButton);
+    })
+  });
+
+  $('.commandTrigger').click(function () {
+    const $this: any = $(this);
+    const thisContainer: any = $this.parent(); //should be <div class="mdc-touch-target-wrapper">
+
+    const hidden: boolean = $this.data('hidden');
+    commandBtnController.slideCommands(thisContainer, hidden);
+    $this.data('hidden', !hidden);
+    if (hidden)
+      $this.prop('title', 'Show Commands');
+    else
+      $this.prop('title', 'Hide Commands');
+  })
+});
 

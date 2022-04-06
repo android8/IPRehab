@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 
-import { ICommonUtility } from "../appModels/ICommonUtility.js";
+import { ICommonUtility } from "./commonImport.js";
 
 export class Utility implements ICommonUtility {
   isDate(aDate: Date): boolean {
@@ -8,7 +8,7 @@ export class Utility implements ICommonUtility {
     return aDate instanceof Date && !isNaN(aDate.valueOf());
   }
 
-  isEmpty($this: any): boolean {
+  isEmpty($this): boolean {
     //throw new Error("Method not implemented.");
     if (typeof $this.val() !== 'undefined' && $this.val())
       return false;
@@ -16,11 +16,11 @@ export class Utility implements ICommonUtility {
       return true;
   }
 
-  public isTheSame($this: any, oldValue: string, currentValue: string): boolean {
+  public isTheSame($this, oldValue: string, currentValue: string): boolean {
     //throw new Error("Method not implemented.");
     const controlType: string = $this.prop('type');
     const controlID: string = $this.prop('id');
-    let equalMsg: string = '';
+    let equalMsg = '';
 
     //!undefined or !NaN yield true
 
@@ -48,7 +48,7 @@ export class Utility implements ICommonUtility {
         break;
     }
 
-    if (controlID.indexOf('K0520B') != -1 && equalMsg != '')
+    if (controlID.indexOf('K0520B') !== -1 && equalMsg !== '')
       console.log(equalMsg);
 
     if (equalMsg !== '') {
@@ -64,7 +64,7 @@ export class Utility implements ICommonUtility {
     const checked: boolean = $this.prop('checked');
 
     switch (true) {
-      case (currentValue !== oldValue && +oldValue == 0 && controlType === 'number'):
+      case (currentValue !== oldValue && +oldValue === 0 && controlType === 'number'):
         console.log('(C)reate current value = ' + currentValue + ' because old value 0 is blank equivalent');
         return 'C';
       case (currentValue && !oldValue):
@@ -73,7 +73,7 @@ export class Utility implements ICommonUtility {
       case (oldValue && !currentValue):
         console.log('(D)elete old value = ' + oldValue + ' because current value = blank');
         return 'D1';
-      case (oldValue == currentValue && controlType == 'checkbox' && !checked):
+      case (oldValue === currentValue && controlType === 'checkbox' && !checked):
         console.log('(D)elete old value = ' + oldValue + ', current value = ' + currentValue + ' but unchecked');
         return 'D2';
       case ((currentValue && oldValue) && (currentValue !== oldValue)):
@@ -81,20 +81,19 @@ export class Utility implements ICommonUtility {
         return 'U';
         break;
     }
-
   }
 
-  getControlValue($thisControl: any, valueSource: string = 'other'): any {
+  getControlValue($thisControl, valueSource = 'other') {
     //throw new Error("Method not implemented.");
     //console.log('$thisControl', $thisControl);
-    let thisControlType: string = $thisControl.prop('type');
-    let thisValue: any;
+    const thisControlType: string = $thisControl.prop('type');
+    let thisValue;
     switch (valueSource) {
       case "other": {
         switch (thisControlType) {
           case "select-one": {
             //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-            let selectedOption: string = $('#' + $thisControl.prop('id') + ' option:selected').text();
+            const selectedOption: string = $('#' + $thisControl.prop('id') + ' option:selected').text();
             thisValue = parseInt(selectedOption);
             break;
           }
@@ -106,7 +105,7 @@ export class Utility implements ICommonUtility {
             break;
 
           case "text": {
-            let numberString: number = parseInt($thisControl.val());
+            const numberString: number = parseInt($thisControl.val());
             if (!isNaN(numberString))
               thisValue = $thisControl.val();
             else
@@ -122,7 +121,7 @@ export class Utility implements ICommonUtility {
         break;
       }
       default: {
-        if ((thisControlType == 'checkbox' || thisControlType == 'radio') && $thisControl.prop('checked')) {
+        if ((thisControlType === 'checkbox' || thisControlType === 'radio') && $thisControl.prop('checked')) {
           thisValue = $thisControl.val();
         }
         else {
@@ -134,13 +133,13 @@ export class Utility implements ICommonUtility {
     return thisValue;
   }
 
-  resetControlValue($thisControl: any, newValue: string) {
+  resetControlValue($thisControl, newValue: string) {
     //throw new Error("Method not implemented.");
     //console.log('$thisControl', $thisControl);
-    let thisControlType: string = $thisControl.prop('type');
+    const thisControlType: string = $thisControl.prop('type');
     switch (thisControlType) {
       case "select-one": {
-        let newValueInt: number = parseInt(newValue);
+        const newValueInt: number = parseInt(newValue);
         if (isNaN(newValueInt)) 
           $thisControl.val(-1).change();
         else
@@ -159,16 +158,16 @@ export class Utility implements ICommonUtility {
     }
   }
 
-  getTextPixels(someText: string, font: any) {
+  getTextPixels(someText: string, font) {
     //throw new Error("Method not implemented.");
-    let canvas = document.createElement('canvas');
-    let context = canvas.getContext("2d");
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext("2d");
     context.font = font;
-    let width = context.measureText(someText).width;
+    const width = context.measureText(someText).width;
     return Math.ceil(width);
   }
 
-  breakLongSentence(thisSelectElement: any) {
+  breakLongSentence(thisSelectElement) {
     throw new Error("Method not implemented.");
   //  console.log('thisSelectElement', thisSelectElement);
   //  let maxLength: number = 50;

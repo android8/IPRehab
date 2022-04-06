@@ -1,4 +1,4 @@
-/// <binding AfterBuild='cleanDestination, minifyAppJs, minifyAppModelsJs, copyScripts, compileStyles' />
+/// <binding AfterBuild='cleanDestination, compileStyles, minifyAppModelsJs, minifyAppJs, copyMaps' />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 /*
@@ -12,7 +12,7 @@ var gulp = require('gulp');
 var del = require('del');
 
 var scriptSources = {
-  myTypeScripts: ['./Scripts/**/*.js', './Scripts/**/*.map'],
+  map: ['./Scripts/**/*.map'],
   destinations: ['./wwwroot/js']
 };
 
@@ -28,7 +28,7 @@ gulp.task('cleanDestination', function () {
 gulp.task('minifyAppJs', function () {
   return gulp.src(['./Scripts/app/*.js'], { allowEmpty: true })
     .pipe(minify({
-      noSource: true,
+      noSource: false,
       ext: {
         min: '.min.js'
       } }))
@@ -38,7 +38,7 @@ gulp.task('minifyAppJs', function () {
 gulp.task('minifyAppModelsJs', function () {
   return gulp.src(['./Scripts/appModels/*.js'], { allowEmpty: true })
     .pipe(minify({
-      noSource: true,
+      noSource: false,
       ext: {
         min: '.min.js'
       }
@@ -46,8 +46,8 @@ gulp.task('minifyAppModelsJs', function () {
     .pipe(gulp.dest('./wwwroot/js/appModels'));
 });
 
-gulp.task('copyScripts', function () {
-  return gulp.src(scriptSources.myTypeScripts)
+gulp.task('copyMaps', function () {
+  return gulp.src(scriptSources.map)
     .pipe(gulp.dest(scriptSources.destinations))
 });
 

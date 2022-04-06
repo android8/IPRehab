@@ -1,99 +1,8 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
-//import { MDCRipple } from "../../node_modules/@material/ripple/index";
-import { Utility } from "./utility.js";
-import { UserAnswer } from "./userAnswer.js";
-import { AjaxPostbackModel } from "./ajaxPostbackModel.js";
+import { Utility, UserAnswer, AjaxPostbackModel } from "./commonImport.js";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
-$(function () {
-    $('.persistable').change(function () {
-        const onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
-        const admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
-        const commonUtility = new Utility();
-        //if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
-        if (commonUtility.isDate(onsetDate) && commonUtility.isDate(admissionDate)) {
-            $('#ajaxPost').removeAttr('disabled');
-            //$('#mvcPost').removeAttr('disabled');
-        }
-    });
-    $('select').each(function () {
-        const $this = $(this);
-        $this.change(function () {
-            formController.breakLongSentence($this);
-        });
-    });
-    /* section nav */
-    $('#questionTab').hover(function () {
-        $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
-    }, function () {
-        $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
-    });
-    /* jump to section anchor */
-    $('.gotoSection').each(function () {
-        const $this = $(this);
-        $this.click(function () {
-            const anchorID = $this.data("anchorid");
-            if (anchorID != '') {
-                formController.scrollToAnchor(anchorID);
-            }
-        });
-    });
-    /* show hide section */
-    $('.section-title').each(function () {
-        const thisTitle = $(this);
-        thisTitle.click(function () {
-            let sectionContent = thisTitle.next();
-            let sectionContentHidden = sectionContent.attr('hidden');
-            sectionContent.attr('hidden', !sectionContentHidden);
-        });
-    });
-    /* show hide individual question */
-    $('.child1').each(function () {
-        const thisKey = $(this);
-        thisKey.click(function () {
-            const thisQuestion = thisKey.next();
-            console.log('thisQuestion', thisQuestion);
-            const thisQuestionHidden = thisQuestion.attr('hidden');
-            console.log('thisQuestion hidden', thisQuestionHidden);
-            thisQuestion.attr('hidden', !thisQuestionHidden);
-        });
-    });
-    /* traditional form post */
-    //$('#mvcPost').click(function () {
-    //  $('form').submit();
-    //});
-    /* ajax post form */
-    $('#ajaxPost').click(function () {
-        if (formController.validate) {
-            formController.submitTheForm($(this));
-        }
-    });
-    /* self care score on load */
-    formController.selfCareScore();
-    /* self care scorce on change */
-    $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
-        const $this = $(this);
-        $this.change(function () {
-            formController.selfCareScore();
-            formController.grandTotal();
-        });
-    });
-    /* mobility score on load */
-    formController.mobilityScore();
-    /* mobility score on change */
-    $('.persistable[id^=GG0170]:not([id*=Discharge_Goal])').each(function () {
-        $(this).change(function () {
-            formController.mobilityScore();
-            formController.grandTotal();
-        });
-    });
-    /* grand total on load */
-    formController.grandTotal();
-});
-/****************************************************************************
- * javaScript closure
- ***************************************************************************/
-let formController = (function () {
+const formController = (function () {
     const commonUtility = new Utility();
     /* private function */
     function scrollToAnchor(anchorID) {
@@ -101,68 +10,68 @@ let formController = (function () {
          *
          * https://www.w3schools.com/jquery/css_scrolltop.asp
          */
-        let thisElement = $('#' + anchorID);
+        const thisElement = $('#' + anchorID);
         console.log('scroll to ' + anchorID + '.prop("offsetTop"): ' + thisElement.prop('offsetTop'), thisElement);
         console.log(anchorID + '.offset().top = ' + thisElement.offset().top);
-        let scrollAmount = thisElement.prop('offsetTop');
+        const scrollAmount = thisElement.prop('offsetTop');
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
     }
     /* private function */
-    function setRehabBtns(targetScope) {
-        let currentIdx = 0;
-        $.each($('.rehabAction', targetScope), function () {
-            let $this = $(this);
-            let newTitle = $this.prop('title').replace(/Edit/g, 'Create');
-            let newHref = $this.prop('href').replace(/Edit/g, 'Create');
-            $this.prop('title', newTitle);
-            $this.prop('href', newHref);
-            currentIdx++;
-            let newClass = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
-            $this.prop('class', newClass);
-        });
-    }
+    //function setRehabBtns(targetScope: any) {
+    //  let currentIdx: number = 0;
+    //  $.each($('.rehabAction', targetScope), function () {
+    //    let $this = $(this);
+    //    let newTitle: string = $this.prop('title').replace(/Edit/g, 'Create');
+    //    let newHref: string = $this.prop('href').replace(/Edit/g, 'Create');
+    //    $this.prop('title', newTitle);
+    //    $this.prop('href', newHref);
+    //    currentIdx++;
+    //    let newClass: string = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
+    //    $this.prop('class', newClass);
+    //  });
+    //}
     /* private function */
-    function resetRehabBtns(targetScope) {
-        let cmdBtns = ['primary', 'info', 'secondary', 'success', 'warning'];
-        let currentIdx = 0;
-        $.each($('.rehabAction', targetScope), function () {
-            let $this = $(this);
-            let newTitle = $this.prop('title').replace(/Create/g, 'Edit');
-            let newHref = $this.prop('href').replace(/Create/g, 'Edit');
-            $this.prop('title', newTitle);
-            $this.prop('href', newHref);
-            let resetClass = '';
-            resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
-            currentIdx++;
-            $this.prop('class', resetClass);
-        });
-    }
+    //function resetRehabBtns(targetScope: any) {
+    //  let cmdBtns: string[] = ['primary', 'info', 'secondary', 'success', 'warning'];
+    //  let currentIdx: number = 0;
+    //  $.each($('.rehabAction', targetScope), function () {
+    //    let $this = $(this);
+    //    let newTitle: string = $this.prop('title').replace(/Create/g, 'Edit');
+    //    let newHref: string = $this.prop('href').replace(/Create/g, 'Edit');
+    //    $this.prop('title', newTitle);
+    //    $this.prop('href', newHref);
+    //    let resetClass: string = '';
+    //    resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
+    //    currentIdx++;
+    //    $this.prop('class', resetClass);
+    //  });
+    //}
     /* private function */
     function breakLongSentence(thisSelectElement) {
         //console.log('thisSelectElement', thisSelectElement);
-        let maxLength = 50;
-        let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
+        const maxLength = 50;
+        const longTextOptionDIV = thisSelectElement.next('div.longTextOption');
         //console.log('longTextOptionDIV', longTextOptionDIV);
-        let thisSelectWidth = thisSelectElement[0].clientWidth;
-        let thisScope = thisSelectElement;
-        let selectedValue = parseInt(thisSelectElement.prop('value'));
+        const thisSelectWidth = thisSelectElement[0].clientWidth;
+        const thisScope = thisSelectElement;
+        const selectedValue = parseInt(thisSelectElement.prop('value'));
         if (selectedValue <= 0) {
             longTextOptionDIV.text('');
         }
         else {
             $.each($('option:selected', thisScope), function () {
-                let $thisOption = $(this);
-                let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
-                let oldText = $thisOption.text();
-                let font = $thisOption.css('font');
-                let oldTextInPixel = commonUtility.getTextPixels(oldText, font);
+                const $thisOption = $(this);
+                const regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
+                const oldText = $thisOption.text();
+                const font = $thisOption.css('font');
+                const oldTextInPixel = commonUtility.getTextPixels(oldText, font);
                 //console.log('oldTextInPixel', oldTextInPixel);
                 //console.log('thisSelectWidth', thisSelectWidth);
                 longTextOptionDIV.text('');
                 if (oldTextInPixel > thisSelectWidth) {
                     let newStr = oldText.replace(regX, "$1\n");
                     newStr = newStr.trim();
-                    let startWithNumber = $.isNumeric(newStr.substring(0, 1));
+                    const startWithNumber = $.isNumeric(newStr.substring(0, 1));
                     if (startWithNumber) {
                         newStr = newStr.substring(newStr.indexOf(" ") + 1);
                     }
@@ -175,7 +84,89 @@ let formController = (function () {
         }
     }
     /* private function */
-    function submitTheForm(thisPostBtn) {
+    function submitTheForm(thisPostBtn, dialogOptions) {
+        //use jquery ajax
+        function jQueryAjax(thisUrl, postBackModel, episodeID) {
+            $.ajax({
+                type: "POST",
+                url: thisUrl,
+                data: JSON.stringify(postBackModel),
+                headers: {
+                    //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
+                    'RequestVerificationToken': $('input[name="X-CSRF-TOKEN-IPREHAB"]').val().toString(),
+                    'Accept': 'application/json',
+                },
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                crossDomain: true,
+                //xhrFields: {
+                //  withCredentials: true
+                //}
+            })
+                .done(function (result) {
+                $('.spinnerContainer').hide();
+                console.log('postback result', result);
+                const jsonResult = $.parseJSON(result);
+                console.log('jsonResult', jsonResult);
+                if (episodeID === -1) {
+                    $('#episodeID').val(jsonResult);
+                }
+                dialogOptions.title = 'Success';
+                $('#dialog')
+                    .text('Data is saved.')
+                    .dialog(dialogOptions);
+                $('.rehabAction').removeAttr('disabled');
+            })
+                .fail(function (error) {
+                $('.spinnerContainer').hide();
+                thisPostBtn.attr('disabled', 'false');
+                console.log('postback error', error);
+                dialogOptions.title = error.statusText;
+                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
+                if (error.statusText === "OK" || error.statusText === "Ok") {
+                    $('#dialog')
+                        .text('Data is saved.')
+                        .dialog(dialogOptions);
+                }
+                else {
+                    $('#dialog')
+                        .text('Data is not saved. ' + error.responseText)
+                        .dialog(dialogOptions);
+                }
+            });
+        }
+        //use fetch api
+        function onPost(thisUrl) {
+            const url = thisUrl;
+            const headers = {};
+            fetch(url, {
+                method: "POST",
+                mode: 'cors',
+                headers: headers
+            })
+                .then((response) => {
+                if (!response.ok) {
+                    throw new Error(response.text.toString());
+                }
+                return response.json();
+            })
+                .then(data => {
+                $('#dialog')
+                    .text('Data is saved.')
+                    .dialog(dialogOptions);
+                $('.rehabAction').removeAttr('disabled');
+            })
+                .catch(function (error) {
+                thisPostBtn.attr('disabled', 'false');
+                console.log('postback error', error);
+                $('.spinnerContainer').hide();
+                dialogOptions.title = error.statusText;
+                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
+                $('#dialog')
+                    .text('Data is not saved. ' + error)
+                    .dialog(dialogOptions);
+            });
+        }
         thisPostBtn.attr('disabled', 'true');
         $('.spinnerContainer').show();
         const oldAnswers = new Array();
@@ -189,29 +180,29 @@ let formController = (function () {
         let episodeID = +($('#episodeID', theScope).val());
         //get the key answers. these must be done outside of the .map() 
         //because each answer in .map() will use the same episode onset date and admission date
-        let onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
-        let admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+        const onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
+        const admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
         if (facilityID) {
-            let tmp = facilityID.split('(')[2];
-            let tmp2pos = tmp.indexOf(')');
+            const tmp = facilityID.split('(')[2];
+            const tmp2pos = tmp.indexOf(')');
             facilityID = tmp.substr(0, tmp2pos);
         }
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         const persistables = $('.persistable');
         let counter = 0;
-        if (stageName.toLowerCase() == "new")
+        if (stageName.toLowerCase() === "new")
             episodeID = -1;
         persistables.each(function () {
             var _a, _b;
             counter++;
             const $thisPersistable = $(this);
             const questionKey = $thisPersistable.data('questionkey');
-            let thisAnswer = new UserAnswer();
-            let oldValue = (_a = $thisPersistable.data('oldvalue')) === null || _a === void 0 ? void 0 : _a.toString();
+            const thisAnswer = new UserAnswer();
+            const oldValue = (_a = $thisPersistable.data('oldvalue')) === null || _a === void 0 ? void 0 : _a.toString();
             let currentValue = '';
             currentValue = (_b = commonUtility.getControlValue($thisPersistable, 'default')) === null || _b === void 0 ? void 0 : _b.toString();
             //!undefined or !NaN yield true
-            if (+currentValue == -1)
+            if (+currentValue === -1)
                 currentValue = '';
             if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
                 return;
@@ -258,7 +249,7 @@ let formController = (function () {
                     break;
             }
             console.log('(' + counter + ') ' + questionKey, thisAnswer);
-            let CRUD = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
+            const CRUD = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
             switch (CRUD) {
                 case 'C':
                     newAnswers.push(thisAnswer);
@@ -278,130 +269,23 @@ let formController = (function () {
             }
         });
         $('.spinnerContainer').hide();
-        let dialogOptions = {
-            resizable: true,
-            //height: ($(window).height() - 200),
-            //width: '90%',
-            classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
-            modal: true,
-            stack: true,
-            sticky: true,
-            position: { my: 'center', at: 'center', of: window },
-            buttons: [{
-                    //    "Save": function () {
-                    //      //do something here
-                    //      let thisUrl: string = $('form').prop('action');
-                    //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
-                    //      postBackModel.NewAnswers = newAnswers;
-                    //      postBackModel.OldAnswers = oldAnswers;
-                    //      postBackModel.UpdatedAnswers = updatedAnswers;
-                    //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-                    //    },
-                    text: "Close",
-                    //icon: "ui-icon-close",
-                    click: function () {
-                        $(this).dialog("close");
-                    }
-                }]
-        };
-        let postBackModel = new AjaxPostbackModel();
+        const postBackModel = new AjaxPostbackModel();
         postBackModel.EpisodeID = episodeID;
         postBackModel.FacilityID = facilityID;
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;
         console.log('postBackModel', postBackModel);
-        let apiBaseUrl = thisPostBtn.data('apibaseurl');
-        let apiController = thisPostBtn.data('controller');
+        const apiBaseUrl = thisPostBtn.data('apibaseurl');
+        const apiController = thisPostBtn.data('controller');
         let thisUrl = apiBaseUrl + '/api/' + apiController;
         if (episodeID === -1) {
             thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
         }
         //thisUrl = $('form').prop('action');
         $('.spinnerContainer').show();
-        jQueryAjax();
-        //onPost();
-        //use jquery ajax
-        function jQueryAjax() {
-            $.ajax({
-                type: "POST",
-                url: thisUrl,
-                data: JSON.stringify(postBackModel),
-                headers: {
-                    //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
-                    'RequestVerificationToken': $('input[name="X-CSRF-TOKEN-IPREHAB"]').val().toString(),
-                    'Accept': 'application/json',
-                },
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                crossDomain: true,
-                //xhrFields: {
-                //  withCredentials: true
-                //}
-            })
-                .done(function (result) {
-                $('.spinnerContainer').hide();
-                let jsonResult = $.parseJSON(result);
-                if (episodeID === -1) {
-                    $('#episodeID').val(result.id);
-                }
-                console.log('postback result', result);
-                dialogOptions.title = 'Success';
-                $('#dialog')
-                    .text('Data is saved.')
-                    .dialog(dialogOptions);
-                $('.rehabAction').removeAttr('disabled');
-            })
-                .fail(function (error) {
-                $('.spinnerContainer').hide();
-                thisPostBtn.attr('disabled', 'false');
-                console.log('postback error', error);
-                dialogOptions.title = error.statusText;
-                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
-                if (error.statusText == "OK" || error.statusText == "Ok") {
-                    $('#dialog')
-                        .text('Data is saved.')
-                        .dialog(dialogOptions);
-                }
-                else {
-                    $('#dialog')
-                        .text('Data is not saved. ' + error.responseText)
-                        .dialog(dialogOptions);
-                }
-            });
-        }
-        //use fetch api
-        function onPost() {
-            const url = thisUrl;
-            var headers = {};
-            fetch(url, {
-                method: "POST",
-                mode: 'cors',
-                headers: headers
-            })
-                .then((response) => {
-                if (!response.ok) {
-                    throw new Error(response.text.toString());
-                }
-                return response.json();
-            })
-                .then(data => {
-                $('#dialog')
-                    .text('Data is saved.')
-                    .dialog(dialogOptions);
-                $('.rehabAction').removeAttr('disabled');
-            })
-                .catch(function (error) {
-                thisPostBtn.attr('disabled', 'false');
-                console.log('postback error', error);
-                $('.spinnerContainer').hide();
-                dialogOptions.title = error.statusText;
-                dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' };
-                $('#dialog')
-                    .text('Data is not saved. ' + error)
-                    .dialog(dialogOptions);
-            });
-        }
+        jQueryAjax(thisUrl, postBackModel, episodeID);
+        //onPost(thisUrl);
     }
     /* private function */
     function validateForm(theForm) {
@@ -409,15 +293,14 @@ let formController = (function () {
     }
     /* private function */
     function updateScore(thisControl, newScore) {
-        let theScoreEl;
-        theScoreEl = $(thisControl.siblings('i.score'));
+        const theScoreEl = $(thisControl.siblings('i.score'));
         if (newScore <= 0) {
             if (theScoreEl.length > 0) {
                 theScoreEl.remove();
             }
         }
         else {
-            if (theScoreEl.length == 0) {
+            if (theScoreEl.length === 0) {
                 {
                     thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
                 }
@@ -532,9 +415,9 @@ let formController = (function () {
         let GG0170_AtoP_Performance = 0;
         /* select only GG0170 Admission Performance excluding Q, R and S */
         $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
-            let $thisControl = $(this);
-            let thisControlScore = commonUtility.getControlValue($thisControl);
-            let thisControlID = $thisControl.prop('id');
+            const $thisControl = $(this);
+            const thisControlScore = commonUtility.getControlValue($thisControl);
+            const thisControlID = $thisControl.prop('id');
             switch (true) {
                 case (thisControlScore >= 7): {
                     if (thisControlID.indexOf('GG0170I') >= 0) {
@@ -566,7 +449,7 @@ let formController = (function () {
         let multiplier = 1, R_Performance = 0, S_Performance = 0;
         let GG0170I, GG0170R, GG0170S;
         let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
-        if (stage == 'Base') {
+        if (stage === 'Base') {
             /* GG0170I determines the multiplier for GG0170R and GG0170S */
             GG0170I = $('.persistable[id^=GG0170I_Admission_Performance]');
             GG0170R = $('.persistable[id^=GG0170R_Admission_Performance]');
@@ -605,9 +488,9 @@ let formController = (function () {
         let GG0170_AtoP_Discharge_Performance = 0;
         /* select only GG0170 Discharge Performance excluding Q, R and S */
         $('.persistable[id^=GG0170]:not([id*=Admission_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
-            let $thisControl = $(this);
-            let thisControlScore = commonUtility.getControlValue($thisControl);
-            let thisControlID = $thisControl.prop('id');
+            const $thisControl = $(this);
+            const thisControlScore = commonUtility.getControlValue($thisControl);
+            const thisControlID = $thisControl.prop('id');
             switch (true) {
                 case thisControlScore >= 7:
                     if (thisControlID.indexOf('GG0170I') >= 0) {
@@ -635,24 +518,24 @@ let formController = (function () {
     function Score_GG0170RandS_Discharge_Performance() {
         let multiplier = 1, R_Performance = 0, S_Performance = 0;
         /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
-        let GG0170I = $('.persistable[id^=GG0170I_Discharge_Performance]');
-        let GG0170I_Value = commonUtility.getControlValue(GG0170I);
+        const GG0170I = $('.persistable[id^=GG0170I_Discharge_Performance]');
+        const GG0170I_Value = commonUtility.getControlValue(GG0170I);
         if (GG0170I_Value >= 7)
             multiplier = 2;
         if (GG0170I_Value <= 6)
             multiplier = 0;
         if (isNaN(GG0170I_Value))
             multiplier = 1; //when GG0170I is not answered score R and S as is
-        let GG0170R = $('.persistable[id^=GG0170R_Discharge_Performance]');
-        let GG0170R_Value = commonUtility.getControlValue(GG0170R);
+        const GG0170R = $('.persistable[id^=GG0170R_Discharge_Performance]');
+        const GG0170R_Value = commonUtility.getControlValue(GG0170R);
         if (GG0170R_Value > 0) {
             updateScore(GG0170R, GG0170R_Value * multiplier);
             R_Performance += GG0170R_Value * multiplier;
         }
         else
             updateScore(GG0170R, 0);
-        let GG0170S = $('.persistable[id^=GG0170S_Discharge_Performance]');
-        let GG0170S_Value = commonUtility.getControlValue(GG0170S);
+        const GG0170S = $('.persistable[id^=GG0170S_Discharge_Performance]');
+        const GG0170S_Value = commonUtility.getControlValue(GG0170S);
         if (GG0170S_Value > 0) {
             updateScore(GG0170S, GG0170S_Value * multiplier);
             S_Performance += GG0170S_Value * multiplier;
@@ -666,8 +549,8 @@ let formController = (function () {
     ***************************************************************************/
     return {
         'scrollToAnchor': scrollToAnchor,
-        'setRehabBtns': setRehabBtns,
-        'resetRehabBtns': resetRehabBtns,
+        //'setRehabBtns': setRehabBtns,
+        //'resetRehabBtns': resetRehabBtns,
         'breakLongSentence': breakLongSentence,
         'submitTheForm': submitTheForm,
         'validate': validateForm,
@@ -677,4 +560,133 @@ let formController = (function () {
         'grandTotal': grandTotal
     };
 })();
+$(function () {
+    const dialogOptions = {
+        resizable: true,
+        //height: ($(window).height() - 200),
+        //width: '90%',
+        classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+        modal: true,
+        stack: true,
+        sticky: true,
+        position: { my: 'center', at: 'center', of: window },
+        buttons: [{
+                //    "Save": function () {
+                //      //do something here
+                //      let thisUrl: string = $('form').prop('action');
+                //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
+                //      postBackModel.NewAnswers = newAnswers;
+                //      postBackModel.OldAnswers = oldAnswers;
+                //      postBackModel.UpdatedAnswers = updatedAnswers;
+                //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+                //    },
+                text: "Close",
+                //icon: "ui-icon-close",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+    };
+    $('.persistable').change(function () {
+        const minDate = new Date('2021-01-01 00:00:00');
+        const onsetDate = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
+        const admissionDate = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+        const commonUtility = new Utility();
+        //if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
+        if (commonUtility.isDate(onsetDate) && commonUtility.isDate(admissionDate)) {
+            if (onsetDate > minDate && admissionDate > minDate && admissionDate >= onsetDate) {
+                $('#ajaxPost').removeAttr('disabled');
+                //$('#mvcPost').removeAttr('disabled');
+            }
+            else {
+                $('#dialog')
+                    .text('Onset Date must be same or earlier than Admit Date, and both dates must be later than 01/01/2021 00:00:00')
+                    .dialog(dialogOptions);
+            }
+        }
+        else {
+            $('#dialog')
+                .text('Onset Date and Admit Date must be valid dates.')
+                .dialog(dialogOptions);
+        }
+    });
+    $('select').each(function () {
+        const $this = $(this);
+        $this.change(function () {
+            if ($this.val() !== -1) {
+                formController.breakLongSentence($this);
+            }
+        });
+    });
+    /* section nav */
+    $('#questionTab').hover(function () {
+        $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
+    }, function () {
+        $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
+    });
+    /* jump to section anchor */
+    $('.gotoSection').each(function () {
+        const $this = $(this);
+        $this.click(function () {
+            const anchorID = $this.data("anchorid");
+            if (anchorID != '') {
+                formController.scrollToAnchor(anchorID);
+            }
+        });
+    });
+    /* show hide section */
+    $('.section-title').each(function () {
+        const thisTitle = $(this);
+        thisTitle.click(function () {
+            let sectionContent = thisTitle.next();
+            let sectionContentHidden = sectionContent.attr('hidden');
+            sectionContent.attr('hidden', !sectionContentHidden);
+        });
+    });
+    /* show hide individual question */
+    $('.child1').each(function () {
+        const thisKey = $(this);
+        thisKey.click(function () {
+            const thisQuestion = thisKey.next();
+            console.log('thisQuestion', thisQuestion);
+            const thisQuestionHidden = thisQuestion.attr('hidden');
+            console.log('thisQuestion hidden', thisQuestionHidden);
+            thisQuestion.attr('hidden', !thisQuestionHidden);
+        });
+    });
+    /* traditional form post */
+    //$('#mvcPost').click(function () {
+    //  $('form').submit();
+    //});
+    /* ajax post form */
+    $('#ajaxPost').click(function () {
+        if (formController.validate) {
+            formController.submitTheForm($(this), dialogOptions);
+        }
+    });
+    /* self care score on load */
+    formController.selfCareScore();
+    /* self care scorce on change */
+    $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
+        const $this = $(this);
+        $this.change(function () {
+            formController.selfCareScore();
+            formController.grandTotal();
+        });
+    });
+    /* mobility score on load */
+    formController.mobilityScore();
+    /* mobility score on change */
+    $('.persistable[id^=GG0170]:not([id*=Discharge_Goal])').each(function () {
+        $(this).change(function () {
+            formController.mobilityScore();
+            formController.grandTotal();
+        });
+    });
+    /* grand total on load */
+    formController.grandTotal();
+});
+/****************************************************************************
+ * javaScript closure
+ ***************************************************************************/ 
 //# sourceMappingURL=form.js.map
