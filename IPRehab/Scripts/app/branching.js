@@ -12,17 +12,26 @@ const branchingController = (function () {
     function Q12_Q23_blank_then_Lock_All() {
         const Q12 = $('.persistable[id^=Q12]');
         const Q23 = $('.persistable[id^=Q23]');
-        const otherPersistables = $('.persistable:not("[id^=Q12]"):not([id^=Q23])');
+        const otherPersistables = $('.persistable:not("[id^=Q12]"):not([id^=Q23]), .persistable[id^=Q12B]');
         if (commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23)) {
             otherPersistables.each(function () {
                 $(this).prop("disabled", true);
             });
         }
         else {
-            $('.persistable').each(function () {
-                $(this).prop("disabled", false);
-            });
+            const minDate = new Date('2020-01-01 00:00:00');
+            const onsetDate = new Date(Q23.val());
+            const admitDate = new Date(Q12.val());
+            if (onsetDate > minDate && admitDate > minDate && onsetDate <= admitDate) {
+                $('.persistable').each(function () {
+                    $(this).prop("disabled", false);
+                });
+            }
         }
+    }
+    /* private function */
+    function Q12B_blank_then_Lock_Discharge() {
+        //lock all field with pertaining discharge Q15B,Q16B, Q17B, Q21B, Q41, Q44C
     }
     /* private function */
     function Q14B_enabled_if_Q14A_is_Yes() {
@@ -47,6 +56,7 @@ const branchingController = (function () {
         else {
             if (Q14AYes && Q14Bs.length > 0) {
                 Q14Bs.removeAttr('disabled');
+                //commonUtility.scrollTo(Q14Bs[0]);
                 Q14Bs[0].focus();
             }
             if (Q14ANo && Q14Bs.length > 0) {
@@ -62,6 +72,8 @@ const branchingController = (function () {
         const Q17 = $(".persistable[id^=Q17]:not([id^=Q17B])");
         if (Q16A.length > 0 && !commonUtility.isEmpty(Q16A) && commonUtility.getControlValue(Q16A) === 1 /* 1. Home */) {
             if (Q17.length > 0) {
+                const scrollAmount = Q17.prop('offsetTop');
+                $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
                 Q17.prop('disabled', false).focus();
             }
         }
@@ -296,6 +308,7 @@ const branchingController = (function () {
     return {
         'CommonUnlock': CommonUnlock,
         'Q12_Q23_blank_then_Lock_All': Q12_Q23_blank_then_Lock_All,
+        'Q12B_blank_then_Lock_Discharge': Q12B_blank_then_Lock_Discharge,
         'Q14B_enabled_if_Q14A_is_Yes': Q14B_enabled_if_Q14A_is_Yes,
         'Q16A_is_Home_then_Q17': Q16A_is_Home_then_Q17,
         'Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A': Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A,

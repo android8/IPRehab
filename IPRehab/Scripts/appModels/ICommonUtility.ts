@@ -7,4 +7,5 @@
   resetControlValue($this: any, newValue: string);
   getTextPixels(someText: string, font: any);
   breakLongSentence(thisSelectElement);
+  scrollTo(anElement: any);
 }

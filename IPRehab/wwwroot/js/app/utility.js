@@ -185,5 +185,9 @@ export class Utility {
         //    });
         //  }
     }
+    scrollTo(thisElement) {
+        const scrollAmount = thisElement.prop('offsetTop');
+        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+    }
 }
 //# sourceMappingURL=utility.js.map

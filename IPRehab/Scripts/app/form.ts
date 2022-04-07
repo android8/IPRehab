@@ -4,6 +4,9 @@
 import { Utility, UserAnswer, AjaxPostbackModel }  from "./commonImport.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
+/****************************************************************************
+ * javaScript closure
+ ***************************************************************************/
 const formController = (function () {
   const commonUtility: Utility = new Utility();
 
@@ -15,8 +18,6 @@ const formController = (function () {
      */
 
     const thisElement: any = $('#' + anchorID);
-    console.log('scroll to ' + anchorID + '.prop("offsetTop"): ' + thisElement.prop('offsetTop'), thisElement);
-    console.log(anchorID + '.offset().top = ' + thisElement.offset().top);
     const scrollAmount: number = thisElement.prop('offsetTop');
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
   }
@@ -122,6 +123,7 @@ const formController = (function () {
           console.log('jsonResult', jsonResult);
           if (episodeID === -1) {
             $('#episodeID').val(jsonResult);
+            $('#stage').val('Base');
           }
 
           dialogOptions.title = 'Success';
@@ -184,6 +186,7 @@ const formController = (function () {
             .dialog(dialogOptions)
         });
     }
+
     thisPostBtn.attr('disabled', 'true');
     $('.spinnerContainer').show();
 
@@ -192,7 +195,6 @@ const formController = (function () {
     const updatedAnswers: Array<UserAnswer> = new Array<UserAnswer>();
 
     const theScope: any = $('#userAnswerForm');
-    const stageName: string = $('#stage', theScope).val().toString();
     const patientID: string = $('#patientID', theScope).val().toString();
     const patientName: string = $('#patientName', theScope).val().toString();
     let facilityID: string = $('#facilityID', theScope).val().toString();
@@ -211,8 +213,6 @@ const formController = (function () {
     //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
     const persistables: any = $('.persistable');
     let counter = 0
-    if (stageName.toLowerCase() === "new")
-      episodeID = -1;
 
     persistables.each(function () {
       counter++;
@@ -313,9 +313,14 @@ const formController = (function () {
 
     const apiBaseUrl = thisPostBtn.data('apibaseurl');
     const apiController = thisPostBtn.data('controller');
-    let thisUrl: string = apiBaseUrl + '/api/' + apiController;
+
+    let thisUrl: string;
     if (episodeID === -1) {
+      //post to different api when episode === -1
       thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
+    }
+    else {
+      thisUrl = apiBaseUrl + '/api/' + apiController;
     }
 
     //thisUrl = $('form').prop('action');
@@ -790,6 +795,3 @@ $(function () {
   formController.grandTotal();
 });
 
-/****************************************************************************
- * javaScript closure
- ***************************************************************************/

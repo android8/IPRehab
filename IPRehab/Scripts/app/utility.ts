@@ -206,4 +206,9 @@ export class Utility implements ICommonUtility {
   //    });
   //  }
   }
+
+  public scrollTo(thisElement: any) {
+    const scrollAmount: number = thisElement.prop('offsetTop');
+    $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+  }
 }

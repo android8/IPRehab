@@ -122,11 +122,8 @@
     <None Include="Views\Shared\Components\Input\MaterialTextArea.cshtml" />
     <None Include="Views\Shared\Components\Input\RadioFlexDirectionColumnLongText2.cshtml" />
     <None Include="wwwroot\js\app\animateBanner.js" />
-    <None Include="wwwroot\js\app\animateBanner.js.map" />
     <None Include="wwwroot\js\app\form.js" />
-    <None Include="wwwroot\js\app\form.js.map" />
     <None Include="wwwroot\js\app\patientList.js" />
-    <None Include="wwwroot\js\app\patientList.js.map" />
     <None Include="wwwroot\materialize-css\CHANGELOG.md" />
     <None Include="wwwroot\materialize-css\dist\.DS_Store" />
     <None Include="wwwroot\materialize-css\dist\css\.DS_Store" />
@@ -140,7 +137,6 @@
 
   <ItemGroup>
     <Folder Include="logs\" />
-    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
   <ItemGroup>

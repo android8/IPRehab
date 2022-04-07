@@ -16,19 +16,23 @@
 }
 
 <environment include="Production">
+    @section MyStyles_prod {
+        <link rel="stylesheet" href="~/css/snowAnimation.css" />
+    }
+
     @section MyScripts_prod {
-    @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@
-    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
+        @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@
+        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
     }
 </environment>
 
 <environment include="Development">
     @section MyScripts_dev {
-    <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
     }
 </environment>
 

@@ -39,35 +39,46 @@ namespace IPRehab.ViewComponents
         cmdBtnTemplateVM.Stage = entry.Key;
         cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
 
-        if (entry.Key == "Patient" && EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
+        if (entry.Key == "Patient")
         {
-          //only visible when in Question stage form
-          cmdBtnTemplateVM.ShowThisButton = true;
+          if (EpisodeBtnConfig.ActionButtonVM.HostingPage == "Patient")
+          {
+            cmdBtnTemplateVM.ShowThisButton = false;
+          }
+          else
+          {
+            //only visible when in Question stage form
+            cmdBtnTemplateVM.ShowThisButton = true;
 
-          cmdBtnTemplateVM.TextNode = "Patient List";
+            cmdBtnTemplateVM.TextNode = "Patient List";
 
-          RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
-          clonedPatientActionVM.ControllerName = "Patient";
-          clonedPatientActionVM.ActionName = "Index";
-          clonedPatientActionVM.PatientID = string.Empty;
-          clonedPatientActionVM.EpisodeID = -1;
-          //use cloned
-          cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
-          cmdButtonVMList.Add(cmdBtnTemplateVM);
+            RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
+            clonedPatientActionVM.ControllerName = "Patient";
+            clonedPatientActionVM.ActionName = "Index";
+            clonedPatientActionVM.PatientID = string.Empty;
+            clonedPatientActionVM.EpisodeID = -1;
+            //use cloned
+            cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
+            cmdButtonVMList.Add(cmdBtnTemplateVM);
+          }
         }
         else
         {
-          if (entry.Key == "New" || EpisodeBtnConfig.EpisodeOfCareID > 0 || EpisodeBtnConfig.ActionButtonVM.HostingPage == "Question")
-
+          if (EpisodeBtnConfig.EpisodeOfCareID == -1)
+          {
+            cmdBtnTemplateVM.ShowThisButton = false;
+          }
+          else { 
             cmdBtnTemplateVM.ShowThisButton = true;
 
-          // use invoked parameter
-          cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;
-          if (entry.Value.ButtonTitle == "Base")
-            cmdBtnTemplateVM.TextNode = "Episode of Care";
-          else
-            cmdBtnTemplateVM.TextNode = entry.Value.ButtonTitle;
-          cmdButtonVMList.Add(cmdBtnTemplateVM);
+            // use invoked parameter
+            cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;
+            if (entry.Value.ButtonTitle == "Base")
+              cmdBtnTemplateVM.TextNode = "Episode of Care";
+            else
+              cmdBtnTemplateVM.TextNode = entry.Value.ButtonTitle;
+            cmdButtonVMList.Add(cmdBtnTemplateVM);
+          }
         }
       }
 
