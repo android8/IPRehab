@@ -1,8 +1,38 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 
-import { ICommonUtility } from "./commonImport.js";
+import { ICommonUtility, EnumGetControlValueBehavior } from "./commonImport.js";
 
 export class Utility implements ICommonUtility {
+  public dialogOptions() {
+    const dialogOptions: any = {
+      resizable: true,
+      //height: ($(window).height() - 200),
+      //width: '90%',
+      classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+      modal: true,
+      stack: true,
+      sticky: true,
+      position: { my: 'center', at: 'center', of: window },
+      buttons: [{
+        //    "Save": function () {
+        //      //do something here
+        //      let thisUrl: string = $('form').prop('action');
+        //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
+        //      postBackModel.NewAnswers = newAnswers;
+        //      postBackModel.OldAnswers = oldAnswers;
+        //      postBackModel.UpdatedAnswers = updatedAnswers;
+        //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+        //    },
+        text: "Close",
+        //icon: "ui-icon-close",
+        click: function () {
+          $(this).dialog("close");
+        }
+      }]
+    };
+    return dialogOptions;
+  }
+
   isDate(aDate: Date): boolean {
     //throw new Error("Method not implemented.");
     return aDate instanceof Date && !isNaN(aDate.valueOf());
@@ -34,7 +64,7 @@ export class Utility implements ICommonUtility {
           equalMsg = controlType + ' ' + controlID + ' unchecked unequal';
         }
         break;
-       
+
       default:
         if (!currentValue && !oldValue && +currentValue === +oldValue) {
           equalMsg = controlType + ' ' + controlID + 'both values are blank';
@@ -83,13 +113,12 @@ export class Utility implements ICommonUtility {
     }
   }
 
-  getControlValue($thisControl, valueSource = 'other') {
+  getControlValue($thisControl, behavior = EnumGetControlValueBehavior.Elaborated /*use other if no valueSource */) {
     //throw new Error("Method not implemented.");
     //console.log('$thisControl', $thisControl);
     const thisControlType: string = $thisControl.prop('type');
     let thisValue;
-    switch (valueSource) {
-      case "other": {
+    if (behavior === EnumGetControlValueBehavior.Elaborated) {
         switch (thisControlType) {
           case "select-one": {
             //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
@@ -118,43 +147,50 @@ export class Utility implements ICommonUtility {
             break;
           }
         }
-        break;
       }
-      default: {
+      else {
         if ((thisControlType === 'checkbox' || thisControlType === 'radio') && $thisControl.prop('checked')) {
           thisValue = $thisControl.val();
         }
         else {
           thisValue = $thisControl.val();
         }
-        break;
       }
-    }
     return thisValue;
   }
 
-  resetControlValue($thisControl, newValue: string) {
+  resetControlValue($thisControl, newValue: string = '-1') {
     //throw new Error("Method not implemented.");
     //console.log('$thisControl', $thisControl);
     const thisControlType: string = $thisControl.prop('type');
+    console.log('resetting control type ' + thisControlType + $thisControl.prop('id'));
     switch (thisControlType) {
       case "select-one": {
         const newValueInt: number = parseInt(newValue);
-        if (isNaN(newValueInt)) 
+        if (isNaN(newValueInt)) {
           $thisControl.val(-1).change();
-        else
-          $thisControl.val(newValue);
+        }
+        else {
+          $thisControl.val(newValue).change();
+        }
+        console.log('changed ' + thisControlType + ' ' + $thisControl.prop('id') + ' value to ' + newValueInt);
         break;
       }
       case "checkbox":
       case "radio": {
-        $thisControl.prop('checked', false);
+        $thisControl.prop('checked', false).change();
+        console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
         break;
       }
-      case "text": {
-        $thisControl.val('');
+      case "text": 
+      case "date": {
+        $thisControl.val('').change();
+        console.log('cleared ' + thisControlType + ' ' + $thisControl.prop('id'));
         break;
       }
+      default:
+        console.log('unknown ' + thisControlType + 'control type:  for ' + $thisControl.prop('id)'));
+        break;
     }
   }
 
@@ -169,46 +205,47 @@ export class Utility implements ICommonUtility {
 
   breakLongSentence(thisSelectElement) {
     throw new Error("Method not implemented.");
-  //  console.log('thisSelectElement', thisSelectElement);
-  //  let maxLength: number = 50;
-  //  let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
-  //  console.log('longTextOptionDIV', longTextOptionDIV);
-  //  let thisSelectWidth = thisSelectElement[0].clientWidth;
-  //  let thisScope: any = thisSelectElement;
-  //  let selectedValue: number = parseInt(thisSelectElement.prop('value'));
-  //  if (selectedValue <= 0) {
-  //    longTextOptionDIV.text('');
-  //  }
-  //  else {
-  //    $.each($('option:selected', thisScope), function () {
-  //      let $thisOption = $(this);
+    //  console.log('thisSelectElement', thisSelectElement);
+    //  let maxLength: number = 50;
+    //  let longTextOptionDIV = thisSelectElement.next('div.longTextOption');
+    //  console.log('longTextOptionDIV', longTextOptionDIV);
+    //  let thisSelectWidth = thisSelectElement[0].clientWidth;
+    //  let thisScope: any = thisSelectElement;
+    //  let selectedValue: number = parseInt(thisSelectElement.prop('value'));
+    //  if (selectedValue <= 0) {
+    //    longTextOptionDIV.text('');
+    //  }
+    //  else {
+    //    $.each($('option:selected', thisScope), function () {
+    //      let $thisOption = $(this);
 
-  //      let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g")
-  //      let oldText: string = $thisOption.text();
-  //      let font = $thisOption.css('font');
-  //      let oldTextInPixel = getTextPixels(oldText, font);
+    //      let regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g")
+    //      let oldText: string = $thisOption.text();
+    //      let font = $thisOption.css('font');
+    //      let oldTextInPixel = getTextPixels(oldText, font);
 
-  //      console.log('oldTextInPixel', oldTextInPixel);
-  //      console.log('thisSelectWidth', thisSelectWidth);
-  //      longTextOptionDIV.text('');
-  //      if (oldTextInPixel > thisSelectWidth) {
-  //        let newStr = oldText.replace(regX, "$1\n");
-  //        newStr = newStr.trim();
-  //        let startWithNumber = $.isNumeric(newStr.substring(0, 1));
-  //        if (startWithNumber) {
-  //          newStr = newStr.substring(newStr.indexOf(" ") + 1);
-  //        }
-  //        console.log('old ->', oldText);
-  //        console.log('new ->', newStr);
-  //        longTextOptionDIV.text(newStr);
-  //        longTextOptionDIV.removeClass("invisible");
-  //      }
-  //    });
-  //  }
+    //      console.log('oldTextInPixel', oldTextInPixel);
+    //      console.log('thisSelectWidth', thisSelectWidth);
+    //      longTextOptionDIV.text('');
+    //      if (oldTextInPixel > thisSelectWidth) {
+    //        let newStr = oldText.replace(regX, "$1\n");
+    //        newStr = newStr.trim();
+    //        let startWithNumber = $.isNumeric(newStr.substring(0, 1));
+    //        if (startWithNumber) {
+    //          newStr = newStr.substring(newStr.indexOf(" ") + 1);
+    //        }
+    //        console.log('old ->', oldText);
+    //        console.log('new ->', newStr);
+    //        longTextOptionDIV.text(newStr);
+    //        longTextOptionDIV.removeClass("invisible");
+    //      }
+    //    });
+    //  }
   }
 
   public scrollTo(thisElement: any) {
-    const scrollAmount: number = thisElement.prop('offsetTop');
+    let scrollAmount: number = thisElement.prop('offsetTop');
+    if (thisElement.prop('id').indexOf('Q12')) scrollAmount += 15; //scroll up further by 15
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
   }
 }

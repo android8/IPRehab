@@ -23,14 +23,19 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="%2a%2a\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="Scripts\typings\**" />
+    <Content Remove="%2a%2a\**" />
     <Content Remove="Data\**" />
     <Content Remove="Scripts\typings\**" />
+    <EmbeddedResource Remove="%2a%2a\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Scripts\typings\**" />
+    <None Remove="%2a%2a\**" />
     <None Remove="Data\**" />
     <None Remove="Scripts\typings\**" />
+    <TypeScriptCompile Remove="%2a%2a\**" />
     <TypeScriptCompile Remove="node_modules\**" />
     <TypeScriptCompile Remove="Scripts\typings\**" />
   </ItemGroup>
@@ -56,6 +61,8 @@
     <Content Remove="Views\Shared\Components\Input\MaterialInputDate1.cshtml" />
     <Content Remove="Views\Shared\Components\Input\MDNumberBeforeHeader.cshtml" />
     <Content Remove="Views\Shared\_RehabActionBtns.cshtml" />
+    <Content Remove="wwwroot\%2a%2a" />
+    <Content Remove="wwwroot\css\snowyBackground.html" />
     <Content Remove="wwwroot\js\file.ts" />
   </ItemGroup>
 
@@ -70,6 +77,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="%2a%2a\%2a.ts" />
+    <TypeScriptCompile Remove="%2a%2a\%2a.tsx" />
     <TypeScriptCompile Remove="Scripts\app\patientDataTable.ts" />
     <TypeScriptCompile Remove="Scripts\app\validationRules.ts" />
   </ItemGroup>
@@ -133,10 +142,6 @@
     <None Include="wwwroot\materialize-css\Gruntfile.js" />
     <None Include="wwwroot\materialize-css\LICENSE" />
     <None Include="wwwroot\materialize-css\README.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="logs\" />
   </ItemGroup>
 
   <ItemGroup>

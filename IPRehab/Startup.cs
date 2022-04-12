@@ -65,16 +65,27 @@ namespace IPRehab
         {
           // Creates a CSS and a JS bundle. Globbing patterns supported.
           pipeline.AddScssBundle("/css/siteCssBundle.css", 
-            new string[] { "css/**/site.css", "css/**/transition.css", "css/**/app.css" });
+            new string[] { 
+              "css/**/site.css", 
+              "css/**/transition.css", 
+              "css/**/app.css"
+            });
 
           pipeline.AddJavaScriptBundle("/js/siteJsBundle.js", 
-            new string[] { "js/**/animateBanner.js", "js/**/cookieConsent.js"});
+            new string[] { 
+              "js/**/animateBanner.js", 
+              "js/**/cookieConsent.js"});
 
           pipeline.AddJavaScriptBundle("/js/patientBundle.js", 
-            new string[] { "js/**/commandBtns.js", "js/**/patientList.js"});
+            new string[] { 
+              "js/**/commandBtns.js", 
+              "js/**/patientList.js"});
 
           pipeline.AddJavaScriptBundle("/js/questionBundle.js", 
-            new string[] { "js/**/commandBtns.js", "js/**/branching.js", "js/**/form.js" });
+            new string[] { 
+              "js/**/commandBtns.js", 
+              "js/**/branching.js", 
+              "js/**/form.js" });
 
           // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
           //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")

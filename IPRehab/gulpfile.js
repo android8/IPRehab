@@ -1,4 +1,4 @@
-/// <binding AfterBuild='cleanDestination, compileStyles, minifyCss, minifyAppJs, copyAppJsMap' />
+/// <binding AfterBuild='cleaMyJs, minifyAppJs, copyAppJsMap, cleanMyCss, compileMySassStyles, minifyMyCss' />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 /*
@@ -13,22 +13,27 @@ var del = require('del');
 
 var scriptSources = {
   myMap: ['./Scripts/app/**/*.map'],
-  myJs: ['./Scripts/app/*.js'],
+  myJs: ['./Scripts/app/*.js', './Scripts/appModels/enum.js'],
   destinations: ['./wwwroot/js/app']
 };
 
 var styleSources = {
   mySass: ['./wwwroot/css/**/*.scss'],
-  myCss: ['./wwwroot/css/**/*.css'],
+  myCssOnly: ['./wwwroot/css/**/*.css'],
   destinations: ['./wwwroot/css']
 }
 
-gulp.task('cleanDestination', function () {
+gulp.task('cleanMyCss', function () {
+  return del(styleSources.myCssOnly); /* don't clean .scss */
+});
+
+
+gulp.task('cleaMyJs', function () {
   return del(scriptSources.destinations);
 });
 
 gulp.task('minifyAppJs', function () {
-  return gulp.src(scriptSources.myJs[0], { allowEmpty: true })
+  return gulp.src(scriptSources.myJs, { allowEmpty: true })
     .pipe(minify({
       noSource: false,
       ext: {
@@ -44,7 +49,7 @@ gulp.task('copyAppJsMap', function () {
 });
 
 //gulp.task('minifyAppModelsJs', function () {
-//  return gulp.src(scriptSources.myJs[0], { allowEmpty: true })
+//  return gulp.src(scriptSources.myJs[1], { allowEmpty: true })
 //    .pipe(minify({
 //      noSource: false,
 //      ext: {
@@ -55,12 +60,12 @@ gulp.task('copyAppJsMap', function () {
 //});
 
 //gulp.task('copyAppModelsJsMap', function () {
-//    return gulp.src(scriptSources.myMap[0])
+//    return gulp.src(scriptSources.myMap[1])
 //    .pipe(gulp.dest(scriptSources.destinations[0]));
 //});
 
 
-gulp.task('compileStyles', function (done) {
+gulp.task('compileMySassStyles', function (done) {
   gulp.src(styleSources.mySass)
     .pipe(
       sass() /*compile sass */
@@ -72,8 +77,8 @@ gulp.task('compileStyles', function (done) {
   done();
 });
 
-gulp.task('minifyCss', function () {
-  return gulp.src(styleSources.myCss, { allowEmpty: true })
+gulp.task('minifyMyCss', function () {
+  return gulp.src(styleSources.myCssOnly, { allowEmpty: true })
     .pipe(minify({
       noSource: false,
       ext: {

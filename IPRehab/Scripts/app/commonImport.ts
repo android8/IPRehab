@@ -8,12 +8,12 @@ import { AjaxPostbackModel } from "./ajaxPostbackModel.js";
 import { IAjaxPostbackModel } from "../appModels/IAjaxPostbackModel.js";
 import { IUserAnswer } from "../appModels/IUserAnswer.js";
 import { ICommonUtility } from "../appModels/ICommonUtility.js";
-
+import { EnumGetControlValueBehavior, EnumChangeEventArg } from "../app/enums.js";
 export {
   //deprecated,
   //MDCRipple,
   //MDCTextField,
-  Utility, UserAnswer, AjaxPostbackModel, IAjaxPostbackModel, IUserAnswer, ICommonUtility
+  Utility, UserAnswer, AjaxPostbackModel, IAjaxPostbackModel, IUserAnswer, ICommonUtility, EnumGetControlValueBehavior, EnumChangeEventArg
   //, isNumeric, 
   //post
 };

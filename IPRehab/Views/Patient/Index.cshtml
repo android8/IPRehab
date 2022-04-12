@@ -139,17 +139,6 @@
                                 No episode of care&nbsp;
                               </div>
                               <div>
-                                @*<div class="mdc-touch-target-wrapper">
-                                    <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
-                                            title="show commands" data-hidden="true">
-                                      <span class="mdc-button__ripple"></span>
-                                      <span class="mdc-button__label textNoWrap">Commands</span>
-                                      <div class="mdc-button__touch"></div>
-                                    </button>
-                                  </div>*@
-
-                                @*/*the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
-
                                 @{
                                   string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
@@ -187,18 +176,6 @@
                             }
                           </td>
                           <td>
-                            @*<div class="mdc-touch-target-wrapper">
-                              <button class="mdc-button mdc-button--raised mdc-button--touch commandTrigger"
-                              title="show commands" data-hidden="true">
-                              <span class="mdc-button__ripple"></span>
-                              <span class="mdc-button__label textNoWrap">Commands</span>
-                              <div class="mdc-button__touch"></div>
-                              </button>
-                              </div>*@
-
-                            @*/
-                              *the old partial view*/ @{await Html.RenderPartialAsync("_RehabActionBtns", episodeAndCommands.ActionButtonVM);}*@
-
                             @{
                               /* stage command buttons view component controller */
                               string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);

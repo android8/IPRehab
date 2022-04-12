@@ -1,58 +1,22 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
 
-import { Utility, UserAnswer, AjaxPostbackModel }  from "./commonImport.js";
+import { Utility, UserAnswer, AjaxPostbackModel, EnumGetControlValueBehavior }  from "./commonImport.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
+
+  const commonUtility: Utility = new Utility();
+
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
 const formController = (function () {
-  const commonUtility: Utility = new Utility();
-
   /* private function */
   function scrollToAnchor(anchorID: string) {
-    /* https://arnavzedion.medium.com/the-difference-between-offsettop-scrolltop-clienttop-36cf52b733ca#:~:text=offsetTop%20is%20read-only%2C%20while%20scrollTop%20is%20read%2Fwrite.%20As,dependent%20variable%20or%20offset%20position%20to%20scroll%20independently
-     * 
-     * https://www.w3schools.com/jquery/css_scrolltop.asp
-     */
-
     const thisElement: any = $('#' + anchorID);
     const scrollAmount: number = thisElement.prop('offsetTop');
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
   }
-
-  /* private function */
-  //function setRehabBtns(targetScope: any) {
-  //  let currentIdx: number = 0;
-  //  $.each($('.rehabAction', targetScope), function () {
-  //    let $this = $(this);
-  //    let newTitle: string = $this.prop('title').replace(/Edit/g, 'Create');
-  //    let newHref: string = $this.prop('href').replace(/Edit/g, 'Create');
-  //    $this.prop('title', newTitle);
-  //    $this.prop('href', newHref);
-  //    currentIdx++;
-  //    let newClass: string = $this.prop('class') + ' createActionCmd' + currentIdx.toString();
-  //    $this.prop('class', newClass);
-  //  });
-  //}
-
-  /* private function */
-  //function resetRehabBtns(targetScope: any) {
-  //  let cmdBtns: string[] = ['primary', 'info', 'secondary', 'success', 'warning'];
-  //  let currentIdx: number = 0;
-  //  $.each($('.rehabAction', targetScope), function () {
-  //    let $this = $(this);
-  //    let newTitle: string = $this.prop('title').replace(/Create/g, 'Edit');
-  //    let newHref: string = $this.prop('href').replace(/Create/g, 'Edit');
-  //    $this.prop('title', newTitle);
-  //    $this.prop('href', newHref);
-  //    let resetClass: string = '';
-  //    resetClass = 'badge badge-' + cmdBtns[currentIdx] + ' rehabAction';
-  //    currentIdx++;
-  //    $this.prop('class', resetClass);
-  //  });
-  //}
 
   /* private function */
   function breakLongSentence(thisSelectElement) {
@@ -106,7 +70,7 @@ const formController = (function () {
         data: JSON.stringify(postBackModel),
         headers: {
           //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
-          'RequestVerificationToken': $('input[name="X-CSRF-TOKEN-IPREHAB"]').val().toString(),
+          'RequestVerificationToken': $('input[name=X-CSRF-TOKEN-IPREHAB]').val().toString(),
           'Accept': 'application/json',
         },
         contentType: 'application/json; charset=utf-8',
@@ -130,14 +94,12 @@ const formController = (function () {
           $('#dialog')
             .text('Data is saved.')
             .dialog(dialogOptions);
-          $('.rehabAction').removeAttr('disabled');
         })
         .fail(function (error) {
           $('.spinnerContainer').hide();
           thisPostBtn.attr('disabled', 'false');
           console.log('postback error', error);
           dialogOptions.title = error.statusText;
-          dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
 
           if (error.statusText === "OK" || error.statusText === "Ok") {
             $('#dialog')
@@ -172,15 +134,12 @@ const formController = (function () {
           $('#dialog')
             .text('Data is saved.')
             .dialog(dialogOptions);
-          $('.rehabAction').removeAttr('disabled');
-
         })
         .catch(function (error) {
           thisPostBtn.attr('disabled', 'false');
           console.log('postback error', error);
           $('.spinnerContainer').hide();
           dialogOptions.title = error.statusText;
-          dialogOptions.classes = { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' }
           $('#dialog')
             .text('Data is not saved. ' + error)
             .dialog(dialogOptions)
@@ -201,8 +160,8 @@ const formController = (function () {
     let episodeID: number = +($('#episodeID', theScope).val());
     //get the key answers. these must be done outside of the .map() 
     //because each answer in .map() will use the same episode onset date and admission date
-    const onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
-    const admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
+    const onsetDate: Date = new Date($('.persistable[id^=Q23]').val().toString());
+    const admissionDate: Date = new Date($('.persistable[id^=Q12_]').val().toString());
 
     if (facilityID) {
       const tmp = facilityID.split('(')[2];
@@ -223,7 +182,7 @@ const formController = (function () {
       const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
       let currentValue = '';
 
-      currentValue = commonUtility.getControlValue($thisPersistable, 'default')?.toString();
+      currentValue = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)?.toString();  //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
 
       //!undefined or !NaN yield true
       if (+currentValue === -1) currentValue = '';
@@ -301,6 +260,12 @@ const formController = (function () {
       }
     });
 
+    if (newAnswers.length === 0 || oldAnswers.length === 0 || updatedAnswers.length === 0) {
+      $('#dialog')
+        .text('Nothing to save.  All fields seem be unchanged')
+        .dialog(dialogOptions);
+    }
+    
     $('.spinnerContainer').hide();
 
     const postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
@@ -634,13 +599,11 @@ const formController = (function () {
     return R_Performance + S_Performance;
   }
 
-  /****************************************************************************
+  /***************************************************************************
    * public functions exposing the private functions to outside of the closure
   ***************************************************************************/
   return {
     'scrollToAnchor': scrollToAnchor,
-    //'setRehabBtns': setRehabBtns,
-    //'resetRehabBtns': resetRehabBtns,
     'breakLongSentence': breakLongSentence,
     'submitTheForm': submitTheForm,
     'validate': validateForm,
@@ -650,63 +613,25 @@ const formController = (function () {
     'grandTotal': grandTotal
   }
 })();
+/******************************* end of closure ****************************/
 
 $(function () {
-  const dialogOptions: any = {
-    resizable: true,
-    //height: ($(window).height() - 200),
-    //width: '90%',
-    classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
-    modal: true,
-    stack: true,
-    sticky: true,
-    position: { my: 'center', at: 'center', of: window },
-    buttons: [{
-      //    "Save": function () {
-      //      //do something here
-      //      let thisUrl: string = $('form').prop('action');
-      //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
-      //      postBackModel.NewAnswers = newAnswers;
-      //      postBackModel.OldAnswers = oldAnswers;
-      //      postBackModel.UpdatedAnswers = updatedAnswers;
-      //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-      //    },
-      text: "Close",
-      //icon: "ui-icon-close",
-      click: function () {
-        $(this).dialog("close");
-      }
-    }]
-  };
+  const dialogOptions =commonUtility.dialogOptions();
 
-  $('.persistable').change(function () {
-    const minDate = new Date('2021-01-01 00:00:00');
-    const onsetDate: Date = new Date($(".persistable[data-questionkey^='Q23']").val().toString());
-    const admissionDate: Date = new Date($(".persistable[data-questionkey^='Q12']").val().toString());
-    const commonUtility: Utility = new Utility();
-
-    //if (formController.isDate(onsetDate) && formController.isDate(admissionDate)) {
-    if (commonUtility.isDate(onsetDate) && commonUtility.isDate(admissionDate)) {
-      if (onsetDate > minDate && admissionDate > minDate && admissionDate >= onsetDate) {
-        $('#ajaxPost').removeAttr('disabled');
-        //$('#mvcPost').removeAttr('disabled');
-      }
-      else {
-        $('#dialog')
-          .text('Onset Date must be same or earlier than Admit Date, and both dates must be later than 01/01/2021 00:00:00')
-          .dialog(dialogOptions);
-      }
-    }
-    else {
-      $('#dialog')
-        .text('Onset Date and Admit Date must be valid dates.')
-        .dialog(dialogOptions);
+  /* each reset calendar click reset the date of the target sibling */
+  $('.bi-calendar-x').on('click', function () {
+    const which: string = $(this).data('target');
+    const targetDate = $('#' + which);
+    console.log('calendar reset ' + targetDate.prop('id'));
+    if (targetDate.length > 0) {
+      commonUtility.resetControlValue(targetDate);
+      //targetDate.val('').change(); //programmatically raise change() event of the target
     }
   });
 
   $('select').each(function () {
     const $this = $(this);
-    $this.change(function () {
+    $this.on('change', function () {
       if ($this.val() !== -1) { 
         formController.breakLongSentence($this);
       }
@@ -719,7 +644,7 @@ $(function () {
       $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
     },
     function () { /* slide out of the viewing area */
-      $('#questionTab').css({ 'left': '-230px', 'transition-duration': '1s' });
+      $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
     }
   );
 
@@ -774,7 +699,7 @@ $(function () {
   /* self care scorce on change */
   $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
     const $this: any = $(this);
-    $this.change(function () {
+    $this.on('change',function () {
       formController.selfCareScore();
       formController.grandTotal();
     });
@@ -785,7 +710,7 @@ $(function () {
 
   /* mobility score on change */
   $('.persistable[id^=GG0170]:not([id*=Discharge_Goal])').each(function () {
-    $(this).change(function () {
+    $(this).on('change',function () {
       formController.mobilityScore();
       formController.grandTotal();
     })

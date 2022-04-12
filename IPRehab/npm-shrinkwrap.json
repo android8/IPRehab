@@ -9,6 +9,7 @@
       "version": "1.0.0",
       "dependencies": {
         "bootstrap": "^5.1.3",
+        "bootstrap-icons": "^1.8.1",
         "bootstrap-ui": "^3.1.1",
         "jquery": "^3.6.0",
         "jquery-validation": "^1.19.3",
@@ -935,6 +936,14 @@
         "@popperjs/core": "^2.10.2"
       }
     },
+    "node_modules/bootstrap-icons": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/bootstrap-icons/-/bootstrap-icons-1.8.1.tgz",
+      "integrity": "sha512-IXUqislddPJfwq6H+2nTkHyr9epO9h6u1AG0OZCx616w+TgzeoCjfmI3qJMQqt1J586gN2IxzB4M99Ip4sTZ1w==",
+      "engines": {
+        "node": ">=10"
+      }
+    },
     "node_modules/bootstrap-ui": {
       "version": "3.1.1",
       "resolved": "https://registry.npmjs.org/bootstrap-ui/-/bootstrap-ui-3.1.1.tgz",
@@ -1644,9 +1653,9 @@
       }
     },
     "node_modules/moment": {
-      "version": "2.29.1",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz",
-      "integrity": "sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==",
+      "version": "2.29.2",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.2.tgz",
+      "integrity": "sha512-UgzG4rvxYpN15jgCmVJwac49h9ly9NurikMWGPdVxm8GZD6XjkKPxDTjQQ43gtGgnV3X0cAyWDdP2Wexoquifg==",
       "engines": {
         "node": "*"
       }
@@ -2983,6 +2992,11 @@
       "integrity": "sha512-fcQztozJ8jToQWXxVuEyXWW+dSo8AiXWKwiSSrKWsRB/Qt+Ewwza+JWoLKiTuQLaEPhdNAJ7+Dosc9DOIqNy7Q==",
       "requires": {}
     },
+    "bootstrap-icons": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/bootstrap-icons/-/bootstrap-icons-1.8.1.tgz",
+      "integrity": "sha512-IXUqislddPJfwq6H+2nTkHyr9epO9h6u1AG0OZCx616w+TgzeoCjfmI3qJMQqt1J586gN2IxzB4M99Ip4sTZ1w=="
+    },
     "bootstrap-ui": {
       "version": "3.1.1",
       "resolved": "https://registry.npmjs.org/bootstrap-ui/-/bootstrap-ui-3.1.1.tgz",
@@ -3567,9 +3581,9 @@
       }
     },
     "moment": {
-      "version": "2.29.1",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz",
-      "integrity": "sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ=="
+      "version": "2.29.2",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.29.2.tgz",
+      "integrity": "sha512-UgzG4rvxYpN15jgCmVJwac49h9ly9NurikMWGPdVxm8GZD6XjkKPxDTjQQ43gtGgnV3X0cAyWDdP2Wexoquifg=="
     },
     "moment-timezone": {
       "version": "0.4.1",

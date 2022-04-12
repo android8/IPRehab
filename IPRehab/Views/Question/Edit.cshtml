@@ -10,9 +10,7 @@
 
 @section VendorScripts{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-};
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
 <environment include="Production">
@@ -29,6 +27,9 @@
 </environment>
 
 <environment include="Development">
+    @section MyStyles_dev {
+        <link rel="stylesheet" href="~/css/snowAnimation.css" />
+    }
     @section MyScripts_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>

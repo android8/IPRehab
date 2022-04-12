@@ -1,4 +1,5 @@
 ﻿export interface ICommonUtility {
+  dialogOptions(): any;
   isDate(aDate: Date): boolean;
   isEmpty($this: any): boolean;
   isTheSame($this: any, oldValue: string, currentValue: string): boolean;
