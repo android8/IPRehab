@@ -1,12 +1,38 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+//https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 //don't need use strict because the script is loaded as module which by default is executed in strict mode
 //'use strict';
-//import { MDCRipple } from "./commonImport.js";
-//https://www.typescriptlang.org/docs/handbook/asp-net-core.html
+//import { Utility } from "./commonImport.js";
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
 const commandBtnController = (function () {
+    const dialogOptions = {
+        resizable: true,
+        //height: ($(window).height() - 200),
+        //width: '90%',
+        classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+        modal: true,
+        stack: true,
+        sticky: true,
+        position: { my: 'center', at: 'center', of: window },
+        buttons: [{
+                //    "Save": function () {
+                //      //do something here
+                //      let thisUrl: string = $('form').prop('action');
+                //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
+                //      postBackModel.NewAnswers = newAnswers;
+                //      postBackModel.OldAnswers = oldAnswers;
+                //      postBackModel.UpdatedAnswers = updatedAnswers;
+                //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+                //    },
+                text: "Close",
+                //icon: "ui-icon-close",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+    };
     /* private function */
     function addRipple(el) {
         /* addMaterial Design ripple effect to all .rehabAction buttons */
@@ -77,23 +103,6 @@ const commandBtnController = (function () {
         //else {
         //  location.href = thisUrl;
         //}
-        const dialogOptions = {
-            resizable: true,
-            height: "auto",
-            width: 400,
-            modal: true,
-            stack: true,
-            sticky: true,
-            position: { my: 'center', at: 'center', of: window },
-            classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
-            buttons: [{
-                    text: "Close",
-                    //icon: "ui-icon-close",
-                    click: function () {
-                        $(this).dialog("close");
-                    }
-                }]
-        };
         const pageTitleLowerCase = $(".pageTitle").data('systitle').toLowerCase();
         if (stageLowerCase === pageTitleLowerCase) {
             $('.spinnerContainer').hide();
@@ -173,6 +182,7 @@ const commandBtnController = (function () {
         'slideCommands': slideCommands
     };
 })();
+/****************************** end of closure *******************************/
 $(function () {
     $('.rehabAction').each(function () {
         const $thisButton = $(this);

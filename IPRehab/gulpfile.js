@@ -19,7 +19,7 @@ var scriptSources = {
 
 var styleSources = {
   mySass: ['./wwwroot/css/**/*.scss'],
-  myCssOnly: ['./wwwroot/css/**/*.css'],
+  myCssOnly: ['./wwwroot/css/**/*.css', '!./wwwroot/css/**/site.css'],
   destinations: ['./wwwroot/css']
 }
 

@@ -1,10 +1,10 @@
-﻿export enum EnumGetControlValueBehavior{
+﻿export enum EnumGetControlValueBehavior {
   Elaborated,
   Simple
-};
+}
 
 export enum EnumChangeEventArg {
-  Ready,
-  Change,
-  NoScroll
-};
+  Load='Load',
+  Change='Change',
+  NoScroll='NoScroll'
+}

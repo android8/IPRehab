@@ -1,8 +1,14 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 
-import { ICommonUtility, EnumGetControlValueBehavior } from "./commonImport.js";
+import { ICommonUtility /*, EnumGetControlValueBehavior */ } from "./commonImport.js";
+
+enum EnumGetControlValueBehavior {
+  Elaborated,
+  Simple
+}
 
 export class Utility implements ICommonUtility {
+
   public dialogOptions() {
     const dialogOptions: any = {
       resizable: true,
@@ -119,43 +125,45 @@ export class Utility implements ICommonUtility {
     const thisControlType: string = $thisControl.prop('type');
     let thisValue;
     if (behavior === EnumGetControlValueBehavior.Elaborated) {
-        switch (thisControlType) {
-          case "select-one": {
-            //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-            const selectedOption: string = $('#' + $thisControl.prop('id') + ' option:selected').text();
-            thisValue = parseInt(selectedOption);
-            break;
+      switch (thisControlType) {
+        case "select-one": {
+          //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
+          //console.log(behavior + ' get control value for ' + $thisControl.prop('id')  + ' option:selected = ', $('#' + $thisControl.prop('id') + ' option:selected').text());
+          const selectedOption: string = $('#' + $thisControl.prop('id') + ' option:selected').text();
+          thisValue = parseInt(selectedOption);
+          break;
+        }
+
+        case "radio":
+        case "checkbox":
+          if ($thisControl.prop('checked')) {
+            //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' prop("checked") = ', $thisControl.prop('checked'));
+            thisValue = 1;
           }
+          break;
 
-          case "radio":
-          case "checkbox":
-            if ($thisControl.prop('checked'))
-              thisValue = 1;
-            break;
-
-          case "text": {
-            const numberString: number = parseInt($thisControl.val());
-            if (!isNaN(numberString))
-              thisValue = $thisControl.val();
-            else
-              thisValue = numberString;
-            break;
-          }
-
-          default: {
+        case "text": {
+          const numberString: number = parseInt($thisControl.val());
+          if (!isNaN(numberString)) {
+            //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ' + $thisControl.val());
             thisValue = $thisControl.val();
-            break;
           }
+          else
+            thisValue = numberString;
+          break;
+        }
+
+        default: {
+          //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
+          thisValue = $thisControl.val();
+          break;
         }
       }
-      else {
-        if ((thisControlType === 'checkbox' || thisControlType === 'radio') && $thisControl.prop('checked')) {
-          thisValue = $thisControl.val();
-        }
-        else {
-          thisValue = $thisControl.val();
-        }
-      }
+    }
+    else {
+      //console.log('simple get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
+      thisValue = $thisControl.val();
+    }
     return thisValue;
   }
 
@@ -163,7 +171,7 @@ export class Utility implements ICommonUtility {
     //throw new Error("Method not implemented.");
     //console.log('$thisControl', $thisControl);
     const thisControlType: string = $thisControl.prop('type');
-    console.log('resetting control type ' + thisControlType + $thisControl.prop('id'));
+    console.log('resetting ' + thisControlType + ' control type ' + $thisControl.prop('id'));
     switch (thisControlType) {
       case "select-one": {
         const newValueInt: number = parseInt(newValue);
@@ -182,10 +190,10 @@ export class Utility implements ICommonUtility {
         console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
         break;
       }
-      case "text": 
+      case "text":
       case "date": {
         $thisControl.val('').change();
-        console.log('cleared ' + thisControlType + ' ' + $thisControl.prop('id'));
+        console.log('cleared ' + $thisControl.prop('id') + ' ' + thisControlType);
         break;
       }
       default:
@@ -245,7 +253,9 @@ export class Utility implements ICommonUtility {
 
   public scrollTo(thisElement: any) {
     let scrollAmount: number = thisElement.prop('offsetTop');
-    if (thisElement.prop('id').indexOf('Q12')) scrollAmount += 15; //scroll up further by 15
+    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
+    console.log('scroll to ' + thisElement.prop('id') + ', amount', scrollAmount);
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+    thisElement.focus();
   }
 }

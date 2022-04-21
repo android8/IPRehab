@@ -11,16 +11,16 @@ const sliderController = (function () {
             let x = window.matchMedia("(max-width:576px)");
             if (x.matches) {
                 //console.log('screen is <= 576 pixels wide');
-                return "-30px";
+                return "-32px";
             }
             x = window.matchMedia("(max-width:768px)");
             if (x.matches) {
                 //console.log('screen is <= 768 pixels wide');
-                return "-65px";
+                return "-62px";
             }
             else {
                 //console.log('screen is >= 768 pixels wide');
-                return "-70px";
+                return "-68px";
             }
         }
         /*hide header and footer after 2 seconds*/

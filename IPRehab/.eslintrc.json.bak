@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "camelcase": 0,
+    "@typescript-eslint/camelcase": "off"
+  },
+  "ignorePatterns": [ "src/**/*.test.ts", "src/frontend/generated/*" ]
+}

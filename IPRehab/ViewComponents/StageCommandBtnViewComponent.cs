@@ -15,9 +15,6 @@ namespace IPRehab.ViewComponents
 
     public Task<IViewComponentResult> InvokeAsync(PatientEpisodeAndCommandVM EpisodeBtnConfig)
     {
-      Dictionary<string, CommandBtnConfig> commandBtnConfig = EpisodeCommandButtonSettings.CommandBtnConfigDictionary;
-      List<StageCommandViewComponentTemplateModel> cmdButtonVMList = new();
-
       if (EpisodeBtnConfig.EpisodeOfCareID > 0)
       {
         EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK.Substring(EpisodeBtnConfig.PatientIcnFK.Length - 4, 4);
@@ -27,59 +24,80 @@ namespace IPRehab.ViewComponents
         EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK;
       }
 
+      Dictionary<string, CommandBtnConfig> commandBtnConfig = EpisodeCommandButtonSettings.CommandBtnConfigDictionary;
+
+      List<StageCommandViewComponentTemplateModel> cmdButtonVMList = new();
+
       /* iterate 8 stage types */
       foreach (KeyValuePair<string, CommandBtnConfig> entry in commandBtnConfig)
       {
         StageCommandViewComponentTemplateModel cmdBtnTemplateVM = new();
-        if (EpisodeBtnConfig.ActionButtonVM.EpisodeID != -1 && cmdBtnTemplateVM.Stage != "New")
-          cmdBtnTemplateVM.Title = entry.Value.ButtonTitle.Replace("Create new", "Edit existing");
-        else
-          cmdBtnTemplateVM.Title = entry.Value.ButtonTitle;
 
-        cmdBtnTemplateVM.Stage = entry.Key;
-        cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
+        string HostingPage = EpisodeBtnConfig.ActionButtonVM.HostingPage;
+        switch (entry.Key) {
+          case "Patient":
+            {
+              switch (HostingPage)
+              {
+                case "Patient": {
+                    cmdBtnTemplateVM.ShowThisButton = false;
+                    break;
+                  }
+                case "Question":
+                  {
+                    cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
+                    cmdBtnTemplateVM.ShowThisButton = true;
+                    cmdBtnTemplateVM.TextNode = "Patient List";
+                    RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
+                    clonedPatientActionVM.ControllerName = "Patient";
+                    clonedPatientActionVM.ActionName = "Index";
+                    clonedPatientActionVM.PatientID = string.Empty;
+                    clonedPatientActionVM.EpisodeID = -1;
+                    cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;  //use cloned
+                    break;
+                  }
+              }
+              break;
+            }
+          case "New":
+            {
+              cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
+              cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter as is
+              cmdBtnTemplateVM.Stage = entry.Key;
+              cmdBtnTemplateVM.TextNode = (entry.Value.ButtonTitle == "Base") ? "Episode of Care" :
+                entry.Value.ButtonTitle;
+              cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
+                entry.Value.ButtonTitle.Replace("Create new", "Edit existing") :
+                entry.Value.ButtonTitle;
 
-        if (entry.Key == "Patient")
-        {
-          if (EpisodeBtnConfig.ActionButtonVM.HostingPage == "Patient")
-          {
-            cmdBtnTemplateVM.ShowThisButton = false;
-          }
-          else
-          {
-            //only visible when in Question stage form
-            cmdBtnTemplateVM.ShowThisButton = true;
-
-            cmdBtnTemplateVM.TextNode = "Patient List";
-
-            RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
-            clonedPatientActionVM.ControllerName = "Patient";
-            clonedPatientActionVM.ActionName = "Index";
-            clonedPatientActionVM.PatientID = string.Empty;
-            clonedPatientActionVM.EpisodeID = -1;
-            //use cloned
-            cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
-            cmdButtonVMList.Add(cmdBtnTemplateVM);
-          }
+              if (HostingPage == "Question")
+              {
+                if (EpisodeBtnConfig.EpisodeOfCareID > 0)
+                  cmdBtnTemplateVM.ShowThisButton = true;
+                else
+                  cmdBtnTemplateVM.ShowThisButton = false;
+              }
+              else
+                cmdBtnTemplateVM.ShowThisButton = true;
+              break;
+            }
+          default:
+            {
+              if (EpisodeBtnConfig.EpisodeOfCareID > 0)
+              {
+                cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
+                cmdBtnTemplateVM.ShowThisButton = true;
+                cmdBtnTemplateVM.Stage = entry.Key;
+                cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
+                entry.Value.ButtonTitle.Replace("Create new", "Edit existing") : entry.Value.ButtonTitle;
+                cmdBtnTemplateVM.TextNode = entry.Value.ButtonTitle == "Base" ?
+                  "Episode of Care" : entry.Value.ButtonTitle;
+                cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter
+              }
+              break;
+            }
         }
-        else
-        {
-          if (EpisodeBtnConfig.EpisodeOfCareID == -1)
-          {
-            cmdBtnTemplateVM.ShowThisButton = false;
-          }
-          else { 
-            cmdBtnTemplateVM.ShowThisButton = true;
-
-            // use invoked parameter
-            cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;
-            if (entry.Value.ButtonTitle == "Base")
-              cmdBtnTemplateVM.TextNode = "Episode of Care";
-            else
-              cmdBtnTemplateVM.TextNode = entry.Value.ButtonTitle;
-            cmdButtonVMList.Add(cmdBtnTemplateVM);
-          }
-        }
+        cmdButtonVMList.Add(cmdBtnTemplateVM);
       }
 
       string viewName = "StageCommandBtn";

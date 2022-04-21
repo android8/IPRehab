@@ -38,12 +38,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1c2d8e;
+  color: white;
   font-size: 3em;
   /*position:fixed;*/
-  background-image: -webkit-linear-gradient(#fff, #e2e2f2);
+  /*  background-image: -webkit-linear-gradient(#fff, #e2e2f2);
   -webkit-background-clip: padding-box;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: transparent;*/
 }
 
 .splashscreen .waitMessage {
@@ -890,8 +890,9 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 #questionTab .nav-item:hover {
-  border: solid 1px gold;
+  border: solid 1.5px gold;
   cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.39);
 }
 
 div.questionRow:last-child {

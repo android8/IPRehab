@@ -1,5 +1,39 @@
 /// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
+var EnumGetControlValueBehavior;
+(function (EnumGetControlValueBehavior) {
+    EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
+    EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
+})(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
 export class Utility {
+    dialogOptions() {
+        const dialogOptions = {
+            resizable: true,
+            //height: ($(window).height() - 200),
+            //width: '90%',
+            classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+            modal: true,
+            stack: true,
+            sticky: true,
+            position: { my: 'center', at: 'center', of: window },
+            buttons: [{
+                    //    "Save": function () {
+                    //      //do something here
+                    //      let thisUrl: string = $('form').prop('action');
+                    //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
+                    //      postBackModel.NewAnswers = newAnswers;
+                    //      postBackModel.OldAnswers = oldAnswers;
+                    //      postBackModel.UpdatedAnswers = updatedAnswers;
+                    //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+                    //    },
+                    text: "Close",
+                    //icon: "ui-icon-close",
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                }]
+        };
+        return dialogOptions;
+    }
     isDate(aDate) {
         //throw new Error("Method not implemented.");
         return aDate instanceof Date && !isNaN(aDate.valueOf());
@@ -70,74 +104,82 @@ export class Utility {
                 break;
         }
     }
-    getControlValue($thisControl, valueSource = 'other') {
+    getControlValue($thisControl, behavior = EnumGetControlValueBehavior.Elaborated /*use other if no valueSource */) {
         //throw new Error("Method not implemented.");
         //console.log('$thisControl', $thisControl);
         const thisControlType = $thisControl.prop('type');
         let thisValue;
-        switch (valueSource) {
-            case "other": {
-                switch (thisControlType) {
-                    case "select-one": {
-                        //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-                        const selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
-                        thisValue = parseInt(selectedOption);
-                        break;
+        if (behavior === EnumGetControlValueBehavior.Elaborated) {
+            switch (thisControlType) {
+                case "select-one": {
+                    //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
+                    //console.log(behavior + ' get control value for ' + $thisControl.prop('id')  + ' option:selected = ', $('#' + $thisControl.prop('id') + ' option:selected').text());
+                    const selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
+                    thisValue = parseInt(selectedOption);
+                    break;
+                }
+                case "radio":
+                case "checkbox":
+                    if ($thisControl.prop('checked')) {
+                        //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' prop("checked") = ', $thisControl.prop('checked'));
+                        thisValue = 1;
                     }
-                    case "radio":
-                    case "checkbox":
-                        if ($thisControl.prop('checked'))
-                            thisValue = 1;
-                        break;
-                    case "text": {
-                        const numberString = parseInt($thisControl.val());
-                        if (!isNaN(numberString))
-                            thisValue = $thisControl.val();
-                        else
-                            thisValue = numberString;
-                        break;
-                    }
-                    default: {
+                    break;
+                case "text": {
+                    const numberString = parseInt($thisControl.val());
+                    if (!isNaN(numberString)) {
+                        //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ' + $thisControl.val());
                         thisValue = $thisControl.val();
-                        break;
                     }
+                    else
+                        thisValue = numberString;
+                    break;
                 }
-                break;
-            }
-            default: {
-                if ((thisControlType === 'checkbox' || thisControlType === 'radio') && $thisControl.prop('checked')) {
+                default: {
+                    //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
                     thisValue = $thisControl.val();
+                    break;
                 }
-                else {
-                    thisValue = $thisControl.val();
-                }
-                break;
             }
+        }
+        else {
+            //console.log('simple get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
+            thisValue = $thisControl.val();
         }
         return thisValue;
     }
-    resetControlValue($thisControl, newValue) {
+    resetControlValue($thisControl, newValue = '-1') {
         //throw new Error("Method not implemented.");
         //console.log('$thisControl', $thisControl);
         const thisControlType = $thisControl.prop('type');
+        console.log('resetting ' + thisControlType + ' control type ' + $thisControl.prop('id'));
         switch (thisControlType) {
             case "select-one": {
                 const newValueInt = parseInt(newValue);
-                if (isNaN(newValueInt))
+                if (isNaN(newValueInt)) {
                     $thisControl.val(-1).change();
-                else
-                    $thisControl.val(newValue);
+                }
+                else {
+                    $thisControl.val(newValue).change();
+                }
+                console.log('changed ' + thisControlType + ' ' + $thisControl.prop('id') + ' value to ' + newValueInt);
                 break;
             }
             case "checkbox":
             case "radio": {
-                $thisControl.prop('checked', false);
+                $thisControl.prop('checked', false).change();
+                console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
                 break;
             }
-            case "text": {
-                $thisControl.val('');
+            case "text":
+            case "date": {
+                $thisControl.val('').change();
+                console.log('cleared ' + $thisControl.prop('id') + ' ' + thisControlType);
                 break;
             }
+            default:
+                console.log('unknown ' + thisControlType + 'control type:  for ' + $thisControl.prop('id)'));
+                break;
         }
     }
     getTextPixels(someText, font) {
@@ -186,8 +228,12 @@ export class Utility {
         //  }
     }
     scrollTo(thisElement) {
-        const scrollAmount = thisElement.prop('offsetTop');
+        let scrollAmount = thisElement.prop('offsetTop');
+        if (thisElement.prop('id').indexOf('Q12') !== -1)
+            scrollAmount = 0; //scroll up further by 15
+        console.log('scroll to ' + thisElement.prop('id') + ', amount', scrollAmount);
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+        thisElement.focus();
     }
 }
 //# sourceMappingURL=utility.js.map

@@ -1,7 +1,8 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
 
-import { Utility, UserAnswer, AjaxPostbackModel, EnumGetControlValueBehavior }  from "./commonImport.js";
+import { Utility, UserAnswer, AjaxPostbackModel /*, EnumGetControlValueBehavior*/ }  from "./commonImport.js";
+import { EnumChangeEventArg } from "./enums.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
@@ -11,6 +12,11 @@ import { Utility, UserAnswer, AjaxPostbackModel, EnumGetControlValueBehavior }  
  * javaScript closure
  ***************************************************************************/
 const formController = (function () {
+  enum EnumGetControlValueBehavior {
+    Elaborated,
+    Simple
+  }
+
   /* private function */
   function scrollToAnchor(anchorID: string) {
     const thisElement: any = $('#' + anchorID);
@@ -620,12 +626,19 @@ $(function () {
 
   /* each reset calendar click reset the date of the target sibling */
   $('.bi-calendar-x').on('click', function () {
-    const which: string = $(this).data('target');
-    const targetDate = $('#' + which);
+    const target: string = $(this).data('target');
+    const targetDate = $('#' + target);
     console.log('calendar reset ' + targetDate.prop('id'));
     if (targetDate.length > 0) {
-      commonUtility.resetControlValue(targetDate);
-      //targetDate.val('').change(); //programmatically raise change() event of the target
+      //else use the commonUtility to reset the value
+      if (target.indexOf('Q12B') > 0) {
+        console.log('raise change() and let branching.Q12B_blank_then_Lock_Discharge() open a dialog before reset');
+        $('[id^=Q12B_').change();
+      }
+      else {
+        //simple reset
+        commonUtility.resetControlValue(targetDate); //change() fired in commonUtility and let affected event handler respond if any branching rule applies
+      }
     }
   });
 
@@ -685,6 +698,10 @@ $(function () {
   //$('#mvcPost').click(function () {
   //  $('form').submit();
   //});
+
+  $('.persistable:not([id*=Discharge_Goal])').on('change', function (e) {
+    $('#ajaxPost').removeAttr('disabled');
+  });
 
   /* ajax post form */
   $('#ajaxPost').click(function () {
