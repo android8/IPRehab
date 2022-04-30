@@ -12,11 +12,20 @@ const formController = (function () {
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
     })(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
+    function scrollTo(thisElement) {
+        let scrollAmount = thisElement.prop('offsetTop') + 15;
+        if (thisElement.prop('id').indexOf('Q12') !== -1)
+            scrollAmount = 0; //scroll up further by 15
+        console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
+        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+        thisElement.focus();
+    }
     /* private function */
     function scrollToAnchor(anchorID) {
         const thisElement = $('#' + anchorID);
-        const scrollAmount = thisElement.prop('offsetTop');
-        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+        //const scrollAmount: number = thisElement.prop('offsetTop');
+        //$('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+        scrollTo(thisElement);
     }
     /* private function */
     function breakLongSentence(thisSelectElement) {
@@ -81,7 +90,7 @@ const formController = (function () {
                 const jsonResult = $.parseJSON(result);
                 console.log('jsonResult', jsonResult);
                 if (episodeID === -1) {
-                    $('#episodeID').val(jsonResult);
+                    $('#episodeID').val(jsonResult); //after posting new record, asign the new record id carried in jsonResult to the #episodeID. Otherwise, without refreshing the screen and repost it will create duplicate record.
                     $('#stage').val('Base');
                 }
                 dialogOptions.title = 'Success';
@@ -326,6 +335,9 @@ const formController = (function () {
             $('#Self_Care_Aggregate_Score_Admission_Performance').text(selfCareAdmissionPerformance);
             $('#Self_Care_Aggregate_Score_Discharge_Performance').text(selfCareDischargePerformance);
             $('#Self_Care_Aggregate_Score_Total_Change').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
+            $('#slidingAggregator #self_care_admission_score').text(selfCareAdmissionPerformance);
+            $('#slidingAggregator #self_care_discharge_score').text(selfCareDischargePerformance);
+            $('#slidingAggregator #self_care_total').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
         }
         else {
             /* interim performance or follow up performance */
@@ -343,6 +355,9 @@ const formController = (function () {
             $('#Mobility_Aggregate_Score_Admission_Performance').text(mobilityAdmissionPerformance);
             $('#Mobility_Aggregate_Score_Discharge_Performance').text(mobilityDischargePerformance);
             $('#Mobility_Aggregate_Score_Total_Change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+            $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
+            $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
+            $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
         }
         else {
             let mobilityPerformance = 0;
@@ -364,6 +379,8 @@ const formController = (function () {
             const admissionPerformanceGrandTotal = selfCareAdmissionPerformance + mobilityAdmissionPerformance;
             if ($('#Admission_Performance_Grand_Total').length > 0)
                 $('#Admission_Performance_Grand_Total').text(admissionPerformanceGrandTotal);
+            if ($('#slidingAggregator #admission_total').length > 0)
+                $('#slidingAggregator #admission_total').text(admissionPerformanceGrandTotal);
             /* Discharge Performance */
             const Self_Care_Discharge_Performance = $('#Self_Care_Aggregate_Score_Discharge_Performance').text();
             const selfCareDischargePerformance = parseInt(Self_Care_Discharge_Performance);
@@ -372,6 +389,8 @@ const formController = (function () {
             const dischargePerformanceGrandTotal = selfCareDischargePerformance + mobilityDischargePerformance;
             if ($('#Discharge_Performance_Grand_Total').length > 0)
                 $('#Discharge_Performance_Grand_Total').text(dischargePerformanceGrandTotal);
+            if ($('#slidingAggregator #discharge_total').length > 0)
+                $('#slidingAggregator #discharge_total').text(dischargePerformanceGrandTotal);
             grandTotal = dischargePerformanceGrandTotal - admissionPerformanceGrandTotal;
         }
         else {
@@ -384,6 +403,8 @@ const formController = (function () {
         }
         if ($('#Grand_Total').length > 0)
             $('#Grand_Total').text(grandTotal);
+        if ($('#slidingAggregator #grand_total').length > 0)
+            $('#slidingAggregator #grand_total').text(grandTotal);
     }
     /* internal function */
     function Score_GG0170AtoP_Performance() {
@@ -535,29 +556,57 @@ const formController = (function () {
 })();
 /******************************* end of closure ****************************/
 $(function () {
-    const dialogOptions = commonUtility.dialogOptions();
+    //const dialogOptions =commonUtility.dialogOptions();
+    const dialogOptions = {
+        resizable: true,
+        //height: ($(window).height() - 200),
+        //width: '90%',
+        classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
+        modal: true,
+        stack: true,
+        sticky: true,
+        position: { my: 'center', at: 'center', of: window },
+        buttons: [{
+                //    "Save": function () {
+                //      //do something here
+                //      let thisUrl: string = $('form').prop('action');
+                //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
+                //      postBackModel.NewAnswers = newAnswers;
+                //      postBackModel.OldAnswers = oldAnswers;
+                //      postBackModel.UpdatedAnswers = updatedAnswers;
+                //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
+                //    },
+                text: "Close",
+                //icon: "ui-icon-close",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }]
+    };
     /* each reset calendar click reset the date of the target sibling */
-    $('.bi-calendar-x').on('click', function () {
-        const target = $(this).data('target');
-        const targetDate = $('#' + target);
-        console.log('calendar reset ' + targetDate.prop('id'));
-        if (targetDate.length > 0) {
-            //else use the commonUtility to reset the value
-            if (target.indexOf('Q12B') > 0) {
-                console.log('raise change() and let branching.Q12B_blank_then_Lock_Discharge() open a dialog before reset');
-                $('[id^=Q12B_').change();
+    $('.calendarReset').on('click', function () {
+        const thisTargetDate = $('#' + $(this).data('target'));
+        console.log('reset ' + thisTargetDate.prop('id'), thisTargetDate);
+        const isTargetOnQ12B = thisTargetDate.prop('id').indexOf('Q12B') !== -1;
+        if (thisTargetDate.length > 0) {
+            thisTargetDate.val('');
+            if (isTargetOnQ12B) {
+                console.log('raise change() to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
+                thisTargetDate.change(); //else use the commonUtility to reset the value
             }
             else {
-                //simple reset
-                commonUtility.resetControlValue(targetDate); //change() fired in commonUtility and let affected event handler respond if any branching rule applies
+                console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
+                commonUtility.resetControlValue(thisTargetDate); //raise change() commonUtility handle the event accordingly
             }
         }
     });
     $('select').each(function () {
-        const $this = $(this);
-        $this.on('change', function () {
-            if ($this.val() !== -1) {
-                formController.breakLongSentence($this);
+        const thisDropdown = $(this);
+        thisDropdown.on('change', function () {
+            //beak long option text
+            //commonUtility.resetControlValue(thisDropdown);
+            if (thisDropdown.val() !== -1) {
+                formController.breakLongSentence(thisDropdown);
             }
         });
     });
@@ -566,6 +615,15 @@ $(function () {
         $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
     }, function () {
         $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
+    });
+    /* aggregate scores container */
+    $('#rotateSlidingAggregatorHandle').on('click', function () {
+        const slidingAggregator = $("#slidingAggregator");
+        slidingAggregator.css("right", "0px");
+    });
+    $('#closeSlidingAggregator').on('click', function () {
+        const slidingAggregator = $("#slidingAggregator");
+        slidingAggregator.css("right", "-250px");
     });
     /* jump to section anchor */
     $('.gotoSection').each(function () {
@@ -601,7 +659,7 @@ $(function () {
     //$('#mvcPost').click(function () {
     //  $('form').submit();
     //});
-    $('.persistable:not([id*=Discharge_Goal])').on('change', function (e) {
+    $('.persistable').on('change', function (e) {
         $('#ajaxPost').removeAttr('disabled');
     });
     /* ajax post form */

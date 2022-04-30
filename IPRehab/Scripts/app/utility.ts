@@ -252,9 +252,9 @@ export class Utility implements ICommonUtility {
   }
 
   public scrollTo(thisElement: any) {
-    let scrollAmount: number = thisElement.prop('offsetTop');
+    let scrollAmount: number = thisElement.prop('offsetTop') + 15;
     if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
-    console.log('scroll to ' + thisElement.prop('id') + ', amount', scrollAmount);
+    console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
     thisElement.focus();
   }

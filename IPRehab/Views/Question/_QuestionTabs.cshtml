@@ -1,5 +1,20 @@
 ﻿<div id="questionTab" class="box-shadow hero__content" role="list">
     <div class="hero">
+        <div class="rotate2">Sections</div>
+        <ul class="sidebar-nav">
+            <!--
+              <li class="nav-title"></li>
+            -->
+            @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
+            {
+                <li role="listitem" class="nav-item gotoSection"
+                data-anchorid="@(sectionInfo.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))">
+                    <span class="sectionKey">@($"{sectionInfo.SectionKey.Replace("(","").Replace(")","")}")</span>
+                    @sectionInfo.SectionTitle
+                    <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                </li>
+            }        
+        </ul>
         <div class="snow">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMax slice">
                 <g fill="#FFF" fill-opacity=".15" transform="translate(5 12)">
@@ -72,20 +87,5 @@
                 </g>
             </svg>
         </div>
-        <div class="rotate2">Sections</div>
-        <ul class="sidebar-nav">
-            <!--
-              <li class="nav-title"></li>
-            -->
-            @foreach (var sectionInfo in (List<SectionInfo>)ViewData["sectionInfo"])
-            {
-                <li role="listitem" class="nav-item gotoSection"
-                data-anchorid="@(sectionInfo.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))">
-                    <span class="sectionKey">@($"{sectionInfo.SectionKey.Replace("(","").Replace(")","")}")</span>
-                    @sectionInfo.SectionTitle
-                    <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                </li>
-            }
-        </ul>
     </div>
 </div>

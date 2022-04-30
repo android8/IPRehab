@@ -10,36 +10,39 @@
 
 @section VendorScripts{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  @{
+      await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
 }
 
 <environment include="Production">
     @section MyStyles_prod {
-        <link rel="stylesheet" href="~/css/snowAnimation.css" />
+    <link rel="stylesheet" href="~/css/snowAnimation.css" />
     }
 
     @section MyScripts_prod {
-        @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@
-        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
+    @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@
+    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
     }
 </environment>
 
 <environment include="Development">
     @section MyStyles_dev {
-        <link rel="stylesheet" href="~/css/snowAnimation.css" />
+    <link rel="stylesheet" href="~/css/snowAnimation.css" />
     }
     @section MyScripts_dev {
-        <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
     }
 </environment>
 
-@* section tabs *@
+@* question tabs *@
 <nav class="sidebar-nav">
-    @await Html.PartialAsync("_QuestionTabs", null, new ViewDataDictionary(ViewData) {
+    @await Html.PartialAsync("_QuestionTabs", null,
+    new ViewDataDictionary(ViewData) {
     { "sectionInfo", Model.Sections },
     { "readOnly", Model.ReadOnly }
     })
@@ -48,9 +51,12 @@
 <aside>
     <div id="dialog"></div>
 
-    @* save button *@
+    @* aggregator's content to be cloned from scoreSections *@
+    @await Html.PartialAsync("_SlidingAggretates")
+
     @if (!Model.ReadOnly)
     {
+        @* save button *@
         <div>
             <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
                 <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn"
@@ -58,6 +64,18 @@
                     data-controller="answer" data-action="post">
                     <div class="mdc-button__ripple"></div>
                     <span class="mdc-button__label">Save</span>
+                    <div class="mdc-button__touch"></div>
+                </button>
+                @*<input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>*@
+            </div>
+        </div>
+
+        @* slidingAggregator trigger button r*@
+        <div>
+            <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
+                <button id="rotateSlidingAggregatorHandle" class="mdc-button mdc-button--raised mdc-button--touch">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">Aggregates</span>
                     <div class="mdc-button__touch"></div>
                 </button>
                 @*<input type="submit" value="MVC Post" id="mvcPost" class="rotate mvc-post-btn" disabled>*@
@@ -234,39 +252,20 @@
                                     </div>
                                 </div>
                             </div>
-
                             @if (aggregateAfterThis)
                             {
-                                @*aggregate row*@
-                                <div class="scoreSection flex-start-column-nowrap border border-dark">
-                                    <div class="footerInstruction flex-container-evenly-justified">
-                                        <div>
-                                            @* instruction icon *@
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle instructionIcon" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                                <title>Instruction</title>
-                                            </svg>
-                                            @si.AggregateInstruction
-                                        </div>
-
-                                        @* aggregate total by type*@
-                                        @switch (Model.StageCode)
-                                        {
-                                            case "New":
-                                            case "Base":
-                                                await Html.RenderPartialAsync("_Aggregates_Base", si);
-                                                break;
-                                            default:
-                                                await Html.RenderPartialAsync("_Aggregates", si);
-                                                break;
-                                        }
-                                    </div>
-                                </div>
-                            }
-                            @if (showoGradTotal)
-                            {
-                                <div class="scoreSection flex-start-column-nowrap border border-dark">
+                                @switch (Model.StageCode)
+                                {
+                                    case "New":
+                                    case "Base":
+                                        await Html.RenderPartialAsync("_Aggregates_Base", si);
+                                        break;
+                                    default:
+                                        await Html.RenderPartialAsync("_Aggregates", si);
+                                        break;
+                                }
+                                @if (showoGradTotal)
+                                {
                                     @switch (Model.StageCode)
                                     {
                                         case "New":
@@ -277,7 +276,7 @@
                                             await Html.RenderPartialAsync("_Aggregates_GrandTotal");
                                             break;
                                     }
-                                </div>
+                                }
                             }
                         }
                     </div>

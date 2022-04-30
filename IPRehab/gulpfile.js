@@ -13,7 +13,7 @@ var del = require('del');
 
 var scriptSources = {
   myMap: ['./Scripts/app/**/*.map'],
-  myJs: ['./Scripts/app/*.js', './Scripts/appModels/enum.js'],
+  myJs: ['./Scripts/app/*.js'],
   destinations: ['./wwwroot/js/app']
 };
 

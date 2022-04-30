@@ -72,7 +72,8 @@ namespace IPRehab.ViewComponents
 
               if (HostingPage == "Question")
               {
-                if (EpisodeBtnConfig.EpisodeOfCareID > 0)
+                /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
+                if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
                   cmdBtnTemplateVM.ShowThisButton = true;
                 else
                   cmdBtnTemplateVM.ShowThisButton = false;
@@ -83,7 +84,8 @@ namespace IPRehab.ViewComponents
             }
           default:
             {
-              if (EpisodeBtnConfig.EpisodeOfCareID > 0)
+              /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
+              if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
               {
                 cmdBtnTemplateVM.ActionBtnCssClass = entry.Value.ButtonCss;
                 cmdBtnTemplateVM.ShowThisButton = true;
