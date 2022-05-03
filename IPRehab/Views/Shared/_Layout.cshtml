@@ -17,23 +17,25 @@
     <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-    <environment include="Production, Development">
-        @await RenderSectionAsync("VendorStyles", required: false)
-    </environment>
+    @await RenderSectionAsync("VendorStyles", required: false)
 
     <environment include="Production">
+
         @* css bundled minified production version *@
         <link rel="stylesheet" href="~/css/siteCssBundle.css" />
         @await RenderSectionAsync("MyStyles_prod", required: false)
+
     </environment>
 
     <environment include="Development">
+
         @* css unbundled unminified development version *@
         <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
         <link href="~/css/transition.css" asp-append-version="true" rel="stylesheet" />
         <link href="~/css/app.css" asp-append-version="true" rel="stylesheet" />
         @*<link href="~/css/cube annimation/cube.css" asp-append-version="true" rel="stylesheet"/>*@
         @await RenderSectionAsync("MyStyles_dev", required: false)
+
     </environment>
 </head>
 <body>
@@ -116,11 +118,13 @@
     @await RenderSectionAsync("VendorScripts", required: false)
 
     <environment include="Production">
+        @* js bundled minified production version *@
         <script type="text/javascript" src="~/js/siteJsBundle.js" asp-append-version="true"></script>
         @await RenderSectionAsync("MyScripts_prod", required: false)
     </environment>
 
     <environment include="Development">
+        @* js unbundled unminified development version *@
         <script type="text/javascript" src="~/js/app/animateBanner.js" asp-append-version="true"></script>
         <script type="text/javascript" src="~/js/app/cookieConsent.js" asp-append-version="true"></script>
         @await RenderSectionAsync("MyScripts_dev", required: false)

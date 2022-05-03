@@ -34,20 +34,26 @@ const branchingController = (function () {
                 //      postBackModel.UpdatedAnswers = updatedAnswers;
                 //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
                 //    },
-                text: "Close",
+                //text: "Close",
                 //icon: "ui-icon-close",
                 click: function () {
                     $(this).dialog("close");
                 }
             }]
     };
-    function scrollTo(thisElement) {
-        let scrollAmount = thisElement.prop('offsetTop') + 15;
-        if (thisElement.prop('id').indexOf('Q12') !== -1)
-            scrollAmount = 0; //scroll up further by 15
-        console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
-        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-        thisElement.focus();
+    function scrollTo(elementId) {
+        const thisElement = $('#' + elementId);
+        if (thisElement.length > 0) {
+            let scrollAmount = thisElement.prop('offsetTop') + 15;
+            if (thisElement.prop('id').indexOf('Q12') !== -1)
+                scrollAmount = 0; //scroll up further by 15
+            console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
+            $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+            thisElement.focus();
+        }
+        else {
+            alert(elementId + " doesn't exist in the current context, can not scroll to that element");
+        }
     }
     /* private function */
     function Q12_Q23_blank_then_Lock_All() {
@@ -112,15 +118,16 @@ const branchingController = (function () {
                 }
                 else {
                     console.log('Onset Date and Admit Date are not empty, apply rules of other ' + otherPersistables.length + ' perPersistables');
+                    console.log(otherPersistables);
                     otherPersistables.each(function () {
-                        //some persistable doesn't track change(), so enable them first then trigger chage() of those that do.
-                        $(this).prop('disabled', false);
-                        $(this).change();
+                        console.log('firing ' + $(this).prop('id') + '.change()');
+                        //trigger other persistables' change() event
+                        $(this).prop('disabled', false).change();
                     });
                 }
             }
         }
-        /* on check */
+        /* on change */
         primaryKeys.each(function () {
             const thisPrimaryKey = $(this);
             thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, checkQ12_Q23);
@@ -148,7 +155,7 @@ const branchingController = (function () {
             const Q41 = $('.persistable[id^=Q41_]'); /* checkbox */
             const Q44C = $('.persistable[id^=Q44C_'); /* checkbox */
             //const DischargeRelated: any = $('.persistable[id ^= Q15B],.persistable[id ^= Q16B],.persistable[id ^= Q17B],.persistable[id ^= Q21B],.persistable[id ^= Q41],.persistable[id ^= Q44C]');
-            const seenTheDialog = false;
+            let seenTheDialog = false;
             const myButtons = {
                 "Ok": function () {
                     if (isDischarged) {
@@ -182,28 +189,30 @@ const branchingController = (function () {
                         //  thisRelatedQ.val('').prop('disabled', true);
                         //});
                         console.log('reset and disable Q15B');
-                        Q15B.val(-1).prop('disabled', true).change();
+                        Q15B.val(-1).prop('disabled', true);
                         console.log('reset and disable Q16B');
-                        Q16B.val(-1).prop('disabled', true).change();
+                        Q16B.val(-1).prop('disabled', true);
                         console.log('reset and disable Q17B');
-                        Q17B.val(-1).prop('disabled', true).change();
+                        Q17B.val(-1).prop('disabled', true);
                         console.log('reset and disable Q21');
-                        Q21B.val(-1).prop('disabled', true).change();
+                        Q21B.val(-1).prop('disabled', true);
                         Q41.each(function () {
                             const thisQ41 = $(this);
                             console.log('uncheck and disable ' + thisQ41.prop('id'));
-                            thisQ41.prop('checked', false).prop('disabled', true).change();
+                            thisQ41.prop('checked', false).prop('disabled', true);
                         });
                         Q44C.each((i, el) => {
                             const thisQ44C = $(el);
                             console.log('uncheck and disable ' + thisQ44C.prop('id'));
-                            thisQ44C.prop('checked', false).prop('disabled', true).change();
+                            thisQ44C.prop('checked', false).prop('disabled', true);
                         });
                     }
                     $(this).dialog("close");
+                    seenTheDialog = true;
                 },
                 "Cancel": function () {
                     $(this).dialog("close");
+                    seenTheDialog = true;
                 }
             };
             if (isDischarged) {
@@ -245,9 +254,9 @@ const branchingController = (function () {
                 }
             }
             else {
-                const dialogText = 'Q12B is not a discharge date. Also reset and lock related discharge fields:  Q15B,Q16B, Q17B, Q21B, Q41, Q44C';
-                console.log('checkQ12B() ' + dialogText);
                 if (((_e = e.data) === null || _e === void 0 ? void 0 : _e.x) === EnumChangeEventArg.Change && !seenTheDialog) {
+                    const dialogText = 'Q12B is not a discharge date. Reset and lock related discharge fields:  Q15B,Q16B, Q17B, Q21B, Q41, Q44C';
+                    console.log('checkQ12B() ' + dialogText);
                     //with warning dialog
                     dialogOptions.title = 'Date';
                     $('#dialog')
@@ -264,22 +273,22 @@ const branchingController = (function () {
                     //  thisRelatedQ.prop('disabled', true).change();
                     //});
                     console.log('checkQ12B() reset and disable Q15B');
-                    Q15B.val(-1).prop('disabled', true).change();
+                    Q15B.val(-1).prop('disabled', true);
                     console.log('checkQ12B() reset and disable Q16B');
-                    Q16B.val(-1).prop('disabled', true).change();
+                    Q16B.val(-1).prop('disabled', true);
                     console.log('checkQ12B() reset and disable Q17B');
-                    Q17B.val(-1).prop('disabled', true).change();
+                    Q17B.val(-1).prop('disabled', true);
                     console.log('checkQ12B() reset and disable Q21B');
-                    Q21B.val(-1).prop('disabled', true).change();
+                    Q21B.val(-1).prop('disabled', true);
                     Q41.each(function () {
                         const thisQ41 = $(this);
                         console.log('checkQ12B() uncheck and disable Q21B');
-                        thisQ41.prop('checked', false).prop('disabled', true).change();
+                        thisQ41.prop('checked', false).prop('disabled', true);
                     });
                     Q44C.each((i, el) => {
                         const thisQ44C = $(el);
                         console.log('checkQ12B() uncheck and disable Q21B');
-                        thisQ44C.prop('checked', false).prop('disabled', true).change();
+                        thisQ44C.prop('checked', false).prop('disabled', true);
                     });
                 }
             }
@@ -294,49 +303,25 @@ const branchingController = (function () {
         console.log("branching::: inside of Q14B_enabled_if_Q14A_is_Yes");
         /* nested event handler */
         function checkQ14A(e) {
-            var _a, _b, _c;
+            var _a, _b;
             console.log('inside of checkQ14A(e) e.data.y', (_a = e.data) === null || _a === void 0 ? void 0 : _a.y);
             const Q14AYes = $('.persistable[id^=Q14A_][id*=Yes]:checked').length === 1;
             const Q14Bs = $('.persistable[id^=Q14B_]');
             let seenTheDialog = false;
             if (Q14AYes) {
-                const dialogText = 'Q14A is Yes, unlock all Q14B and focus on first Q14B';
-                console.log(dialogText);
+                console.log('Q14A is Yes, unlock all Q14B, no dialog');
                 if (Q14Bs.length > 0) {
-                    if (((_b = e.data) === null || _b === void 0 ? void 0 : _b.x) === EnumChangeEventArg.Change && !seenTheDialog) {
-                        const myButtons = {
-                            "Ok": function () {
-                                Q14Bs.each(function () {
-                                    $(this).prop('disabled', false);
-                                });
-                                seenTheDialog = true;
-                                $(this).dialog("close");
-                            },
-                            "Cancel": function () {
-                                $(this).dialog("close");
-                                seenTheDialog = true;
-                            }
-                        };
-                        dialogOptions.title = 'Date';
-                        $('#dialog')
-                            .text(dialogText)
-                            .dialog(dialogOptions, {
-                            title: 'Warning Q14B', buttons: myButtons
-                        });
-                    }
-                    else {
-                        /* without warning dialog */
-                        Q14Bs.each(function () {
-                            $(this).prop('disabled', false);
-                        });
-                    }
+                    /* without warning dialog */
+                    Q14Bs.each(function () {
+                        $(this).prop('disabled', false);
+                    });
                     Q14Bs.first().focus();
                 }
             }
             else {
                 const dialogText = 'Q14A is not answered or is No, uncheck and lock all Q14B';
                 console.log(dialogText);
-                if (((_c = e.data) === null || _c === void 0 ? void 0 : _c.x) === EnumChangeEventArg.Change) {
+                if (((_b = e.data) === null || _b === void 0 ? void 0 : _b.x) === EnumChangeEventArg.Change) {
                     //with warning dialog
                     const myButtons = {
                         "Ok": function () {
@@ -391,40 +376,26 @@ const branchingController = (function () {
         }
         /* nested event handler */
         function checkQ16A(e) {
-            var _a;
             let seenTheDialog = false;
             const Q16AisHome = $(".persistable[id^=Q16A_] option:selected").text().indexOf('1. Home') !== -1;
-            const myButtons = {
-                "Ok": function () {
-                    if (Q16AisHome)
-                        actQ16A(false);
-                    else
-                        actQ16A(true);
-                    $(this).dialog("close");
-                    seenTheDialog = true;
-                },
-                "Cancel": function () {
-                    $(this).dialog("close");
-                    seenTheDialog = true;
-                }
-            };
             if (Q16AisHome) {
                 const dialogText = 'Q16A is home, unlock Q17';
-                console.log(dialogText);
-                if (((_a = e.data) === null || _a === void 0 ? void 0 : _a.x) === EnumChangeEventArg.Change && !seenTheDialog) {
-                    $('#dialog')
-                        .text(dialogText)
-                        .dialog(dialogOptions, {
-                        title: 'Warning 16A, Q17', buttons: myButtons
-                    });
-                }
-                else {
-                    actQ16A(false);
-                }
+                actQ16A(false);
             }
             else {
                 const dialogText = 'Q16A is not home, clear and lock Q17';
                 console.log(dialogText);
+                const myButtons = {
+                    "Ok": function () {
+                        actQ16A(true);
+                        $(this).dialog("close");
+                        seenTheDialog = true;
+                    },
+                    "Cancel": function () {
+                        $(this).dialog("close");
+                        seenTheDialog = true;
+                    }
+                };
                 if (e === EnumChangeEventArg.Change && !seenTheDialog) {
                     $('#dialog')
                         .text(dialogText)
@@ -524,46 +495,38 @@ const branchingController = (function () {
         function checkQ42(e) {
             var _a, _b, _c;
             console.log('checkQ42() e.data', e.data);
-            let dialogText;
             let Q42;
             if ((_a = e.data) === null || _a === void 0 ? void 0 : _a.y) {
                 Q42 = (_b = e.data) === null || _b === void 0 ? void 0 : _b.y;
                 Q42Yes = Q42.prop('id').indexOf('Yes') !== -1;
-                if (Q42Yes)
-                    dialogText = 'Q42 is a Yes, unlock all Q43 till the first blank';
-                else
-                    dialogText = 'Q42 is a No, reset and lock all Q43';
             }
-            console.log(dialogText);
             let seenTheDialog = false;
-            if (((_c = e.data) === null || _c === void 0 ? void 0 : _c.x) === EnumChangeEventArg.Change && !seenTheDialog) {
-                //with warning dialog
-                const myButtons = {
-                    "Ok": function () {
-                        if (Q42Yes)
-                            actQ42(false);
-                        else
-                            actQ42(true);
-                        $(this).dialog("close");
-                        seenTheDialog = true;
-                    },
-                    "Cancel": function () {
-                        $(this).dialog("close");
-                        seenTheDialog = true;
-                    }
-                };
-                $('#dialog')
-                    .text(dialogText)
-                    .dialog(dialogOptions, {
-                    title: 'Warning Q42, Q43', buttons: myButtons
-                });
-            }
+            if (Q42Yes)
+                actQ42(false);
             else {
-                //without warning dialog
-                if (Q42Yes)
-                    actQ42(false);
-                else
+                if (((_c = e.data) === null || _c === void 0 ? void 0 : _c.x) === EnumChangeEventArg.Change && !seenTheDialog) {
+                    //with warning dialog
+                    const myButtons = {
+                        "Ok": function () {
+                            actQ42(true);
+                            $(this).dialog("close");
+                            seenTheDialog = true;
+                        },
+                        "Cancel": function () {
+                            $(this).dialog("close");
+                            seenTheDialog = true;
+                        }
+                    };
+                    $('#dialog')
+                        .text('Q42 is a No, reset and lock all Q43')
+                        .dialog(dialogOptions, {
+                        title: 'Warning Q42, Q43', buttons: myButtons
+                    });
+                }
+                else {
+                    //warning dialog
                     actQ42(true);
+                }
             }
         }
         /* on change */
@@ -617,9 +580,10 @@ const branchingController = (function () {
         let foundBlank;
         /* nested event handler */
         function checkQ43(e) {
-            var _a, _b, _c, _d;
+            var _a, _b, _c;
             console.log('e.data.y in Q43_Rules().checkQ43() =', (_a = e.data) === null || _a === void 0 ? void 0 : _a.y);
             const Q42Yes = $('.persistable[id^=Q42][id*=Yes]:checked').length === 1;
+            const Q42No = $('.persistable[id^=Q42][id*=No]:checked').length === 1;
             const thisQ43 = (_b = e.data) === null || _b === void 0 ? void 0 : _b.y;
             const thisQ43CRUD = commonUtility.getCRUD(thisQ43, thisQ43.data('oldvalue'), thisQ43.val());
             let seenTheDialog = false;
@@ -651,34 +615,20 @@ const branchingController = (function () {
             }
             if (Q42Yes) {
                 console.log("thisQ43CRUD ? " + thisQ43CRUD === undefined ? "unchanged" : thisQ43CRUD);
-                if (((_c = e.data) === null || _c === void 0 ? void 0 : _c.x) === EnumChangeEventArg.Change && !seenTheDialog) {
-                    //with warning dialog
-                    const buttonQ42Yes = myButtonsClosure(Q42Yes);
-                    $('#dialog')
-                        .text('Find next blank Q43 for editing')
-                        .dialog(dialogOptions, {
-                        title: 'Warning Q43', buttons: buttonQ42Yes(thisQ43, thisQ43CRUD)
-                    });
-                }
-                else {
-                    //without warning dialog
-                    switch (thisQ43CRUD) {
-                        case "D1":
-                        case "D1": {
-                            foundBlank = actQ43s('D', thisQ43);
-                            break;
-                        }
-                        default: {
-                            foundBlank = actQ43s('CU', thisQ43);
-                            break;
-                        }
-                    }
+                //without warning dialog
+                switch (thisQ43CRUD) {
+                    case "D":
+                    case "D1":
+                    case "D2":
+                        foundBlank = actQ43s('D', thisQ43);
+                    default:
+                        foundBlank = actQ43s('CU', thisQ43);
                 }
             }
-            else {
-                if (((_d = e.data) === null || _d === void 0 ? void 0 : _d.x) === EnumChangeEventArg.Change && !seenTheDialog) {
+            if (Q42No) {
+                if (((_c = e.data) === null || _c === void 0 ? void 0 : _c.x) === EnumChangeEventArg.Change && !seenTheDialog) {
                     //with warning dialog
-                    const buttonQ42No = myButtonsClosure(Q42Yes);
+                    const buttonQ42No = myButtonsClosure(Q42No);
                     $('#dialog')
                         .text('Find next blank Q43 for editing')
                         .dialog(dialogOptions, {
@@ -687,7 +637,6 @@ const branchingController = (function () {
                 }
                 else {
                     //without warning dialog
-                    //commonUtility.resetControlValue(thisQ43)
                     thisQ43.val('');
                     thisQ43.prop('disabled', true);
                 }
@@ -707,6 +656,7 @@ const branchingController = (function () {
         //event hooked during checkAllRules()
         console.log('branching::: inside of Q44C_Affect_Q44D_Q46');
         const Q44C = $('.persistable[id^=Q44C_]');
+        const Q44C_is_Yes = $('.persistable[id^=Q44C_][id*=Yes]:checked').length === 1;
         /* nested event handler */
         function checkQ44C(e) {
             var _a, _b, _c;
@@ -717,14 +667,13 @@ const branchingController = (function () {
                 "Ok": function () {
                     if (Q44D.length > 0) {
                         //commonUtility.resetControlValue(Q44D);
-                        Q44D.val(-1);
-                        Q44D.prop('disabled', true);
+                        Q44D.val(-1).prop('disabled', true);
                     }
                     if (Q45.length > 0) {
-                        Q45.prop('disabled', true);
+                        Q45.val(-1).prop('disabled', true);
                     }
                     if (Q46.length > 0) {
-                        Q46.prop('disabled', false).focus();
+                        Q46.val(-1).prop('disabled', false).focus();
                     }
                     $(this).dialog("close");
                 },
@@ -732,7 +681,6 @@ const branchingController = (function () {
                     $(this).dialog("close");
                 }
             };
-            const Q44C_is_Yes = $('.persistable[id^=Q44C_][id*=Yes]:checked').length === 1;
             if (Q44C_is_Yes) {
                 console.log(((_a = e.data) === null || _a === void 0 ? void 0 : _a.x) + ' Q44C is yes, unlock Q44D, Q45 and focus on Q44D');
                 if (Q44D.length > 0) {
@@ -778,7 +726,7 @@ const branchingController = (function () {
     }
     /* private function */
     function GG0170JKLMN_depends_on_GG0170I() {
-        //sample code
+        //-----------------sample code-------------------
         //var extra_data = { one: "One", two: "Two" };
         //var make_handler = function (extra_data) {
         //  return function (event) {
@@ -786,30 +734,46 @@ const branchingController = (function () {
         //  };
         //};
         //element.addEventListener("click", make_handler(extra_data));
-        //event hooked during checkAllRules()
+        //-----------------sample code-------------------
+        //$(document).on({
+        //  "touchstart": function () {
+        //    // DO THIS SINCE EVENT WAS TOUCHSTART
+        //  },
+        //  "click": function () {
+        //    // DO THIS SINCE EVENT WAS CLICK
+        //  }
+        //}, "#element");
         console.log('branching::: inside of GG0170JKLMN_depends_on_GG0170I');
         const GG0170I = $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])');
         let thisI;
-        function actGG0170I(GG0170JKL, focusThis, isDisabled, eventArg) {
-            console.log('actGG0170I() focusThis', focusThis);
+        let seenTheDialog = false;
+        function actGG0170I(GG0170JKL, focusThisId, isDisabled, eventArg) {
             GG0170JKL.each(function () {
                 commonUtility.resetControlValue($(this));
                 $(this).prop('disabled', isDisabled);
             });
-            if (eventArg === EnumChangeEventArg.Change)
-                scrollTo(focusThis);
-            else
-                focusThis.focus();
+            if (eventArg === EnumChangeEventArg.Change) {
+                console.log('actGG0170I() scroll to ', focusThisId);
+                scrollTo(focusThisId);
+            }
+            else {
+                console.log('actGG0170I() no scroll focus ', focusThisId);
+                const focustedElement = $('#' + focusThisId);
+                if (focustedElement.length > 0)
+                    focustedElement.focus();
+                else
+                    alert(focusThisId + "dosen't exist in this context, can not set focus on that element");
+            }
         }
         /* nested event handler */
         function checkGG0170I(e) {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
-            console.log('checkGG0170I() eventData ' + ((_a = e.data) === null || _a === void 0 ? void 0 : _a.x) + ' checkGG0170I() e.data.x = ' + ((_b = e.data) === null || _b === void 0 ? void 0 : _b.x) + ' e.data.y = ' + ((_c = e.data) === null || _c === void 0 ? void 0 : _c.y));
-            if ((_d = e.data) === null || _d === void 0 ? void 0 : _d.y)
-                thisI = (_e = e.data) === null || _e === void 0 ? void 0 : _e.y;
-            console.log('checkGG0170I() thisI =', thisI);
+            var _a, _b, _c, _d, _e, _f, _g;
+            console.log('checkGG0170I() e.data.x = ' + ((_a = e.data) === null || _a === void 0 ? void 0 : _a.x) + ', e.data.y = ' + ((_b = e.data) === null || _b === void 0 ? void 0 : _b.y));
+            if ((_c = e.data) === null || _c === void 0 ? void 0 : _c.y)
+                thisI = (_d = e.data) === null || _d === void 0 ? void 0 : _d.y;
+            console.log('checkGG0170I() thisI = ', thisI);
             const intGG0170I = commonUtility.getControlValue(thisI);
-            console.log('checkGG0170I() eventData ' + ((_f = e.data) === null || _f === void 0 ? void 0 : _f.x) + ' commonUtility.getControlValue(' + thisI.prop('id') + ') = ', intGG0170I);
+            console.log('checkGG0170I() e.data.x = ' + ((_e = e.data) === null || _e === void 0 ? void 0 : _e.x) + ', commonUtility.getControlValue(' + thisI.prop('id') + ') = ' + intGG0170I);
             let GG0170J, GG0170JKL, GG0170M;
             let measure;
             if (thisI.prop('id').indexOf('Admission_Performance') !== -1) {
@@ -824,60 +788,44 @@ const branchingController = (function () {
             else if (thisI.prop('id').indexOf('Followup_Performance') !== -1) {
                 measure = 'Followup_Performance';
             }
-            GG0170JKL = $('.persistable[id^=GG0170J_' + measure + '], .persistable[id^=GG0170K_' + measure + '], .persistable[id^=GG0170L_' + measure + ']');
-            GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
             GG0170J = $('.persistable[id^=GG0170J_' + measure + ']');
-            console.log('checkGG0170I() GG017M', GG0170M);
-            console.log('checkGG0170I() GG017J', GG0170J);
-            console.log('checkGG0170I() GG017JKL', GG0170JKL);
-            const myButtons = {
-                "Ok": function () {
-                    switch (true) {
-                        case (intGG0170I > 0 && intGG0170I < 7):
-                            const focusJ = GG0170J;
-                            const enableJKL = false;
-                            actGG0170I(GG0170JKL, focusJ, enableJKL, EnumChangeEventArg.Change);
-                            break;
-                        default:
-                            const focusM = GG0170M;
-                            const disableJKL = true;
-                            actGG0170I(GG0170JKL, focusM, disableJKL, EnumChangeEventArg.Change);
-                            break;
-                    }
-                    $(this).dialog("close");
-                },
-                "Cancel": function () {
-                    $(this).dialog("close");
-                }
-            };
+            console.log('checkGG0170I()::: GG017J = ', GG0170J);
+            GG0170JKL = $('.persistable[id^=GG0170J_' + measure + '], .persistable[id^=GG0170K_' + measure + '], .persistable[id^=GG0170L_' + measure + ']');
+            console.log('checkGG0170I()::: GG017JKL = ', GG0170JKL);
+            GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
+            console.log('checkGG0170I()::: GG017M = ', GG0170M);
             switch (true) {
                 case (intGG0170I > 0 && intGG0170I < 7):
                     {
-                        let dialogText = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
-                        console.log('checkGG0170I() eventData ' + ((_g = e.data) === null || _g === void 0 ? void 0 : _g.x) + dialogText);
-                        if (((_h = e.data) === null || _h === void 0 ? void 0 : _h.x) === EnumChangeEventArg.Change) {
-                            //with warning dialog
-                            $('#dialog')
-                                .text(dialogText)
-                                .dialog(dialogOptions, {
-                                title: 'Warning GG0170IJKLM', buttons: myButtons
-                            });
-                        }
-                        else {
-                            //without warning dialog
-                            /* unlock and clear J K L, skip to J */
-                            const focusJ = GG0170J;
-                            const DisaenableJKL = false;
-                            actGG0170I(GG0170JKL, focusJ, DisaenableJKL, EnumChangeEventArg.Load);
-                        }
+                        let consoleLog = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
+                        console.log('checkGG0170I() eventData ' + ((_f = e.data) === null || _f === void 0 ? void 0 : _f.x) + consoleLog);
+                        //without warning dialog
+                        /* unlock and clear J K L, skip to J */
+                        const focusJ = GG0170J;
+                        const DisaenableJKL = false;
+                        actGG0170I(GG0170JKL, focusJ, DisaenableJKL, EnumChangeEventArg.Load);
                     }
                     break;
                 default: {
                     /* GG0170I is not selected, clear and lock J K L then advance to M */
                     const dialogText = 'GG0170I ' + measure + ' is unknown or is not between 1 and 6, clear and lock GG0170J ' + measure + ', GG0170K ' + measure + 'and GG0170L ' + measure + ', then advance to GG0170M ' + measure;
                     console.log('checkGG0170I() eventData ' + dialogText);
-                    if (((_j = e.data) === null || _j === void 0 ? void 0 : _j.x) === EnumChangeEventArg.Change) {
+                    if (((_g = e.data) === null || _g === void 0 ? void 0 : _g.x) === EnumChangeEventArg.Change && !seenTheDialog) {
                         //with warning dialog
+                        const myButtons = {
+                            "Ok": function () {
+                                let focusM = GG0170M;
+                                const disableJKL = true;
+                                console.log('focusM = ', focusM);
+                                actGG0170I(GG0170JKL, focusM, disableJKL, EnumChangeEventArg.Change);
+                                seenTheDialog = true;
+                                $(this).dialog("close");
+                            },
+                            "Cancel": function () {
+                                seenTheDialog = true;
+                                $(this).dialog("close");
+                            }
+                        };
                         $('#dialog')
                             .text(dialogText)
                             .dialog(dialogOptions, {
@@ -886,8 +834,9 @@ const branchingController = (function () {
                     }
                     else {
                         //without warning dialog
-                        const focusM = GG0170M;
+                        let focusM = GG0170M;
                         const disableJKL = true;
+                        console.log('focusM = ', focusM);
                         actGG0170I(GG0170JKL, focusM, disableJKL, EnumChangeEventArg.Load);
                     }
                 }
@@ -918,14 +867,13 @@ const branchingController = (function () {
                 thisMorN = (_d = e.data) === null || _d === void 0 ? void 0 : _d.y;
             console.log('checkGG0170MN() thisMorN in e.data.y = ', thisMorN);
             let GG0170M, GG0170N, GG0170O, GG0170P;
-            /* thisMorN could be either M or N */
-            if (thisMorN.prop('id').indexOf('GG0170M') !== -1)
-                GG0170M = thisMorN;
-            if (thisMorN.prop('id').indexOf('GG0170N') !== -1)
-                GG0170N = thisMorN;
             let measure;
-            if (GG0170M != null) {
+            let intGG0170 = commonUtility.getControlValue(thisMorN);
+            /* thisMorN could be either M or N */
+            if (thisMorN.prop('id').indexOf('GG0170M') !== -1) {
                 console.log("checkGG0170MN() it's M", GG0170M);
+                GG0170M = thisMorN;
+                intGG0170 = commonUtility.getControlValue(thisMorN);
                 /* determ if this M is an admission_performance */
                 if (GG0170M.prop('id').indexOf('Admission_Performance') !== -1) {
                     measure = "Admission_Performance";
@@ -943,8 +891,10 @@ const branchingController = (function () {
                 GG0170O = $('.persistable[id^=GG0170O_' + measure + ']');
                 GG0170P = $('.persistable[id^=GG0170P_' + measure + ']');
             }
-            else {
+            if (thisMorN.prop('id').indexOf('GG0170N') !== -1) {
                 console.log("checkGG0170MN() it's N", GG0170N);
+                GG0170N = thisMorN;
+                intGG0170 = commonUtility.getControlValue(thisMorN);
                 /* goes to O or P */
                 let measure;
                 if (GG0170N.prop('id').indexOf('Admission_Performance') !== -1) {
@@ -962,8 +912,6 @@ const branchingController = (function () {
                 GG0170O = $('.persistable[id^=GG0170O_' + measure + ']');
                 GG0170P = $('.persistable[id^=GG0170P_' + measure + ']');
             }
-            const intGG0170 = commonUtility.getControlValue(thisMorN);
-            ;
             const myButtons = {
                 "Ok": function () {
                     if (GG0170M) {
@@ -972,59 +920,37 @@ const branchingController = (function () {
                                 /* M >= 7, reset and lock both N and O then advance to P */
                                 if (GG0170N.length > 0) {
                                     //commonUtility.resetControlValue(GG0170N);
-                                    GG0170N.val(-1).change();
-                                    GG0170N.prop('disabled', true);
+                                    GG0170N.val(-1).prop('disabled', true).change();
                                 }
                                 if (GG0170O.length > 0) {
                                     //commonUtility.resetControlValue(GG0170O);
-                                    GG0170O.val(-1).change();
-                                    GG0170O.prop('disabled', true);
+                                    GG0170O.val(-1).prop('disabled', true).change();
                                 }
-                                scrollTo(GG0170P);
-                                break;
-                            case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
-                                /* M between 0 and 6, scroll to N */
-                                if (GG0170O.length > 0) {
-                                    GG0170O.prop('disabled', false);
-                                    scrollTo(GG0170N);
-                                }
+                                scrollTo(GG0170P.prop('id'));
                                 break;
                             default:
                                 /* M is unknown, reset and lock N and O */
                                 //commonUtility.resetControlValue(GG0170N);
-                                GG0170N.val(-1);
-                                GG0170N.prop('disabled', true);
+                                GG0170N.val(-1).prop('disabled', true).change();
                                 //commonUtility.resetControlValue(GG0170O);
-                                GG0170O.val(-1);
-                                GG0170O.prop('disabled', true);
+                                GG0170O.val(-1).prop('disabled', true).change();
                                 break;
                         }
                     }
                     if (GG0170N) {
                         switch (true) {
                             case (intGG0170 >= 7 && GG0170P.length > 0):
-                                /* N >= 7, reset and lock both N and O then advance to P */
+                                /* N >= 7, reset and lock O then advance to P */
                                 if (GG0170O.length > 0) {
                                     //commonUtility.resetControlValue(GG0170O
-                                    GG0170O.val(-1);
-                                    GG0170O.prop('disabled', true);
+                                    GG0170O.val(-1).prop('disabled', true).change();
                                 }
-                                scrollTo(GG0170P);
-                                break;
-                            case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
-                                /* N between 0 and 6, unlock and scroll to N */
-                                if (GG0170O.length > 0) {
-                                    //commonUtility.resetControlValue(GG0170O);
-                                    GG0170O.val(-1);
-                                    GG0170O.prop('disabled', false);
-                                    scrollTo(GG0170O);
-                                }
+                                scrollTo(GG0170P.prop('id'));
                                 break;
                             default:
                                 /* N is unknown, reset and lock O */
                                 //commonUtility.resetControlValue(GG0170O);
-                                GG0170O.val(-1);
-                                GG0170O.prop('disabled', true);
+                                GG0170O.val(-1).prop('disabled', true).change();
                         }
                     }
                     $(this).dialog("close");
@@ -1037,40 +963,16 @@ const branchingController = (function () {
                 case EnumChangeEventArg.Change: {
                     /* with warning dialog */
                     let dialogText;
-                    if (GG0170M) {
-                        switch (true) {
-                            case (intGG0170 >= 7 && GG0170P.length > 0):
-                                dialogText = 'M >= 7, reset and lock both N and O then advance to P';
-                                break;
-                            case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
-                                dialogText = 'M between 0 and 6, scroll to N';
-                                break;
-                            default:
-                                dialogText = 'M is unknown, reset and lock N and O';
-                                break;
-                        }
+                    /* do not show dialogue if 0 < M < 7 */
+                    if ((intGG0170 <= 0 || intGG0170 >= 7) && GG0170P.length > 0) {
+                        if (GG0170M)
+                            dialogText = 'M is unkown or M is greater than 7, reset and lock N and O then advance to P';
+                        if (GG0170N)
+                            dialogText = 'N is unknow or N is greater than 7, reset and lock O then advance to P';
                         $('#dialog')
                             .text(dialogText)
                             .dialog(dialogOptions, {
-                            title: 'Warning GG0170M', buttons: myButtons
-                        });
-                    }
-                    if (GG0170N) {
-                        switch (true) {
-                            case (intGG0170 >= 7 && GG0170P.length > 0):
-                                dialogText = 'N >= 7, reset and lock both N and O then advance to P';
-                                break;
-                            case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
-                                dialogText = 'N between 0 and 6, unlock and scroll to N';
-                                break;
-                            case (intGG0170 <= 0):
-                                dialogText = 'N is unknown, reset and lock O';
-                                break;
-                        }
-                        $('#dialog')
-                            .text(dialogText)
-                            .dialog(dialogOptions, {
-                            title: 'Warning GG0170N', buttons: myButtons
+                            title: 'Warning GG0170M, N, O, and P', buttons: myButtons
                         });
                     }
                     break;
@@ -1083,31 +985,27 @@ const branchingController = (function () {
                                 /* M >= 7, reset and lock both N and O then advance to P */
                                 if (GG0170N.length > 0) {
                                     //commonUtility.resetControlValue(GG0170N);
-                                    GG0170N.val(-1);
-                                    GG0170N.prop('disabled', true);
+                                    GG0170N.val(-1).prop('disabled', true).change();
                                 }
                                 if (GG0170O.length > 0) {
                                     //commonUtility.resetControlValue(GG0170O);
-                                    GG0170O.val(-1);
-                                    GG0170O.prop('disabled', true);
+                                    GG0170O.val(-1).prop('disabled', true).change();
                                 }
-                                scrollTo(GG0170P);
+                                scrollTo(GG0170P.prop('id'));
                                 break;
                             case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
-                                /* M between 0 and 6, scroll to N */
+                                /* M between 0 and 6, reset and disable O then scroll to N */
                                 if (GG0170O.length > 0) {
-                                    GG0170O.prop('disabled', false);
-                                    scrollTo(GG0170N);
+                                    GG0170O.val(-1).prop('disabled', false).change();
+                                    scrollTo(GG0170N.prop('id'));
                                 }
                                 break;
                             default:
                                 /* M is unknown, reset and lock N and O */
                                 //commonUtility.resetControlValue(GG0170N);
-                                GG0170N.val(-1);
-                                GG0170N.prop('disabled', true);
+                                GG0170N.val(-1).prop('disabled', true).change();
                                 //commonUtility.resetControlValue(GG0170O);
-                                GG0170O.val(-1);
-                                GG0170O.prop('disabled', true);
+                                GG0170O.val(-1).prop('disabled', true).change();
                                 break;
                         }
                     }
@@ -1117,25 +1015,22 @@ const branchingController = (function () {
                                 /* N >= 7, reset and lock both N and O then advance to P */
                                 if (GG0170O.length > 0) {
                                     //commonUtility.resetControlValue(GG0170O);
-                                    GG0170O.val(-1);
-                                    GG0170O.prop('disabled', true);
+                                    GG0170O.val(-1).prop('disabled', true).change();
                                 }
-                                scrollTo(GG0170P);
+                                scrollTo(GG0170P.prop('id'));
                                 break;
                             case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
                                 /* N between 0 and 6, unlock and scroll to N */
                                 if (GG0170O.length > 0) {
                                     //commonUtility.resetControlValue(GG0170O);
-                                    GG0170O.val(-1);
-                                    GG0170O.prop('disabled', false);
-                                    scrollTo(GG0170O);
+                                    GG0170O.val(-1).prop('disabled', false).change();
+                                    scrollTo(GG0170O.prop('id'));
                                 }
                                 break;
                             default:
                                 /* N is unknown, reset and lock O */
                                 //commonUtility.resetControlValue(GG0170O);
-                                GG0170O.val(-1);
-                                GG0170O.prop('disabled', true);
+                                GG0170O.val(-1).prop('disabled', true).change();
                         }
                     }
                     break;
@@ -1143,7 +1038,8 @@ const branchingController = (function () {
             }
         }
         /* on change */
-        GG0170M_and_N.each(function () {
+        GG0170M_and_N.each(function (e) {
+            console.log('GG0170M_and_N.each() event =', e);
             $(this).on('change', { x: EnumChangeEventArg.Change, y: $(this) }, checkGG0170MN);
         });
         /* on load */
@@ -1162,10 +1058,10 @@ const branchingController = (function () {
         function checkGG0170Q(e) {
             var _a;
             let GG0170Rs = null, checkNext = true;
-            const thisQ_is_No = thisQ.prop('id').indexOf('No') !== -1;
+            const thisQ_is_No = $('.persistable[id^=GG0170Q_][id*=No]:not([id*=Discharge_Goal]):checked').length > 0;
             const myButtons = {
                 "Ok": function () {
-                    scrollTo(completed);
+                    scrollTo(completed.prop('id'));
                     $(this).dialog("close");
                 },
                 "Cancel": function () {
@@ -1198,9 +1094,11 @@ const branchingController = (function () {
                             $(this).prop('disabled', false);
                         });
                         if (e === EnumChangeEventArg.Change) {
-                            scrollTo(GG0170Rs.first());
+                            scrollTo(GG0170Rs.first().prop('id'));
                         }
-                        GG0170Rs.first().focus();
+                        else {
+                            GG0170Rs.first().focus();
+                        }
                         checkNext = false;
                     }
                 }
@@ -1214,9 +1112,11 @@ const branchingController = (function () {
                             $(this).prop('disabled', false);
                         });
                         if (e === EnumChangeEventArg.Change) {
-                            scrollTo(GG0170Rs.first());
+                            scrollTo(GG0170Rs.first().prop('id'));
                         }
-                        GG0170Rs.first().focus();
+                        else {
+                            GG0170Rs.first().focus();
+                        }
                         checkNext = false;
                     }
                 }
@@ -1230,9 +1130,11 @@ const branchingController = (function () {
                             $(this).prop('disabled', false);
                         });
                         if (e === EnumChangeEventArg.Change) {
-                            scrollTo(GG0170Rs.first());
+                            scrollTo(GG0170Rs.first().prop('id'));
                         }
-                        GG0170Rs.first().focus();
+                        else {
+                            GG0170Rs.first().focus();
+                        }
                         checkNext = false;
                     }
                 }
@@ -1246,9 +1148,11 @@ const branchingController = (function () {
                             $(this).prop('disabled', false);
                         });
                         if (e === EnumChangeEventArg.Change) {
-                            scrollTo(GG0170Rs.first());
+                            scrollTo(GG0170Rs.first().prop('id'));
                         }
-                        GG0170Rs.first().focus();
+                        else {
+                            GG0170Rs.first().focus();
+                        }
                         checkNext = false;
                     }
                 }
@@ -1277,7 +1181,7 @@ const branchingController = (function () {
             });
             if (!isDisabled && eventArg === EnumChangeEventArg.Change) {
                 console.log('scroll to ' + J1750_yes.prop('id'));
-                scrollTo(J1750_yes);
+                scrollTo(J1750_yes.prop('id'));
             }
         }
         function checkJ0510(e) {
@@ -1350,7 +1254,7 @@ const branchingController = (function () {
         J1750_depends_on_J0510();
         const Q12 = $(".persistable[id^=Q12_]");
         //set focus on Q12 after all the above that might have scrolled the screen during load
-        scrollTo(Q12);
+        scrollTo(Q12.prop('id'));
     }
     /***************************************************************************
      * public functions exposing the private functions to outside of the closure

@@ -177,9 +177,12 @@ namespace IPRehabWebAPI2
 
       app.UseRouting();
 
-      //UseCors() must be btween UseRouting and UseAuthorization
-      app.UseCors(MyAllowSpecificOrigins);
-      //app.UseCors();
+      if (env.IsProduction())
+      {
+        //UseCors() must be btween UseRouting and UseAuthorization
+        app.UseCors(MyAllowSpecificOrigins);
+        //app.UseCors();
+      }
 
       //app.UseAuthentication();
       app.UseAuthorization();
