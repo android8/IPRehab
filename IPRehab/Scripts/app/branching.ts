@@ -49,6 +49,8 @@ const branchingController = (function () {
   };
 
   function scrollTo(elementId: string) {
+    console.log('branching::: scrollTo() elementId = ', elementId);
+
     const thisElement: any = $('#' + elementId);
     if (thisElement.length > 0) {
       let scrollAmount: number = thisElement.prop('offsetTop') + 15;
