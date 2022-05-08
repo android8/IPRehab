@@ -19,7 +19,6 @@
   @{
       await Html.RenderPartialAsync("_ValidationScriptsPartial");
   }
-
 }
 
 <environment include="Production">
@@ -258,9 +257,7 @@
                                                     controlCounter++;
                                                 }
 
-                                                <div>
-                                                    @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
-                                                </div>
+                                                @await Component.InvokeAsync(inputViewComponent, new { EpisodeID = Model.EpisodeID, ControlCounter = controlCounter, QWS = q, NetworkID = (string)ViewBag.CurrentUserID })
                                             }
                                         </div>
                                     </div>

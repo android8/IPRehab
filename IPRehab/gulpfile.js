@@ -14,6 +14,7 @@ var del = require('del');
 var scriptSources = {
   myMap: ['./Scripts/app/**/*.map'],
   myJs: ['./Scripts/app/*.js'],
+  myTs: ['./Scripts/app/*.ts'],
   destinations: ['./wwwroot/js/app']
 };
 
@@ -32,6 +33,7 @@ gulp.task('cleaMyJs', function () {
   return del(scriptSources.destinations);
 });
 
+
 gulp.task('minifyAppJs', function () {
   return gulp.src(scriptSources.myJs, { allowEmpty: true })
     .pipe(minify({
@@ -45,6 +47,11 @@ gulp.task('minifyAppJs', function () {
 
 gulp.task('copyAppJsMap', function () {
   return gulp.src(scriptSources.myMap)
+    .pipe(gulp.dest(scriptSources.destinations));
+});
+
+gulp.task('copyAppTs', function () {
+  return gulp.src(scriptSources.myTs)
     .pipe(gulp.dest(scriptSources.destinations));
 });
 

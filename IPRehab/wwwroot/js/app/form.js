@@ -12,19 +12,13 @@ const formController = (function () {
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
     })(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
-    function scrollTo(elementId) {
-        const thisElement = $('#' + elementId);
-        if (thisElement.length > 0) {
-            let scrollAmount = thisElement.prop('offsetTop') + 15;
-            if (thisElement.prop('id').indexOf('Q12') !== -1)
-                scrollAmount = 0; //scroll up further by 15
-            console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
-            $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-            thisElement.focus();
-        }
-        else {
-            alert(elementId + " doesn't exist in the current context, can not scroll to that element");
-        }
+    function scrollTo(thisElement) {
+        let scrollAmount = thisElement.prop('offsetTop') + 15;
+        if (thisElement.prop('id').indexOf('Q12') !== -1)
+            scrollAmount = 0; //scroll up further by 15
+        console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
+        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+        thisElement.focus();
     }
     /* private function */
     function scrollToAnchor(anchorID) {
@@ -550,7 +544,7 @@ const formController = (function () {
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
     return {
-        'scrollTo': scrollTo,
+        'scrollToAnchor': scrollToAnchor,
         'breakLongSentence': breakLongSentence,
         'submitTheForm': submitTheForm,
         'validate': validateForm,
@@ -637,7 +631,7 @@ $(function () {
         $this.click(function () {
             const anchorID = $this.data("anchorid");
             if (anchorID != '') {
-                formController.scrollTo(anchorID);
+                formController.scrollToAnchor(anchorID);
             }
         });
     });

@@ -19,7 +19,7 @@
            aria-label="@($"a text area for {Model.ViewComponentViewModel.QuestionKey}")">
         <span class="mdc-text-field__ripple"></span>
         <span class="mdc-text-field__resizer">
-            <textarea class="mdc-text-field__input persistable inputContainer" rows="8" cols="40"
+            <textarea disabled class="mdc-text-field__input persistable inputContainer" rows="8" cols="40"
                       name="@Model.ViewComponentViewModel.QuestionKey"
                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
                       required="@(Model.ViewComponentViewModel.Required)"

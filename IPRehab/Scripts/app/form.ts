@@ -17,18 +17,12 @@ const formController = (function () {
     Simple
   }
 
-  function scrollTo(elementId: string) {
-    const thisElement: any = $('#' + elementId);
-    if (thisElement.length > 0) {
-      let scrollAmount: number = thisElement.prop('offsetTop') + 15;
-      if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
-      console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
-      $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-      thisElement.focus();
-    }
-    else {
-      alert(elementId + " doesn't exist in the current context, can not scroll to that element");
-    }
+  function scrollTo(thisElement: any) {
+    let scrollAmount: number = thisElement.prop('offsetTop') + 15;
+    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
+    console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
+    $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+    thisElement.focus();
   }
 
   /* private function */
@@ -636,7 +630,7 @@ const formController = (function () {
    * public functions exposing the private functions to outside of the closure
   ***************************************************************************/
   return {
-    'scrollTo': scrollTo,
+    'scrollToAnchor': scrollToAnchor,
     'breakLongSentence': breakLongSentence,
     'submitTheForm': submitTheForm,
     'validate': validateForm,
@@ -733,7 +727,7 @@ $(function () {
     $this.click(function () {
       const anchorID: string = $this.data("anchorid");
       if (anchorID != '') {
-        formController.scrollTo(anchorID);
+        formController.scrollToAnchor(anchorID);
       }
     });
   });

@@ -27,7 +27,7 @@
       <div class="measureHeaderNoBottomBorder">@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")</div>
     </div>
   }
-  <select class="browser-default custom-select select2 dropdown persistable"
+  <select disabled class="browser-default custom-select select2 dropdown persistable"
           name="@(Model.ViewComponentViewModel.QuestionKey)"
           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
           required="@(Model.ViewComponentViewModel.Required)"
