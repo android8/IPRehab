@@ -138,6 +138,7 @@ $(function () {
             }
             default: {
                 console.log('Onset Date and Admit Date are not empty, apply all rules of other ' + otherPersistables.length + ' fields');
+                console.log('------ begin change chain ------');
                 otherPersistables.each(function () {
                     const thisOtherPersistable = $(this);
                     //unlock then raise its change() event handler to set the element state
@@ -1321,7 +1322,7 @@ $(function () {
             }
         });
     })();
-    console.log('Q12 change() chain activated');
+    console.log('------ Q12 change() chain activated ------');
     $('.persistable[id^=Q12_]').change().focus();
 });
 //# sourceMappingURL=branching.js.map

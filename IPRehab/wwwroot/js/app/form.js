@@ -66,6 +66,7 @@ const formController = (function () {
     }
     /* private function */
     function submitTheForm(thisPostBtn, dialogOptions) {
+        var _a, _b, _c, _d;
         //use jquery ajax
         function jQueryAjax(thisUrl, postBackModel, episodeID) {
             $.ajax({
@@ -151,11 +152,14 @@ const formController = (function () {
         const newAnswers = new Array();
         const updatedAnswers = new Array();
         const theScope = $('#userAnswerForm');
-        const patientID = $('#patientID', theScope).val().toString();
-        const patientName = $('#patientName', theScope).val().toString();
-        let facilityID = $('#facilityID', theScope).val().toString();
+        const stage = (_a = $('#stage', theScope).val()) === null || _a === void 0 ? void 0 : _a.toString();
+        const patientID = (_b = $('#patientID', theScope).val()) === null || _b === void 0 ? void 0 : _b.toString();
+        const patientName = (_c = $('#patientName', theScope).val()) === null || _c === void 0 ? void 0 : _c.toString();
+        let facilityID = (_d = $('#facilityID', theScope).val()) === null || _d === void 0 ? void 0 : _d.toString();
         let episodeID = +($('#episodeID', theScope).val());
-        //get the key answers. these must be done outside of the .map() 
+        if (stage === 'New')
+            episodeID = -1;
+        //get the key answers. these must be done outside of the .map()
         //because each answer in .map() will use the same episode onset date and admission date
         const onsetDate = new Date($('.persistable[id^=Q23]').val().toString());
         const admissionDate = new Date($('.persistable[id^=Q12_]').val().toString());

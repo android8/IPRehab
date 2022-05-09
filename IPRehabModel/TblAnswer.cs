@@ -9,9 +9,6 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblAnswer", Schema = "app")]
-    [Index(nameof(EpsideOfCareIDFK), nameof(MeasureIDFK), nameof(AnswerCodeSetFK), nameof(AnswerSequenceNumber), Name = "IX_tblAnswer", IsUnique = true)]
-    [Index(nameof(AnswerCodeSetFK), Name = "IX_tblAnswer_AnswerCodeSetFK")]
-    [Index(nameof(EpsideOfCareIDFK), Name = "IX_tblAnswer_EpisodeOfCareIDFK")]
     [Index(nameof(QuestionIDFK), Name = "IX_tblAnswer_QuestionIDFK")]
     public partial class tblAnswer
     {

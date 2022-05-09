@@ -78,6 +78,16 @@ namespace IPRehabModel
 
             modelBuilder.Entity<tblAnswer>(entity =>
             {
+                entity.HasIndex(e => new { e.EpsideOfCareIDFK, e.MeasureIDFK, e.AnswerCodeSetFK, e.AnswerSequenceNumber }, "IX_tblAnswer")
+                    .IsUnique()
+                    .HasFillFactor((byte)90);
+
+                entity.HasIndex(e => e.AnswerCodeSetFK, "IX_tblAnswer_AnswerCodeSetFK")
+                    .HasFillFactor((byte)90);
+
+                entity.HasIndex(e => e.EpsideOfCareIDFK, "IX_tblAnswer_EpisodeOfCareIDFK")
+                    .HasFillFactor((byte)90);
+
                 entity.Property(e => e.AnswerByUserID).IsUnicode(false);
 
                 entity.Property(e => e.Description).IsUnicode(false);

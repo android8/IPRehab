@@ -29,6 +29,7 @@ namespace IPRehabModel
         public string FacilityID6 { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
+        public bool? Completed { get; set; }
 
         [InverseProperty("EpisodeCareIDFKNavigation")]
         public virtual tblSignature tblSignature { get; set; }
