@@ -15,11 +15,8 @@ enum EnumChangeEventArg {
   NoScroll = 'NoScroll'
 }
 
-/****************************************************************************
- * javaScript closure
- ***************************************************************************/
-
-const branchingController = (function () {
+//const branchingController = 
+$(function () {
 
   const commonUtility: Utility = new Utility();
   //const dialogOptions = commonUtility.dialogOptions();
@@ -85,7 +82,7 @@ const branchingController = (function () {
     document.getElementById(elementId).focus();
   }
 
-  /* private function */
+  /* event handler */
   function Q12_Q23_blank_then_Lock_All(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
     console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
@@ -125,6 +122,8 @@ const branchingController = (function () {
         console.log('Q12 or Q23 is empty or both, lock all other questions');
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
           //with warning dialog
+          console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           dialogOptions.title = 'Date';
           $('#dialog')
             .text('Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked')
@@ -134,6 +133,8 @@ const branchingController = (function () {
         }
         else {
           //without warning dialog
+          console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           console.log('lock all other persistables');
           otherPersistables.each(
             function () {
@@ -166,19 +167,46 @@ const branchingController = (function () {
       }
       default: {
         console.log('Onset Date and Admit Date are not empty, apply all rules of other ' + otherPersistables.length + ' fields');
+
+        console.log('------ begin change chain ------');
+
         otherPersistables.each(
           function () {
             const thisOtherPersistable = $(this);
-              //unlock then raise its change() event handler to set the element state
-              thisOtherPersistable.prop('disabled', false).change();
+            //unlock then raise its change() event handler to set the element state
+            thisOtherPersistable.prop('disabled', false).change();
           }
         );
         break;
       }
     }
 
+    console.log('------ done handling Q12 Q23 ' + eventType + '------');
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function Q12_Q23_addListener() {
+    console.log('adding Q12_Q23_addListener()');
+
+    /* add onchange event listner */
+    let seenTheDialog: boolean = true;
+    const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
+    primaryKeys.each(
+      function () {
+        const thisPrimaryKey = $(this);
+        $(this).prop('disabled', false);
+
+        thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+          console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
+          //checkQ12_Q23(e.data.x);
+          seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+        });
+      }
+    );
+
+    console.log('Q12_Q23 listener added');
+  })();
 
   /* event handler */
   function Q12B_blank_then_Lock_Discharge(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
@@ -247,7 +275,6 @@ const branchingController = (function () {
     const Q12B: any = $('.persistable[id^=Q12B_]');
     const isDischarged: boolean = Q12B.val() !== '';
     let dialogText: string;
-    Q12B.prop('disabled', false);
 
     if (isDischarged) {
       dialogText = 'Q12B is a discharge date, unlock all related discharge fields: Q15B, Q16B, Q17B, Q21B, Q41, Q44C';
@@ -259,6 +286,7 @@ const branchingController = (function () {
 
     if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
       //with warning dialog
+      console.log('Q12B with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
       const Q12Bbuttons = DischargeRelatedButtonClosure();
 
       $('#dialog')
@@ -270,17 +298,39 @@ const branchingController = (function () {
     }
     else {
       //without warning dialog
+      console.log('Q12B without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
       actQ12B(isDischarged);
     }
 
     console.log('byRef.seenTheDialog = ', byRef.seenTheDialog);
+
+    console.log('------ done handling Q12B ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
 
+  /* self executing event listener */
+  (function Q12B_addListener() {
+    console.log('adding Q12B_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const Q12B = $('.persistable[id^=Q12B_]');
+    Q12B.on('change', { x: EnumChangeEventArg.Change, y: Q12B }, function (e) {
+      console.log('before calling Q12B_blank_then_Lock_Discharge(), seenTheDialog = ', seenTheDialog);
+      //JavaScript, and TypeScript can pass an object by reference, but not by value.
+      //Therefore box values into an object  { seenTheDialog: seenTheDialog }
+      seenTheDialog = Q12B_blank_then_Lock_Discharge(e.data.x, { seenTheDialog: seenTheDialog });
+    });
+
+    console.log('Q12B listener added');
+  })();
+
   /* event handler */
   function Q14B_enabled_if_Q14A_is_Yes(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
-    console.log("branching::: inside of Q14B_enabled_if_Q14A_is_Yes, fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
-    const Q14Bs: any = $('.persistable[id^=Q14B_]');
+    console.log("inside of Q14B_enabled_if_Q14A_is_Yes, fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
 
     function setSeenTheDialog(value) {
       //callback after async dialog is done and return the seenTheDialog to the caller
@@ -288,6 +338,7 @@ const branchingController = (function () {
     }
 
     function actQ14A(disableState: boolean) {
+      const Q14Bs: any = $('.persistable[id^=Q14B_]');
       Q14Bs.each(
         function () {
           const thisQ14B = $(this);
@@ -303,17 +354,17 @@ const branchingController = (function () {
 
     if (Q14AYes) {
       console.log('Q14A is Yes, uncheck and unlock all Q14B, no dialog');
-      if (Q14Bs.length > 0) {
-        /* without warning dialog */
-        actQ14A(false);
-        Q14Bs.first().focus();
-      }
+      /* without warning dialog */
+      console.log('Q14A without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+      actQ14A(false);
     }
     else {
       const dialogText = 'Q14A is unknown or is No, uncheck and lock all Q14B';
       console.log(dialogText);
       if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
         //with warning dialog
+        console.log('Q14A with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
         const myButtons = {
           "Ok": function () {
             actQ14A(true);
@@ -333,12 +384,31 @@ const branchingController = (function () {
           });
       }
       else {
+        console.log('Q14A without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         actQ14A(true);
       }
     }
+    console.log('------ done handling Q14A ' + eventType + '------');
 
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function Q14A_addListener() {
+    console.log('adding Q14A_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const Q14A = $('.persistable[id^=Q14A_]');
+    Q14A.on('change', { x: EnumChangeEventArg.Change, y: $(this) }, function (e) {
+      console.log('before calling Q14B_enabled_if_Q14A_is_Yes(), seenTheDialog = ', seenTheDialog);
+      seenTheDialog = Q14B_enabled_if_Q14A_is_Yes(e.data.x, { seenTheDialog: seenTheDialog });
+    });
+
+    console.log('Q14A listener added');
+  })();
 
   /* event handler */
   function Q16A_is_Home_then_Q17(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
@@ -369,6 +439,7 @@ const branchingController = (function () {
 
     if (Q16AisHome) {
       const dialogText = 'Q16A is home, unlock Q17';
+      console.log('Q16A without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
       actQ16A(false);
     }
     else {
@@ -386,6 +457,7 @@ const branchingController = (function () {
         }
       };
       if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+        console.log('Q16A with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         $('#dialog')
           .text(dialogText)
           .dialog(dialogOptions, {
@@ -393,12 +465,32 @@ const branchingController = (function () {
           });
       }
       else {
+        console.log('Q16A without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         actQ16A(true);
       }
     }
 
+    console.log('------ done handling Q16A ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function Q16_addListener() {
+    console.log('adding Q16_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const Q16A = $('.persistable[id^=Q16A_]');
+    Q16A.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+      console.log('before calling Q16A_is_Home_then_Q17(), seenTheDialog = ', seenTheDialog);
+      seenTheDialog = Q16A_is_Home_then_Q17(e.data.x, { seenTheDialog: seenTheDialog });
+    });
+
+    console.log('Q16 listener added');
+  })();
 
   /* event handler, not used per stakeholder request */
   function Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }) {
@@ -461,14 +553,13 @@ const branchingController = (function () {
         $(this).on('change', { x: EnumChangeEventArg.Change }, checkArthritis);
       });
 
-    /* on load */
-    checkArthritis(EnumChangeEventArg.Load);
+    console.log('------ done handling Q21A_Q21B_Q22_Q24_is_Arthritis_then_Q24A ' + eventType + '------');
   }
 
   /* event handler */
   function Q42_Interrupted_then_Q43(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
     //event hooked during checkAllRules()
-    console.log('branching::: inside of Q42_Interrupted_then_Q43, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+    console.log('inside of Q42_Interrupted_then_Q43, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
     function setSeenTheDialog(value) {
       //callback after async dialog is done and return the seenTheDialog to the caller
@@ -497,6 +588,7 @@ const branchingController = (function () {
     else {
       if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
         //with warning dialog
+        console.log('Q42 with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         const myButtons = {
           "Ok": function () {
             actQ42(true);
@@ -517,16 +609,39 @@ const branchingController = (function () {
       }
       else {
         //warning dialog
+        console.log('Q42 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         actQ42(true);
       }
     }
 
+    console.log('------ done handling Q42 ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
 
+  /* self executing event listener */
+  (function Q42_addListener() {
+    console.log('adding Q42_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog = true;
+    const Q42s: any = $('.persistable[id^=Q42_]');
+    Q42s.each(function () {
+      let thisQ42: any = $(this);
+      thisQ42.on('change', { x: EnumChangeEventArg.Change, y: thisQ42 }, function (e) {
+        console.log('before calling Q42_Interrupted_then_Q43(), seenTheDialog = ', seenTheDialog);
+        seenTheDialog = Q42_Interrupted_then_Q43(e.data.x, { seenTheDialog: seenTheDialog });
+      })
+    });
+
+    console.log('Q42 listener added');
+  })();
+
   /* event handler */
   function Q43_Rules(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisQ43: any): object {
-    console.log('branching::: inside of Q43_Rules(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog, thisQ43);
+    console.log('inside of Q43_Rules(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog, thisQ43);
     let foundBlank = false;
 
     function setSeenTheDialog(value) {
@@ -601,6 +716,7 @@ const branchingController = (function () {
       case Q42Yes: {
         console.log("thisQ43CRUD ? " + thisQ43CRUD === undefined ? "unchanged" : thisQ43CRUD);
         //without warning dialog
+        console.log('Q42Yes without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
         switch (thisQ43CRUD) {
           case "D":
           case "D1":
@@ -615,7 +731,8 @@ const branchingController = (function () {
       }
       case Q42No: {
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-          //with warning dialog
+          //with warning 
+          console.log('Q42No with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
           const buttonQ42No = Q42ButtonsClosure(Q42No);
 
           $('#dialog')
@@ -626,6 +743,7 @@ const branchingController = (function () {
         }
         else {
           //without warning dialog
+          console.log('Q42No without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
           thisQ43.val('');
           thisQ43.prop('disabled', true); //don't call change(), otherwise it will cause infinite Q43_Rules() loop
         }
@@ -633,9 +751,40 @@ const branchingController = (function () {
       }
     }
 
+    console.log('------ done handling Q43 ' + eventType + '------');
+
     //return boexed values 
     return { foundBlank: foundBlank, seenTheDialog: byRef.seenTheDialog };
   }
+
+  /* self executing event listener */
+  (function Q43_addListener() {
+    console.log('adding Q43_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change. Q43 only raised by change() event manually here or programmmatically in Q42*/
+
+    let seenTheDialog = true;
+    let foundBlank: boolean;
+
+    const Q43s: any = $('.persistable[id^=Q43_]');
+    Q43s.each(function () {
+      if (!foundBlank) {
+        const thisQ43 = $(this);
+        thisQ43.on('change', { x: EnumChangeEventArg.Change, y: thisQ43 },
+          function (e) {
+            console.log('before calling Q43_Rules(), foundBlank = ', foundBlank, ' seeTheDialog = ', seenTheDialog);
+            const returnedObject: any = Q43_Rules(e.data.x, { seenTheDialog: seenTheDialog }, thisQ43);
+            foundBlank = returnedObject.foundBlank;
+            seenTheDialog = returnedObject.seenTheDialog;
+          }
+        );
+      }
+    });
+
+    console.log('Q43 listener added');
+  })();
 
   /* event handler */
   function Q44C_Affect_Q44D_Q45_Q46(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
@@ -695,6 +844,8 @@ const branchingController = (function () {
         console.log(dialogText);
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
           //with warning dialog
+          console.log('Q44C with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           $('#dialog')
             .text(dialogText)
             .dialog(dialogOptions, {
@@ -703,13 +854,37 @@ const branchingController = (function () {
         }
         else {
           //without warning dialog
+          console.log('Q44C without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           act44C_is_no();
         }
       }
     }
 
+    console.log('------ done handling Q44C ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function Q44C_addListener() {
+    console.log('adding Q44C_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const Q44C = $('.persistable[id^=Q44C_]');
+    Q44C.each(function (i, el) {
+      const thisQ44C = $(el); //don't use $(this) because in the arrow function it will be undefined
+      thisQ44C.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        console.log('before calling Q44C_Affect_Q44D_Q45_Q46(), seenTheDialog = ', seenTheDialog);
+        seenTheDialog = Q44C_Affect_Q44D_Q45_Q46(e.data.x, { seenTheDialog: seenTheDialog });
+      });
+    })
+
+    console.log('Q44 listener added');
+  })();
 
   /* event handler */
   function Q44D_Affect_Q45(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisQ44D): boolean {
@@ -719,9 +894,26 @@ const branchingController = (function () {
     if (thisQ44D.val() === -1)
       Q45.prop('disabled', true).change();
 
+    console.log('------ done handling Q44D ' + eventType + '------');
+
     //no diaglog is used so just return the original byRef.seenTheDialog value
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function Q44D_addListener() {
+    console.log('adding Q44D_addListener()');
+
+    /* on change */
+    let seenTheDialog = true;
+    const Q44D: any = $('.persistable[id^=Q44D_]');
+    Q44D.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+      console.log('before calling Q44C_Affect_Q44D_Q45_Q46(), seenTheDialog = ', seenTheDialog);
+      seenTheDialog = Q44D_Affect_Q45(e.data.x, { seenTheDialog: seenTheDialog }, Q44D);
+    });
+
+    console.log('Q44D listener added');
+  })();
 
   /* event handler */
   function GG0170JKLMN_depends_on_GG0170I(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisI: any): boolean {
@@ -807,6 +999,8 @@ const branchingController = (function () {
           let consoleLog: string = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
 
           //without warning dialog
+          console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           /* unlock and clear J K L, skip to J */
           const focusJ: any = GG0170J;
           const DisaenableJKL = false;
@@ -820,6 +1014,8 @@ const branchingController = (function () {
 
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
           //with warning dialog
+          console.log('GG0170I with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           const myButtons = {
             "Ok": function () {
               let focusM: any = GG0170M;
@@ -843,6 +1039,8 @@ const branchingController = (function () {
         }
         else {
           //without warning dialog
+          console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
           let focusM: any = GG0170M;
           const disableJKL = true;
           console.log('focusM = ', focusM);
@@ -851,8 +1049,30 @@ const branchingController = (function () {
       }
     }
 
+    console.log('------ done handling GG0170I ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function GG0170I_addListener() {
+    console.log('adding GG0170I_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const GG0170I: any = $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])');
+    GG0170I.each(function () {
+      const thisI: any = $(this);
+      thisI.on('change', { x: EnumChangeEventArg.Change, y: thisI }, function (e) {
+        console.log('before calling GG0170JKLMN_depends_on_GG0170I() seenTheDialog = ', seenTheDialog);
+        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, thisI);
+      });
+    })
+
+    console.log('GG0170I listener added');
+  })();
 
   /* event handler */
   function GG0170P_depends_on_GG0170M_and_GG0170N(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisMorN: any): boolean {
@@ -1028,6 +1248,8 @@ const branchingController = (function () {
 
     if (eventType == EnumChangeEventArg.Change && !byRef.seenTheDialog) {
       /* with warning dialog */
+      console.log('GG0170MN with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
       let dialogText: string;
 
       /* do not show dialogue if 0 < M < 7 */
@@ -1048,11 +1270,35 @@ const branchingController = (function () {
       }
     }
     else {
+      console.log('GG0170MN without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
       noDialog();
     }
 
+    console.log('------ done handling GG0170MN ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function GG0170M_N_addListener() {
+    console.log('adding GG0170M_N_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const GG0170M_and_N = $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])');
+    GG0170M_and_N.each(function () {
+      const thisMorN = $(this);
+      thisMorN.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        console.log('before calling GG0170P_depends_on_GG0170M_and_GG0170N() seenTheDialog = ', seenTheDialog);
+        seenTheDialog = GG0170P_depends_on_GG0170M_and_GG0170N(e.data.x, { seenTheDialog: seenTheDialog }, thisMorN);
+      });
+    });
+
+    console.log('GG0170M_N listener added');
+  })();
 
   /* event handler */
   function GG0170Q_is_No_skip_to_Complete(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisQ: any): boolean {
@@ -1090,6 +1336,8 @@ const branchingController = (function () {
       console.log('checkGG0170Q() ' + dialogText);
       if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
         //with warning dialog
+        console.log('GG0170Q with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
         $('#dialog')
           .text(dialogText)
           .dialog(dialogOptions, {
@@ -1185,8 +1433,29 @@ const branchingController = (function () {
       }
     }
 
+    console.log('------ done handling GG0170Q ' + eventType + '------');
+
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function GG0170Q_addListner() {
+    console.log('adding GG0170Q_addListner()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const GG0170Qs: any = $('.persistable[id^=GG0170Q_]:not([id*=Discharge_Goal])');
+    GG0170Qs.each(function () {
+      let thisQ = $(this);
+      thisQ.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog }, thisQ)
+      });
+    });
+
+    console.log('GG0170Q listner added');
+  })();
 
   /* event handler */
   function J1750_depends_on_J0510(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisJ0510: any): boolean {
@@ -1213,9 +1482,31 @@ const branchingController = (function () {
       actJ0510();
     }
 
+    console.log('------ done handling J0510 ' + eventType + '------');
+
     //no dialog is used so just return the original value of byRef.seenTheDialog
     return byRef.seenTheDialog;
   }
+
+  /* self executing event listener */
+  (function J0510_addListener() {
+    console.log('adding J0510_addListener()');
+
+    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+
+    /* on change */
+    let seenTheDialog: boolean = true;
+    const J0510s: any = $('.persistable[id^=J0510]:not([id*=Discharge_Goal]');
+    J0510s.each(function () {
+      const thisJ0510 = $(this);
+      thisJ0510.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        console.log('before calling J1750_depends_on_J0510() seenTheDialog = ', seenTheDialog);
+        seenTheDialog = J1750_depends_on_J0510(e.data.x, { seenTheDialog: seenTheDialog }, thisJ0510);
+      });
+    });
+
+    console.log('J0510 listener added');
+  })();
 
   /* event handler */
   function AddMore(stage: string) {
@@ -1234,472 +1525,31 @@ const branchingController = (function () {
       });
   }
 
-  function Q12_Q23_addListener() {
-    console.log('adding Q12_Q23_addListener()');
+  //self executing arrow function test
+  (() => {
+    console.log('------ self executing arrow function test ------');
 
-    /* add onchange event listner */
-    let seenTheDialog: boolean = false;
-    const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
-    primaryKeys.each(
-      function () {
-        const thisPrimaryKey = $(this);
-        $(this).prop('disabled', false);
+    $('.questionRow').on('change', '.persistable', function (e) {
+      if (e.target !== undefined) {
+        console.log('e.target = ', e.target);
+        //const trigger: string = e.target.prop('id');
+        //switch (true) {
+        //  case (trigger.indexOf('Q12_') !== -1):
+        //    console.log('event triggered ', trigger);
+        //    break;
+        //  case (trigger.indexOf('Q23_') !== -1):
+        //    console.log('event triggered ', trigger);
+        //    break;
+        //  case (trigger.indexOf('Q12B_') !== -1):
+        //    console.log('event triggered ', trigger);
+        //    break;
+        //}
 
-        thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-          console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
-          //checkQ12_Q23(e.data.x);
-          seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
-        });
-      }
-    );
-
-    console.log('added Q12_Q23 listener');
-  }
-
-  function Q12B_addListener() {
-    console.log('adding Q12B_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const Q12B = $('.persistable[id^=Q12B_]');
-    Q12B.on('change', { x: EnumChangeEventArg.Change, y: Q12B }, function (e) {
-      console.log('before calling Q12B_blank_then_Lock_Discharge(), seenTheDialog = ', seenTheDialog);
-      //JavaScript, and TypeScript can pass an object by reference, but not by value.
-      //Therefore box values into an object  { seenTheDialog: seenTheDialog }
-      seenTheDialog = Q12B_blank_then_Lock_Discharge(e.data.x, { seenTheDialog: seenTheDialog });
-    });
-
-    console.log('added Q12B listener');
-  }
-
-  function Q14A_addListener() {
-    console.log('adding Q14A_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const Q14A = $('.persistable[id^=Q14A_]');
-    Q14A.on('change', { x: EnumChangeEventArg.Change, y: $(this) }, function (e) {
-      console.log('before calling Q14B_enabled_if_Q14A_is_Yes(), seenTheDialog = ', seenTheDialog);
-      seenTheDialog = Q14B_enabled_if_Q14A_is_Yes(e.data.x, { seenTheDialog: seenTheDialog });
-    });
-
-    console.log('added Q14A listener');
-  }
-
-  function Q16_addListener() {
-    console.log('adding Q16_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const Q16A = $('.persistable[id^=Q16A_]');
-    Q16A.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-      console.log('before calling Q16A_is_Home_then_Q17(), seenTheDialog = ', seenTheDialog);
-      seenTheDialog = Q16A_is_Home_then_Q17(e.data.x, { seenTheDialog: seenTheDialog });
-    });
-
-    console.log('added Q16 listener');
-  }
-
-  function Q42_addListener() {
-    console.log('adding Q42_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog = false;
-    const Q42s: any = $('.persistable[id^=Q42_]');
-    Q42s.each(function () {
-      let thisQ42: any = $(this);
-      thisQ42.on('change', { x: EnumChangeEventArg.Change, y: thisQ42 }, function (e) {
-        console.log('before calling Q42_Interrupted_then_Q43(), seenTheDialog = ', seenTheDialog);
-        seenTheDialog = Q42_Interrupted_then_Q43(e.data.x, { seenTheDialog: seenTheDialog });
-      })
-    });
-
-    console.log('added Q42 listener');
-  }
-
-  function Q43_addListener() {
-    console.log('adding Q43_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change. Q43 only raised by change() event manually here or programmmatically in Q42*/
-
-    let seenTheDialog = false;
-    let foundBlank: boolean;
-
-    const Q43s: any = $('.persistable[id^=Q43_]');
-    Q43s.each(function () {
-      if (!foundBlank) {
-        const thisQ43 = $(this);
-        thisQ43.on('change', { x: EnumChangeEventArg.Change, y: thisQ43 },
-          function (e) {
-            console.log('before calling Q43_Rules(), foundBlank = ', foundBlank, ' seeTheDialog = ', seenTheDialog);
-            const returnedObject: any = Q43_Rules(e.data.x, { seenTheDialog: seenTheDialog }, thisQ43);
-            foundBlank = returnedObject.foundBlank;
-            seenTheDialog = returnedObject.seenTheDialog;
-          }
-        );
+        console.log('------ done self executing ------');
       }
     });
+  })();
 
-    console.log('added Q43 listener');
-  }
-
-  function Q44C_addListener() {
-    console.log('adding Q44C_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const Q44C = $('.persistable[id^=Q44C_]');
-    Q44C.each(function (i, el) {
-      const thisQ44C = $(el); //don't use $(this) because in the arrow function it will be undefined
-      thisQ44C.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        console.log('before calling Q44C_Affect_Q44D_Q45_Q46(), seenTheDialog = ', seenTheDialog);
-        seenTheDialog = Q44C_Affect_Q44D_Q45_Q46(e.data.x, { seenTheDialog: seenTheDialog });
-      });
-    })
-
-    console.log('added Q44 listener');
-  }
-
-  function Q44D_addListener() {
-    /* on change */
-    let seenTheDialog = false;
-    const Q44D: any = $('.persistable[id^=Q44D_]');
-    Q44D.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-      console.log('before calling Q44C_Affect_Q44D_Q45_Q46(), seenTheDialog = ', seenTheDialog);
-      seenTheDialog = Q44D_Affect_Q45(e.data.x, { seenTheDialog: seenTheDialog }, Q44D);
-    });
-  }
-
-  function GG0170I_addListener() {
-    console.log('adding GG0170I_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const GG0170I: any = $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])');
-    GG0170I.each(function () {
-      const thisI: any = $(this);
-      thisI.on('change', { x: EnumChangeEventArg.Change, y: thisI }, function (e) {
-        console.log('before calling GG0170JKLMN_depends_on_GG0170I() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, thisI);
-      });
-    })
-
-    console.log('added GG0170M_N listener');
-
-    //  const GG0170I_Admission: any = $('.persistable[id^=GG0170I_Admission]');
-    //  const GG0170I_Admission_Value: number = commonUtility.getControlValue(GG0170I_Admission);
-    //  const GG0170JKL_Admission: any = $('.persistable[id^=GG0170J_Admission], .persistable[id ^= GG0170K_Admission], .persistable[id ^= GG0170L_Admission]');
-    //  const GG0170M_Admission: any = $('.persistable[id ^= GG0170M_Admission]');
-    //  if (GG0170I_Admission_Value > 0 && GG0170I_Admission_Value <= 6) {
-    //    /* do not scroll or set focus */
-    //    GG0170JKL_Admission.each(function () {
-    //      const thisGG0170 = $(this);
-    //      thisGG0170.val(-1).prop('disabled', false);
-    //    })
-    //  }
-    //  else {
-    //    /* do not scroll or set focus */
-    //    GG0170JKL_Admission.each(function () {
-    //      $(this).val(-1).prop('disabled', true);
-    //    });
-    //  }
-
-    //  const GG0170I_Discharge: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
-    //  const GG0170I_Discharge_Value: number = commonUtility.getControlValue(GG0170I_Discharge);
-    //  const GG0170JKL_Discharge: any = $('.persistable[id ^= GG0170J_Discharge_Performance], .persistable[id ^= GG0170K_Discharge_Performance], .persistable[id ^= GG0170L_Discharge_Performance]');
-    //  const GG0170M_Discharge: any = $('.persistable[id ^= GG0170M_Discharge_Performance]');
-    //  if (GG0170I_Discharge_Value > 0 && GG0170I_Discharge_Value <= 6) {
-    //    /* do not scroll or set focus */
-    //    GG0170JKL_Discharge.each(function () {
-    //      const thisGG0170 = $(this);
-    //      thisGG0170.val(-1).prop('disabled', false);
-    //    })
-    //  }
-    //  else {
-    //    /* do not scroll or set focus */
-    //    GG0170JKL_Discharge.each(function () {
-    //      $(this).val(-1).prop('disabled', true);
-    //    });
-    //  }
-  }
-
-  function GG0170M_N_addListener() {
-    console.log('adding GG0170M_N_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const GG0170M_and_N = $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])');
-    GG0170M_and_N.each(function () {
-      const thisMorN = $(this);
-      thisMorN.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        console.log('before calling GG0170P_depends_on_GG0170M_and_GG0170N() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = GG0170P_depends_on_GG0170M_and_GG0170N(e.data.x, { seenTheDialog: seenTheDialog }, thisMorN);
-      });
-    });
-
-    console.log('added GG0170M_N listener');
-    //const GG0170M_Admission = $('.persistable[id^=GG0170M_Admission_]');
-    //const GG0170N_Admission = $('.persistable[id^=GG0170N_Admission_]');
-    //const GG0170O_Admission = $('.persistable[id^=GG0170O_Admission_]');
-    //const GG0170P_Admission = $('.persistable[id^=GG0170P_Admission_]');
-    //const GG0170M_Admission_Value: number = commonUtility.getControlValue(GG0170M_Admission);
-
-    //switch (true) {
-    //  case (GG0170M_Admission_Value >= 7):
-    //    /* M >= 7, reset and lock both N and O, do not scroll or set focus */
-    //    GG0170N_Admission.val(-1).prop('disabled', true);
-    //    GG0170O_Admission.val(-1).prop('disabled', true);
-    //    break;
-    //  case (GG0170M_Admission_Value > 0 && GG0170M_Admission_Value < 7):
-    //    /* M between 0 and 6, reset and disable O, do not scroll or set focus */
-    //    GG0170O_Admission.val(-1).prop('disabled', true).change();
-    //    break;
-    //  default:
-    //    /* M is unknown, reset and lock N and O */
-    //    //commonUtility.resetControlValue(GG0170N);
-    //    GG0170N_Admission.val(-1).prop('disabled', true).change();
-    //    //commonUtility.resetControlValue(GG0170O);
-    //    GG0170O_Admission.val(-1).prop('disabled', true).change();
-    //    break;
-    //}
-
-    //const GG0170M_Discharge = $('.persistable[id^=GG0170M_Discharge_Performance]');
-    //const GG0170N_Discharge = $('.persistable[id^=GG0170N_Discharge_Performance]');
-    //const GG0170O_Discharge = $('.persistable[id^=GG0170O_Discharge_Performance]');
-    //const GG0170P_Discharge = $('.persistable[id^=GG0170P_Discharge_Performance]');
-    //const GG0170M_Discharge_Value: number = commonUtility.getControlValue(GG0170M_Discharge);
-
-    //switch (true) {
-    //  case (GG0170M_Discharge_Value >= 7):
-    //    /* M >= 7, reset and lock both N and O, do not scroll or set focus */
-    //    GG0170N_Discharge.val(-1).prop('disabled', true);
-    //    GG0170O_Discharge.val(-1).prop('disabled', true);
-    //    break;
-    //  case (GG0170M_Discharge_Value > 0 && GG0170M_Discharge_Value < 7):
-    //    /* M between 0 and 6, reset and disable O, do not scroll or set focus */
-    //    GG0170O_Discharge.val(-1).prop('disabled', true).change();
-    //    break;
-    //  default:
-    //    /* M is unknown, reset and lock N and O */
-    //    GG0170N_Discharge.val(-1).prop('disabled', true);
-    //    GG0170O_Discharge.val(-1).prop('disabled', true);
-    //    break;
-    //}
-  }
-
-  //function GG0170N_onload() {
-  //  //console.log('inside GG0170N_onload()');
-
-  //  //const GG0170N_Admission = $('.persistable[id^=GG0170N_Admission_]');
-  //  //const GG0170O_Admission = $('.persistable[id^=GG0170O_Admission_]');
-  //  //const GG0170P_Admission = $('.persistable[id^=GG0170P_Admission_]');
-  //  //const GG0170N_Admission_Value: number = commonUtility.getControlValue(GG0170N_Admission);
-
-  //  //switch (true) {
-  //  //  case (GG0170N_Admission_Value >= 7):
-  //  //    /* N >= 7, reset and lock O, do not scroll or set focus */
-  //  //    GG0170O_Admission.val(-1).prop('disabled', true);
-  //  //    break;
-  //  //  case (GG0170N_Admission_Value > 0 && GG0170N_Admission_Value < 7):
-  //  //    /* N between 0 and 6, reset and disable O, do not scroll or set focus */
-  //  //    GG0170O_Admission.val(-1).prop('disabled', true);
-  //  //    break;
-  //  //  default:
-  //  //    /* N is unknown, reset O */
-  //  //    GG0170O_Admission.val(-1).prop('disabled', true);
-  //  //    break;
-  //  //}
-
-  //  //const GG0170N_Discharge = $('.persistable[id^=GG0170N_Discharge_Performance]');
-  //  //const GG0170O_Discharge = $('.persistable[id^=GG0170O_Discharge_Performance]');
-  //  //const GG0170P_Discharge = $('.persistable[id^=GG0170P_Discharge_Performance]');
-  //  //const GG0170N_Discharge_Value: number = commonUtility.getControlValue(GG0170N_Discharge);
-
-  //  //switch (true) {
-  //  //  case (GG0170N_Discharge_Value >= 7):
-  //  //    /* N >= 7, reset and lock O, do not scroll or set focus */
-  //  //    GG0170O_Discharge.val(-1).prop('disabled', true);
-  //  //    break;
-  //  //  case (GG0170N_Discharge_Value > 0 && GG0170N_Discharge_Value < 7):
-  //  //    /* N between 0 and 6, reset and disable O, do not scroll or set focus */
-  //  //    GG0170O_Discharge.val(-1).prop('disabled', true).change();
-  //  //    break;
-  //  //  default:
-  //  //    /* N is unknown, reset O */
-  //  //    GG0170O_Discharge.val(-1).prop('disabled', true);
-  //  //    break;
-  //  //}
-  //}
-
-  function GG0170Q_addListner() {
-    console.log('adding GG0170Q_addListner()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const GG0170Qs: any = $('.persistable[id^=GG0170Q_]:not([id*=Discharge_Goal])');
-    GG0170Qs.each(function () {
-      let thisQ = $(this);
-      thisQ.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog }, thisQ)
-      });
-    });
-  }
-
-  function J0510_addListener() {
-    console.log('adding J0510_addListener()');
-
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
-    let seenTheDialog: boolean = false;
-    const J0510s: any = $('.persistable[id^=J0510]:not([id*=Discharge_Goal]');
-    J0510s.each(function () {
-      const thisJ0510 = $(this);
-      thisJ0510.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        console.log('before calling J1750_depends_on_J0510() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = J1750_depends_on_J0510(e.data.x, { seenTheDialog: seenTheDialog }, thisJ0510);
-      });
-    });
-
-    console.log('added J0510 listener');
-  }
-
-  function raise_Onload_Event_Once_Without_Dialog() {
-    console.log('raise_Onload_Event_Once_Without_Dialog()');
-
-    //JavaScript, and TypeScript can pass an object by reference, but not by value.
-    //Therefore box values into an object like { seenTheDialog: true }
-    const suppressDialog: boolean = true;
-    Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-    Q12B_blank_then_Lock_Discharge(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-    Q14B_enabled_if_Q14A_is_Yes(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-    Q16A_is_Home_then_Q17(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-    Q42_Interrupted_then_Q43(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-
-    const Q43s: any = $('.persistable[id^=Q43_]');
-    Q43s.each(function () {
-      Q43_Rules(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, $(this));
-    });
-
-    const Q44C = $('.persistable[id^=Q44C_]');
-    Q44C.each(function (i, el) {
-      Q44C_Affect_Q44D_Q45_Q46(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog });
-    })
-
-    const Q44D: any = $('.persistable[id^=Q44D_]');
-    Q44D_Affect_Q45(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, Q44D);
-
-    const GG0170I: any = $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])');
-    GG0170I.each(function () {
-      const thisI: any = $(this);
-      GG0170JKLMN_depends_on_GG0170I(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, thisI);
-    })
-
-    const GG0170M_and_N = $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])');
-    GG0170M_and_N.each(function () {
-      const thisMorN = $(this);
-      GG0170P_depends_on_GG0170M_and_GG0170N(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, thisMorN);
-    });
-
-    const GG0170Qs: any = $('.persistable[id^=GG0170Q_]:not([id*=Discharge_Goal])');
-    GG0170Qs.each(function () {
-      let thisQ = $(this);
-      GG0170Q_is_No_skip_to_Complete(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, thisQ)
-    });
-
-    const J0510s: any = $('.persistable[id^=J0510]:not([id*=Discharge_Goal]');
-    J0510s.each(function () {
-      const thisJ0510 = $(this);
-      J1750_depends_on_J0510(EnumChangeEventArg.Load, { seenTheDialog: suppressDialog }, thisJ0510);
-    });
-
-    //set focus on Q12 after all the above that might have scrolled the screen during load
-    const Q12 = $('.persistable[id^=Q12_]');
-    scrollTo(Q12.prop('id'));
-  }
-
-  /* private function */
-  function LoadAllRules(): void {
-    console.log('inside of LoadAllRules()');
-
-    /* add event listener */
-    console.log('add Q12B Listener');
-    Q12B_addListener();
-
-    console.log('add Q14A Listener');
-    Q14A_addListener();
-
-    console.log('add Q16 Listener');
-    Q16_addListener();
-
-    console.log('add Q42 Listener');
-    Q42_addListener();
-
-    console.log('add Q43 Listener');
-    Q43_addListener();
-
-    console.log('add Q44 Listener');
-    Q44C_addListener();
-
-    console.log('add Q44D Listener');
-    Q44D_addListener();
-
-    console.log('add GG0170I Listener');
-    GG0170I_addListener();
-
-    console.log('add GG0170M_N Listener');
-    GG0170M_N_addListener();
-
-    console.log('add GG0170Q_addListner');
-    GG0170Q_addListner();
-
-    console.log('add J0510 Listener');
-    J0510_addListener();
-
-    //add this listen last due to change() is a async fashion
-    console.log('add Q12_Q23 Listener');
-    Q12_Q23_addListener();
-
-    raise_Onload_Event_Once_Without_Dialog();
-  }
-
-  /***************************************************************************
-   * public functions exposing the private functions to outside of the closure
-  ***************************************************************************/
-  return {
-    'LoadAllRules': LoadAllRules
-  }
-})();
-
-/******************************* end of branchingController closure ****************************/
-
-$(function () {
-  let sysTitle: string = $('.pageTitle').data('systitle');
-
-  /* on ready */
-  if (sysTitle === 'Full') {
-    $('.persistable').each(function () { $(this).prop("disabled", true) });
-  }
-  else {
-    console.log('LoadAllRules');
-    branchingController.LoadAllRules();
-  }
-});
+  console.log('------ Q12 change() chain activated ------');
+  $('.persistable[id^=Q12_]').change().focus();
+})

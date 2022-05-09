@@ -169,11 +169,16 @@ const formController = (function () {
     const updatedAnswers: Array<UserAnswer> = new Array<UserAnswer>();
 
     const theScope: any = $('#userAnswerForm');
-    const patientID: string = $('#patientID', theScope).val().toString();
-    const patientName: string = $('#patientName', theScope).val().toString();
-    let facilityID: string = $('#facilityID', theScope).val().toString();
+    const stage: string = $('#stage', theScope).val()?.toString();
+    const patientID: string = $('#patientID', theScope).val()?.toString();
+    const patientName: string = $('#patientName', theScope).val()?.toString();
+    let facilityID: string = $('#facilityID', theScope).val()?.toString();
     let episodeID: number = +($('#episodeID', theScope).val());
-    //get the key answers. these must be done outside of the .map() 
+
+    if (stage === 'New')
+      episodeID = -1;
+
+    //get the key answers. these must be done outside of the .map()
     //because each answer in .map() will use the same episode onset date and admission date
     const onsetDate: Date = new Date($('.persistable[id^=Q23]').val().toString());
     const admissionDate: Date = new Date($('.persistable[id^=Q12_]').val().toString());
