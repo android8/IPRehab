@@ -87,8 +87,9 @@ $(function () {
     console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
     const Q12: any = $('.persistable[id^=Q12_]');
-    const Q23: any = $('.persistable[id^=Q23]');
-    const otherPersistables: any = $('.persistable:not([id^=Q12_]):not([id^=Q23])');
+    const Q23: any = $('.persistable[id^=Q23_]');
+    const Q12B: any = $('.persistable[id^=Q12B_]');
+    const otherPersistables: any = $('.persistable:not([id^=Q12_]):not([id^=Q23_])');
     const minDate = new Date('2020-01-01 00:00:00');
     const onsetDate = new Date(Q23.val());
     const admitDate = new Date(Q12.val());
@@ -142,6 +143,7 @@ $(function () {
             }
           );
         }
+        Q12B.focus();
         break;
       }
       case (onset_is_later_than_admit): {
@@ -177,6 +179,8 @@ $(function () {
             thisOtherPersistable.prop('disabled', false).change();
           }
         );
+
+        
         break;
       }
     }
