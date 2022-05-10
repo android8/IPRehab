@@ -247,7 +247,7 @@ const formController = (function () {
                     break;
             }
         });
-        if (newAnswers.length === 0 || oldAnswers.length === 0 || updatedAnswers.length === 0) {
+        if (newAnswers.length === 0 && oldAnswers.length === 0 && updatedAnswers.length === 0) {
             $('#dialog')
                 .text('Nothing to save.  All fields seem be unchanged')
                 .dialog(dialogOptions);

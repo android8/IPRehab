@@ -68,9 +68,10 @@ $(function () {
     /* event handler */
     function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
         console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q12 = $('.persistable[id^=Q12_]');
-        const Q23 = $('.persistable[id^=Q23]');
-        const otherPersistables = $('.persistable:not([id^=Q12_]):not([id^=Q23])');
+        const Q12 = $('.persistable[id^=Q12_]').prop('disabled', false);
+        const Q23 = $('.persistable[id^=Q23_]').prop('disabled', false);
+        const Q12B = $('.persistable[id^=Q12B_]');
+        const otherPersistables = $('.persistable:not([id^=Q12_]):not([id^=Q23_])');
         const minDate = new Date('2020-01-01 00:00:00');
         const onsetDate = new Date(Q23.val());
         const admitDate = new Date(Q12.val());
@@ -115,6 +116,8 @@ $(function () {
                         $(this).prop("disabled", true);
                     });
                 }
+                console.log('focus on Q12B after Q12 or Q23 is changed');
+                Q12B.focus();
                 break;
             }
             case (onset_is_later_than_admit): {
@@ -158,7 +161,6 @@ $(function () {
         const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
         primaryKeys.each(function () {
             const thisPrimaryKey = $(this);
-            $(this).prop('disabled', false);
             thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
                 console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
                 //checkQ12_Q23(e.data.x);
@@ -180,32 +182,32 @@ $(function () {
             const dischargeRelatedCheckboxes = $('.persistable[id^=Q41_],.persistable[id^=Q44C_]');
             dischargeRelatedDropdown.each(function () {
                 const thisDropdown = $(this);
-                console.log('reset ' + thisDropdown.prop('id'));
+                console.log('reset ' + thisDropdown.prop('id'), thisDropdown);
                 thisDropdown.val(-1);
                 if (dischargeState) {
-                    console.log('enable ' + thisDropdown.prop('id'));
+                    console.log('enable ' + thisDropdown.prop('id'), thisDropdown);
                     thisDropdown.prop('disabled', false).removeAttr('disabled');
                 }
                 else {
-                    console.log('disable ' + thisDropdown.prop('id'));
+                    console.log('disable ' + thisDropdown.prop('id'), thisDropdown);
                     thisDropdown.prop('disabled', true);
                 }
-                console.log('raise chage() on ' + thisDropdown.prop('id'));
+                console.log('raise chage() on ' + thisDropdown.prop('id'), thisDropdown);
                 thisDropdown.change();
             });
             dischargeRelatedCheckboxes.each(function () {
                 const thisCheckbox = $(this);
-                console.log('uncheck ' + thisCheckbox.prop('id'));
+                console.log('uncheck ' + thisCheckbox.prop('id'), thisCheckbox);
                 thisCheckbox.prop('checked', false);
                 if (dischargeState) {
-                    console.log('enable ' + thisCheckbox.prop('id'));
+                    console.log('enable ' + thisCheckbox.prop('id'), thisCheckbox);
                     thisCheckbox.prop('disabled', false).removeAttr('disabled');
                 }
                 else {
-                    console.log('disable ' + thisCheckbox.prop('id'));
+                    console.log('disable ' + thisCheckbox.prop('id'), thisCheckbox);
                     thisCheckbox.prop('disabled', true);
                 }
-                console.log('raise change() ' + thisCheckbox.prop('id'));
+                console.log('raise change() ' + thisCheckbox.prop('id'), thisCheckbox);
                 thisCheckbox.change();
             });
         }
@@ -280,9 +282,9 @@ $(function () {
             const Q14Bs = $('.persistable[id^=Q14B_]');
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                console.log('uncheck ' + thisQ14B.prop('id'));
+                console.log('uncheck ' + thisQ14B.prop('id'), thisQ14B);
                 thisQ14B.prop('checked', false);
-                console.log(disableState ? 'disable ' : 'enable ' + thisQ14B.prop('id'));
+                console.log(disableState ? 'disable ' : 'enable ' + thisQ14B.prop('id'), thisQ14B);
                 thisQ14B.prop('disabled', disableState);
             });
         }
@@ -972,7 +974,7 @@ $(function () {
                                 //commonUtility.resetControlValue(GG0170O);
                                 GG0170O.val(-1).prop('disabled', true).change();
                             }
-                            GG0170P.prop('disabled', false);
+                            GG0170P.prop('disabled', false).focus();
                             scrollTo(GG0170P.prop('id'));
                             break;
                         default:
@@ -992,7 +994,7 @@ $(function () {
                                 //commonUtility.resetControlValue(GG0170O
                                 GG0170O.val(-1).prop('disabled', true).change();
                             }
-                            GG0170P.prop('disabled', false);
+                            GG0170P.prop('disabled', false).focus();
                             scrollTo(GG0170P.prop('id'));
                             break;
                         default:
@@ -1322,7 +1324,6 @@ $(function () {
             }
         });
     })();
-    console.log('------ Q12 change() chain activated ------');
     $('.persistable[id^=Q12_]').change().focus();
 });
 //# sourceMappingURL=branching.js.map
