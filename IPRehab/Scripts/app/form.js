@@ -13,9 +13,9 @@ const formController = (function () {
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
     })(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
     function scrollTo(thisElement) {
-        let scrollAmount = thisElement.prop('offsetTop') + 15;
+        let scrollAmount = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
         if (thisElement.prop('id').indexOf('Q12') !== -1)
-            scrollAmount = 0; //scroll up further by 15
+            scrollAmount = 0;
         console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
         thisElement.focus();
@@ -91,8 +91,12 @@ const formController = (function () {
                 const jsonResult = $.parseJSON(result);
                 console.log('jsonResult', jsonResult);
                 if (episodeID === -1) {
-                    $('#episodeID').val(jsonResult); //after posting new record, asign the new record id carried in jsonResult to the #episodeID. Otherwise, without refreshing the screen and repost it will create duplicate record.
+                    /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
+                    $('#episodeID').val(jsonResult);
                     $('#stage').val('Base');
+                    /* update on screen episode_legend and pageTitle */
+                    $('#pageTitle').text('Episode of Care');
+                    $('#episodeID_legend').text(jsonResult);
                 }
                 dialogOptions.title = 'Success';
                 $('#dialog')
@@ -179,7 +183,8 @@ const formController = (function () {
             const thisAnswer = new UserAnswer();
             const oldValue = (_a = $thisPersistable.data('oldvalue')) === null || _a === void 0 ? void 0 : _a.toString();
             let currentValue = '';
-            currentValue = (_b = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)) === null || _b === void 0 ? void 0 : _b.toString(); //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
+            //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
+            currentValue = (_b = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)) === null || _b === void 0 ? void 0 : _b.toString();
             //!undefined or !NaN yield true
             if (+currentValue === -1)
                 currentValue = '';
@@ -234,9 +239,6 @@ const formController = (function () {
                     newAnswers.push(thisAnswer);
                     break;
                 case 'D1':
-                    thisAnswer.AnswerID = +answerId;
-                    oldAnswers.push(thisAnswer);
-                    break;
                 case 'D2':
                     thisAnswer.AnswerID = +answerId;
                     oldAnswers.push(thisAnswer);

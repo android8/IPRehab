@@ -124,7 +124,7 @@
                 <title>Key question</title>
             </svg> Key question
         </div>
-        <div>@(Model.StageTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
+        <div id='episodeID_legend'>@(Model.StageTitle == "New"? "Episode: New" : $"Episode: {Model.EpisodeID}")</div>
     </div>
 
     <form method="post" enctype="multipart/form-data" asp-action="Edit" id="userAnswerForm" name="userAnswerForm">

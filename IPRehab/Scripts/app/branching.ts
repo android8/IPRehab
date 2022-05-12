@@ -63,7 +63,7 @@ $(function () {
       thisElement.focus();
     }
     else {
-      alert(elementId + " doesn't exist in the current context, can not scroll to that element");
+      console.log(elementId + " doesn't exist in the current context, can not scroll to that element");
     }
   }
 
@@ -77,138 +77,9 @@ $(function () {
     console.log('scroll to ' + elementId + ' with amount ' + offsetTop);
 
     // Now we can scroll the window to this position
-    window.scrollTo(0, offsetTop);
+    window.scrollTo(0, offsetTop - 15);
     document.getElementById(elementId).focus();
   }
-
-  /* event handler */
-  function Q12_Q23_blank_then_Lock_All(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
-    console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-
-    const Q12: any = $('.persistable[id^=Q12_]').prop('disabled',false);
-    const Q23: any = $('.persistable[id^=Q23_]').prop('disabled', false);
-    const Q12B: any = $('.persistable[id^=Q12B_]');
-    const otherPersistables: any = $('.persistable:not([id^=Q12_]):not([id^=Q23_])');
-    const minDate = new Date('2020-01-01 00:00:00');
-    const onsetDate = new Date(Q23.val());
-    const admitDate = new Date(Q12.val());
-    const Q12_or_Q23_is_empty: boolean = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-    const onset_is_later_than_admit: boolean = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
-
-    function setSeenTheDialog(value) {
-      //callback after async dialog is done and return the seenTheDialog to the caller
-      byRef.seenTheDialog = value;
-    }
-
-    const myButtons = {
-      "Ok": function () {
-        console.log('lock all other persistables');
-        otherPersistables.each(
-          function () {
-            $(this).prop("disabled", true);
-          }
-        );
-        $(this).dialog("close");
-        setSeenTheDialog(true); //callback function
-      },
-      "Cancel": function () {
-        $(this).dialog("close");
-        setSeenTheDialog(true); //callback function
-      }
-    };
-
-    switch (true) {
-      case (Q12_or_Q23_is_empty): {
-        console.log('Q12 or Q23 is empty or both, lock all other questions');
-        if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-          //with warning dialog
-          console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-
-          dialogOptions.title = 'Date';
-          $('#dialog')
-            .text('Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked')
-            .dialog(dialogOptions, {
-              title: 'Warning Q12 Q23', buttons: myButtons
-            });
-        }
-        else {
-          //without warning dialog
-          console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-
-          console.log('lock all other persistables');
-          otherPersistables.each(
-            function () {
-              $(this).prop("disabled", true);
-            }
-          );
-        }
-        console.log('focus on Q12B after Q12 or Q23 is changed');
-
-        Q12B.focus();
-        break;
-      }
-      case (onset_is_later_than_admit): {
-        console.log('Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later');
-        if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-          //with warning dialog
-          dialogOptions.title = 'Date';
-          $('#dialog')
-            .text('Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later')
-            .dialog(dialogOptions, {
-              title: 'Warning Q12, Q23', buttons: myButtons
-            });
-        }
-        else {
-          console.log('lock all other persistables');
-          otherPersistables.each(
-            function () {
-              $(this).prop("disabled", true);
-            }
-          );
-        }
-        break;
-      }
-      default: {
-        console.log('Onset Date and Admit Date are not empty, apply all rules of other ' + otherPersistables.length + ' fields');
-
-        console.log('------ begin change chain ------');
-
-        otherPersistables.each(
-          function () {
-            const thisOtherPersistable = $(this);
-            //unlock then raise its change() event handler to set the element state
-            thisOtherPersistable.prop('disabled', false).change();
-          }
-        );
-        break;
-      }
-    }
-
-    console.log('------ done handling Q12 Q23 ' + eventType + '------');
-
-    return byRef.seenTheDialog;
-  }
-
-  /* self executing event listener */
-  (function Q12_Q23_addListener() {
-    console.log('adding Q12_Q23_addListener()');
-
-    /* add onchange event listner */
-    let seenTheDialog: boolean = true;
-    const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
-    primaryKeys.each(
-      function () {
-        const thisPrimaryKey = $(this);
-        thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-          console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
-          //checkQ12_Q23(e.data.x);
-          seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
-        });
-      }
-    );
-
-    console.log('Q12_Q23 listener added');
-  })();
 
   /* event handler */
   function Q12B_blank_then_Lock_Discharge(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
@@ -236,7 +107,6 @@ $(function () {
           thisDropdown.prop('disabled', true);
         }
         console.log('raise chage() on ' + thisDropdown.prop('id'), thisDropdown);
-        thisDropdown.change();
       });
       dischargeRelatedCheckboxes.each(function () {
         const thisCheckbox: any = $(this);
@@ -252,7 +122,6 @@ $(function () {
         }
 
         console.log('raise change() ' + thisCheckbox.prop('id'), thisCheckbox);
-        thisCheckbox.change();
       });
     }
 
@@ -549,7 +418,7 @@ $(function () {
 
     /* on change */
     console.log('check Q24A if Q21A, Q21B, Q22, or Q24 is diabetes');
-    const arthritis = $('.persistable[id ^= Q21A_], .persistable[id ^= Q21B_], .persistable[id ^= Q22_], .persistable[id ^= Q24_]');
+    const arthritis = $('.persistable[id^= Q21A_], .persistable[id^= Q21B_], .persistable[id^= Q22_], .persistable[id^= Q24_]');
     arthritis.each(
       function () {
         $(this).on('change', { x: EnumChangeEventArg.Change }, checkArthritis);
@@ -577,8 +446,8 @@ $(function () {
           thisQ43.val('').prop('disabled', true);
         }
         else {
-          console.log('unlock Q43 then raise Q43.change()');
-          thisQ43.prop('disabled', false).change();
+          console.log('unlock Q43');
+          thisQ43.prop('disabled', false);
         }
       });
     }
@@ -806,15 +675,15 @@ $(function () {
     function act44C_is_no() {
       if (Q44D.length > 0) {
         console.log('disable Q44D');
-        Q44D.val(-1).prop('disabled', true).change();
+        Q44D.val(-1).prop('disabled', true);
       }
       if (Q45.length > 0) {
         console.log('disable Q45');
-        Q45.val(-1).prop('disabled', true).change();
+        Q45.val(-1).prop('disabled', true);
       }
       if (Q46.length > 0) {
         console.log('enable and focus on Q46');
-        Q46.val(-1).prop('disabled', false).chagne().focus();
+        Q46.val(-1).prop('disabled', false).focus();
       }
     }
 
@@ -834,10 +703,10 @@ $(function () {
     if (Q44C_is_Yes) {
       console.log('Q44C is yes, unlock Q44D, Q45 and focus on Q44D');
       if (Q45.length > 0) {
-        Q45.prop('disabled', false).change();
+        Q45.prop('disabled', false)
       }
       if (Q44D.length > 0) {
-        Q44D.prop('disabled', false).change().focus();
+        Q44D.prop('disabled', false);
       }
     }
     else {
@@ -894,7 +763,7 @@ $(function () {
 
     const Q45: any = $('.persistable[id^=Q45_]');
     if (thisQ44D.val() === -1)
-      Q45.prop('disabled', true).change();
+      Q45.prop('disabled', true);
 
     console.log('------ done handling Q44D ' + eventType + '------');
 
@@ -918,7 +787,7 @@ $(function () {
   })();
 
   /* event handler */
-  function GG0170JKLMN_depends_on_GG0170I(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisI: any): boolean {
+  function GG0170JKLMN_depends_on_GG0170I(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisI: any, measure: string): boolean {
     console.log('inside of GG0170JKLMN_depends_on_GG0170I, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
     //-----------------sample code-------------------
@@ -953,66 +822,51 @@ $(function () {
           $(this).prop('disabled', isDisabled);
         });
       if (eventArg === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-        console.log('actGG0170I() scroll to ', focusThis.prop('id'));
-        focusThis.prop('disabled', false);  //.change();
-        scrollTo(focusThis.prop('id'));
+        if (focusThis?.length > 0) {
+          console.log('actGG0170I() scroll to ', focusThis?.prop('id'));
+          focusThis?.prop('disabled', false);
+          scrollTo(focusThis.prop('id'));
+        }
       }
       else {
-        console.log('actGG0170I() no scroll but focus ', focusThis.prop('id'));
-        const focusedElement: any = $('#' + focusThis.prop('id'));
-        if (focusedElement.length > 0) {
-          focusedElement.prop('disabled', false); //.change();
-          focusedElement.focus();
+        if (focusThis?.length > 0) {
+          console.log('actGG0170I() no scroll but focus ', focusThis.prop('id'));
+          const focusedElement: any = $('#' + focusThis.prop('id'));
+          if (focusedElement?.length > 0) {
+            focusedElement.prop('disabled', false);
+            focusedElement.focus();
+          }
         }
         else
-          alert(focusThis.prop('id') + "dosen't exist in this context, can not set focus on that element");
+          console.log(focusThis.prop('id') + " dosen't exist in this context, can not set focus on that element");
       }
     }
 
     let GG0170J: any, GG0170JKL: any, GG0170M: any;
 
-    let measure: string;
-    if (thisI.prop('id').indexOf('Admission_Performance') !== -1) {
-      measure = 'Admission_Performance';
-    }
-    else if (thisI.prop('id').indexOf('Discharge_Performance') !== -1) {
-      measure = 'Discharge_Performance';
-    }
-    else if (thisI.prop('id').indexOf('Interim_Performance') !== -1) {
-      measure = 'Interim_Performance';
-    }
-    else if (thisI.prop('id').indexOf('Followup_Performance') !== -1) {
-      measure = 'Followup_Performance';
-    }
-
     GG0170J = $('.persistable[id^=GG0170J_' + measure + ']');
-    console.log('checkGG0170I()::: GG017J = ', GG0170J);
-
     GG0170JKL = $('.persistable[id^=GG0170J_' + measure + '], .persistable[id^=GG0170K_' + measure + '], .persistable[id^=GG0170L_' + measure + ']');
-    console.log('checkGG0170I()::: GG017JKL = ', GG0170JKL);
-
     GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
-    console.log('checkGG0170I()::: GG017M = ', GG0170M);
 
     const intGG0170I: number = commonUtility.getControlValue(thisI);
     switch (true) {
-      case (intGG0170I > 0 && intGG0170I < 7):
-        {
-          let consoleLog: string = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
+      case (intGG0170I > 0 && intGG0170I < 7): {
+        /* unlock and clear J K L, skip to J */
+        let consoleLog: string = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
 
-          //without warning dialog
-          console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+        //without warning dialog
+        console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
 
-          /* unlock and clear J K L, skip to J */
-          const focusJ: any = GG0170J;
-          const DisaenableJKL = false;
-          actGG0170I(GG0170JKL, focusJ, DisaenableJKL, eventType);
-        }
+        const focusJ: any = GG0170J;
+        const DisaenableJKL = false;
+        actGG0170I(GG0170JKL, focusJ, DisaenableJKL, eventType);
+
         break;
+      }
       default: {
         /* GG0170I is not selected, clear and lock J K L then advance to M */
         const dialogText = 'GG0170I ' + measure + ' is unknown or is not between 1 and 6, clear and lock GG0170J ' + measure + ', GG0170K ' + measure + 'and GG0170L ' + measure + ', then advance to GG0170M ' + measure;
-        console.log('checkGG0170I() eventData ' + dialogText);
+        console.log('eventData ' + dialogText);
 
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
           //with warning dialog
@@ -1048,6 +902,8 @@ $(function () {
           console.log('focusM = ', focusM);
           actGG0170I(GG0170JKL, focusM, disableJKL, eventType);
         }
+
+        break;
       }
     }
 
@@ -1064,20 +920,36 @@ $(function () {
 
     /* on change */
     let seenTheDialog: boolean = true;
-    const GG0170I: any = $('.persistable[id^=GG0170I]:not([id*=Discharge_Goal])');
-    GG0170I.each(function () {
-      const thisI: any = $(this);
-      thisI.on('change', { x: EnumChangeEventArg.Change, y: thisI }, function (e) {
-        console.log('before calling GG0170JKLMN_depends_on_GG0170I() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, thisI);
+    const GG0170I_Admission_Performance: any = $('.persistable[id^=GG0170I][id*=Admission]:not([id*=Discharge_Goal])').first();
+    if (GG0170I_Admission_Performance.length > 0) {
+      GG0170I_Admission_Performance.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, GG0170I_Admission_Performance, 'Admission_Performance');
       });
-    })
+    }
+    const GG0170I_Discharge_Performance: any = $('.persistable[id^=GG0170I][id*=Discharge]:not([id*=Discharge_Goal])').first();
+    if (GG0170I_Discharge_Performance.length > 0) {
+      GG0170I_Discharge_Performance.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, GG0170I_Discharge_Performance, 'Discharge_Performance');
+      });
+    }
+    const GG0170I_Interim_Performance: any = $('.persistable[id^=GG0170I][id*=Discharge]:not([id*=Discharge_Goal])').first();
+    if (GG0170I_Interim_Performance.length > 0) {
+      GG0170I_Interim_Performance.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, GG0170I_Interim_Performance, 'Interim_Performance');
+      });
+    }
+    const GG0170I_Followup_Performance: any = $('.persistable[id^=GG0170I][id*=Discharge]:not([id*=Discharge_Goal])').first();
+    if (GG0170I_Followup_Performance.length > 0) {
+      GG0170I_Followup_Performance.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+        seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, GG0170I_Followup_Performance, 'Followup_Performance');
+      });
+    }
 
     console.log('GG0170I listener added');
   })();
 
   /* event handler */
-  function GG0170P_depends_on_GG0170M_and_GG0170N(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisMorN: any): boolean {
+  function GG0170P_depends_on_GG0170M_and_GG0170N(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisMorN: any, measure: string): boolean {
     //event hooked during checkAllRules()
     console.log('inside of GG0170P_depends_on_GG0170M_and_GG0170N, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
@@ -1086,51 +958,13 @@ $(function () {
       byRef.seenTheDialog = value;
     }
 
-    console.log('checkGG0170MN() thisMorN = ', thisMorN);
-
     let GG0170M: any, GG0170N: any, GG0170O: any, GG0170P: any;
-    let measure: string;
-
     if (thisMorN.prop('id').indexOf('GG0170M') !== -1) {
-      console.log("it's M", thisMorN);
-      GG0170M = thisMorN;
-
-      /* check measure */
-      if (GG0170M.prop('id').indexOf('Admission_Performance') !== -1) {
-        measure = "Admission_Performance";
-      }
-      else if (GG0170M.prop('id').indexOf('Discharge_Performance') !== -1) {
-        measure = 'Discharge_Performance';
-      }
-      else if (GG0170M.prop('id').indexOf('Interim_Performance') !== -1) {
-        measure = 'Interim_Performance';
-      }
-      else if (GG0170M.prop('id').indexOf('Followup_Performance') !== -1) {
-        measure = 'Followup_Performance';
-      }
-      GG0170N = $('.persistable[id^=GG0170N_' + measure + ']');
-      GG0170O = $('.persistable[id^=GG0170O_' + measure + ']');
-      GG0170P = $('.persistable[id^=GG0170P_' + measure + ']');
+      GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
     }
-    else /* (thisMorN.prop('id').indexOf('GG0170N') !== -1) */ {
-      console.log("it's N", thisMorN);
-      GG0170N = thisMorN;
-
-      if (GG0170N.prop('id').indexOf('Admission_Performance') !== -1) {
-        measure = 'Admission_Performance';
-      }
-      else if (GG0170N.prop('id').indexOf('Discharge_Performance') !== -1) {
-        measure = 'Discharge_Performance';
-      }
-      else if (GG0170N.prop('id').indexOf('Interim_Performance') !== -1) {
-        measure = 'Interim_Performance';
-      }
-      else if (GG0170N.prop('id').indexOf('Followup_Performance') !== -1) {
-        measure = 'Followup_Performance';
-      }
-      GG0170O = $('.persistable[id^=GG0170O_' + measure + ']');
-      GG0170P = $('.persistable[id^=GG0170P_' + measure + ']');
-    }
+    GG0170N = $('.persistable[id^=GG0170N_' + measure + ']');
+    GG0170O = $('.persistable[id^=GG0170O_' + measure + ']');
+    GG0170P = $('.persistable[id^=GG0170P_' + measure + ']');
 
     let intGG0170: number = commonUtility.getControlValue(thisMorN);
     const myButtons = {
@@ -1141,11 +975,11 @@ $(function () {
               /* M >= 7, reset and lock both N and O then advance to P */
               if (GG0170N.length > 0) {
                 //commonUtility.resetControlValue(GG0170N);
-                GG0170N.val(-1).prop('disabled', true).change();
+                GG0170N.val(-1).prop('disabled', true);
               }
               if (GG0170O.length > 0) {
                 //commonUtility.resetControlValue(GG0170O);
-                GG0170O.val(-1).prop('disabled', true).change();
+                GG0170O.val(-1).prop('disabled', true);
               }
               GG0170P.prop('disabled', false).focus();
               scrollTo(GG0170P.prop('id'));
@@ -1153,9 +987,9 @@ $(function () {
             default:
               /* M is unknown, reset and lock N and O */
               //commonUtility.resetControlValue(GG0170N);
-              GG0170N.val(-1).prop('disabled', true).change();
+              GG0170N.val(-1).prop('disabled', true);
               //commonUtility.resetControlValue(GG0170O);
-              GG0170O.val(-1).prop('disabled', true).change();
+              GG0170O.val(-1).prop('disabled', true);
               break;
           }
         }
@@ -1165,7 +999,7 @@ $(function () {
               /* N >= 7, reset and lock O then advance to P */
               if (GG0170O.length > 0) {
                 //commonUtility.resetControlValue(GG0170O
-                GG0170O.val(-1).prop('disabled', true).change();
+                GG0170O.val(-1).prop('disabled', true);
               }
               GG0170P.prop('disabled', false).focus();
               scrollTo(GG0170P.prop('id'));
@@ -1173,7 +1007,7 @@ $(function () {
             default:
               /* N is unknown, reset and lock O */
               //commonUtility.resetControlValue(GG0170O);
-              GG0170O.val(-1).prop('disabled', true).change();
+              GG0170O.val(-1).prop('disabled', true);
           }
         }
         setSeenTheDialog(true); //callback
@@ -1194,29 +1028,29 @@ $(function () {
               /* M >= 7, reset and lock both N and O then advance to P */
               if (GG0170N.length > 0) {
                 //commonUtility.resetControlValue(GG0170N);
-                GG0170N.val(-1).prop('disabled', true).change();
+                GG0170N.val(-1).prop('disabled', true);
               }
               if (GG0170O.length > 0) {
                 //commonUtility.resetControlValue(GG0170O);
-                GG0170O.val(-1).prop('disabled', true).change();
+                GG0170O.val(-1).prop('disabled', true);
               }
-              GG0170P.prop('disabled', false).change();
+              GG0170P.prop('disabled', false);
               scrollTo(GG0170P.prop('id'));
               break;
             case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
               /* M between 0 and 6, reset and disable O then scroll to N */
               if (GG0170O.length > 0) {
-                GG0170O.val(-1).prop('disabled', true).change();
-                GG0170N.prop('disabled', false).change();
+                GG0170O.val(-1).prop('disabled', true);
+                GG0170N.prop('disabled', false);
                 scrollTo(GG0170N.prop('id'));
               }
               break;
             default:
               /* M is unknown, reset and lock N and O */
               //commonUtility.resetControlValue(GG0170N);
-              GG0170N.val(-1).prop('disabled', true).change();
+              GG0170N.val(-1).prop('disabled', true);
               //commonUtility.resetControlValue(GG0170O);
-              GG0170O.val(-1).prop('disabled', true).change();
+              GG0170O.val(-1).prop('disabled', true);
               break;
           }
         }
@@ -1226,23 +1060,23 @@ $(function () {
               /* N >= 7, reset and lock both N and O then advance to P */
               if (GG0170O.length > 0) {
                 //commonUtility.resetControlValue(GG0170O);
-                GG0170O.val(-1).prop('disabled', true).change();
+                GG0170O.val(-1).prop('disabled', true);
               }
-              GG0170P.prop('disabled', false).change();
+              GG0170P.prop('disabled', false);
               scrollTo(GG0170P.prop('id'));
               break;
             case ((intGG0170 > 0 && intGG0170 < 7) && GG0170N.length > 0):
               /* N between 0 and 6, unlock and scroll to N */
               if (GG0170O.length > 0) {
                 //commonUtility.resetControlValue(GG0170O);
-                GG0170O.val(-1).prop('disabled', false).change();
+                GG0170O.val(-1).prop('disabled', false);
                 scrollTo(GG0170O.prop('id'));
               }
               break;
             default:
               /* N is unknown, reset and lock O */
               //commonUtility.resetControlValue(GG0170O);
-              GG0170O.val(-1).prop('disabled', true).change();
+              GG0170O.val(-1).prop('disabled', true);
           }
         }
       }
@@ -1292,18 +1126,34 @@ $(function () {
     let seenTheDialog: boolean = true;
     const GG0170M_and_N = $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])');
     GG0170M_and_N.each(function () {
-      const thisMorN = $(this);
+      const thisMorN: any = $(this);
+      let measure: string = thisMorN.prop('id');
+      switch (true) {
+        case measure.indexOf('Admission_Performance') !== -1:
+          measure = 'Admission_Performance';
+          break;
+        case measure.indexOf('Discharge_Performance') !== -1:
+          measure = 'Discharge_Performance';
+          break;
+        case measure.indexOf('Interim_Performance') !== -1:
+          measure = 'Interim_Performance';
+          break;
+        case measure.indexOf('Followup_Performance') !== -1:
+          measure = 'Followup_Performance';
+          break;
+      }
+
       thisMorN.on('change', { x: EnumChangeEventArg.Change }, function (e) {
         console.log('before calling GG0170P_depends_on_GG0170M_and_GG0170N() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = GG0170P_depends_on_GG0170M_and_GG0170N(e.data.x, { seenTheDialog: seenTheDialog }, thisMorN);
+        seenTheDialog = GG0170P_depends_on_GG0170M_and_GG0170N(e.data.x, { seenTheDialog: seenTheDialog }, thisMorN, measure);
       });
     });
 
     console.log('GG0170M_N listener added');
   })();
 
-  /* event handler */
-  function GG0170Q_is_No_skip_to_Complete(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisQ: any): boolean {
+  /* event handler for any GG0170Q no */
+  function GG0170Q_is_No_skip_to_Complete(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
     console.log('inside of GG0170Q_is_No_skip_to_Complete, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
     function setSeenTheDialog(value) {
@@ -1311,19 +1161,20 @@ $(function () {
       byRef.seenTheDialog = value;
     }
 
-    const completed = $('.persistable[id ^= Assessment][id*=Yes]');
-
-    let GG0170Rs: any = null, checkNext: boolean = true;
-    const thisQ_is_No: boolean = $('.persistable[id^=GG0170Q_][id*=No]:not([id*=Discharge_Goal]):checked').length > 0;
+    const completed = $('.persistable[id^= Assessment]');
+    const completed_Yes = $('.persistable[id^= Assessment][id*=Yes]');
+    const GG0170Rs = $('.persistable[id^=GG0170R_]');
     const myButtons = {
       "Ok": function () {
-        GG0170Rs.each(
-          function () {
-            $(this).prop('disabled', false);
-          }
-        );
-        completed.prop('disabled', false);
-        scrollTo(completed.prop('id'));
+        GG0170Rs.each(function () {
+          const thisR: any = $(this);
+          thisR.prop('disabled', true);
+        });
+        completed.each(function () {
+          const thisCompleted: any = $(this);
+          thisCompleted.prop('disabled', false);
+        });
+        scrollTo(completed_Yes.prop('id'));
         setSeenTheDialog(true); //callback
         $(this).dialog("close");
       },
@@ -1333,106 +1184,69 @@ $(function () {
       }
     }
 
-    if (thisQ_is_No) {
-      const dialogText = 'At least one of the GG0170Qs is a no, lock all GG0170Rs, advance to Assesment Complete';
-      console.log('checkGG0170Q() ' + dialogText);
-      if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-        //with warning dialog
-        console.log('GG0170Q with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-
-        $('#dialog')
-          .text(dialogText)
-          .dialog(dialogOptions, {
-            title: 'Warning GG0170Q', buttons: myButtons
-          });
-      }
-      //onload don't scroll to complete 
+    const dialogText = 'At least one of the GG0170Qs is a no, lock all GG0170Rs, advance to Assesment Complete';
+    console.log(dialogText);
+    if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+      //with warning dialog
+      $('#dialog')
+        .text(dialogText)
+        .dialog(dialogOptions, {
+          title: 'Warning GG0170Q', buttons: myButtons
+        });
     }
     else {
-      const GG0170Q_Admission_Performance_Yes: boolean = $('.persistable[id^=GG0170Q_Admission_Performance][id*=Yes]:checked').length === 1;
-      if (GG0170Q_Admission_Performance_Yes) {
-        console.log('checkGG0170Q() GG0170Q Admission Performance is yes, unlock and focus on GG0170R Admission Performance');
-        GG0170Rs = $('.persistable[id^=GG0170R_Admission]');
-        console.log('checkGG0170Q() GG0170Rs', GG0170Rs);
-        GG0170Rs.each(
-          function () {
-            $(this).prop('disabled', false)
-          }
-        );
-        if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-          scrollTo(GG0170Rs.first().prop('id'));
-        }
-        else {
-          GG0170Rs.first().focus();
-        }
-        checkNext = false;
+      GG0170Rs.each(function () {
+        const thisR: any = $(this);
+        thisR.prop('disabled', true);
+      });
+      completed.each(function () {
+        const thisCompleted: any = $(this);
+        thisCompleted.prop('disabled', false);
+      });
+      completed_Yes.focus();
+    }
+    //onload don't scroll to complete 
+
+    console.log('------ done handling GG0170Q ' + eventType + '------');
+
+    return byRef.seenTheDialog;
+  }
+
+  /* event handler for any GG0170Q yes */
+  function GG0170Q_is_Yes_skip_to_GG0170R(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisGG0170R: any): boolean {
+    console.log('inside of GG0170Q_is_Yes_skip_to_GG0170R, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+
+    function setSeenTheDialog(value) {
+      //callback after async dialog is done and return the seenTheDialog to the caller
+      byRef.seenTheDialog = value;
+    }
+
+    const myButtons = {
+      "Ok": function () {
+        thisGG0170R.prop('disabled', false);
+        scrollTo(thisGG0170R.prop('id'));
+        setSeenTheDialog(true); //callback
+        $(this).dialog("close");
+      },
+      "Cancel": function () {
+        setSeenTheDialog(true); //callback
+        $(this).dialog("close");
       }
+    }
 
-      if (checkNext) {
-        const GG0170Q_Discharge_Performance_Yes: boolean = $('.persistable[id^=GG0170Q_Discharge_Performance][id*=Yes]:checked').length === 1;
-        if (GG0170Q_Discharge_Performance_Yes) {
-          console.log('GG0170Q Discharge Performance is yes, unlock and focus on GG0170R Discharge Performance');
-          GG0170Rs = $('.persistable[id^=GG0170R_Discharge_Performance]');
-          console.log('GG0170Rs', GG0170Rs);
-          GG0170Rs.each(
-            function () {
-              $(this).prop('disabled', false)
-            }
-          );
-          if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-            scrollTo(GG0170Rs.first().prop('id'));
-          }
-          else {
-            GG0170Rs.first().focus();
-          }
-
-          checkNext = false;
-        }
-      }
-
-      if (checkNext) {
-        const GG0170Q_Interim_Performance_Yes: boolean = $('.persistable[id^=GG0170Q_Interim_Performance][id*=Yes]:checked').length === 1;
-        if (GG0170Q_Interim_Performance_Yes) {
-          console.log('GG0170Q Interim Performance is yes, unlock and focus on GG0170R Interim Performance');
-          GG0170Rs = $('.persistable[id^=GG0170R_Interim_Performance]');
-          console.log('GG0170Rs', GG0170Rs);
-          GG0170Rs.each(
-            function () {
-              $(this).prop('disabled', false)
-            }
-          );
-          if (eventType === EnumChangeEventArg.Change) {
-            scrollTo(GG0170Rs.first().prop('id'));
-          }
-          else {
-            GG0170Rs.first().focus();
-          }
-
-          checkNext = false;
-        }
-      }
-
-      if (checkNext) {
-        const GG0170Q_Followup_Performance_Yes: boolean = $('.persistable[id^=GG0170Q_Followup_Performance][id*=Yes]:checked').length === 1;
-        if (GG0170Q_Followup_Performance_Yes) {
-          console.log('GG0170Q Follow Up Performance is yes, unlock and focus on GG0170R Follow Up Performance');
-          GG0170Rs = $('.persistable[id^=GG0170R_Followup_Performance]');
-          console.log('GG0170Rs', GG0170Rs);
-          GG0170Rs.each(
-            function () {
-              $(this).prop('disabled', false)
-            }
-          );
-          if (eventType === EnumChangeEventArg.Change) {
-            scrollTo(GG0170Rs.first().prop('id'));
-          }
-          else {
-            GG0170Rs.first().focus();
-          }
-
-          checkNext = false;
-        }
-      }
+    if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+      //with warning dialog
+      const dialogText = 'GG0170Q is yes, unlock and advance to corespondent GG0170Rs';
+      console.log(dialogText);
+      $('#dialog')
+        .text(dialogText)
+        .dialog(dialogOptions, {
+          title: 'Warning GG0170Q', buttons: myButtons
+        });
+    }
+    else {
+      //without warning dialog
+      thisGG0170R.prop('disabled', false).focus();
     }
 
     console.log('------ done handling GG0170Q ' + eventType + '------');
@@ -1448,40 +1262,58 @@ $(function () {
 
     /* on change */
     let seenTheDialog: boolean = true;
-    const GG0170Qs: any = $('.persistable[id^=GG0170Q_]:not([id*=Discharge_Goal])');
+    const GG0170Qs: any = $('.persistable[id^=GG0170Q_]');
     GG0170Qs.each(function () {
       let thisQ = $(this);
-      thisQ.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog }, thisQ)
-      });
+      thisQ.on('change', { x: EnumChangeEventArg.Change },
+        function (e) {
+          const any_No: any = $('.persistable[id^=GG0170Q][id*=No]:checked');
+          const any_Yes: any = $('.persistable[id^=GG0170Q][id*=Yes]:checked');
+          if (any_No.length > 0) {
+            seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog });
+          }
+          else if (any_Yes.length > 0) {
+              const firstYes: any = any_Yes.first();
+              let thisGG0170R: any;
+              switch (true) {
+                case firstYes.prop('id').indexOf('Admission_Performance'):
+                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Admission_Performance]');
+                  break;
+                case firstYes.prop('id').indexOf('Discharge_Performance'):
+                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Discharge_Performance]');
+                  break;
+                case firstYes.prop('id').indexOf('Interim_Performance'):
+                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
+                  break;
+                case firstYes.prop('id').indexOf('Followup_Performance'):
+                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Followup_Performance]');
+                  break;
+              }
+              seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
+          }
+          else
+            GG0170Qs.prop('disabled', false);
+        });
     });
 
     console.log('GG0170Q listner added');
   })();
 
   /* event handler */
-  function J1750_depends_on_J0510(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }, thisJ0510: any): boolean {
+  function J1750_depends_on_J0510(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
     console.log('inside of J1750_depends_on_J0510, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
-    function actJ0510() {
-      const J1750s = $('.persistable[id^=J1750]');
-      const J1750_yes = $('.persistable[id^=J1750][id*=Yes]');
-      J1750s.each(function () {
-        $(this).prop('disabled', false);
-      });
-      if (eventType === EnumChangeEventArg.Change) {
-        console.log('scroll to ' + J1750_yes.prop('id'));
-        scrollTo(J1750_yes.prop('id'));
-      }
+    const J1750s = $('.persistable[id^=J1750_]');
+    const J1750_yes = $('.persistable[id^=J1750_][id*=Yes]');
+    J1750s.each(function () {
+      $(this).prop('disabled', false);
+    });
+    if (eventType === EnumChangeEventArg.Change) {
+      console.log('scroll to ' + J1750_yes.prop('id'));
+      scrollTo(J1750_yes.prop('id'));
     }
-
-    //const this_has_Not_Apply: boolean = $(".persistable[id=" + thisJ0510.prop('id') + "] option:selected").text().indexOf('0. Does not apply') !== -1;
-
-    const Does_not_apply: any = thisJ0510.find('option[text="0. Does not apply"]');
-    if (Does_not_apply.length > 0) {
-      //found any 'Does not apply' should scroll to J1750 Yes
-      console.log('"0. Does not apply" is found in ' + thisJ0510.prop('id') + ', unlock all J1750s and focus on J1750 Yes option');
-      actJ0510();
+    else {
+      J1750_yes.prop('disabled', false).focus();
     }
 
     console.log('------ done handling J0510 ' + eventType + '------');
@@ -1494,16 +1326,21 @@ $(function () {
   (function J0510_addListener() {
     console.log('adding J0510_addListener()');
 
-    //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
-
-    /* on change */
     let seenTheDialog: boolean = true;
-    const J0510s: any = $('.persistable[id^=J0510]:not([id*=Discharge_Goal]');
+
+    //const this_has_Not_Apply: boolean = $(".persistable[id=" + thisJ0510.prop('id') + "] option:selected").text().indexOf('0. Does not apply') !== -1;
+    //const Does_not_apply: any = thisJ0510.find('option[text="0. Does not apply"]');
+    let J0510firstDoesNotApply: any;
+    const J0510s = $('.persistable[id^=J0510_] option:selected');
     J0510s.each(function () {
-      const thisJ0510 = $(this);
-      thisJ0510.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-        console.log('before calling J1750_depends_on_J0510() seenTheDialog = ', seenTheDialog);
-        seenTheDialog = J1750_depends_on_J0510(e.data.x, { seenTheDialog: seenTheDialog }, thisJ0510);
+      const thisJ0510: any = $(this);
+      thisJ0510.on('change', function () {
+        if (thisJ0510.text().indexOf(' 0.') !== -1) {
+          J0510firstDoesNotApply = thisJ0510;
+          if (J0510firstDoesNotApply.length > 0) {
+            seenTheDialog = J1750_depends_on_J0510(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+          }
+        }
       });
     });
 
@@ -1526,6 +1363,132 @@ $(function () {
         lastInputDate.append(dateClone);
       });
   }
+
+  /* event handler, add this last to raise change chain */
+  function Q12_Q23_blank_then_Lock_All(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
+    console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+    const Q12: any = $('.persistable[id^=Q12_]').prop('disabled', false);
+    const Q23: any = $('.persistable[id^=Q23_]').prop('disabled', false);
+    const otherPersistables: any = $('.persistable').not(Q12).not(Q23);
+    const minDate = new Date('2020-01-01 00:00:00');
+    const onsetDate = new Date(Q23.val());
+    const admitDate = new Date(Q12.val());
+    const Q12_or_Q23_is_empty: boolean = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
+    const onset_is_later_than_admit: boolean = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
+
+    function setSeenTheDialog(value) {
+      //callback after async dialog is done and return the seenTheDialog to the caller
+      byRef.seenTheDialog = value;
+    }
+
+    const myButtons = {
+      "Ok": function () {
+        console.log('lock all other persistables');
+        otherPersistables.each(
+          function () {
+            $(this).prop("disabled", true);
+          }
+        );
+        $(this).dialog("close");
+        setSeenTheDialog(true); //callback function
+      },
+      "Cancel": function () {
+        $(this).dialog("close");
+        setSeenTheDialog(true); //callback function
+      }
+    };
+
+    switch (true) {
+      case (Q12_or_Q23_is_empty):
+      case (onset_is_later_than_admit): {
+        console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
+        if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+          //with warning dialog
+          console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
+          let dialogText: string;
+
+          if (Q12_or_Q23_is_empty)
+            dialogText = 'Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked';
+          if (onset_is_later_than_admit)
+            dialogText = 'Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later';
+
+          dialogOptions.title = 'Date';
+          $('#dialog')
+            .text(dialogText)
+            .dialog(dialogOptions, {
+              title: 'Warning Q12 Q23', buttons: myButtons
+            });
+        }
+        else {//without warning dialog
+          console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+
+          console.log('lock all other persistables');
+          otherPersistables.each(function () {
+            const thisPersistable = $(this);
+            thisPersistable.prop('disabled', true);
+          });
+        }
+        break;
+      }
+      default: {
+        //see branchingTree.txt
+        const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');
+
+        console.log('Onset Date and Admit Date are not empty, unlock ' + toBeUnlocked.length + ' fields');
+
+        toBeUnlocked.each(function () {
+          const unlockThis = $(this);
+          //just enable the no handler persistables and persistables with handler but don't raise change event to prevent infinite loop
+          unlockThis.prop('disabled', false);
+        });
+
+        $('.spinnerContainer').show();
+
+        //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
+        //only raise change for the following
+        $('.persistable[id^=Q12B_]').change();
+        $('.persistable[id^=Q14A_]').change();
+        $('.persistable[id^=Q16A_]').change();
+        $('.persistable[id^=Q42_]').change();
+        $('.persistable[id^=Q44C_]').change();
+        $('.persistable[id^=GG0170I_]').change();
+        $('.persistable[id^=GG0170M_]').change();
+        $('.persistable[id^=GG0170Q_]').change();
+        $('.persistable[id^=J0510]').change();
+
+        //set focus on Q12B after the above rule might have set focus somewhere else
+        $('.persistable[id^=Q12B_]').focus();
+
+        $('.spinnerContainer').hide();
+        break;
+      }
+    }
+
+    console.log('------ done handling Q12 Q23 ' + eventType + '------');
+    return byRef.seenTheDialog;
+  }
+
+  /* self executing event listener, add this last to raise change chain */
+  (function Q12_Q23_addListener() {
+    console.log('adding Q12_Q23_addListener()');
+
+    /* add onchange event listner */
+    let seenTheDialog: boolean = true;
+    const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
+    primaryKeys.each(
+      function () {
+        const thisPrimaryKey = $(this);
+        thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+          console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
+          //checkQ12_Q23(e.data.x);
+          seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+        });
+      }
+    );
+
+    console.log('Q12_Q23 listener added');
+  })();
 
   //self executing arrow function test
   (() => {

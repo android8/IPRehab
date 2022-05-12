@@ -1,12 +1,12 @@
 ﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 /// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
 
-import { Utility, UserAnswer, AjaxPostbackModel /*, EnumGetControlValueBehavior*/ }  from "./commonImport.js";
+import { Utility, UserAnswer, AjaxPostbackModel /*, EnumGetControlValueBehavior*/ } from "./commonImport.js";
 import { EnumChangeEventArg } from "./enums.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
-  const commonUtility: Utility = new Utility();
+const commonUtility: Utility = new Utility();
 
 /****************************************************************************
  * javaScript closure
@@ -18,8 +18,8 @@ const formController = (function () {
   }
 
   function scrollTo(thisElement: any) {
-    let scrollAmount: number = thisElement.prop('offsetTop') + 15;
-    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
+    let scrollAmount: number = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
+    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; 
     console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
     thisElement.focus();
@@ -101,8 +101,13 @@ const formController = (function () {
           const jsonResult: any = $.parseJSON(result);
           console.log('jsonResult', jsonResult);
           if (episodeID === -1) {
-            $('#episodeID').val(jsonResult);  //after posting new record, asign the new record id carried in jsonResult to the #episodeID. Otherwise, without refreshing the screen and repost it will create duplicate record.
+            /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
+            $('#episodeID').val(jsonResult);
             $('#stage').val('Base');
+
+            /* update on screen episode_legend and pageTitle */
+            $('#pageTitle').text('Episode of Care');
+            $('#episodeID_legend').text(jsonResult);
           }
 
           dialogOptions.title = 'Success';
@@ -202,7 +207,8 @@ const formController = (function () {
       const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
       let currentValue = '';
 
-      currentValue = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)?.toString();  //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
+      //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
+      currentValue = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)?.toString();
 
       //!undefined or !NaN yield true
       if (+currentValue === -1) currentValue = '';
@@ -266,9 +272,6 @@ const formController = (function () {
           newAnswers.push(thisAnswer);
           break;
         case 'D1':
-          thisAnswer.AnswerID = +answerId;
-          oldAnswers.push(thisAnswer);
-          break;
         case 'D2':
           thisAnswer.AnswerID = +answerId;
           oldAnswers.push(thisAnswer);
@@ -285,7 +288,7 @@ const formController = (function () {
         .text('Nothing to save.  All fields seem be unchanged')
         .dialog(dialogOptions);
     }
-    
+
     $('.spinnerContainer').hide();
 
     const postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
@@ -513,7 +516,7 @@ const formController = (function () {
 
   /* internal function */
   function Score_GG0170RandS_Performance(stage: string): number {
-    let multiplier  = 1, R_Performance = 0,S_Performance = 0;
+    let multiplier = 1, R_Performance = 0, S_Performance = 0;
 
     let GG0170I: any, GG0170R: any, GG0170S: any;
     let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
@@ -699,7 +702,7 @@ $(function () {
     thisDropdown.on('change', function () {
       //beak long option text
       //commonUtility.resetControlValue(thisDropdown);
-      if (thisDropdown.val() !== -1) { 
+      if (thisDropdown.val() !== -1) {
         formController.breakLongSentence(thisDropdown);
       }
     });
@@ -782,7 +785,7 @@ $(function () {
   /* self care scorce on change */
   $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
     const $this: any = $(this);
-    $this.on('change',function () {
+    $this.on('change', function () {
       formController.selfCareScore();
       formController.grandTotal();
     });
@@ -793,7 +796,7 @@ $(function () {
 
   /* mobility score on change */
   $('.persistable[id^=GG0170]:not([id*=Discharge_Goal])').each(function () {
-    $(this).on('change',function () {
+    $(this).on('change', function () {
       formController.mobilityScore();
       formController.grandTotal();
     })
