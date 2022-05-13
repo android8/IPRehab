@@ -625,6 +625,24 @@ $(function () {
     /* aggregate scores container */
     $('#rotateSlidingAggregatorHandle').on('click', function () {
         const slidingAggregator = $("#slidingAggregator");
+        const stage = $('#stage').val().toString();
+        switch (stage) {
+            case 'Base':
+                $("#slidingAggregator #Base").show();
+                $("#slidingAggregator #Interim").hide();
+                $("#slidingAggregator #Followup").hide();
+                break;
+            case 'Interim':
+                $("#slidingAggregator #Base").hide();
+                $("#slidingAggregator #Interim").show();
+                $("#slidingAggregator #Followup").hide();
+                break;
+            case 'Followup':
+                $("#slidingAggregator #Base").hide();
+                $("#slidingAggregator #Interim").hide();
+                $("#slidingAggregator #Followup").show();
+                break;
+        }
         slidingAggregator.css("right", "0px");
     });
     $('#closeSlidingAggregator').on('click', function () {
