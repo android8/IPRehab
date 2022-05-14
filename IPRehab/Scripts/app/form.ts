@@ -19,7 +19,7 @@ const formController = (function () {
 
   function scrollTo(thisElement: any) {
     let scrollAmount: number = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
-    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; 
+    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0;
     console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
     thisElement.focus();
@@ -99,6 +99,7 @@ const formController = (function () {
           $('.spinnerContainer').hide();
           console.log('postback result', result);
           const jsonResult: any = $.parseJSON(result);
+          let dialogText: string;
           console.log('jsonResult', jsonResult);
           if (episodeID === -1) {
             /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
@@ -108,11 +109,12 @@ const formController = (function () {
             /* update on screen episode_legend and pageTitle */
             $('#pageTitle').text('Episode of Care');
             $('#episodeID_legend').text(jsonResult);
+            dialogText = '\Note: When in NEW mord and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID corresponding shown on the upper right of the form.';
           }
 
           dialogOptions.title = 'Success';
           $('#dialog')
-            .text('Data is saved.')
+            .text('Data is saved.' + dialogText)
             .dialog(dialogOptions);
         })
         .fail(function (error) {
@@ -720,31 +722,34 @@ $(function () {
 
   /* aggregate scores container */
   $('#rotateSlidingAggregatorHandle').on('click', function () {
+    const stage: string = $('#stage').val()?.toString();
+    console.log(stage + ' slidingAggregator should slide into view');
     const slidingAggregator: any = $("#slidingAggregator");
-    const stage: string = $('#stage').val().toString();
     switch (stage) {
       case 'Base':
-        $("#slidingAggregator #Base").show();
-        $("#slidingAggregator #Interim").hide();
-        $("#slidingAggregator #Followup").hide();
+        slidingAggregator.css("width", "15em");
         break;
       case 'Interim':
-        $("#slidingAggregator #Base").hide();
-        $("#slidingAggregator #Interim").show();
-        $("#slidingAggregator #Followup").hide();
-        break;
-      case 'Followup':
-        $("#slidingAggregator #Base").hide();
-        $("#slidingAggregator #Interim").hide();
-        $("#slidingAggregator #Followup").show();
+      case 'Follow Up':
+        slidingAggregator.css({ "width": "8em" });
         break;
     }
-    slidingAggregator.css("right", "0px");
+    slidingAggregator.css("right", "0em");
   });
 
   $('#closeSlidingAggregator').on('click', function () {
+    const stage: string = $('#stage').val().toString();
     const slidingAggregator: any = $("#slidingAggregator");
-    slidingAggregator.css("right", "-250px");
+    console.log(stage + ' slidingAggregator should slide out of view');
+    switch (stage) {
+      case 'Base':
+        slidingAggregator.css("right", "-15em");
+        break;
+      case 'Interim':
+      case 'Follow Up':
+        slidingAggregator.css({ "right": "-8em" });
+        break;
+    }
   });
 
   /* jump to section anchor */

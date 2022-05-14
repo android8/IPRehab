@@ -62,8 +62,17 @@
 <aside>
     <div id="dialog"></div>
 
+    @switch (Model.StageTitle)
+    {
+        case "Base":
+            @await Html.PartialAsync("_SlidingAggretates")
+            break;
+        case "Interim":
+        case "Follow Up":
+            @await Html.PartialAsync("_SlidingAggretates_Interim_Followup")
+            break;
+    }
     @* aggregator's content to be cloned from scoreSections *@
-    @await Html.PartialAsync("_SlidingAggretates")
 
     @if (!Model.ReadOnly)
     {

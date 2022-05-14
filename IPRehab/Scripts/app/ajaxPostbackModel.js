@@ -7,4 +7,4 @@ export class AjaxPostbackModel {
         this.NewAnswers = [];
     }
 }
-//# sourceMappingURL=ajaxPostbackModel.js.map
+//# sourceMappingURL=AjaxPostbackModel.js.map
