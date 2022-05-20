@@ -42,7 +42,14 @@ $(function () {
       //icon: "ui-icon-close",
       click: function () {
         $(this).dialog("close");
-      }
+      },
+      open: function (event, ui) {
+        $('.ui-widget-overlay').css({
+          'opacity': '0.5',
+          'filter': 'Alpha(Opacity = 50)',
+          'background-color': 'black'
+        });
+      },
     }]
   };
 
@@ -147,29 +154,25 @@ $(function () {
     const isDischarged: boolean = Q12B.val() !== '';
     let dialogText: string;
 
-    if (isDischarged) {
-      dialogText = 'Q12B is a discharge date, unlock all related discharge fields: Q15B, Q16B, Q17B, Q21B, Q41, Q44C';
-    }
-    else
+    if (!isDischarged) {
       dialogText = 'Q12B is not a discharge date. Reset and lock related discharge fields:  Q15B,Q16B, Q17B, Q21B, Q41, Q44C';
 
-    console.log(dialogText);
+      console.log(dialogText);
 
-    if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-      //with warning dialog
-      console.log('Q12B with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-      const Q12Bbuttons = DischargeRelatedButtonClosure();
+      if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+        //with warning dialog
+        const Q12Bbuttons = DischargeRelatedButtonClosure();
 
-      $('#dialog')
-        .text(dialogText)
-        .dialog(dialogOptions, {
-          title: 'Warning Q12B', buttons: Q12Bbuttons(isDischarged)
-        });
-      console.log('Q12B handler return byRef.seenTheDialog = ', byRef.seenTheDialog);
+        $('#dialog')
+          .text(dialogText)
+          .dialog(dialogOptions, {
+            title: 'Warning Q12B', buttons: Q12Bbuttons(isDischarged)
+          });
+        console.log('Q12B handler return byRef.seenTheDialog = ', byRef.seenTheDialog);
+      }
     }
     else {
       //without warning dialog
-      console.log('Q12B without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
       actQ12B(isDischarged);
     }
 
@@ -186,14 +189,31 @@ $(function () {
 
     //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
 
-    /* on change */
-    let seenTheDialog: boolean = true;
+    let seenTheDialog: boolean = false;
     const Q12B = $('.persistable[id^=Q12B_]');
+
+    /* on change */
     Q12B.on('change', { x: EnumChangeEventArg.Change, y: Q12B }, function (e) {
       console.log('before calling Q12B_blank_then_Lock_Discharge(), seenTheDialog = ', seenTheDialog);
       //JavaScript, and TypeScript can pass an object by reference, but not by value.
       //Therefore box values into an object  { seenTheDialog: seenTheDialog }
       seenTheDialog = Q12B_blank_then_Lock_Discharge(e.data.x, { seenTheDialog: seenTheDialog });
+    });
+
+    /* add rule help */
+    const Q12BRule = $('.branchingRule[data-target^=Q12B],.branchingRule[data-target^=Q15B],.branchingRule[data-target^=Q16B],.branchingRule[data-target^=Q17B],.branchingRule[data-target^=Q21B],.branchingRule[data-target^=Q41],.branchingRule[data-target^=Q44C]');
+    const ruleText = 'If Q12B is not a date, reset and lock related discharge fields: Q15B, Q16B, Q17B, Q21B, Q41, Q44C'
+    Q12BRule.prop('title', ruleText).show();
+    Q12BRule.on('click', function () {
+      $('#dialog')
+        .text(ruleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
     });
 
     console.log('Q12B listener added');
@@ -215,7 +235,6 @@ $(function () {
           const thisQ14B = $(this);
           console.log('uncheck ' + thisQ14B.prop('id'), thisQ14B);
           thisQ14B.prop('checked', false);
-          console.log(disableState ? 'disable ' : 'enable ' + thisQ14B.prop('id'), thisQ14B);
           thisQ14B.prop('disabled', disableState);
         }
       );
@@ -278,6 +297,21 @@ $(function () {
       seenTheDialog = Q14B_enabled_if_Q14A_is_Yes(e.data.x, { seenTheDialog: seenTheDialog });
     });
 
+    /* add rule help */
+    const Q14ARule = $('.branchingRule[data-target^=Q14A], .branchingRule[data-target^=Q14B]');
+    const Q14ARuleText = 'If Q14A is unknown or is No, uncheck and lock all Q14B';
+    Q14ARule.prop('title', Q14ARuleText).show();
+    Q14ARule.on('click', function () {
+      $('#dialog')
+        .text(Q14ARuleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    });
     console.log('Q14A listener added');
   })();
 
@@ -296,9 +330,10 @@ $(function () {
       if (Q17.length > 0) {
         console.log('thisQ17', Q17);
         Q17.prop('disabled', isDisabled);
-        if (isDisabled)
+        if (isDisabled) {
           //commonUtility.resetControlValue(Q17);
           Q17.val(-1)
+        }
         else {
           console.log('focus on Q17', Q17);
           Q17.focus();
@@ -360,6 +395,21 @@ $(function () {
       seenTheDialog = Q16A_is_Home_then_Q17(e.data.x, { seenTheDialog: seenTheDialog });
     });
 
+    /* add rule help */
+    const Q16ARule = $('.branchingRule[data-target^=Q16A], .branchingRule[data-target^=Q17]');
+    const Q16ARuleText = 'If Q16A is home, unlock Q17';
+    Q16ARule.prop('title', Q16ARuleText).show();
+    Q16ARule.on('click', function () {
+      $('#dialog')
+        .text(Q16ARuleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    });
     console.log('Q16 listener added');
   })();
 
@@ -441,13 +491,20 @@ $(function () {
       const Q43s: any = $('.persistable[id^=Q43_]');
       Q43s.each(function () {
         const thisQ43 = $(this)
+        const thisDateReset = $('button.calendarReset[data-target=' + thisQ43.prop('id') + ']');
         if (lockQ43) {
           console.log('lock Q43');
           thisQ43.val('').prop('disabled', true);
+          if (thisDateReset.length !== 0) {
+            thisDateReset.prop('disabled', true);
+          }
         }
         else {
           console.log('unlock Q43');
           thisQ43.prop('disabled', false);
+          if (thisQ43.val() !== '' && thisDateReset.length !== 0) {
+            thisDateReset.prop('disabled', false);
+          }
         }
       });
     }
@@ -507,6 +564,21 @@ $(function () {
       })
     });
 
+    /* add rule help */
+    const Q42Rule = $('.branchingRule[data-target^=Q42], .branchingRule[data-target^=Q43]');
+    const Q42RuleText = 'If Q42 is a No, reset and lock all Q43';
+    Q42Rule.prop('title', Q42RuleText).show();
+    Q42Rule.on('click', function () {
+      $('#dialog')
+        .text(Q42RuleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    });
     console.log('Q42 listener added');
   })();
 
@@ -654,6 +726,8 @@ $(function () {
       }
     });
 
+    /* no need to add rule help which is added with Q42 */
+
     console.log('Q43 listener added');
   })();
 
@@ -754,6 +828,23 @@ $(function () {
       });
     })
 
+    /* add rule help */
+    const Q44CRule = $('.branchingRule[data-target^=Q44C], .branchingRule[data-target^=Q44D], .branchingRule[data-target^=Q45], .branchingRule[data-target^=Q46]');
+    const Q44CRule1Text = Q44CRule.prop('title');
+    const Q44CRule2Text = 'If all fields present and if Q44C is yes, unlock Q44D, Q45 and focus on Q44D. If Q44C is no, lock Q44D, Q45 and focus on Q46';
+
+    Q44CRule.prop('title', '1. ' + Q44CRule1Text + '. 2. ' + Q44CRule2Text).show();
+    Q44CRule.on('click', function () {
+      $('#dialog')
+        .text(Q44CRule1Text + ' ' + Q44CRule2Text)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    });
     console.log('Q44 listener added');
   })();
 
@@ -783,7 +874,7 @@ $(function () {
       seenTheDialog = Q44D_Affect_Q45(e.data.x, { seenTheDialog: seenTheDialog }, Q44D);
     });
 
-    console.log('Q44D listener added');
+    /* no need to add rule help, it is added in Q44C */
   })();
 
   /* event handler */
@@ -943,6 +1034,24 @@ $(function () {
         seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, thisI, measure);
       })
     });
+
+    /* add rule help */
+    const GG0170Irule = $('.branchingRule[data-target=GG0170I]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170J]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170K]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170L]:not([id*=Discharge_Goal])');
+    const GG0170IruleText = 'If GG0170I Admission Performance or Discharge Performance is between 1 and 6, unlock the corresponding measure in J, K, L, and set focus on the corresponding measure in GG0170J. Other measures are unchanged. If the measure is 7 or greater, then reset and lock J, K, L, and set focus on the corresponding measure in GG0170M';
+
+    GG0170Irule.prop('title', GG0170IruleText).show();
+    GG0170Irule.on('click', function () {
+      $('#dialog')
+        .text(GG0170IruleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    })
+
     console.log('GG0170I listener added');
   })();
 
@@ -1109,6 +1218,24 @@ $(function () {
       });
     });
 
+    /* add rule help */
+    const GG0170M_and_Nrule = $('.branchingRule[data-target=GG0170M]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170N]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170O]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170P]:not([id*=Discharge_Goal])');
+    const GG0170M_and_NruleText = 'If the Admission Performance or Discharge Performance is between 1 and 6, unlock the corresponding measure of the next question in sequence.  That is M opens N, N opens O.  If value is 7 or greater, N and O will be reset and locked, then advance the cursor to P.';
+
+    GG0170M_and_Nrule.prop('title', GG0170M_and_NruleText).show();
+    GG0170M_and_Nrule.on('click', function () {
+      $('#dialog')
+        .text(GG0170M_and_NruleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    })
+
+
     console.log('GG0170M_N listener added');
   })();
 
@@ -1262,6 +1389,23 @@ $(function () {
           }
         });
     });
+
+    /* add rule help */
+    const GG0170QRule = $('.branchingRule[data-target^=GG0170Q], .branchingRule[data-target^=AssessmentCompleted]');
+    const GG0170QRuleText = 'If any GG0170Q is NO, unlock and set focus on YES of the Complete Assessment';
+    GG0170QRule.prop('title', GG0170QRuleText).show();
+    GG0170QRule.on('click', function () {
+      $('#dialog')
+        .text(GG0170QRuleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    });
+
     console.log('GG0170Q listner added');
   })();
 
@@ -1311,6 +1455,22 @@ $(function () {
           }
         });
       });
+    });
+
+    /* add rule help */
+    const J0510Rule = $('.branchingRule[data-target^=J0510], .branchingRule[data-target^=J1750]');
+    const J0510RuleText = 'If found "Does not apply in any J0510, unlock all J1750 and set focus on J1750 Yes';
+    J0510Rule.prop('title', J0510RuleText).show();
+    J0510Rule.on('click', function () {
+      $('#dialog')
+        .text(J0510RuleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
     });
 
     console.log('J0510 listener added');
@@ -1371,6 +1531,7 @@ $(function () {
       case (Q12_or_Q23_is_empty):
       case (onset_is_later_than_admit): {
         console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
+        $('#ajaxPost').prop('disabled', true);
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
           //with warning dialog
           console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
@@ -1402,7 +1563,7 @@ $(function () {
       }
       default: {
         //see branchingTree.txt
-        const controlledByHandlers = $('.persistable[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_],[id^=GG0170K_],[id^=GG0170L_],[id^=GG0170N_],[id^=GG0170O_],[id^=GG0170R_],[id^=J1750_],[id^=Complete]');
+        const controlledByHandlers = $('.persistable[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=J1750_],[id^=Complete]');
 
         /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
 
@@ -1417,7 +1578,7 @@ $(function () {
         $('.spinnerContainer').show();
 
         //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
-        //only raise change for the following
+        //only raise change for the following to unlock or remain lock of the respective fields
         $('.persistable[id^=Q12B_]').change();
         $('.persistable[id^=Q14A_]').change();
         $('.persistable[id^=Q16A_]').change();
@@ -1430,6 +1591,7 @@ $(function () {
 
         //set focus on Q12B after the above rule might have set focus somewhere else
         $('.persistable[id^=Q12B_]').focus();
+        $('#ajaxPost').prop('disabled', false);
 
         $('.spinnerContainer').hide();
         break;
@@ -1445,7 +1607,24 @@ $(function () {
     console.log('adding Q12_Q23_addListener()');
 
     /* add onchange event listner */
-    let seenTheDialog: boolean = true;
+    let seenTheDialog: boolean = false;
+
+    /* add rule help */
+    const Q12_Q23rule = $('.branchingRule[data-target=Q12], .branchingRule[data-target=Q23]');
+    const Q12_Q23ruleText = 'If Q12 or Q23 is blank or Q12 date is later than Q23 date, lock all inputs and the save button'
+    Q12_Q23rule.prop('title', Q12_Q23ruleText).show();
+    Q12_Q23rule.on('click', function () {
+      $('#dialog')
+        .text(Q12_Q23ruleText)
+        .dialog(dialogOptions, {
+          title: 'Rules', buttons: {
+            'Ok': function () {
+              $(this).dialog("close");
+            }
+          }
+        });
+    })
+
     const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
     primaryKeys.each(
       function () {
@@ -1460,6 +1639,7 @@ $(function () {
 
     console.log('Q12_Q23 listener added');
   })();
+
 
   //self executing arrow function test
   (() => {

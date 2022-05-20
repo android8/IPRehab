@@ -19,7 +19,7 @@ const formController = (function () {
 
   function scrollTo(thisElement: any) {
     let scrollAmount: number = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
-    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; 
+    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0;
     console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
     $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
     thisElement.focus();
@@ -99,6 +99,7 @@ const formController = (function () {
           $('.spinnerContainer').hide();
           console.log('postback result', result);
           const jsonResult: any = $.parseJSON(result);
+          let dialogText: string;
           console.log('jsonResult', jsonResult);
           if (episodeID === -1) {
             /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
@@ -108,11 +109,12 @@ const formController = (function () {
             /* update on screen episode_legend and pageTitle */
             $('#pageTitle').text('Episode of Care');
             $('#episodeID_legend').text(jsonResult);
+            dialogText = '\Note: When in NEW mord and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID corresponding shown on the upper right of the form.';
           }
 
           dialogOptions.title = 'Success';
           $('#dialog')
-            .text('Data is saved.')
+            .text('Data is saved.' + dialogText)
             .dialog(dialogOptions);
         })
         .fail(function (error) {
@@ -386,24 +388,25 @@ const formController = (function () {
       }
     });
 
-    if ($('#Self_Care_Aggregate_Score_Admission_Performance').length > 0 && $('#Self_Care_Aggregate_Score_Discharge_Performance').length > 0) {
-      $('#Self_Care_Aggregate_Score_Admission_Performance').text(selfCareAdmissionPerformance);
-      $('#Self_Care_Aggregate_Score_Discharge_Performance').text(selfCareDischargePerformance);
-      $('#Self_Care_Aggregate_Score_Total_Change').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
+    if ($('.scoreSection #self_care_aggregate_score_admission_performance').length > 0 && $('.scoreSection #self_care_aggregate_score_discharge_performance').length > 0) {
+      $('.scoreSection #self_care_aggregate_score_admission_performance').text(selfCareAdmissionPerformance);
+      $('.scoreSection #self_care_aggregate_score_discharge_performance').text(selfCareDischargePerformance);
+      $('.scoreSection #self_care_aggregate_score_total_change').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
       $('#slidingAggregator #self_care_admission_score').text(selfCareAdmissionPerformance);
       $('#slidingAggregator #self_care_discharge_score').text(selfCareDischargePerformance);
       $('#slidingAggregator #self_care_total').text(selfCareDischargePerformance - selfCareAdmissionPerformance);
     }
     else {
       /* interim performance or follow up performance */
-      $('#Self_Care_Aggregate_Score').text(selfCarePerformance);
+      $('.scoreSection #self_care_aggregate_score').text(selfCarePerformance);
+      $('#slidingAggregator #self_care_aggregate_score').text(selfCarePerformance);
     }
   }
 
   /* private function */
   function mobilityScore(): void {
 
-    if ($('#Mobility_Aggregate_Score_Admission_Performance').length > 0 && $('#Mobility_Aggregate_Score_Discharge_Performance').length > 0) {
+    if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
 
       let mobilityAdmissionPerformance = 0,
         mobilityDischargePerformance = 0;
@@ -414,9 +417,9 @@ const formController = (function () {
       mobilityDischargePerformance += Score_GG0170AtoP_Discharge_Performance();
       mobilityDischargePerformance += Score_GG0170RandS_Discharge_Performance();
 
-      $('#Mobility_Aggregate_Score_Admission_Performance').text(mobilityAdmissionPerformance);
-      $('#Mobility_Aggregate_Score_Discharge_Performance').text(mobilityDischargePerformance);
-      $('#Mobility_Aggregate_Score_Total_Change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+      $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
+      $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
+      $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
       $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
       $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
       $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
@@ -428,33 +431,34 @@ const formController = (function () {
       /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
       mobilityPerformance += Score_GG0170AtoP_Performance();
       mobilityPerformance += Score_GG0170RandS_Performance('Interim or Follow Up');
-      $('#Mobility_Aggregate_Score').text(mobilityPerformance);
+      $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
+      $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
     }
   }
 
   /* private function */
   function grandTotal(): void {
     let grandTotal = 0;
-    if ($('#Self_Care_Aggregate_Score_Admission_Performance').length > 0 && $('#Mobility_Aggregate_Score_Admission_Performance').length > 0) {
+    if ($('.scoreSection #self_care_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_admission_performance').length > 0) {
       /* Admission Performance */
-      const Self_Care_Admission_Performance: string = $('#Self_Care_Aggregate_Score_Admission_Performance').text();
-      const selfCareAdmissionPerformance: number = parseInt(Self_Care_Admission_Performance);
-      const Mobility_Admission_Performance: string = $('#Mobility_Aggregate_Score_Admission_Performance').text();
-      const mobilityAdmissionPerformance: number = parseInt(Mobility_Admission_Performance);
+      const self_care_admission_performance: string = $('.scoreSection #self_care_aggregate_score_admission_performance').text();
+      const selfCareAdmissionPerformance: number = parseInt(self_care_admission_performance);
+      const mobility_admission_performance: string = $('.scoreSection #mobility_aggregate_score_admission_performance').text();
+      const mobilityAdmissionPerformance: number = parseInt(mobility_admission_performance);
       const admissionPerformanceGrandTotal: number = selfCareAdmissionPerformance + mobilityAdmissionPerformance
-      if ($('#Admission_Performance_Grand_Total').length > 0)
-        $('#Admission_Performance_Grand_Total').text(admissionPerformanceGrandTotal);
+      if ($('.scoreSection #admission_performance_grand_total').length > 0)
+        $('.scoreSection #admission_performance_grand_total').text(admissionPerformanceGrandTotal);
       if ($('#slidingAggregator #admission_total').length > 0)
         $('#slidingAggregator #admission_total').text(admissionPerformanceGrandTotal);
 
       /* Discharge Performance */
-      const Self_Care_Discharge_Performance: string = $('#Self_Care_Aggregate_Score_Discharge_Performance').text();
-      const selfCareDischargePerformance: number = parseInt(Self_Care_Discharge_Performance);
-      const Mobility_Discharge_Performance: string = $('#Mobility_Aggregate_Score_Discharge_Performance').text();
-      const mobilityDischargePerformance: number = parseInt(Mobility_Discharge_Performance);
+      const self_care_discharge_performance: string = $('.scoreSection #self_care_aggregate_score_discharge_performance').text();
+      const selfCareDischargePerformance: number = parseInt(self_care_discharge_performance);
+      const mobility_discharge_performance: string = $('.scoreSection #mobility_aggregate_score_discharge_performance').text();
+      const mobilityDischargePerformance: number = parseInt(mobility_discharge_performance);
       const dischargePerformanceGrandTotal: number = selfCareDischargePerformance + mobilityDischargePerformance;
-      if ($('#Discharge_Performance_Grand_Total').length > 0)
-        $('#Discharge_Performance_Grand_Total').text(dischargePerformanceGrandTotal);
+      if ($('.scoreSection #discharge_performance_grand_total').length > 0)
+        $('.scoreSection #discharge_performance_grand_total').text(dischargePerformanceGrandTotal);
       if ($('#slidingAggregator #discharge_total').length > 0)
         $('#slidingAggregator #discharge_total').text(dischargePerformanceGrandTotal);
 
@@ -462,16 +466,16 @@ const formController = (function () {
     }
     else {
       /* Interim Performance or Follow Up Performance */
-      const Self_Care_Aggregate: string = $('#Self_Care_Aggregate_Score').text();
-      const selfCareAggregate: number = parseInt(Self_Care_Aggregate);
-      const Mobility_Aggregate: string = $('#Mobility_Aggregate_Score').text();
-      const mobilityAggregate: number = parseInt(Mobility_Aggregate);
+      const self_care_aggregate: string = $('.scoreSection #self_care_aggregate_score').text();
+      const selfCareAggregate: number = parseInt(self_care_aggregate);
+      const mobility_aggregate: string = $('.scoreSection #mobility_aggregate_score').text();
+      const mobilityAggregate: number = parseInt(mobility_aggregate);
 
       grandTotal = selfCareAggregate + mobilityAggregate;
     }
 
-    if ($('#Grand_Total').length > 0)
-      $('#Grand_Total').text(grandTotal);
+    if ($('.scoreSection #grand_total').length > 0)
+      $('.scoreSection #grand_total').text(grandTotal);
     if ($('#slidingAggregator #grand_total').length > 0)
       $('#slidingAggregator #grand_total').text(grandTotal);
   }
@@ -679,13 +683,30 @@ $(function () {
     }]
   };
 
+  $('input[type=date]').each(function () {
+    const thisDate = $(this);
+    thisDate.on('change', function () {
+      if (thisDate.val() !== '') {
+        const thisDateReset = $('button.calendarReset[data-target=' + thisDate.prop('id') + ']');
+        if (thisDateReset.length !== 0) {
+          thisDateReset.prop('disabled', false);
+        }
+      }
+    })
+  });
+
   /* each reset calendar click reset the date of the target sibling */
-  $('.calendarReset').on('click', function () {
-    const thisTargetDate = $('#' + $(this).data('target'));
+  $('.calendarReset').on('click', function (e) {
+    const thisResetButton = $(this);
+    const thisTargetDate = $('#' + thisResetButton.data('target'));
     console.log('reset ' + thisTargetDate.prop('id'), thisTargetDate);
     const isTargetOnQ12B = thisTargetDate.prop('id').indexOf('Q12B') !== -1;
     if (thisTargetDate.length > 0) {
       thisTargetDate.val('');
+
+      //after clear the date, disable the reset button since there is no date to clear
+      thisResetButton.prop('disabled', true);
+
       if (isTargetOnQ12B) {
         console.log('raise change() to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
         thisTargetDate.change();      //else use the commonUtility to reset the value
@@ -695,6 +716,7 @@ $(function () {
         commonUtility.resetControlValue(thisTargetDate); //raise change() commonUtility handle the event accordingly
       }
     }
+    e.preventDefault();
   });
 
   $('select').each(function () {
@@ -720,31 +742,36 @@ $(function () {
 
   /* aggregate scores container */
   $('#rotateSlidingAggregatorHandle').on('click', function () {
+    const stage: string = $('#stage').val()?.toString();
+    console.log(stage + ' slidingAggregator should slide into view');
     const slidingAggregator: any = $("#slidingAggregator");
-    const stage: string = $('#stage').val().toString();
     switch (stage) {
-      case 'Base':
-        $("#slidingAggregator #Base").show();
-        $("#slidingAggregator #Interim").hide();
-        $("#slidingAggregator #Followup").hide();
+      case "Episode Of Care":
+      case "New":
+        slidingAggregator.css("width", "13.5em");
         break;
       case 'Interim':
-        $("#slidingAggregator #Base").hide();
-        $("#slidingAggregator #Interim").show();
-        $("#slidingAggregator #Followup").hide();
-        break;
-      case 'Followup':
-        $("#slidingAggregator #Base").hide();
-        $("#slidingAggregator #Interim").hide();
-        $("#slidingAggregator #Followup").show();
+      case 'Follow Up':
+        slidingAggregator.css({ "width": "7.2em" });
         break;
     }
-    slidingAggregator.css("right", "0px");
+    slidingAggregator.css("right", "0em");
   });
 
   $('#closeSlidingAggregator').on('click', function () {
+    const stage: string = $('#stage').val().toString();
     const slidingAggregator: any = $("#slidingAggregator");
-    slidingAggregator.css("right", "-250px");
+    console.log(stage + ' slidingAggregator should slide out of view');
+    switch (stage) {
+      case "Episode Of Care":
+      case "New":
+        slidingAggregator.css("right", "-13.5em");
+        break;
+      case 'Interim':
+      case 'Follow Up':
+        slidingAggregator.css({ "right": "-7.2em" });
+        break;
+    }
   });
 
   /* jump to section anchor */
@@ -757,7 +784,6 @@ $(function () {
       }
     });
   });
-
 
   /* show hide section */
   $('.section-title').each(function () {
@@ -787,7 +813,11 @@ $(function () {
   //});
 
   $('.persistable').on('change', function (e) {
-    $('#ajaxPost').removeAttr('disabled');
+    const Q12: any = $('.persistable[id^=Q12_]');
+    const Q23: any = $('.persistable[id^=Q23_]');
+    const Q12_or_Q23_is_empty: boolean = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
+    if (!Q12_or_Q23_is_empty)
+      $('#ajaxPost').removeAttr('disabled');
   });
 
   /* ajax post form */
