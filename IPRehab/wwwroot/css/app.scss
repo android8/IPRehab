@@ -7,6 +7,10 @@
   }
 }
 
+#logo{
+  display:none;
+}
+
 *:focus {
   animation: pulse 2s infinite !important;
 }
@@ -970,7 +974,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   justify-content:center;
 }
 #closeSlidingAggregator {
-  background-color: gold;
+  padding: 5px 0 5px 5px;
 }
 #closeSlidingAggregator:hover {
   cursor: pointer;
@@ -1025,6 +1029,11 @@ button.rehabAction {
   font-size: x-small;
   margin: 0 1px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+button.calendarReset, button.calendarReset:disabled {
+  background: none !important;
+  border: none !important;
 }
 
 .disabled, :disabled {
@@ -1116,7 +1125,7 @@ i.score {
   font-size: 3em;
   animation: heart-beat .1s;
 }
-/*#Mobility_Aggregate_Score, #Self_Care_Aggregate_Score {
+/*#mobility_aggregate_score, #self_care_aggregate_score {
   animation: heart-beat .1s;
 }*/
 
@@ -1136,3 +1145,6 @@ i.score {
 .footerInstruction > div {
   width: 40%;
 }
+
+.branchingRule {display: none;}
+.branchingRule:hover {cursor:pointer}

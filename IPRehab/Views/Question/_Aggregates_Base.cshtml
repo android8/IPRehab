@@ -14,15 +14,15 @@
         <div class="flex-container-evenly-justified flex-alignment-normal">
             <div class="flex-space-between-column-nowrap border border-dark">
                 <div class="text-wrap">Admission Performance</div>
-                <div id="@($"{Model.AggregateType.Replace(" ","_")}_Admission_Performance")" class="text-center aggregate_score">0</div>
+                <div id="@($"{Model.AggregateType.Replace(" ","_").ToLower()}_admission_performance")" class="text-center aggregate_score">0</div>
             </div>
             <div class="flex-space-between-column-nowrap border border-dark">
                 <div class="text-wrap">Discharge Performance</div>
-                <div id="@($"{Model.AggregateType.Replace(" ","_")}_Discharge_Performance")" class="text-center aggregate_score">0</div>
+                <div id="@($"{Model.AggregateType.Replace(" ","_").ToLower()}_discharge_performance")" class="text-center aggregate_score">0</div>
             </div>
             <div class="flex-space-between-column-nowrap border border-dark">
                 <div class="text-wrap">Total Change Score</div>
-                <div id="@($"{Model.AggregateType.Replace(" ","_")}_Total_Change")" class="text-center aggregate_score">0</div>
+                <div id="@($"{Model.AggregateType.Replace(" ","_").ToLower()}_total_change")" class="text-center aggregate_score">0</div>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
         <div id='Base' class="flex-start-column-wrap">
             <div class="flex-start-row-nowrap" id="summaryTitle">
                 <div>Score Card</div>
-                <div id="closeSlidingAggregator" class="flex-start-column-wrap">
+                <div id="closeSlidingAggregator" class="flex-start-column-wrap" tabindex="0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                         <title>Close</title>
                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z" />
@@ -12,8 +12,8 @@
             </div>
             <div class="flex-start-row-nowrap">
                 <div class="summary">&nbsp;</div>
-                <div class="summary header" title="Admission Performance">AP</div>
-                <div class="summary header" title="Discharge Performance">DP</div>
+                <div class="summary header" title="Admission Performance">Adm Perf</div>
+                <div class="summary header" title="Discharge Performance">Dchg Perf</div>
                 <div class="summary header">Total</div>
             </div>
             <div class="flex-start-row-nowrap">
@@ -35,52 +35,5 @@
                 <div class="summary header" title="grand total" id="grand_total">0</div>
             </div>
         </div>
-
-        @* for interim *@
-        <div id='Interim' class="flex-start-column-wrap">
-            <div class="flex-start-row-nowrap" id="summaryTitle">
-                Score Card
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary">&nbsp;</div>
-                <div class="summary header" title="Interim Performance">IP</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Self-Care</div>
-                <div class="summary header" title="self-care interim score" id="self_care_interim_score">0</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Mobi-lity</div>
-                <div class="summary header" title="mobility interim score" id="mobility_interim_score">0</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Total</div>
-                <div class="summary header" title="grand total" id="grand_total_interim">0</div>
-            </div>
-        </div>
-
-        @* for follow up *@
-        <div id='Followup' class="flex-start-column-wrap">
-            <div class="flex-start-row-nowrap" id="summaryTitle">
-                Score Card
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary">&nbsp;</div>
-                <div class="summary header" title="Follow up Performance">FP</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Self-Care</div>
-                <div class="summary header" title="self-care Follow up score" id="self_care_followup_score">0</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Mobi-lity</div>
-                <div class="summary header" title="mobility Follow up score" id="mobility_followup_score">0</div>
-            </div>
-            <div class="flex-start-row-nowrap">
-                <div class="summary header">Total</div>
-                <div class="summary header" title="grand total" id="grand_total_followup">0</div>
-            </div>
-        </div>
     </div>
 </div>
-
