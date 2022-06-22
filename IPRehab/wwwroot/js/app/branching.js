@@ -637,7 +637,7 @@ $(function () {
     function Q44C_Affect_Q44D_Q45_Q46(eventType, byRef) {
         //event hooked during checkAllRules()
         console.log('inside of Q44C_Affect_Q44D_Q46, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q44C_is_Yes = $('.persistable[id^=Q44C_][id*=Yes]:checked').length === 1;
+        const Q44C_is_Yes = $('.persistable[id^=Q44C_][id*=Yes]:checked, .persistable[id^=Q44C-FollowUp][id*=Yes]:checked').length === 1;
         const Q44D = $('.persistable[id^=Q44D_]');
         const Q45 = $('.persistable[id^=Q45_]');
         const Q46 = $('.persistable[id^=Q46_]');
@@ -646,18 +646,12 @@ $(function () {
             byRef.seenTheDialog = value;
         }
         function act44C_is_no() {
-            if (Q44D.length > 0) {
-                console.log('disable Q44D');
-                Q44D.val(-1).prop('disabled', true);
-            }
-            if (Q45.length > 0) {
-                console.log('disable Q45');
-                Q45.val(-1).prop('disabled', true);
-            }
-            if (Q46.length > 0) {
-                console.log('enable and focus on Q46');
-                Q46.val(-1).prop('disabled', false).focus();
-            }
+            console.log('disable Q44D');
+            Q44D.val(-1).prop('disabled', true);
+            console.log('disable Q45');
+            Q45.val(-1).prop('disabled', true);
+            console.log('enable and focus on Q46');
+            Q46.val(-1).prop('disabled', false).focus();
         }
         /* nested event handler */
         const myButtons = {
