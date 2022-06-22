@@ -819,7 +819,7 @@ $(function () {
 
     /* on change */
     let seenTheDialog: boolean = true;
-    const Q44C = $('.persistable[id^=Q44C_]');
+    const Q44C = $('.persistable[id^=Q44C_],.persistable[id^=Q44C-FollowUp] ');
     Q44C.each(function (i, el) {
       const thisQ44C = $(el); //don't use $(this) because in the arrow function it will be undefined
       thisQ44C.on('change', { x: EnumChangeEventArg.Change }, function (e) {

@@ -5,7 +5,12 @@
   }
 }
 #logo {
-  display: none;
+  display: inline-flex;
+  width: 5rem;
+  height: 4.5rem;
+  background-image: url("../images/VSSC_Logo1.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 *:focus {

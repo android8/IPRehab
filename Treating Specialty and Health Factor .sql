@@ -1,9 +1,10 @@
-/* connect to [VHAAusBI13.vha.med.va.gov].DMTreatingSpecialty */
+/* use [VHAAusBI13.vha.med.va.gov].DMTreatingSpecialty */
 use DMTreatingSpecialty
-
-/* use [VHAAUSBI25.vha.med.va.gov].[DMHealthFactors]*/
---use [DMHealthFactors]
 go
+
+/* old quaterly update */
+/* use [VHAAUSBI25.vha.med.va.gov].[DMHealthFactors]*/
+--go
 
 declare @StartDate datetime ='2021-10-01'
 declare @EndDate datetime ='2022-06-30'
@@ -30,6 +31,7 @@ declare @facility varchar(6) = '%648%'
 --order by hf.bedsecn
 --left join 
 --(
+
 select realssn, [inpatientsid],[bsta6a],[bedsecn],[discharge],
 [bsinday],[bsoutday],[disday],[admitdatetime],[dischargedatetime],[bsindatetime],[bsoutdatetime],[bsindaynew],[bsoutdaynew]
 from VHAAusBI13.DMTreatingSpecialty.[dbo].[FactTSAll_Day_CDW_2yrs]

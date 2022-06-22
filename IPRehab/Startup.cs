@@ -112,6 +112,7 @@ namespace IPRehab
       services.AddResponseCaching();
       services.AddRazorPages();
 
+      /* IoC for mailer.  It's not WebAPI's concern so it should not register there */
       services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
       services.AddSingleton<Mailer.IEmailSender, EmailSender>();
 

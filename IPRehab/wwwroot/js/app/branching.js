@@ -709,7 +709,7 @@ $(function () {
         //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
         /* on change */
         let seenTheDialog = true;
-        const Q44C = $('.persistable[id^=Q44C_]');
+        const Q44C = $('.persistable[id^=Q44C_],.persistable[id^=Q44C-FollowUp] ');
         Q44C.each(function (i, el) {
             const thisQ44C = $(el); //don't use $(this) because in the arrow function it will be undefined
             thisQ44C.on('change', { x: EnumChangeEventArg.Change }, function (e) {
