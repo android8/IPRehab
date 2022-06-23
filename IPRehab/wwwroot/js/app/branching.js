@@ -714,11 +714,24 @@ $(function () {
         /* add rule help */
         const Q44CRule = $('.branchingRule[data-target^=Q44C], .branchingRule[data-target^=Q44D], .branchingRule[data-target^=Q45], .branchingRule[data-target^=Q46]');
         const Q44CRule1Text = Q44CRule.prop('title');
-        const Q44CRule2Text = 'If all fields present and if Q44C is yes, unlock Q44D, Q45 and focus on Q44D. If Q44C is no, lock Q44D, Q45 and focus on Q46';
-        Q44CRule.prop('title', '1. ' + Q44CRule1Text + '. 2. ' + Q44CRule2Text).show();
+        const Q44CFollowuUpRule = $('.branchingRule[data-target^=Q44C-FollowUp]');
+        const Q44CFollowuUpRuleText = 'If Q44C is yes, unlock Q44D, Q45 and focus on Q44D. If Q44C is no, lock Q44D, Q45 and focus on Q46';
+        Q44CRule.prop('title', '1. ' + Q44CRule1Text).show();
         Q44CRule.on('click', function () {
             $('#dialog')
-                .text(Q44CRule1Text + ' ' + Q44CRule2Text)
+                .text(Q44CRule1Text)
+                .dialog(dialogOptions, {
+                title: 'Rules', buttons: {
+                    'Ok': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+        Q44CFollowuUpRule.prop('title', Q44CFollowuUpRuleText).show();
+        Q44CFollowuUpRule.on('click', function () {
+            $('#dialog')
+                .text(Q44CFollowuUpRuleText)
                 .dialog(dialogOptions, {
                 title: 'Rules', buttons: {
                     'Ok': function () {
