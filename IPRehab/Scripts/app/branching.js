@@ -766,7 +766,7 @@ $(function () {
     })();
     /* event handler */
     function GG0170JKLMN_depends_on_GG0170I(eventType, byRef, thisI, measure) {
-        console.log('inside of GG0170JKLMN_depends_on_GG0170I, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+        console.log('inside of GG0170JKLMN_depends_on_GG0170I with measure = ' + measure + ', fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
         //-----------------sample code-------------------
         //var extra_data = { one: "One", two: "Two" };
         //var make_handler = function (extra_data) {
@@ -892,8 +892,8 @@ $(function () {
                     case (theID.indexOf('Interim') !== -1):
                         measure = 'Interim';
                         break;
-                    case (theID.indexOf('Followup') !== -1):
-                        measure = 'Followup';
+                    case (theID.indexOf('Follow_Up') !== -1):
+                        measure = 'Follow_Up';
                         break;
                 }
                 seenTheDialog = GG0170JKLMN_depends_on_GG0170I(e.data.x, { seenTheDialog: seenTheDialog }, thisI, measure);
@@ -1058,8 +1058,8 @@ $(function () {
                     case measure.indexOf('Interim_Performance') !== -1:
                         measure = 'Interim_Performance';
                         break;
-                    case measure.indexOf('Followup_Performance') !== -1:
-                        measure = 'Followup_Performance';
+                    case measure.indexOf('Follow_Up_Performance') !== -1:
+                        measure = 'Follow_Up_Performance';
                         break;
                 }
                 console.log('before calling GG0170P_depends_on_GG0170M_and_GG0170N() seenTheDialog = ', seenTheDialog);
@@ -1086,10 +1086,6 @@ $(function () {
     /* event handler for any GG0170Q no */
     function GG0170Q_is_No_skip_to_Complete(eventType, byRef) {
         console.log('inside of GG0170Q_is_No_skip_to_Complete, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        function setSeenTheDialog(value) {
-            //callback after async dialog is done and return the seenTheDialog to the caller
-            byRef.seenTheDialog = value;
-        }
         const completed = $('.persistable[id^= Assessment]');
         const completed_Yes = $('.persistable[id^= Assessment][id*=Yes]');
         const GG0170Rs = $('.persistable[id^=GG0170R_]');
@@ -1104,11 +1100,11 @@ $(function () {
                     thisCompleted.prop('disabled', false);
                 });
                 scrollTo(completed_Yes.prop('id'));
-                setSeenTheDialog(true); //callback
+                byRef.seenTheDialog = true; //callback
                 $(this).dialog("close");
             },
             "Cancel": function () {
-                setSeenTheDialog(true); //callback
+                byRef.seenTheDialog = true; //callback
                 $(this).dialog("close");
             }
         };
@@ -1204,8 +1200,8 @@ $(function () {
                             case (firstYes.prop('id').indexOf('Interim_Performance') !== -1):
                                 thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
                                 break;
-                            case (firstYes.prop('id').indexOf('Followup_Performance') !== -1):
-                                thisGG0170R = $('.persistable[id^=GG0170R_][id*=Followup_Performance]');
+                            case (firstYes.prop('id').indexOf('Follow_Up_Performance') !== -1):
+                                thisGG0170R = $('.persistable[id^=GG0170R_][id*=Follow_Up_Performance]');
                                 break;
                         }
                         console.log('thisGG0170R = ', thisGG0170R);
