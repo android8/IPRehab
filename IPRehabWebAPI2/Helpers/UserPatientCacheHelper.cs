@@ -109,99 +109,104 @@ namespace IPRehabWebAPI2.Helpers
         else
           searchCriteriaType = "non-numeric";
 
-        foreach (int thisPeriod in GetQuarterOfInterest())
+        bool patientsFound = false;
+        List<int> targetQuarters = GetQuarterOfInterest();
+        foreach (int thisPeriod in targetQuarters)
         {
-          switch (searchCriteriaType)
+          if (patientsFound) break; //break out foreach()
           {
-            case "none":
-              {
-                var rawPatients = await _patientRepository
-                  .FindByCondition(p => thisPeriod == p.FiscalPeriodInt).OrderBy(x=>x.Name).ToListAsync();
-
-                if (rawPatients.Any())
+            switch (searchCriteriaType)
+            {
+              case "none":
                 {
-                  //applying facility filter cannot be done in previous SQL server side query
-                  //it must be filtered in IIS memory after the last ToListAsync()
-                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                  var rawPatients = await _patientRepository
+                    .FindByCondition(p => thisPeriod == p.FiscalPeriodInt).OrderBy(x => x.Name).ToListAsync();
 
-                  if (!string.IsNullOrEmpty(patientID))
-                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
-
-                  totalViewablePatientCount = viewablePatients.Count();
-
-                  if (pageNumber <= 0)
+                  if (rawPatients.Any())
                   {
-                    viewablePatients = viewablePatients.Take(PageSize);
+                    //applying facility filter cannot be done in previous SQL server side query
+                    //it must be filtered in IIS memory after the last ToListAsync()
+                    var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+
+                    if (!string.IsNullOrEmpty(patientID))
+                      viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+
+                    totalViewablePatientCount = viewablePatients.Count();
+
+                    if (pageNumber <= 0)
+                    {
+                      viewablePatients = viewablePatients.Take(PageSize);
+                    }
+                    else
+                    {
+                      viewablePatients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+                    }
+
+                    patients = viewablePatients.Select(p => HydrateDTO.HydratePatient(p)).ToList();
+
+                    patientsFound = true;
                   }
-                  else
+                }
+                break; //break case
+              case "numeric":
+                {
+                  var rawPatients = await _patientRepository.FindByCondition(p =>
+                                    (thisPeriod == p.FiscalPeriodInt) &&
+                                    (
+                                      p.ADMParent_Key == numericCriteria ||
+                                      p.Sta6aKey == numericCriteria ||
+                                      p.bedsecn == numericCriteria ||
+                                      p.FiscalPeriodInt == numericCriteria ||
+                                      p.PTFSSN.Contains(criteria) ||
+                                      p.Facility.Contains(criteria) ||
+                                      p.VISN.Contains(criteria)
+                                    )
+                                  ).OrderBy(x => x.Name).ToListAsync();
+
+                  if (rawPatients.Any())
                   {
-                    viewablePatients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize);
+                    //facility filter cannot be done in previous SQL server side LINQ. must be filtered in IIS memory 
+                    var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+
+                    if (!string.IsNullOrEmpty(patientID))
+                      viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+
+                    totalViewablePatientCount = viewablePatients.Count();
+                    patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
+                      .Select(p => HydrateDTO.HydratePatient(p)).ToList();
+
+                    patientsFound = true;
                   }
-
-                  patients = viewablePatients.Select(p => HydrateDTO.HydratePatient(p)).ToList();
-
-                  break; //break out foreach loop since patients are in this period
                 }
-              }
-              break; //break case
-            case "numeric":
-              {
-                var rawPatients = await _patientRepository.FindByCondition(p =>
-                                  (thisPeriod == p.FiscalPeriodInt) &&
-                                  (
-                                    p.ADMParent_Key == numericCriteria ||
-                                    p.Sta6aKey == numericCriteria ||
-                                    p.bedsecn == numericCriteria ||
-                                    p.FiscalPeriodInt == numericCriteria ||
-                                    p.PTFSSN.Contains(criteria) ||
-                                    p.Facility.Contains(criteria) ||
-                                    p.VISN.Contains(criteria)
-                                  )
-                                ).OrderBy(x=>x.Name).ToListAsync();
-
-                if (rawPatients.Any())
+                break; //break case
+              case "non-numeric":
                 {
-                  //facility filter cannot be done in previous SQL server side LINQ. must be filtered in IIS memory 
-                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
+                  var rawPatients = await _patientRepository.FindByCondition(p =>
+                                    (thisPeriod == p.FiscalPeriodInt) &&
+                                    (
+                                      p.Name.Contains(criteria) || p.PTFSSN.Contains(criteria) || p.Facility.Contains(criteria) ||
+                                      p.VISN.Contains(criteria) || p.District.Contains(criteria) || p.FiscalPeriod.Contains(criteria)
+                                    )
+                                  ).OrderBy(x => x.Name).ToListAsync();
 
-                  if (!string.IsNullOrEmpty(patientID))
-                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+                  if (rawPatients.Any())
+                  {
+                    //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
+                    var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
 
-                  totalViewablePatientCount = viewablePatients.Count();
-                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
-                    .Select(p => HydrateDTO.HydratePatient(p)).ToList();
+                    if (!string.IsNullOrEmpty(patientID))
+                      viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
 
-                  break; //break out foreach loop since patients are in this period
+                    totalViewablePatientCount = viewablePatients.Count();
+
+                    patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
+                      .Select(p => HydrateDTO.HydratePatient(p)).ToList();
+                    
+                    patientsFound = true;
+                  }
                 }
-              }
-              break; //break case
-            case "non-numeric":
-              {
-                var rawPatients = await _patientRepository.FindByCondition(p =>
-                                  (thisPeriod == p.FiscalPeriodInt) &&
-                                  (
-                                    p.Name.Contains(criteria) || p.PTFSSN.Contains(criteria) || p.Facility.Contains(criteria) ||
-                                    p.VISN.Contains(criteria) || p.District.Contains(criteria) || p.FiscalPeriod.Contains(criteria)
-                                  )
-                                ).OrderBy(x=>x.Name).ToListAsync();
-
-                if (rawPatients.Any())
-                {
-                  //facility filter cannot be done in previous SQL server side query. must be filtered by IIS memory 
-                  var viewablePatients = rawPatients.Where(p => userFacilitySta3.Any(uf => p.Facility.Contains(uf)));
-
-                  if (!string.IsNullOrEmpty(patientID))
-                    viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
-
-                  totalViewablePatientCount = viewablePatients.Count();
-
-                  patients = viewablePatients.Skip((pageNumber - 1) * PageSize).Take(PageSize)
-                    .Select(p => HydrateDTO.HydratePatient(p)).ToList();
-
-                  break;  //break out foreach loop since patients are in this period
-                }
-              }
-              break;
+                break;
+            }
           }
         }
         //PatientSearchResultDTO meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
