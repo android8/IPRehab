@@ -288,16 +288,19 @@ const formController = (function () {
         const theScoreEl = $(thisControl.siblings('i.score'));
         if (newScore <= 0) {
             if (theScoreEl.length > 0) {
+                console.log('path1');
                 theScoreEl.remove();
             }
         }
         else {
             if (theScoreEl.length === 0) {
                 {
+                    console.log('path2');
                     thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
                 }
             }
             else {
+                console.log('path3');
                 theScoreEl.text('score: ' + newScore);
             }
         }
@@ -357,10 +360,14 @@ const formController = (function () {
     function mobilityScore() {
         if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
             let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
-            mobilityAdmissionPerformance += Score_GG0170AtoP_Performance();
-            mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Base');
-            mobilityDischargePerformance += Score_GG0170AtoP_Discharge_Performance();
-            mobilityDischargePerformance += Score_GG0170RandS_Discharge_Performance();
+            mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission');
+            console.log('mobilityAdmissionPerformance (Admission) = ' + mobilityAdmissionPerformance);
+            mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission');
+            //console.log('mobilityAdmissionPerformance (Base) = ' + mobilityAdmissionPerformance);
+            mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge');
+            console.log('mobilityDischargePerformance (Discharge) = ' + mobilityAdmissionPerformance);
+            mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge');
+            //console.log('mobilityDischargePerformance (null, Discharge)= ' + mobilityAdmissionPerformance);
             $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
             $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
             $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
@@ -370,9 +377,17 @@ const formController = (function () {
         }
         else {
             let mobilityPerformance = 0;
-            /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
-            mobilityPerformance += Score_GG0170AtoP_Performance();
-            mobilityPerformance += Score_GG0170RandS_Performance('Interim or Follow Up');
+            const isInterim = $('.persistable[id*=Interim]').length > 0;
+            const isFollowup = $('.persistable[id*=Followup]').length > 0;
+            if (isInterim) {
+                /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
+                mobilityPerformance += Score_GG0170AtoP_Performance('Interim');
+                mobilityPerformance += Score_GG0170RandS_Performance('Interim');
+            }
+            if (isFollowup) {
+                mobilityPerformance += Score_GG0170AtoP_Performance('Followup');
+                mobilityPerformance += Score_GG0170RandS_Performance('Followup');
+            }
             $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
             $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
         }
@@ -417,139 +432,157 @@ const formController = (function () {
             $('#slidingAggregator #grand_total').text(grandTotal);
     }
     /* internal function */
-    function Score_GG0170AtoP_Performance() {
+    //function Score_GG0170AtoP_Performance_old(): number {
+    //  let GG0170_AtoP_Performance = 0;
+    //  /* select only GG0170 Admission Performance excluding Q, R and S */
+    //  $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
+    //    const $thisControl = $(this);
+    //    const thisControlScore: number = commonUtility.getControlValue($thisControl);
+    //    const thisControlID: string = $thisControl.prop('id');
+    //    switch (true) {
+    //      case (thisControlScore >= 7): {
+    //        if (thisControlID.indexOf('GG0170I') >= 0) {
+    //          //7,9,10, or 88 don't score per customer 12/8/2021
+    //          updateScore($thisControl, 0);
+    //        }
+    //        else {
+    //          updateScore($thisControl, 1);
+    //          GG0170_AtoP_Performance += 1;
+    //        }
+    //        break;
+    //      }
+    //      case (thisControlScore > 0 && thisControlScore <= 6): {
+    //        //btw 1 and 6 add value point 
+    //        updateScore($thisControl, thisControlScore);
+    //        GG0170_AtoP_Performance += thisControlScore;
+    //        break;
+    //      }
+    //      default: {
+    //        updateScore($thisControl, 0);
+    //        break;
+    //      }
+    //    }
+    //  });
+    //  return GG0170_AtoP_Performance;
+    //}
+    /* internal function */
+    function Score_GG0170AtoP_Performance(performanceType) {
         let GG0170_AtoP_Performance = 0;
-        /* select only GG0170 Admission Performance excluding Q, R and S */
-        $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
+        const GG0170IScore = commonUtility.getControlValue($('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]'));
+        console.log('GG0170IScore = ' + GG0170IScore);
+        /* select only GG0170 Discharge Performance excluding Q, R and S */
+        $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])')
+            .each(function () {
             const $thisControl = $(this);
             const thisControlScore = commonUtility.getControlValue($thisControl);
-            const thisControlID = $thisControl.prop('id');
+            console.log('thisControlScore = ' + thisControlScore);
+            const isThisGG0170I = $thisControl.prop('id').indexOf('GG0170I') >= 0 && $thisControl.prop('id').indexOf(performanceType) >= 0;
             switch (true) {
-                case (thisControlScore >= 7): {
-                    if (thisControlID.indexOf('GG0170I') >= 0) {
-                        //7,9,10, or 88 don't score per customer 12/8/2021
-                        updateScore($thisControl, 0);
+                case (thisControlScore >= 7):
+                    if (isThisGG0170I) {
+                        updateScore($thisControl, 0); //I > 7 don't score per customer 12/8/2021
                     }
                     else {
                         updateScore($thisControl, 1);
                         GG0170_AtoP_Performance += 1;
                     }
                     break;
-                }
-                case (thisControlScore > 0 && thisControlScore <= 6): {
-                    //btw 1 and 6 add value point 
-                    updateScore($thisControl, thisControlScore);
-                    GG0170_AtoP_Performance += thisControlScore;
-                    break;
-                }
-                default: {
-                    updateScore($thisControl, 0);
-                    break;
-                }
-            }
-        });
-        return GG0170_AtoP_Performance;
-    }
-    /* internal function */
-    function Score_GG0170RandS_Performance(stage) {
-        let multiplier = 1, R_Performance = 0, S_Performance = 0;
-        let GG0170I, GG0170R, GG0170S;
-        let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
-        if (stage === 'Base') {
-            /* GG0170I determines the multiplier for GG0170R and GG0170S */
-            GG0170I = $('.persistable[id^=GG0170I_Admission_Performance]');
-            GG0170R = $('.persistable[id^=GG0170R_Admission_Performance]');
-            GG0170S = $('.persistable[id^=GG0170S_Admission_Performance]');
-        }
-        else {
-            GG0170I = $('.persistable[id^=GG0170I_Interim_Performance], .persistable[id^=GG0170I_Follow_Up_Performance]');
-            GG0170R = $('.persistable[id^=GG0170R_Interim_Performance], .persistable[id^=GG0170R_Follow_Up_Performance]');
-            GG0170S = $('.persistable[id^=GG0170S_Interim_Performance], .persistable[id^=GG0170S_Follow_Up_Performance]');
-        }
-        GG0170I_Value = commonUtility.getControlValue(GG0170I);
-        if (GG0170I_Value >= 7)
-            multiplier = 2;
-        if (GG0170I_Value <= 6)
-            multiplier = 0;
-        if (isNaN(GG0170I_Value))
-            multiplier = 1; //when GG0170I is not answered score R and S as is
-        GG0170R_Value = commonUtility.getControlValue(GG0170R);
-        if (GG0170R_Value > 0) {
-            updateScore(GG0170R, GG0170R_Value * multiplier);
-            R_Performance += GG0170R_Value * multiplier;
-        }
-        else
-            updateScore(GG0170R, 0);
-        GG0170S_Value = commonUtility.getControlValue(GG0170S);
-        if (GG0170S_Value > 0) {
-            updateScore(GG0170S, GG0170S_Value * multiplier);
-            S_Performance += GG0170S_Value * multiplier;
-        }
-        else
-            updateScore(GG0170S, 0);
-        return R_Performance + S_Performance;
-    }
-    /* internal function */
-    function Score_GG0170AtoP_Discharge_Performance() {
-        let GG0170_AtoP_Discharge_Performance = 0;
-        /* select only GG0170 Discharge Performance excluding Q, R and S */
-        $('.persistable[id^=GG0170]:not([id*=Admission_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
-            const $thisControl = $(this);
-            const thisControlScore = commonUtility.getControlValue($thisControl);
-            const thisControlID = $thisControl.prop('id');
-            switch (true) {
-                case thisControlScore >= 7:
-                    if (thisControlID.indexOf('GG0170I') >= 0) {
-                        //7,9,10, or 88 don't score per customer 12/8/2021
-                        updateScore($thisControl, 0);
+                case thisControlScore > 0 && thisControlScore < 7:
+                    if (isThisGG0170I) {
+                        const GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
+                        const GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
+                        updateScore(GG0170R, 0); //exclue R
+                        updateScore(GG0170S, 0); //exclue S
+                        GG0170_AtoP_Performance += thisControlScore;
                     }
                     else {
-                        updateScore($thisControl, 1);
-                        GG0170_AtoP_Discharge_Performance += 1;
+                        updateScore($thisControl, thisControlScore);
+                        GG0170_AtoP_Performance += thisControlScore;
                     }
-                    break;
-                case thisControlScore > 0 && thisControlScore <= 6:
-                    //btw 1 and 6 add value point 
-                    updateScore($thisControl, thisControlScore);
-                    GG0170_AtoP_Discharge_Performance += thisControlScore;
-                    break;
                 default:
                     updateScore($thisControl, 0);
                     break;
             }
         });
-        return GG0170_AtoP_Discharge_Performance;
+        return GG0170_AtoP_Performance;
     }
     /* internal function */
-    function Score_GG0170RandS_Discharge_Performance() {
+    function Score_GG0170RandS_Performance(performanceType = '') {
         let multiplier = 1, R_Performance = 0, S_Performance = 0;
-        /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
-        const GG0170I = $('.persistable[id^=GG0170I_Discharge_Performance]');
-        const GG0170I_Value = commonUtility.getControlValue(GG0170I);
-        if (GG0170I_Value >= 7)
-            multiplier = 2;
-        if (GG0170I_Value <= 6)
-            multiplier = 0;
-        if (isNaN(GG0170I_Value))
-            multiplier = 1; //when GG0170I is not answered score R and S as is
-        const GG0170R = $('.persistable[id^=GG0170R_Discharge_Performance]');
-        const GG0170R_Value = commonUtility.getControlValue(GG0170R);
-        if (GG0170R_Value > 0) {
-            updateScore(GG0170R, GG0170R_Value * multiplier);
-            R_Performance += GG0170R_Value * multiplier;
+        let GG0170I, GG0170R, GG0170S;
+        let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
+        GG0170I = $('.persistable[id^=GG0170I_' + performanceType + ']');
+        GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
+        GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
+        GG0170I_Value = commonUtility.getControlValue(GG0170I);
+        GG0170R_Value = commonUtility.getControlValue(GG0170R);
+        GG0170S_Value = commonUtility.getControlValue(GG0170S);
+        if (GG0170I_Value > 0 && GG0170I_Value < 7) {
+            updateScore(GG0170R, 0); //exclue R
+            updateScore(GG0170S, 0); //exclue S
+            R_Performance += GG0170I_Value; //take I value      
         }
-        else
-            updateScore(GG0170R, 0);
-        const GG0170S = $('.persistable[id^=GG0170S_Discharge_Performance]');
-        const GG0170S_Value = commonUtility.getControlValue(GG0170S);
-        if (GG0170S_Value > 0) {
-            updateScore(GG0170S, GG0170S_Value * multiplier);
-            S_Performance += GG0170S_Value * multiplier;
+        else {
+            /* GG0170I determines the multiplier for GG0170R and GG0170S */
+            if (GG0170I_Value >= 7)
+                multiplier = 2;
+            if (GG0170I_Value === 0 || isNaN(GG0170I_Value))
+                multiplier = 1; //when GG0170I is not answered score R and S as is
+            /************************************************************/
+            if (GG0170R_Value >= 7) {
+                updateScore(GG0170R, multiplier);
+                R_Performance += multiplier;
+            }
+            else if (GG0170R_Value > 0 && GG0170R_Value < 7) {
+                updateScore(GG0170R, GG0170R_Value * multiplier);
+                R_Performance += GG0170R_Value * multiplier;
+            }
+            else {
+                updateScore(GG0170R, 0);
+            }
+            if (GG0170S_Value >= 7) {
+                updateScore(GG0170S, multiplier);
+                S_Performance += multiplier;
+            }
+            else if (GG0170S_Value > 0 && GG0170S_Value < 7) {
+                updateScore(GG0170S, GG0170S_Value * multiplier);
+                S_Performance += GG0170S_Value * multiplier;
+            }
+            else
+                updateScore(GG0170S, 0);
         }
-        else
-            updateScore(GG0170S, 0);
         return R_Performance + S_Performance;
     }
+    /* internal function */
+    //function Score_GG0170RandS_Discharge_Performance(): number {
+    //  let multiplier = 1, R_Performance = 0, S_Performance = 0;
+    //  /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
+    //  const GG0170I: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
+    //  const GG0170I_Value: number = commonUtility.getControlValue(GG0170I);
+    //  if (GG0170I_Value >= 7)
+    //    multiplier = 2;
+    //  if (GG0170I_Value <= 6)
+    //    multiplier = 0;
+    //  if (isNaN(GG0170I_Value))
+    //    multiplier = 1; //when GG0170I is not answered score R and S as is
+    //  const GG0170R: any = $('.persistable[id^=GG0170R_Discharge_Performance]');
+    //  const GG0170R_Value: number = commonUtility.getControlValue(GG0170R);
+    //  if (GG0170R_Value > 0) {
+    //    updateScore(GG0170R, GG0170R_Value * multiplier);
+    //    R_Performance += GG0170R_Value * multiplier;
+    //  }
+    //  else
+    //    updateScore(GG0170R, 0);
+    //  const GG0170S: any = $('.persistable[id^=GG0170S_Discharge_Performance]');
+    //  const GG0170S_Value: number = commonUtility.getControlValue(GG0170S);
+    //  if (GG0170S_Value > 0) {
+    //    updateScore(GG0170S, GG0170S_Value * multiplier);
+    //    S_Performance += GG0170S_Value * multiplier;
+    //  }
+    //  else
+    //    updateScore(GG0170S, 0);
+    //  return R_Performance + S_Performance;
+    //}
     /***************************************************************************
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
