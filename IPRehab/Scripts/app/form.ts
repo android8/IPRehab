@@ -314,7 +314,6 @@ const formController = (function () {
     }
 
     //thisUrl = $('form').prop('action');
-    $('.spinnerContainer').show();
 
     jQueryAjax(thisUrl, postBackModel, episodeID);
     //onPost(thisUrl);
@@ -411,25 +410,23 @@ const formController = (function () {
 
     if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
 
-      let mobilityAdmissionPerformance = 0,
-        mobilityDischargePerformance = 0;
+      let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
 
       mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission');
-      console.log('mobilityAdmissionPerformance (Admission) = ' + mobilityAdmissionPerformance);
-
       mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission');
-      //console.log('mobilityAdmissionPerformance (Base) = ' + mobilityAdmissionPerformance);
+      console.log('mobilityPerformance (Admission) = ' + mobilityAdmissionPerformance);
 
       mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge');
-      console.log('mobilityDischargePerformance (Discharge) = ' + mobilityAdmissionPerformance);
-
       mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge');
-      //console.log('mobilityDischargePerformance (null, Discharge)= ' + mobilityAdmissionPerformance);
+      console.log('mobilityPerformance (Discharge) = ' + mobilityDischargePerformance);
 
+      /* update Admission and Discharge performance scores in the question section */
       $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
       $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
       $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
-      $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
+
+      /* update Admission and Discharge performance scores in the sliding scorecard */
+      $('#slidinAdmission and Discharge performance scoresator #mobility_admission_score').text(mobilityAdmissionPerformance);
       $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
       $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
     }
@@ -443,12 +440,15 @@ const formController = (function () {
         /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
         mobilityPerformance += Score_GG0170AtoP_Performance('Interim');
         mobilityPerformance += Score_GG0170RandS_Performance('Interim');
+        console.log('mobilityPerformance (Interim) = ' + mobilityPerformance);
       }
       if (isFollowup) {
         mobilityPerformance += Score_GG0170AtoP_Performance('Followup');
         mobilityPerformance += Score_GG0170RandS_Performance('Followup');
+        console.log('mobilityPerformance (Follow Up) = ' + mobilityPerformance);
       }
 
+      /* update Interim or Follow Up performance scores in the question section and the slideing scorecard */
       $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
       $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
     }
@@ -538,55 +538,62 @@ const formController = (function () {
 
   /* internal function */
   function Score_GG0170AtoP_Performance(performanceType: string): number {
-    let GG0170_AtoP_Performance = 0;
-    const GG0170IScore: number = commonUtility.getControlValue($('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]'));
-    console.log('GG0170IScore = ' + GG0170IScore);
 
-    /* select only GG0170 Discharge Performance excluding Q, R and S */
-    $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])')
-      .each(function () {
-        const thisControl = $(this);
-        const thisControlScore: number = commonUtility.getControlValue(thisControl);
-        console.log('thisControlScore = ' + thisControlScore);
+    /* select only GG0170I matching the performance type parameter */
+    const GG0170I_Only: any = $('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]');
+    const GG0170I_Only_Score: number = commonUtility.getControlValue(GG0170I_Only);
+    console.log(GG0170I_Only.prop('id') + ' score = ' + GG0170I_Only_Score);
 
-        const isThisGG0170I: boolean = thisControl.prop('id').indexOf('GG0170I') >= 0 && thisControl.prop('id').indexOf(performanceType) >= 0;
-        switch (true) {
-          case (thisControlScore >= 7):
-            if (isThisGG0170I) {
-              updateScore(thisControl, 0); //I > 7 don't score per customer 12/8/2021
-            }
-            else {
-              updateScore(thisControl, 1);
-              GG0170_AtoP_Performance += 1;
-            }
-            break;
-          case thisControlScore > 0 && thisControlScore < 7:
-            if (isThisGG0170I) {
-              const GG0170R: any = $('.persistable[id^=GG0170R_' + performanceType + ']');
-              const GG0170S: any = $('.persistable[id^=GG0170S_' + performanceType + ']');
-              updateScore(GG0170R, 0);  //exclue R
-              updateScore(GG0170S, 0);  //exclue S
-              GG0170_AtoP_Performance += thisControlScore;
-            }
-            else {
-              updateScore(thisControl, thisControlScore);
-              GG0170_AtoP_Performance += thisControlScore;
-            }
-          default:
-            updateScore(thisControl, 0);
-            break;
-        }
-      });
+    /* select only GG0170 matching the performance type parameter excluding Q, R and S */
+    const targetELs: any = $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
+    console.log('targetELs', targetELs);
 
-    return GG0170_AtoP_Performance;
+    let PerformanceScore: number = 0;
+    targetELs.each(function () {
+      const thisEL = $(this);
+      const thisELScore = commonUtility.getControlValue(thisEL);
+      const isThisGG0170I: boolean = thisEL.prop('id').indexOf('GG0170I_' + performanceType) >= 0;
+
+      switch (true) {
+        case (thisELScore >= 7):
+          if (isThisGG0170I) {
+            updateScore(thisEL, 0); //don't count I when I >= 7 per customer 12/8/2021
+          }
+          else {
+            updateScore(thisEL, 1);
+            PerformanceScore += 1;
+          }
+          break;
+        case thisELScore > 0 && thisELScore < 7:
+          if (isThisGG0170I) {
+            PerformanceScore += GG0170I_Only_Score; /* count only I score but don't count R and S scores */
+
+            const GG0170R: any = $('.persistable[id^=GG0170R_' + performanceType + ']');
+            const GG0170S: any = $('.persistable[id^=GG0170S_' + performanceType + ']');
+            updateScore(GG0170R, 0);  //reset R to 0
+            updateScore(GG0170S, 0);  //reset S to 0
+          }
+          else {
+            updateScore(thisEL, thisELScore);
+            /* count non-I score as is */
+            PerformanceScore += thisELScore;
+          }
+        default:
+          updateScore(thisEL, 0);
+          break;
+      }
+      console.log(thisEL.prop('id') + ' score = ' + thisELScore);
+    });
+
+    return PerformanceScore;
   }
 
   /* internal function */
   function Score_GG0170RandS_Performance(performanceType: string = ''): number {
-    let multiplier = 1, R_Performance = 0, S_Performance = 0;
+    let multiplier = 1, R_PerformanceScore = 0, S_PerformanceScore = 0;
 
     let GG0170I: any, GG0170R: any, GG0170S: any;
-    let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
+    let GG0170I_Value: number = 0, GG0170R_Value:number = 0, GG0170S_Value:number = 0;
 
     GG0170I = $('.persistable[id^=GG0170I_' + performanceType + ']');
     GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
@@ -596,44 +603,28 @@ const formController = (function () {
     GG0170R_Value = commonUtility.getControlValue(GG0170R);
     GG0170S_Value = commonUtility.getControlValue(GG0170S);
 
-    if (GG0170I_Value > 0 && GG0170I_Value < 7) {
-      updateScore(GG0170R, 0);  //exclue R
-      updateScore(GG0170S, 0);  //exclue S
-      R_Performance += GG0170I_Value; //take I value      
+    if (GG0170I_Value >= 7)
+      multiplier = 2;
+    else if (GG0170I_Value > 0 && GG0170I_Value < 7) {
+      multiplier = 0; /* take I value which has been counted so don't count it again */
     }
-    else {
-      /* GG0170I determines the multiplier for GG0170R and GG0170S */
-      if (GG0170I_Value >= 7)
-        multiplier = 2;
-      if (GG0170I_Value === 0 || isNaN(GG0170I_Value))
-        multiplier = 1; //when GG0170I is not answered score R and S as is
-      /************************************************************/
+    console.log('multiplier = ' + multiplier);
 
-      if (GG0170R_Value >= 7) {
-        updateScore(GG0170R, multiplier);
-        R_Performance += multiplier;
-      }
-      else if (GG0170R_Value > 0 && GG0170R_Value < 7) {
-        updateScore(GG0170R, GG0170R_Value * multiplier);
-        R_Performance += GG0170R_Value * multiplier;
-      }
-      else {
-        updateScore(GG0170R, 0);
-      }
-
-      if (GG0170S_Value >= 7) {
-        updateScore(GG0170S, multiplier);
-        S_Performance += multiplier;
-      }
-      else if (GG0170S_Value > 0 && GG0170S_Value < 7) {
-        updateScore(GG0170S, GG0170S_Value * multiplier);
-        S_Performance += GG0170S_Value * multiplier;
-      }
-      else
-        updateScore(GG0170S, 0);
+    if (GG0170R_Value >= 7) {
+      GG0170R_Value = 1;
     }
+    updateScore(GG0170R, GG0170R_Value * multiplier);
+    R_PerformanceScore += GG0170R_Value * multiplier;
+    console.log('GG0170R_Value * multiplier = ' + (GG0170R_Value * multiplier));
 
-    return R_Performance + S_Performance;
+    if (GG0170S_Value >= 7) {
+      GG0170S_Value = 1;
+    }
+    updateScore(GG0170S, GG0170S_Value * multiplier);
+    S_PerformanceScore += GG0170S_Value * multiplier;
+    console.log('GG0170S_Value * multiplier = ' + (GG0170S_Value * multiplier));
+
+    return R_PerformanceScore + S_PerformanceScore;
   }
 
   /* internal function */

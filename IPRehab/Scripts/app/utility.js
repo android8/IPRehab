@@ -106,14 +106,15 @@ export class Utility {
     }
     getControlValue($thisControl, behavior = EnumGetControlValueBehavior.Elaborated /*use other if no valueSource */) {
         //throw new Error("Method not implemented.");
-        //console.log('$thisControl', $thisControl);
         const thisControlType = $thisControl.prop('type');
         let thisValue;
-        if (behavior === EnumGetControlValueBehavior.Elaborated) {
+        if (behavior !== EnumGetControlValueBehavior.Elaborated) {
+            thisValue = $thisControl.val();
+        }
+        else {
             switch (thisControlType) {
                 case "select-one": {
-                    //true score is the selected option text because it starts with 1 to 6, 7, 9, 10 and 88
-                    //console.log(behavior + ' get control value for ' + $thisControl.prop('id')  + ' option:selected = ', $('#' + $thisControl.prop('id') + ' option:selected').text());
+                    //use the selected option text and parse the starting text to int
                     const selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
                     thisValue = parseInt(selectedOption);
                     break;
@@ -142,10 +143,7 @@ export class Utility {
                 }
             }
         }
-        else {
-            //console.log('simple get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
-            thisValue = $thisControl.val();
-        }
+        console.log('control value ' + behavior + ' method for ' + $thisControl.prop('id') + '(' + thisControlType + ') = ' + thisValue);
         return thisValue;
     }
     resetControlValue($thisControl, newValue = '-1') {

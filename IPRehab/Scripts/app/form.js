@@ -275,7 +275,6 @@ const formController = (function () {
             thisUrl = apiBaseUrl + '/api/' + apiController;
         }
         //thisUrl = $('form').prop('action');
-        $('.spinnerContainer').show();
         jQueryAjax(thisUrl, postBackModel, episodeID);
         //onPost(thisUrl);
     }
@@ -309,35 +308,35 @@ const formController = (function () {
     function selfCareScore() {
         let selfCareAdmissionPerformance = 0, selfCareDischargePerformance = 0, selfCarePerformance = 0 /* Interim Performance or Discharge Performance */;
         $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
-            const $this = $(this);
-            const $thisID = $(this).prop('id');
-            const $thisValue = commonUtility.getControlValue($this);
+            const thisControl = $(this);
+            const thisID = $(this).prop('id');
+            const thisValue = commonUtility.getControlValue(thisControl);
             switch (true) {
-                case ($thisValue >= 7): // greater than 7,9,10,88
+                case (thisValue >= 7): // greater than 7,9,10,88
                     {
-                        updateScore($this, 1);
-                        if ($thisID.indexOf('Admission') >= 0)
+                        updateScore(thisControl, 1);
+                        if (thisID.indexOf('Admission') >= 0)
                             selfCareAdmissionPerformance += 1;
-                        else if ($thisID.indexOf('Discharge') >= 0)
+                        else if (thisID.indexOf('Discharge') >= 0)
                             selfCareDischargePerformance += 1;
                         else
                             selfCarePerformance += 1;
                         break;
                     }
-                case ($thisValue > 0 && $thisValue <= 6): // between 1 and 6
+                case (thisValue > 0 && thisValue <= 6): // between 1 and 6
                     {
-                        updateScore($this, $thisValue);
-                        if ($thisID.indexOf('Admission') >= 0)
-                            selfCareAdmissionPerformance += $thisValue;
-                        else if ($thisID.indexOf('Discharge') >= 0)
-                            selfCareDischargePerformance += $thisValue;
+                        updateScore(thisControl, thisValue);
+                        if (thisID.indexOf('Admission') >= 0)
+                            selfCareAdmissionPerformance += thisValue;
+                        else if (thisID.indexOf('Discharge') >= 0)
+                            selfCareDischargePerformance += thisValue;
                         else
-                            selfCarePerformance += $thisValue;
+                            selfCarePerformance += thisValue;
                         break;
                     }
                 default:
                     {
-                        updateScore($this, 0);
+                        updateScore(thisControl, 0);
                         break;
                     }
             }
@@ -361,17 +360,17 @@ const formController = (function () {
         if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
             let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
             mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission');
-            console.log('mobilityAdmissionPerformance (Admission) = ' + mobilityAdmissionPerformance);
             mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission');
-            //console.log('mobilityAdmissionPerformance (Base) = ' + mobilityAdmissionPerformance);
+            console.log('mobilityPerformance (Admission) = ' + mobilityAdmissionPerformance);
             mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge');
-            console.log('mobilityDischargePerformance (Discharge) = ' + mobilityAdmissionPerformance);
             mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge');
-            //console.log('mobilityDischargePerformance (null, Discharge)= ' + mobilityAdmissionPerformance);
+            console.log('mobilityPerformance (Discharge) = ' + mobilityDischargePerformance);
+            /* update Admission and Discharge performance scores in the question section */
             $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
             $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
             $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
-            $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
+            /* update Admission and Discharge performance scores in the sliding scorecard */
+            $('#slidinAdmission and Discharge performance scoresator #mobility_admission_score').text(mobilityAdmissionPerformance);
             $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
             $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
         }
@@ -383,11 +382,14 @@ const formController = (function () {
                 /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
                 mobilityPerformance += Score_GG0170AtoP_Performance('Interim');
                 mobilityPerformance += Score_GG0170RandS_Performance('Interim');
+                console.log('mobilityPerformance (Interim) = ' + mobilityPerformance);
             }
             if (isFollowup) {
                 mobilityPerformance += Score_GG0170AtoP_Performance('Followup');
                 mobilityPerformance += Score_GG0170RandS_Performance('Followup');
+                console.log('mobilityPerformance (Follow Up) = ' + mobilityPerformance);
             }
+            /* update Interim or Follow Up performance scores in the question section and the slideing scorecard */
             $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
             $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
         }
@@ -467,48 +469,52 @@ const formController = (function () {
     //}
     /* internal function */
     function Score_GG0170AtoP_Performance(performanceType) {
-        let GG0170_AtoP_Performance = 0;
-        const GG0170IScore = commonUtility.getControlValue($('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]'));
-        console.log('GG0170IScore = ' + GG0170IScore);
-        /* select only GG0170 Discharge Performance excluding Q, R and S */
-        $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])')
-            .each(function () {
-            const $thisControl = $(this);
-            const thisControlScore = commonUtility.getControlValue($thisControl);
-            console.log('thisControlScore = ' + thisControlScore);
-            const isThisGG0170I = $thisControl.prop('id').indexOf('GG0170I') >= 0 && $thisControl.prop('id').indexOf(performanceType) >= 0;
+        /* select only GG0170I matching the performance type parameter */
+        const GG0170I_Only = $('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]');
+        const GG0170I_Only_Score = commonUtility.getControlValue(GG0170I_Only);
+        console.log(GG0170I_Only.prop('id') + ' score = ' + GG0170I_Only_Score);
+        /* select only GG0170 matching the performance type parameter excluding Q, R and S */
+        const targetELs = $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
+        console.log('targetELs', targetELs);
+        let PerformanceScore = 0;
+        targetELs.each(function () {
+            const thisEL = $(this);
+            const thisELScore = commonUtility.getControlValue(thisEL);
+            const isThisGG0170I = thisEL.prop('id').indexOf('GG0170I_' + performanceType) >= 0;
             switch (true) {
-                case (thisControlScore >= 7):
+                case (thisELScore >= 7):
                     if (isThisGG0170I) {
-                        updateScore($thisControl, 0); //I > 7 don't score per customer 12/8/2021
+                        updateScore(thisEL, 0); //don't count I when I >= 7 per customer 12/8/2021
                     }
                     else {
-                        updateScore($thisControl, 1);
-                        GG0170_AtoP_Performance += 1;
+                        updateScore(thisEL, 1);
+                        PerformanceScore += 1;
                     }
                     break;
-                case thisControlScore > 0 && thisControlScore < 7:
+                case thisELScore > 0 && thisELScore < 7:
                     if (isThisGG0170I) {
+                        PerformanceScore += GG0170I_Only_Score; /* count only I score but don't count R and S scores */
                         const GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
                         const GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
-                        updateScore(GG0170R, 0); //exclue R
-                        updateScore(GG0170S, 0); //exclue S
-                        GG0170_AtoP_Performance += thisControlScore;
+                        updateScore(GG0170R, 0); //reset R to 0
+                        updateScore(GG0170S, 0); //reset S to 0
                     }
                     else {
-                        updateScore($thisControl, thisControlScore);
-                        GG0170_AtoP_Performance += thisControlScore;
+                        updateScore(thisEL, thisELScore);
+                        /* count non-I score as is */
+                        PerformanceScore += thisELScore;
                     }
                 default:
-                    updateScore($thisControl, 0);
+                    updateScore(thisEL, 0);
                     break;
             }
+            console.log(thisEL.prop('id') + ' score = ' + thisELScore);
         });
-        return GG0170_AtoP_Performance;
+        return PerformanceScore;
     }
     /* internal function */
     function Score_GG0170RandS_Performance(performanceType = '') {
-        let multiplier = 1, R_Performance = 0, S_Performance = 0;
+        let multiplier = 1, R_PerformanceScore = 0, S_PerformanceScore = 0;
         let GG0170I, GG0170R, GG0170S;
         let GG0170I_Value = 0, GG0170R_Value = 0, GG0170S_Value = 0;
         GG0170I = $('.persistable[id^=GG0170I_' + performanceType + ']');
@@ -517,41 +523,25 @@ const formController = (function () {
         GG0170I_Value = commonUtility.getControlValue(GG0170I);
         GG0170R_Value = commonUtility.getControlValue(GG0170R);
         GG0170S_Value = commonUtility.getControlValue(GG0170S);
-        if (GG0170I_Value > 0 && GG0170I_Value < 7) {
-            updateScore(GG0170R, 0); //exclue R
-            updateScore(GG0170S, 0); //exclue S
-            R_Performance += GG0170I_Value; //take I value      
+        if (GG0170I_Value >= 7)
+            multiplier = 2;
+        else if (GG0170I_Value > 0 && GG0170I_Value < 7) {
+            multiplier = 0; /* take I value which has been counted so don't count it again */
         }
-        else {
-            /* GG0170I determines the multiplier for GG0170R and GG0170S */
-            if (GG0170I_Value >= 7)
-                multiplier = 2;
-            if (GG0170I_Value === 0 || isNaN(GG0170I_Value))
-                multiplier = 1; //when GG0170I is not answered score R and S as is
-            /************************************************************/
-            if (GG0170R_Value >= 7) {
-                updateScore(GG0170R, multiplier);
-                R_Performance += multiplier;
-            }
-            else if (GG0170R_Value > 0 && GG0170R_Value < 7) {
-                updateScore(GG0170R, GG0170R_Value * multiplier);
-                R_Performance += GG0170R_Value * multiplier;
-            }
-            else {
-                updateScore(GG0170R, 0);
-            }
-            if (GG0170S_Value >= 7) {
-                updateScore(GG0170S, multiplier);
-                S_Performance += multiplier;
-            }
-            else if (GG0170S_Value > 0 && GG0170S_Value < 7) {
-                updateScore(GG0170S, GG0170S_Value * multiplier);
-                S_Performance += GG0170S_Value * multiplier;
-            }
-            else
-                updateScore(GG0170S, 0);
+        console.log('multiplier = ' + multiplier);
+        if (GG0170R_Value >= 7) {
+            GG0170R_Value = 1;
         }
-        return R_Performance + S_Performance;
+        updateScore(GG0170R, GG0170R_Value * multiplier);
+        R_PerformanceScore += GG0170R_Value * multiplier;
+        console.log('GG0170R_Value * multiplier = ' + (GG0170R_Value * multiplier));
+        if (GG0170S_Value >= 7) {
+            GG0170S_Value = 1;
+        }
+        updateScore(GG0170S, GG0170S_Value * multiplier);
+        S_PerformanceScore += GG0170S_Value * multiplier;
+        console.log('GG0170S_Value * multiplier = ' + (GG0170S_Value * multiplier));
+        return R_PerformanceScore + S_PerformanceScore;
     }
     /* internal function */
     //function Score_GG0170RandS_Discharge_Performance(): number {

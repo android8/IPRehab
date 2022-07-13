@@ -1359,38 +1359,48 @@ $(function () {
       let thisQ = $(this);
       thisQ.on('change', { x: EnumChangeEventArg.Change },
         function (e) {
-          const any_No: any = $('.persistable[id^=GG0170Q][id*=No]:checked');
-          const any_Yes: any = $('.persistable[id^=GG0170Q][id*=Yes]:checked');
+          //const Q_admission_is_No: any = $('.persistable[id^=GG0170Q][id*=Admission_Performance][id*=No]:checked');
+          const Q_admission_is_No: any = thisQ.prop('id').indexOf('Admission_Performance') >= 0 && thisQ.prop('id').indexOf('No') >= 0 && thisQ.prop('checked');
+          //const Q_admission_is_Yes: any = $('.persistable[id^=GG0170Q][id*=Admission_Performance][id*=Yes]:checked');
+          const Q_admission_is_Yes: any = thisQ.prop('id').indexOf('Admission_Performance') >= 0 && thisQ.prop('id').indexOf('Yes') >= 0 && thisQ.prop('checked');
+          //const Q_discharge_is_No: any = $('.persistable[id^=GG0170Q][id*=Discharge_Performance][id*=No]:checked');
+          const Q_discharge_is_No: any = thisQ.prop('id').indexOf('Discharge_Performance') >= 0 && thisQ.prop('id').indexOf('No') >= 0 && thisQ.prop('checked');
+          //const Q_discharge_is_Yes: any = $('.persistable[id^=GG0170Q][id*=Discharge_Performance][id*=Yes]:checked');
+          const Q_discharge_is_Yes: any = thisQ.prop('id').indexOf('Discharge_Performance') >= 0 && thisQ.prop('id').indexOf('Yes') >= 0 && thisQ.prop('checked');
+
+          const Q_interim_is_No: any = thisQ.prop('id').indexOf('Interim_Performance') >= 0 && thisQ.prop('id').indexOf('No') >= 0 && thisQ.prop('checked');
+          const Q_interim_is_Yes: any = thisQ.prop('id').indexOf('Interim_Performance') >= 0 && thisQ.prop('id').indexOf('Yes') >= 0 && thisQ.prop('checked');
+
+          const Q_followUp_is_No: any = thisQ.prop('id').indexOf('Follow_Up_Performance') >= 0 && thisQ.prop('id').indexOf('No') >= 0 && thisQ.prop('checked');
+          const Q_followUp_is_Yes: any = thisQ.prop('id').indexOf('Follow_Up_Performance') >= 0 && thisQ.prop('id').indexOf('Yes') >= 0 && thisQ.prop('checked');
+
+          let thisGG0170R: any;
           switch (true) {
-            case (any_No.length > 0):
+            case (Q_admission_is_No || Q_discharge_is_No || Q_interim_is_No || Q_followUp_is_Yes):
               seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog });
               break;
-            case (any_Yes.length > 0): {
-              const firstYes: any = any_Yes.first();
-              let thisGG0170R: any;
-              switch (true) {
-                case (firstYes.prop('id').indexOf('Admission_Performance') !== -1):
-                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Admission_Performance]');
-                  break;
-                case (firstYes.prop('id').indexOf('Discharge_Performance') !== -1):
-                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Discharge_Performance]');
-                  break;
-                case (firstYes.prop('id').indexOf('Interim_Performance') !== -1):
-                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
-                  break;
-                case (firstYes.prop('id').indexOf('Follow_Up_Performance') !== -1):
-                  thisGG0170R = $('.persistable[id^=GG0170R_][id*=Follow_Up_Performance]');
-                  break;
-              }
-              console.log('thisGG0170R = ', thisGG0170R);
-              seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
-              break;;
-            }
+            case Q_admission_is_Yes:
+              thisGG0170R = $('.persistable[id^=GG0170R_][id*=Admission_Performance]');
+              break;
+            case Q_discharge_is_Yes:
+              thisGG0170R = $('.persistable[id^=GG0170R_][id*=Discharge_Performance]');
+              break;
+            case Q_interim_is_Yes:
+              thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
+              break;
+            case Q_followUp_is_Yes:
+              thisGG0170R = $('.persistable[id^=GG0170R_][id*=Follow_Up_Performance]');
+              break;
             default:
               GG0170Qs.prop('disabled', false);
               break;
           }
-        });
+          console.log('thisGG0170R = ', thisGG0170R);
+          if (thisGG0170R.length !== 0) {
+            seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
+          }
+        }
+      );
     });
 
     /* add rule help */
@@ -1578,8 +1588,6 @@ $(function () {
           unlockThis.prop('disabled', false);
         });
 
-        $('.spinnerContainer').show();
-
         //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
         //only raise change for the following to unlock or remain lock of the respective fields
         $('.persistable[id^=Q12B_]').change();
@@ -1596,7 +1604,6 @@ $(function () {
         $('.persistable[id^=Q12B_]').focus();
         $('#ajaxPost').prop('disabled', false);
 
-        $('.spinnerContainer').hide();
         break;
       }
     }
