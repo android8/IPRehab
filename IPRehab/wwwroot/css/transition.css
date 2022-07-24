@@ -52,3 +52,30 @@ table {
     opacity: 1;
   }
 }
+@keyframes fly-in-font {
+  0% {
+    font-size: 40px;
+  }
+  100% {
+    font-size: initial;
+  }
+}
+@keyframes heart-beat {
+  0% {
+    font-size: initial;
+  }
+  50% {
+    font-size: 40px;
+  }
+  100% {
+    font-size: initial;
+  }
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 255, 0, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+  }
+}

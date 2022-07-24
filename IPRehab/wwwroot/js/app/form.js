@@ -98,7 +98,7 @@ const formController = (function () {
                     /* update on screen episode_legend and pageTitle */
                     $('#pageTitle').text('Episode of Care');
                     $('#episodeID_legend').text(jsonResult);
-                    dialogText = '\Note: When in NEW mord and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID corresponding shown on the upper right of the form.';
+                    dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
                 }
                 dialogOptions.title = 'Success';
                 $('#dialog')
@@ -284,25 +284,46 @@ const formController = (function () {
     }
     /* private function */
     function updateScore(thisControl, newScore) {
-        const theScoreEl = $(thisControl.siblings('i.score'));
-        if (newScore <= 0) {
-            if (theScoreEl.length > 0) {
-                console.log('path1');
-                theScoreEl.remove();
+        const i_score_element = thisControl.siblings('i.score');
+        switch (true) {
+            case ((newScore <= 0 || isNaN(newScore)) && i_score_element.length > 0): {
+                console.log('path1 remove the <i class="score">');
+                i_score_element.remove();
+                break;
+            }
+            case (newScore > 0 && i_score_element.length === 0): {
+                console.log('path2 append the <i class="score">' + newScore + '</i>');
+                thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
+                break;
+            }
+            case (newScore > 0 && i_score_element.length > 0): {
+                console.log('path3 update existing <i class="score">' + newScore + '</i>');
+                i_score_element.text('score: ' + newScore);
+                break;
+            }
+            default: {
+                console.log('default path theScoreEl = ' + newScore, i_score_element);
+                break;
             }
         }
-        else {
-            if (theScoreEl.length === 0) {
-                {
-                    console.log('path2');
-                    thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
-                }
-            }
-            else {
-                console.log('path3');
-                theScoreEl.text('score: ' + newScore);
-            }
-        }
+        //if (newScore <= 0 || isNaN(newScore)) {
+        //    if (theScoreEl.length > 0) {
+        //        console.log('path1')
+        //        theScoreEl.remove();
+        //    }
+        //}
+        //else {
+        //    if (theScoreEl.length === 0) {
+        //        {
+        //            console.log('path2');
+        //            thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
+        //        }
+        //    }
+        //    else {
+        //        console.log('path3');
+        //        theScoreEl.text('score: ' + newScore);
+        //    }
+        //}
     }
     /* private function */
     function selfCareScore() {
@@ -357,42 +378,85 @@ const formController = (function () {
     }
     /* private function */
     function mobilityScore() {
-        if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
-            let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
-            mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission');
-            mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission');
-            console.log('mobilityAdmissionPerformance (Admission) = ' + mobilityAdmissionPerformance);
-            mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge');
-            mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge');
-            console.log('mobilityDischargePerformance (Discharge) = ' + mobilityDischargePerformance);
-            /* update Admission and Discharge performance scores in the question section */
-            $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
-            $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
-            $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
-            /* update Admission and Discharge performance scores in the sliding scorecard */
-            $('#slidinAdmission and Discharge performance scoresator #mobility_admission_score').text(mobilityAdmissionPerformance);
-            $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
-            $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
-        }
-        else {
-            let mobilityPerformance = 0;
-            const isInterim = $('.persistable[id*=Interim]').length > 0;
-            const isFollowup = $('.persistable[id*=Followup]').length > 0;
-            if (isInterim) {
+        switch (true) {
+            case $('.scoreSection #mobility_aggregate_score_admission_performance').length > 0:
+            case $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0:
+                {
+                    let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
+                    mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission_Performance');
+                    mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission_Performance');
+                    console.log('mobilityPerformance (Admission) = ' + mobilityAdmissionPerformance);
+                    mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge_Performance');
+                    mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge_Performance');
+                    console.log('mobilityPerformance (Discharge) = ' + mobilityDischargePerformance);
+                    /* update scores in the question section */
+                    $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
+                    $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
+                    $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+                    /* update scores in the sliding scorecard */
+                    $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
+                    $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
+                    $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+                }
+                break;
+            case $('.persistable[id*=Interim]').length > 0: {
+                let mobilityPerformance = 0;
                 /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
-                mobilityPerformance += Score_GG0170AtoP_Performance('Interim');
-                mobilityPerformance += Score_GG0170RandS_Performance('Interim');
+                mobilityPerformance += Score_GG0170AtoP_Performance('Interim_Performance');
+                mobilityPerformance += Score_GG0170RandS_Performance('Interim_Performance');
                 console.log('mobilityPerformance (Interim) = ' + mobilityPerformance);
+                /* update Interim or Follow Up performance scores in the question section and the slideing scorecard */
+                $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
+                $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
+                break;
             }
-            if (isFollowup) {
-                mobilityPerformance += Score_GG0170AtoP_Performance('Followup');
-                mobilityPerformance += Score_GG0170RandS_Performance('Followup');
+            case $('.persistable[id*=Follow_Up]').length > 0: {
+                let mobilityPerformance = 0;
+                mobilityPerformance += Score_GG0170AtoP_Performance('Follow_Up_Performance');
+                mobilityPerformance += Score_GG0170RandS_Performance('Follow_Up_Performance');
                 console.log('mobilityPerformance (Follow Up) = ' + mobilityPerformance);
+                /* update Follow Up performance scores in the question section and the slideing scorecard */
+                $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
+                $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
+                break;
             }
-            /* update Interim or Follow Up performance scores in the question section and the slideing scorecard */
-            $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
-            $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
         }
+        //    if ($('.scoreSection #mobility_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_discharge_performance').length > 0) {
+        //        let mobilityAdmissionPerformance = 0, mobilityDischargePerformance = 0;
+        //        mobilityAdmissionPerformance += Score_GG0170AtoP_Performance('Admission_Performance');
+        //        mobilityAdmissionPerformance += Score_GG0170RandS_Performance('Admission_Performance');
+        //        console.log('mobilityPerformance (Admission) = ' + mobilityAdmissionPerformance);
+        //        mobilityDischargePerformance += Score_GG0170AtoP_Performance('Discharge_Performance');
+        //        mobilityDischargePerformance += Score_GG0170RandS_Performance('Discharge_Performance');
+        //        console.log('mobilityPerformance (Discharge) = ' + mobilityDischargePerformance);
+        //        /* update Admission and Discharge performance scores in the question section */
+        //        $('.scoreSection #mobility_aggregate_score_admission_performance').text(mobilityAdmissionPerformance);
+        //        $('.scoreSection #mobility_aggregate_score_discharge_performance').text(mobilityDischargePerformance);
+        //        $('.scoreSection #mobility_aggregate_score_total_change').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+        //        /* update Admission and Discharge performance scores in the sliding scorecard */
+        //        $('#slidingAggregator #mobility_admission_score').text(mobilityAdmissionPerformance);
+        //        $('#slidingAggregator #mobility_discharge_score').text(mobilityDischargePerformance);
+        //        $('#slidingAggregator #mobility_total').text(mobilityDischargePerformance - mobilityAdmissionPerformance);
+        //    }
+        //    else {
+        //        let mobilityPerformance = 0;
+        //        const isInterim: boolean = $('.persistable[id*=Interim]').length > 0;
+        //        const isFollowup: boolean = $('.persistable[id*=Followup]').length > 0;
+        //        if (isInterim) {
+        //            /* Interim Performance or Follow Up Performance reuse Score_GG0170x_Performance() since the element selector will pickup only GG0170x */
+        //            mobilityPerformance += Score_GG0170AtoP_Performance('Interim_Performance');
+        //            mobilityPerformance += Score_GG0170RandS_Performance('Interim_Performance');
+        //            console.log('mobilityPerformance (Interim) = ' + mobilityPerformance);
+        //        }
+        //        if (isFollowup) {
+        //            mobilityPerformance += Score_GG0170AtoP_Performance('Followup_Performance');
+        //            mobilityPerformance += Score_GG0170RandS_Performance('Followup_Performance');
+        //            console.log('mobilityPerformance (Follow Up) = ' + mobilityPerformance);
+        //        }
+        //        /* update Interim or Follow Up performance scores in the question section and the slideing scorecard */
+        //        $('.scoreSection #mobility_aggregate_score').text(mobilityPerformance);
+        //        $('#slidingAggregator #mobility_aggregate_score').text(mobilityPerformance);
+        //    }
     }
     /* private function */
     function grandTotal() {
@@ -470,45 +534,54 @@ const formController = (function () {
     /* internal function */
     function Score_GG0170AtoP_Performance(performanceType) {
         /* select only GG0170I matching the performance type parameter */
-        const GG0170I_Only = $('.persistable[id^=GG0170I][id*=' + performanceType + '_Performance]');
+        const GG0170I_Only = $('.persistable[id^=GG0170I][id*=' + performanceType + ']');
         const GG0170I_Only_Score = commonUtility.getControlValue(GG0170I_Only);
         console.log(GG0170I_Only.prop('id') + ' score = ' + GG0170I_Only_Score);
         /* select only GG0170 matching the performance type parameter excluding Q, R and S */
-        const targetELs = $('.persistable[id^=GG0170][id*=' + performanceType + '_Performance]:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
-        console.log('targetELs', targetELs);
+        const targetELs = $('.persistable[id^=GG0170][id*=' + performanceType + ']:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
+        //console.log('targetELs', targetELs);
         let PerformanceScore = 0;
         targetELs.each(function () {
             const thisEL = $(this);
+            console.log('----- begin update score for ', thisEL.prop('id'));
             const thisELScore = commonUtility.getControlValue(thisEL);
             const isThisGG0170I = thisEL.prop('id').indexOf('GG0170I_' + performanceType) >= 0;
             switch (true) {
                 case (thisELScore >= 7):
                     if (isThisGG0170I) {
-                        updateScore(thisEL, 0); //don't count I when I >= 7 per customer 12/8/2021
+                        console.log('\t Score_GG0170AtoP_Performance::: path 1');
+                        updateScore(thisEL, 0); //don't count GG0170I when I >= 7 per customer 12/8/2021
                     }
                     else {
+                        console.log('\t Score_GG0170AtoP_Performance::: path 2');
                         updateScore(thisEL, 1);
                         PerformanceScore += 1;
                     }
                     break;
                 case thisELScore > 0 && thisELScore < 7:
                     if (isThisGG0170I) {
-                        PerformanceScore += GG0170I_Only_Score; /* count only I score but don't count R and S scores */
+                        PerformanceScore += GG0170I_Only_Score; /* count GG0170I only */
+                        updateScore(thisEL, thisELScore);
                         const GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
+                        console.log('\t Score_GG0170AtoP_Performance::: path 3.1');
+                        updateScore(GG0170R, 0); //ignore by resetting R to 0
                         const GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
-                        updateScore(GG0170R, 0); //reset R to 0
-                        updateScore(GG0170S, 0); //reset S to 0
+                        console.log('\t Score_GG0170AtoP_Performance::: path 3.2');
+                        updateScore(GG0170S, 0); //ignore by resetting S to 0
                     }
                     else {
+                        console.log('\t Score_GG0170AtoP_Performance::: path 4');
                         updateScore(thisEL, thisELScore);
                         /* count non-I score as is */
                         PerformanceScore += thisELScore;
                     }
+                    break;
                 default:
+                    console.log('\t Score_GG0170AtoP_Performance::: default');
                     updateScore(thisEL, 0);
                     break;
             }
-            console.log(thisEL.prop('id') + ' score = ' + thisELScore);
+            console.log('\t after update ' + thisEL.prop('id') + ' score = ' + thisELScore);
         });
         return PerformanceScore;
     }
@@ -528,19 +601,18 @@ const formController = (function () {
         else if (GG0170I_Value > 0 && GG0170I_Value < 7) {
             multiplier = 0; /* take I value which has been counted so don't count it again */
         }
-        console.log('multiplier = ' + multiplier);
         if (GG0170R_Value >= 7) {
             GG0170R_Value = 1;
         }
         updateScore(GG0170R, GG0170R_Value * multiplier);
         R_PerformanceScore += GG0170R_Value * multiplier;
-        console.log('GG0170R_Value * multiplier = ' + (GG0170R_Value * multiplier));
+        console.log('GG0170R_Value_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170R_Value * multiplier));
         if (GG0170S_Value >= 7) {
             GG0170S_Value = 1;
         }
         updateScore(GG0170S, GG0170S_Value * multiplier);
         S_PerformanceScore += GG0170S_Value * multiplier;
-        console.log('GG0170S_Value * multiplier = ' + (GG0170S_Value * multiplier));
+        console.log('GG0170S_Value_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170S_Value * multiplier));
         return R_PerformanceScore + S_PerformanceScore;
     }
     /* internal function */

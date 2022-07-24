@@ -1376,7 +1376,7 @@ $(function () {
 
           let thisGG0170R: any;
           switch (true) {
-            case (Q_admission_is_No || Q_discharge_is_No || Q_interim_is_No || Q_followUp_is_Yes):
+            case (Q_admission_is_No || Q_discharge_is_No || Q_interim_is_No || Q_followUp_is_No):
               seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog });
               break;
             case Q_admission_is_Yes:
@@ -1396,7 +1396,7 @@ $(function () {
               break;
           }
           console.log('thisGG0170R = ', thisGG0170R);
-          if (thisGG0170R.length !== 0) {
+          if (thisGG0170R && thisGG0170R.length !== 0) {
             seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
           }
         }

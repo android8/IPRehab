@@ -116,7 +116,10 @@ export class Utility {
                 case "select-one": {
                     //use the selected option text and parse the starting text to int
                     const selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
+                    //console.log('selected option text = ', selectedOption);
                     thisValue = parseInt(selectedOption);
+                    if (isNaN(thisValue))
+                        thisValue = 0;
                     break;
                 }
                 case "radio":
@@ -143,7 +146,7 @@ export class Utility {
                 }
             }
         }
-        console.log('control value ' + behavior + ' method for ' + $thisControl.prop('id') + '(' + thisControlType + ') = ' + thisValue);
+        console.log('(' + thisControlType + ') ' + $thisControl.prop('id') + ' = ' + thisValue + ' (with ' + EnumGetControlValueBehavior[behavior] + ' behavior)');
         return thisValue;
     }
     resetControlValue($thisControl, newValue = '-1') {

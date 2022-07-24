@@ -73,10 +73,6 @@
 
   <ItemGroup>
     <None Remove=".eslintrc.json.bak" />
-    <None Remove="Scripts\app\enums.js" />
-    <None Remove="Scripts\app\enums.js.map" />
-    <None Remove="Scripts\app\patientDataTable.js" />
-    <None Remove="Scripts\app\patientDataTable.js.map" />
     <None Remove="Scripts\app\userAnswer.js" />
     <None Remove="Scripts\app\userAnswer.js.map" />
     <None Remove="Scripts\app\validationRules.js" />
@@ -87,8 +83,6 @@
   <ItemGroup>
     <TypeScriptCompile Remove="%2a%2a\%2a.ts" />
     <TypeScriptCompile Remove="%2a%2a\%2a.tsx" />
-    <TypeScriptCompile Remove="Scripts\app\enums.ts" />
-    <TypeScriptCompile Remove="Scripts\app\patientDataTable.ts" />
     <TypeScriptCompile Remove="Scripts\app\validationRules.ts" />
   </ItemGroup>
 

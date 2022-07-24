@@ -723,8 +723,7 @@ div.questionRow {
   /* Firefox */
   -moz-transform: rotate(-90deg);
   /* IE */
-  -ms-transform: rotate(-90deg);
-  /* IE 9 */
+  -ms-transform: rotate(-90deg); /* IE 9 */
   /* Opera */
   -o-transform: rotate(-90deg);
   /* Internet Explorer */
@@ -820,7 +819,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 }
 
 .flex-item {
-  flex: 0 1 calc(100% / 4);
+  flex: 0 1 25%;
   overflow: hidden;
   padding: 4px;
   /*  

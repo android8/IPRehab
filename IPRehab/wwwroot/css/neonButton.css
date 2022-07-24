@@ -34,21 +34,21 @@
 
 .one:hover {
   background-color: #4cc9f0;
-  -webkit-box-shadow: 10px 10px 99px 6px #4cc9f0;
-  -moz-box-shadow: 10px 10px 99px 6px #4cc9f0;
-  box-shadow: 10px 10px 99px 6px #4cc9f0;
+  -webkit-box-shadow: 10px 10px 99px 6px rgb(76, 201, 240);
+  -moz-box-shadow: 10px 10px 99px 6px rgb(76, 201, 240);
+  box-shadow: 10px 10px 99px 6px rgb(76, 201, 240);
 }
 
 .two:hover {
   background-color: #f038ff;
-  -webkit-box-shadow: 10px 10px 99px 6px #f038ff;
-  -moz-box-shadow: 10px 10px 99px 6px #f038ff;
-  box-shadow: 10px 10px 99px 6px #f038ff;
+  -webkit-box-shadow: 10px 10px 99px 6px rgb(240, 56, 255);
+  -moz-box-shadow: 10px 10px 99px 6px rgb(240, 56, 255);
+  box-shadow: 10px 10px 99px 6px rgb(240, 56, 255);
 }
 
 .three:hover {
   background-color: #b9e769;
-  -webkit-box-shadow: 10px 10px 99px 6px #b9e769;
-  -moz-box-shadow: 10px 10px 99px 6px #b9e769;
-  box-shadow: 10px 10px 99px 6px #b9e769;
+  -webkit-box-shadow: 10px 10px 99px 6px rgb(185, 231, 105);
+  -moz-box-shadow: 10px 10px 99px 6px rgb(185, 231, 105);
+  box-shadow: 10px 10px 99px 6px rgb(185, 231, 105);
 }
