@@ -788,60 +788,60 @@ $(function () {
             //callback after async dialog is done and return the seenTheDialog to the caller
             byRef.seenTheDialog = value;
         }
-        function actGG0170I(GG0170JKL, focusThis, isDisabled, eventArg) {
+        function actGG0170I(focusThis, isDisabled, eventArg) {
+            const GG0170JKL = $('.persistable[id^=GG0170J_' + measure + '], .persistable[id^=GG0170K_' + measure + '], .persistable[id^=GG0170L_' + measure + ']');
             GG0170JKL.each(function () {
-                commonUtility.resetControlValue($(this));
+                if (isDisabled) {
+                    commonUtility.resetControlValue($(this));
+                }
                 $(this).prop('disabled', isDisabled);
             });
             if (eventArg === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
                 if ((focusThis === null || focusThis === void 0 ? void 0 : focusThis.length) > 0) {
                     console.log('actGG0170I() scroll to ', focusThis === null || focusThis === void 0 ? void 0 : focusThis.prop('id'));
-                    focusThis === null || focusThis === void 0 ? void 0 : focusThis.prop('disabled', false);
+                    focusThis.prop('disabled', false);
                     scrollTo(focusThis.prop('id'));
                 }
             }
             else {
                 if ((focusThis === null || focusThis === void 0 ? void 0 : focusThis.length) > 0) {
                     console.log('actGG0170I() no scroll but focus ', focusThis.prop('id'));
-                    const focusedElement = $('#' + focusThis.prop('id'));
-                    if ((focusedElement === null || focusedElement === void 0 ? void 0 : focusedElement.length) > 0) {
-                        focusedElement.prop('disabled', false);
-                        focusedElement.focus();
-                    }
+                    focusThis.prop('disabled', false);
+                    scrollTo(focusThis.prop('id'));
+                    focusThis.focus();
                 }
                 else
                     console.log(focusThis.prop('id') + " dosen't exist in this context, can not set focus on that element");
             }
         }
-        let GG0170J, GG0170JKL, GG0170M;
+        let GG0170J, GG0170M;
         GG0170J = $('.persistable[id^=GG0170J_' + measure + ']');
-        GG0170JKL = $('.persistable[id^=GG0170J_' + measure + '], .persistable[id^=GG0170K_' + measure + '], .persistable[id^=GG0170L_' + measure + ']');
         GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
         const intGG0170I = commonUtility.getControlValue(thisI);
         switch (true) {
             case (intGG0170I > 0 && intGG0170I < 7): {
                 /* unlock and clear J K L, skip to J */
-                let consoleLog = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
+                //let consoleLog: string = 'GG0170I ' + measure + ' is between 1 and 6, unlock GG0170J ' + measure + ', GG0170K ' + measure + ', GG0170L ' + measure + ', and advance to GG0170J ' + measure + '. Other measures are kept intact.';
                 //without warning dialog
                 console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
                 const focusJ = GG0170J;
-                const DisaenableJKL = false;
-                actGG0170I(GG0170JKL, focusJ, DisaenableJKL, eventType);
+                const enableJKL = false;
+                actGG0170I(focusJ, enableJKL, eventType);
                 break;
             }
             default: {
                 /* GG0170I is not selected, clear and lock J K L then advance to M */
                 const dialogText = 'GG0170I ' + measure + ' is unknown or is not between 1 and 6, clear and lock GG0170J ' + measure + ', GG0170K ' + measure + 'and GG0170L ' + measure + ', then advance to GG0170M ' + measure;
                 console.log('eventData ' + dialogText);
+                const focusM = GG0170M;
                 if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
                     //with warning dialog
                     console.log('GG0170I with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
                     const myButtons = {
                         "Ok": function () {
-                            let focusM = GG0170M;
                             const disableJKL = true;
                             console.log('focusM = ', focusM);
-                            actGG0170I(GG0170JKL, focusM, disableJKL, eventType);
+                            actGG0170I(focusM, disableJKL, eventType);
                             setSeenTheDialog(true); //callback
                             $(this).dialog("close");
                         },
@@ -859,10 +859,9 @@ $(function () {
                 else {
                     //without warning dialog
                     console.log('GG0170I without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                    let focusM = GG0170M;
                     const disableJKL = true;
                     console.log('focusM = ', focusM);
-                    actGG0170I(GG0170JKL, focusM, disableJKL, eventType);
+                    actGG0170I(focusM, disableJKL, eventType);
                 }
                 break;
             }
@@ -1084,17 +1083,13 @@ $(function () {
         console.log('GG0170M_N listener added');
     })();
     /* event handler for any GG0170Q no */
-    function GG0170Q_is_No_skip_to_Complete(eventType, byRef) {
+    function GG0170Q_is_No_skip_to_Complete(thisR, eventType, byRef) {
         console.log('inside of GG0170Q_is_No_skip_to_Complete, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
         const completed = $('.persistable[id^= Assessment]');
         const completed_Yes = $('.persistable[id^= Assessment][id*=Yes]');
-        const GG0170Rs = $('.persistable[id^=GG0170R_]');
         const myButtons = {
             "Ok": function () {
-                GG0170Rs.each(function () {
-                    const thisR = $(this);
-                    thisR.prop('disabled', true);
-                });
+                thisR.prop('disabled', true);
                 completed.each(function () {
                     const thisCompleted = $(this);
                     thisCompleted.prop('disabled', false);
@@ -1108,7 +1103,7 @@ $(function () {
                 $(this).dialog("close");
             }
         };
-        const dialogText = 'At least one of the GG0170Qs is a no, lock all GG0170Rs, advance to Assesment Complete';
+        const dialogText = 'The GG0170Q is a no, lock coresponding GG0170R, advance to Assesment Complete';
         console.log(dialogText);
         if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
             //with warning dialog
@@ -1119,14 +1114,12 @@ $(function () {
             });
         }
         else {
-            GG0170Rs.each(function () {
-                const thisR = $(this);
-                thisR.prop('disabled', true);
-            });
+            thisR.prop('disabled', true);
             completed.each(function () {
                 const thisCompleted = $(this);
                 thisCompleted.prop('disabled', false);
             });
+            scrollTo(completed_Yes.prop('id'));
             completed_Yes.focus();
         }
         //onload don't scroll to complete 
@@ -1195,28 +1188,54 @@ $(function () {
                 const Q_followUp_is_Yes = thisQ.prop('id').indexOf('Follow_Up_Performance') >= 0 && thisQ.prop('id').indexOf('Yes') >= 0 && thisQ.prop('checked');
                 let thisGG0170R;
                 switch (true) {
-                    case (Q_admission_is_No || Q_discharge_is_No || Q_interim_is_No || Q_followUp_is_No):
-                        seenTheDialog = GG0170Q_is_No_skip_to_Complete(e.data.x, { seenTheDialog: seenTheDialog });
+                    case (Q_admission_is_No):
+                        console.log('Q_admission_is_No');
+                        thisGG0170R = $('.persistable[id^=GG0170R_][id*=Admission_Performance]');
+                        thisGG0170R.prop('disabled', true).val(-1).siblings('div.longTextOption, i.score').remove();
+                        seenTheDialog = GG0170Q_is_No_skip_to_Complete(thisGG0170R, e.data.x, { seenTheDialog: seenTheDialog });
+                        break;
+                    case (Q_discharge_is_No):
+                        console.log('Q_discharge_is_No');
+                        thisGG0170R = $('.persistable[id^=GG0170R_][id*=Discharge_Performance]');
+                        thisGG0170R.prop('disabled', true).val(-1).siblings('div.longTextOption, i.score').remove();
+                        seenTheDialog = GG0170Q_is_No_skip_to_Complete(thisGG0170R, e.data.x, { seenTheDialog: seenTheDialog });
+                        break;
+                    case (Q_interim_is_No):
+                        console.log("Q_interim_is_No");
+                        thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
+                        thisGG0170R.prop('disabled', true).val(-1).siblings('idiv.longTextOption, i.score').remove();
+                        seenTheDialog = GG0170Q_is_No_skip_to_Complete(thisGG0170R, e.data.x, { seenTheDialog: seenTheDialog });
+                        break;
+                    case (Q_followUp_is_No):
+                        console.log("Q_followUp_is_No");
+                        thisGG0170R = $('.persistable[id^=GG0170R_][id*=Follow_Up_Performance]');
+                        thisGG0170R.prop('disabled', true).val(-1).siblings('div.longTextOption, i.score').remove();
+                        seenTheDialog = GG0170Q_is_No_skip_to_Complete(thisGG0170R, e.data.x, { seenTheDialog: seenTheDialog });
                         break;
                     case Q_admission_is_Yes:
+                        console.log("Q_admission_is_Yes");
                         thisGG0170R = $('.persistable[id^=GG0170R_][id*=Admission_Performance]');
+                        seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
                         break;
                     case Q_discharge_is_Yes:
+                        console.log("Q_discharge_is_Yes");
                         thisGG0170R = $('.persistable[id^=GG0170R_][id*=Discharge_Performance]');
+                        seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
                         break;
                     case Q_interim_is_Yes:
+                        console.log("Q_interim_is_Yes");
                         thisGG0170R = $('.persistable[id^=GG0170R_][id*=Interim_Performance]');
+                        seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
                         break;
                     case Q_followUp_is_Yes:
+                        console.log("Q_followUp_is_Yes");
                         thisGG0170R = $('.persistable[id^=GG0170R_][id*=Follow_Up_Performance]');
+                        seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
                         break;
                     default:
+                        console.log("GG0170Qs disabled");
                         GG0170Qs.prop('disabled', false);
                         break;
-                }
-                console.log('thisGG0170R = ', thisGG0170R);
-                if (thisGG0170R && thisGG0170R.length !== 0) {
-                    seenTheDialog = GG0170Q_is_Yes_skip_to_GG0170R(e.data.x, { seenTheDialog: seenTheDialog }, thisGG0170R);
                 }
             });
         });
@@ -1268,19 +1287,23 @@ $(function () {
             const thisJ0510 = $(this);
             thisJ0510.on('change', function () {
                 const selectedOptions = $('.persistable[id^=J0510_] :selected');
-                selectedOptions.each(function () {
+                selectedOptions === null || selectedOptions === void 0 ? void 0 : selectedOptions.each(function () {
                     const thisSelectedOption = $(this);
                     if (thisSelectedOption.text().indexOf('0.') !== -1) {
                         console.log('found "Does not apply in ' + thisJ0510.prop('id') + ', advance to J1750 Yes');
                         seenTheDialog = J1750_depends_on_J0510(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
                         return false; //break out selectedOptions.each()
                     }
+                    //no locking per 07/27/2022 email
+                    //else {
+                    //    $('.persistable[id^=J1750_]').prop('disabled', true);
+                    //}
                 });
             });
         });
         /* add rule help */
         const J0510Rule = $('.branchingRule[data-target^=J0510], .branchingRule[data-target^=J1750]');
-        const J0510RuleText = 'If found "Does not apply in any J0510, unlock all J1750 and set focus on J1750 Yes';
+        const J0510RuleText = 'When GG0510 is "0. Does not apply", set focus on J1750 Yes';
         J0510Rule.prop('title', J0510RuleText).show();
         J0510Rule.on('click', function () {
             $('#dialog')
@@ -1371,7 +1394,7 @@ $(function () {
             }
             default: {
                 //see branchingTree.txt
-                const controlledByHandlers = $('.persistable[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=J1750_],[id^=Complete]');
+                const controlledByHandlers = $('.persistable[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
                 /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
                 console.log('Onset Date and Admit Date are not empty, unlock ' + $('.persistable').not(controlledByHandlers).length + ' fields');
                 $('.persistable').not(controlledByHandlers).each(function () {

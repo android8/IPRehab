@@ -326,26 +326,23 @@ const formController = (function () {
 
     /* private function */
     function updateScore(thisControl: any, newScore: number) {
+        console.log('thisControl score = ' + newScore, thisControl);
         const i_score_element: any = thisControl.siblings('i.score');
 
         switch (true) {
             case ((newScore <= 0 || isNaN(newScore)) && i_score_element.length > 0): {
-                console.log('path1 remove the <i class="score">');
+                console.log('path1: remove the score');
                 i_score_element.remove();
                 break;
             }
             case (newScore > 0 && i_score_element.length === 0): {
-                console.log('path2 append the <i class="score">' + newScore + '</i>');
+                console.log('path2: append the score');
                 thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
                 break;
             }
             case (newScore > 0 && i_score_element.length > 0): {
-                console.log('path3 update existing <i class="score">' + newScore + '</i>');
+                console.log('path3: update existing score');
                 i_score_element.text('score: ' + newScore);
-                break;
-            }
-            default: {
-                console.log('default path theScoreEl = ' + newScore, i_score_element);
                 break;
             }
         }
@@ -636,15 +633,14 @@ const formController = (function () {
                     break;
                 case thisELScore > 0 && thisELScore < 7:
                     if (isThisGG0170I) {
+                        console.log('\t Score_GG0170AtoP_Performance::: path 3 update I, R, S');
                         PerformanceScore += GG0170I_Only_Score; /* count GG0170I only */
                         updateScore(thisEL, thisELScore);
 
                         const GG0170R: any = $('.persistable[id^=GG0170R_' + performanceType + ']');
-                        console.log('\t Score_GG0170AtoP_Performance::: path 3.1');
                         updateScore(GG0170R, 0);  //ignore by resetting R to 0
 
                         const GG0170S: any = $('.persistable[id^=GG0170S_' + performanceType + ']');
-                        console.log('\t Score_GG0170AtoP_Performance::: path 3.2');
                         updateScore(GG0170S, 0);  //ignore by resetting S to 0
                     }
                     else {
