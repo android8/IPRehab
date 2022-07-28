@@ -29,7 +29,7 @@ gulp.task('cleanMyCss', function () {
 });
 
 
-gulp.task('cleaMyJs', function () {
+gulp.task('cleanMyJs', function () {
   return del(scriptSources.destinations);
 });
 

@@ -73,8 +73,30 @@
 
   <ItemGroup>
     <None Remove=".eslintrc.json.bak" />
+    <None Remove="Scripts\app\AjaxPostbackModel.js" />
+    <None Remove="Scripts\app\AjaxPostbackModel.js.map" />
+    <None Remove="Scripts\app\animateBanner.js" />
+    <None Remove="Scripts\app\animateBanner.js.map" />
+    <None Remove="Scripts\app\branching.js" />
+    <None Remove="Scripts\app\branching.js.map" />
+    <None Remove="Scripts\app\commandBtns.js" />
+    <None Remove="Scripts\app\commandBtns.js.map" />
+    <None Remove="Scripts\app\commonImport.js" />
+    <None Remove="Scripts\app\commonImport.js.map" />
+    <None Remove="Scripts\app\cookieConsent.js" />
+    <None Remove="Scripts\app\cookieConsent.js.map" />
+    <None Remove="Scripts\app\enums.js" />
+    <None Remove="Scripts\app\enums.js.map" />
+    <None Remove="Scripts\app\form.js" />
+    <None Remove="Scripts\app\form.js.map" />
+    <None Remove="Scripts\app\patientDataTable.js" />
+    <None Remove="Scripts\app\patientDataTable.js.map" />
+    <None Remove="Scripts\app\patientList.js" />
+    <None Remove="Scripts\app\patientList.js.map" />
     <None Remove="Scripts\app\userAnswer.js" />
     <None Remove="Scripts\app\userAnswer.js.map" />
+    <None Remove="Scripts\app\utility.js" />
+    <None Remove="Scripts\app\utility.js.map" />
     <None Remove="Scripts\app\validationRules.js" />
     <None Remove="Scripts\app\validationRules.js.map" />
     <None Remove="Scripts\cascadeDropdown\cascadeDropdown.js" />
@@ -87,14 +109,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Scripts\app\userAnswer.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Scripts\app\userAnswer.js.map">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="Scripts\TypeScriptSupport.md" />
   </ItemGroup>
 

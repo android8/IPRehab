@@ -1112,7 +1112,7 @@ $(function () {
                         case (M_value > 0 && M_value < 7):
                             /* M between 0 and 6, reset and disable O then scroll to N */
                             if (O.length > 0) {
-                                O.val(-1).prop('disabled', true);
+                                O.prop('disabled', true);
                             }
                             if (N.length > 0) {
                                 N.prop('disabled', false);
@@ -1143,7 +1143,7 @@ $(function () {
                         case (N_value > 0 && N_value < 7):
                             /* N between 0 and 6, unlock and scroll to O */
                             if (O.length > 0) {
-                                O.val(-1).prop('disabled', false);
+                                O.prop('disabled', false);
                                 scrollTo(O.prop('id'));
                             }
                             break;
@@ -1201,18 +1201,18 @@ $(function () {
             const thisMorN: any = $(this);
             thisMorN.on('change', { x: EnumChangeEventArg.Change }, function (e) {
                 let seenTheDialog: boolean = true;
-                let measure: string = thisMorN.prop('id');
+                let measure: string = thisMorN.data('measuredescription');
                 switch (true) {
-                    case measure.indexOf('Admission_Performance') !== -1:
+                    case measure === 'Admission Performance':
                         measure = 'Admission_Performance';
                         break;
-                    case measure.indexOf('Discharge_Performance') !== -1:
+                    case measure === 'Discharge Performance':
                         measure = 'Discharge_Performance';
                         break;
-                    case measure.indexOf('Interim_Performance') !== -1:
+                    case measure === 'Interim Performance':
                         measure = 'Interim_Performance';
                         break;
-                    case measure.indexOf('Follow_Up_Performance') !== -1:
+                    case measure === 'Follow Up Performance':
                         measure = 'Follow_Up_Performance';
                         break;
                 }
