@@ -9,27 +9,33 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblPatient", Schema = "app")]
-    [Index(nameof(LastName), nameof(FirstName), nameof(MiddleName), nameof(Last4SSN), Name = "IX_tblPatient_UniqueName", IsUnique = true)]
+    [Index("LastName", "FirstName", "MiddleName", "Last4SSN", Name = "IX_tblPatient_UniqueName", IsUnique = true)]
     public partial class tblPatient
     {
         [Key]
         [StringLength(10)]
+        [Unicode(false)]
         public string ICN { get; set; }
         [Required]
         [StringLength(10)]
+        [Unicode(false)]
         public string IEN { get; set; }
         [Required]
         [StringLength(20)]
+        [Unicode(false)]
         public string FirstName { get; set; }
         [Required]
         [StringLength(20)]
+        [Unicode(false)]
         public string LastName { get; set; }
         [StringLength(20)]
+        [Unicode(false)]
         public string MiddleName { get; set; }
         [Column(TypeName = "date")]
         public DateTime DateOfBirth { get; set; }
         [Required]
         [StringLength(4)]
+        [Unicode(false)]
         public string Last4SSN { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }

@@ -43,10 +43,13 @@
         var lastChar = window.location.href.slice(-1);
         if (lastChar === '/') {
           //var chleanUrl = window.location.href.replace(/\/$/, "")
-          window.location = window.location + 'patient/index';
+          //window.location = window.location + 'patient/index';
+          window.location = window.location + 'patient/IndexTreatingSpecailty';
         }
         else {
-          window.location = window.location + '/patient/index';
+          //window.location = window.location + '/patient/index';
+            window.location = window.location + '/patient/IndexTreatingSpecailty';
+
         }
       }, 1000);
     });

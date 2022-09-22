@@ -42,7 +42,7 @@ namespace IPRehab.Helpers
         using var client = new HttpClient();
         var useraudit = JsonConvert.SerializeObject(audit);
         StringContent content = new(useraudit, Encoding.UTF8, "application/json");
-        using var response = await client.PostAsync(url, content);
+        using HttpResponseMessage response = await client.PostAsync(url, content);
         var results = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
       }

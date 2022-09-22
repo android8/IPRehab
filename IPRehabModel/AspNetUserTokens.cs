@@ -21,8 +21,8 @@ namespace IPRehabModel
         public string Name { get; set; }
         public string Value { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(AspNetUsers.AspNetUserTokens))]
+        [ForeignKey("UserId")]
+        [InverseProperty("AspNetUserTokens")]
         public virtual AspNetUsers User { get; set; }
     }
 }

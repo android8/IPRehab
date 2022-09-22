@@ -88,11 +88,9 @@ namespace IPRehab.Controllers
       _office = _configuration.GetSection("AppSettings").GetValue<string>("Office");
       _options = new JsonSerializerOptions()
       {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = false,
-        PropertyNameCaseInsensitive = true,
-        IgnoreNullValues = true,
-        AllowTrailingCommas = true
+        WriteIndented = false, PropertyNameCaseInsensitive = true, AllowTrailingCommas = true
       };
     }
 
@@ -121,7 +119,7 @@ namespace IPRehab.Controllers
         if (string.IsNullOrEmpty(jsonStringFromSession))
         {
           string apiUrlBase = $"{ApiBaseUrl}/api/MasterReportsUser";
-          accessLevels = await SerializationGeneric<List<MastUserDTO>>.SerializeAsync($"{apiUrlBase}/{this.UserID}", this.BaseOptions);
+          accessLevels = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrlBase}/{this.UserID}", this.BaseOptions);
           if (accessLevels == null && !accessLevels.Any())
           {
             sourceOfCredential = "(WebAPI: access level is null)";

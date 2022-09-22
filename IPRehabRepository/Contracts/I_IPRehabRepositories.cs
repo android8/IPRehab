@@ -1,50 +1,59 @@
 ﻿using IPRehabModel;
 using PatientModel;
+using PatientModel_TreatingSpecialty;
 
 namespace IPRehabRepository.Contracts
 {
-   public interface IAnswerRepository : IRepositoryBase<tblAnswer>
-   {
-   }
+    public interface IAnswerRepository : IRepositoryBase<tblAnswer>
+    {
+    }
 
-   public interface IEpisodeOfCareRepository : IRepositoryBase<tblEpisodeOfCare>
-   {
-   }
+    public interface IEpisodeOfCareRepository : IRepositoryBase<tblEpisodeOfCare>
+    {
+    }
 
-   public interface IQuestionRepository : IRepositoryBase<tblQuestion>
-   {
-   }
+    public interface IQuestionRepository : IRepositoryBase<tblQuestion>
+    {
+    }
 
-   public interface IUserRepository : IRepositoryBase<tblUser>
-   {
-   }
+    public interface IUserRepository : IRepositoryBase<tblUser>
+    {
+    }
 
-   public interface IPatientRepository : IRepositoryBase<tblPatient>
-   {
-   }
+    public interface IPatientRepository : IRepositoryBase<tblPatient>
+    {
+    }
 
-   /// <summary>
-   /// external patient data source from BI25.DMHealthFactors
-   /// only needed for CRUD operation which would never happen other than select
-   /// </summary>
-   public interface IFSODPatientRepository : IRepositoryBase<FSODPatient>
-   {
-   }
+    /// <summary>
+    /// external patient data source from BI13.DMHealthFactors
+    /// only needed for CRUD operation which would never happen other than select
+    /// </summary>
+    public interface IFSODPatientRepository : IRepositoryBase<FSODPatient>
+    {
+    }
 
-   public interface ICodeSetRepository : IRepositoryBase<tblCodeSet>
-   {
-   }
+    /// <summary>
+    /// DB9 internal view with remote query of BI25.DMHealthFactors
+    /// only needed for CRUD operation which would never happen other than select
+    /// </summary>
+    public interface ITreatingSpecialtyPatientRepository : IRepositoryBase<vTreatingSpecialtyRecent3Yrs>
+    {
+    }
 
-   public interface IQuestionInstructionRepository : IRepositoryBase<tblQuestionInstruction>
-   {
-   }
+    public interface ICodeSetRepository : IRepositoryBase<tblCodeSet>
+    {
+    }
 
-   public interface ISignatureRepository : IRepositoryBase<tblSignature>
-   {
-   }
+    public interface IQuestionInstructionRepository : IRepositoryBase<tblQuestionInstruction>
+    {
+    }
 
-   public interface IQuestionMeasureRepository : IRepositoryBase<tblQuestionMeasure>
-   {
-   }
+    public interface ISignatureRepository : IRepositoryBase<tblSignature>
+    {
+    }
+
+    public interface IQuestionMeasureRepository : IRepositoryBase<tblQuestionMeasure>
+    {
+    }
 }
 

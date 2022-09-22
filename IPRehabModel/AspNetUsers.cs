@@ -9,15 +9,15 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("AspNetUsers", Schema = "app")]
-    [Index(nameof(NormalizedEmail), Name = "EmailIndex")]
+    [Index("NormalizedEmail", Name = "EmailIndex")]
     public partial class AspNetUsers
     {
         public AspNetUsers()
         {
             AspNetUserClaims = new HashSet<AspNetUserClaims>();
             AspNetUserLogins = new HashSet<AspNetUserLogins>();
-            AspNetUserRoles = new HashSet<AspNetUserRoles>();
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
+            Role = new HashSet<AspNetRoles>();
         }
 
         [Key]
@@ -41,8 +41,10 @@ namespace IPRehabModel
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         [StringLength(30)]
+        [Unicode(false)]
         public string FirstName { get; set; }
         [StringLength(30)]
+        [Unicode(false)]
         public string LastName { get; set; }
 
         [InverseProperty("User")]
@@ -50,8 +52,10 @@ namespace IPRehabModel
         [InverseProperty("User")]
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         [InverseProperty("User")]
-        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
-        [InverseProperty("User")]
         public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
+
+        [ForeignKey("UserId")]
+        [InverseProperty("User")]
+        public virtual ICollection<AspNetRoles> Role { get; set; }
     }
 }

@@ -9,17 +9,19 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblUser", Schema = "app")]
-    [Index(nameof(LastName), nameof(FirstName), Name = "IX_tblUser_Name")]
-    [Index(nameof(NetworkName), Name = "IX_tblUser_NetworkName", IsUnique = true)]
+    [Index("LastName", "FirstName", Name = "IX_tblUser_Name")]
+    [Index("NetworkName", Name = "IX_tblUser_NetworkName", IsUnique = true)]
     public partial class tblUser
     {
         [Key]
         public int ID { get; set; }
         [Required]
         [StringLength(20)]
+        [Unicode(false)]
         public string FirstName { get; set; }
         [Required]
         [StringLength(20)]
+        [Unicode(false)]
         public string LastName { get; set; }
         [Required]
         [StringLength(20)]

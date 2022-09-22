@@ -1,6 +1,6 @@
 ﻿C:\Users\VHAPORSUNC\source\repos\VSSC\IPRehab\PatientModel\doc\Change Table Name Quartly.txt
 
-At the last day of the current quarter, change FYxx and Qx in the following line 
+In the DmhealthfactorsContext.cs, at the last day of the current quarter, change FYxx and Qx in the following line 
 
 entity.ToTable("FSODPatientDetailFYxxQx", "FSOD");
 

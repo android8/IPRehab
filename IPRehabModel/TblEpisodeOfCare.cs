@@ -24,6 +24,7 @@ namespace IPRehabModel
         public DateTime AdmissionDate { get; set; }
         [Required]
         [StringLength(10)]
+        [Unicode(false)]
         public string PatientICNFK { get; set; }
         [StringLength(6)]
         public string FacilityID6 { get; set; }

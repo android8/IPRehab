@@ -24,14 +24,18 @@ namespace IPRehabModel
         public int QuestionID { get; set; }
         [Required]
         [StringLength(20)]
+        [Unicode(false)]
         public string QuestionKey { get; set; }
         public int? Order { get; set; }
         [StringLength(200)]
+        [Unicode(false)]
         public string QuestionSection { get; set; }
         [Required]
         [StringLength(1000)]
+        [Unicode(false)]
         public string Question { get; set; }
         [StringLength(50)]
+        [Unicode(false)]
         public string GroupTitle { get; set; }
         public int AnswerCodeSetFK { get; set; }
         public bool? BranchingPoint { get; set; }
@@ -40,14 +44,14 @@ namespace IPRehabModel
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(AnswerCodeSetFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestion))]
+        [ForeignKey("AnswerCodeSetFK")]
+        [InverseProperty("tblQuestion")]
         public virtual tblCodeSet AnswerCodeSetFKNavigation { get; set; }
         [InverseProperty("QuestionIDFKNavigation")]
         public virtual ICollection<tblAnswer> tblAnswer { get; set; }
-        [InverseProperty(nameof(tblBranching.FromQuestion))]
+        [InverseProperty("FromQuestion")]
         public virtual ICollection<tblBranching> tblBranchingFromQuestion { get; set; }
-        [InverseProperty(nameof(tblBranching.ToQuestion))]
+        [InverseProperty("ToQuestion")]
         public virtual ICollection<tblBranching> tblBranchingToQuestion { get; set; }
         [InverseProperty("QuestionIDFKNavigation")]
         public virtual ICollection<tblQuestionInstruction> tblQuestionInstruction { get; set; }

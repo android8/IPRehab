@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblSignature", Schema = "app")]
-    [Index(nameof(Signature), Name = "IX_tblSignature", IsUnique = true)]
+    [Index("Signature", Name = "IX_tblSignature", IsUnique = true)]
     public partial class tblSignature
     {
         [Key]
@@ -19,6 +19,7 @@ namespace IPRehabModel
         public byte[] Signature { get; set; }
         [Required]
         [StringLength(100)]
+        [Unicode(false)]
         public string Title { get; set; }
         [Column(TypeName = "date")]
         public DateTime DateInformationProvided { get; set; }
@@ -26,8 +27,8 @@ namespace IPRehabModel
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(EpisodeCareIDFK))]
-        [InverseProperty(nameof(tblEpisodeOfCare.tblSignature))]
+        [ForeignKey("EpisodeCareIDFK")]
+        [InverseProperty("tblSignature")]
         public virtual tblEpisodeOfCare EpisodeCareIDFKNavigation { get; set; }
     }
 }

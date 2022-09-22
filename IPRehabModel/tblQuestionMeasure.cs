@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblQuestionMeasure", Schema = "app")]
-    [Index(nameof(QuestionIDFK), nameof(StageFK), nameof(MeasureCodeSetIDFK), Name = "IX_tblQuestionMeasure", IsUnique = true)]
-    [Index(nameof(QuestionIDFK), Name = "IX_tblQuestionMeasure_QuestionIdFk")]
-    [Index(nameof(StageFK), Name = "IX_tblQuestionMeasure_StageFk")]
+    [Index("QuestionIDFK", "StageFK", "MeasureCodeSetIDFK", Name = "IX_tblQuestionMeasure", IsUnique = true)]
+    [Index("QuestionIDFK", Name = "IX_tblQuestionMeasure_QuestionIdFk")]
+    [Index("StageFK", Name = "IX_tblQuestionMeasure_StageFk")]
     public partial class tblQuestionMeasure
     {
         public tblQuestionMeasure()
@@ -27,18 +27,19 @@ namespace IPRehabModel
         public bool? Required { get; set; }
         public int? MeasureCodeSetIDFK { get; set; }
         [StringLength(500)]
+        [Unicode(false)]
         public string Comment { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(MeasureCodeSetIDFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestionMeasureMeasureCodeSetIDFKNavigation))]
+        [ForeignKey("MeasureCodeSetIDFK")]
+        [InverseProperty("tblQuestionMeasureMeasureCodeSetIDFKNavigation")]
         public virtual tblCodeSet MeasureCodeSetIDFKNavigation { get; set; }
-        [ForeignKey(nameof(QuestionIDFK))]
-        [InverseProperty(nameof(tblQuestion.tblQuestionMeasure))]
+        [ForeignKey("QuestionIDFK")]
+        [InverseProperty("tblQuestionMeasure")]
         public virtual tblQuestion QuestionIDFKNavigation { get; set; }
-        [ForeignKey(nameof(StageFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestionMeasureStageFKNavigation))]
+        [ForeignKey("StageFK")]
+        [InverseProperty("tblQuestionMeasureStageFKNavigation")]
         public virtual tblCodeSet StageFKNavigation { get; set; }
         [InverseProperty("MeasureIDFKNavigation")]
         public virtual ICollection<tblAnswer> tblAnswer { get; set; }

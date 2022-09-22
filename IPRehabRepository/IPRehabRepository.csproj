@@ -1,23 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Contracts\I_FSOPatientRepositories.cs" />
     <Compile Remove="FSOPatientRepositories.cs" />
     <Compile Remove="MasterReportsRepositoryBase.cs" />
+    <Compile Remove="TreatingSpecialtyRecentRepositoryBase.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IPRehabModel\IPRehabModel.csproj" />
-    <ProjectReference Include="..\PatientModel\PatientModel.csproj" />
+    <ProjectReference Include="..\PatientModel\PatientModel_HealthFactor.csproj" />
+    <ProjectReference Include="..\PatientModel_TreatingSpecialty\PatientModel_TreatingSpecialty.csproj" />
     <ProjectReference Include="..\UserModel\UserModel.csproj" />
   </ItemGroup>
 

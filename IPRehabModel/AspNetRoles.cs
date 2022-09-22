@@ -14,7 +14,7 @@ namespace IPRehabModel
         public AspNetRoles()
         {
             AspNetRoleClaims = new HashSet<AspNetRoleClaims>();
-            AspNetUserRoles = new HashSet<AspNetUserRoles>();
+            User = new HashSet<AspNetUsers>();
         }
 
         [Key]
@@ -27,7 +27,9 @@ namespace IPRehabModel
 
         [InverseProperty("Role")]
         public virtual ICollection<AspNetRoleClaims> AspNetRoleClaims { get; set; }
+
+        [ForeignKey("RoleId")]
         [InverseProperty("Role")]
-        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public virtual ICollection<AspNetUsers> User { get; set; }
     }
 }

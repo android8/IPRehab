@@ -12,215 +12,260 @@ using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
-  //ToDo: [Authorize]
-  public class QuestionController : BaseController
-  {
-    public QuestionController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<QuestionController> logger)
-      : base(environment, configuration, logger)
+    //ToDo: [Authorize]
+    public class QuestionController : BaseController
     {
-    }
-
-    /// <summary>
-    /// https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns> 
-    // GET: QuestionController/Edit/5
-    //public async Task<ActionResult> Edit1(string stage, string patientID, string patientName, int episodeID)
-    //{
-    //  stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
-    //  patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
-    //  string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
-
-    //  string action = "Edit";
-    //  ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
-    //  ViewBag.Action = $"{action} Mode";
-
-    //  List<QuestionDTO> questions = new List<QuestionDTO>();
-    //  bool includeAnswer = (action == "Edit");
-
-    //  RehabActionViewModel actionButtonVM = new()
-    //  {
-    //    HostingPage = "Question",
-    //    EpisodeID = episodeID,
-    //  };
-
-    //  ViewBag.ActionBtnVM = actionButtonVM;
-
-    //  string apiEndpoint;
-    //  string badgeBackgroundColor;
-    //  switch (stage)
-    //  {
-    //    case null:
-    //    case "":
-    //    case "Full":
-    //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-    //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
-    //      break;
-    //    default:
-    //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
-    //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
-    //      break;
-    //  }
-    //  ViewBag.ModeColor = badgeBackgroundColor;
-
-    //  questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", base.BaseOptions);
-
-    //  List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
-    //  foreach (var dto in questions)
-    //  {
-    //    QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
-    //    vm.Add(qws);
-    //  }
-
-    //  //model for section navigator side bar
-    //  var distinctSections = HydrateVM.GetDistinctSections(vm);
-    //  ViewBag.QuestionSections = distinctSections;
-
-    //  //returning the question list to view  
-    //  return View(vm);
-    //}
-
-    public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy)
-    {
-      string patientApiEndpoint = string.Empty;
-      string questionApiEndpoint = string.Empty;
-      string facilityID = string.Empty;
-      string currentUserID = ViewBag.CurrentUserID;
-      string patientName = string.Empty;
-      stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
-
-      PatientDTO thisPatient;
-      //enforcing PHI/PII, no patient ID nor patient name can be used in querystring
-      //so use episode id to search for the target patient
-      switch (stage)
-      {
-        case "New":
-          if (episodeID == -1)
-            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
-          else
-            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?patientID={patientID}&pageSize={base.PageSize}";
-            break;
-        default:
-          if (episodeID == -1)
-          {
-            //get patient by patientID since no episodeID to go by
-            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
-            /* ToDo: to be deleted after test */
-            //patientApiEndpoint = $"{ApiBaseUrl}/api/TestFSODPatient/{patientID}?networkID={currentUserID}&pageSize={base.PageSize}";
-          }
-          else
-          {
-            //get patient by episodeID
-            patientApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
-            /* ToDo: to be deleted after test */
-            //patientApiEndpoint = $"{ApiBaseUrl}/api/TestFSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
-          }
-          break;
-      }
-
-      thisPatient = await SerializationGeneric<PatientDTO>.SerializeAsync($"{patientApiEndpoint}", base.BaseOptions);
-      patientID = thisPatient.PTFSSN;
-      patientName = thisPatient.Name;
-      facilityID = thisPatient.Facility;
-      string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
-      string action = nameof(Edit);
-      bool includeAnswer = (action == "Edit");
-      if (stage == "New")
-      {
-        includeAnswer = false;
-      }
-
-      List<QuestionDTO> questions = new();
-
-      questionApiEndpoint = stage switch
-      {
-          null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
-          _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}",
-      };
-
-      questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{questionApiEndpoint}", base.BaseOptions);
-
-      string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
-
-      RehabActionViewModel episodeCommandBtn = new()
-      {
-        HostingPage = "Question",
-        SearchCriteria = searchCriteria,
-        PageNumber = pageNumber,
-        EpisodeID = episodeID,
-      };
-
-      if (episodeID == -1)
-      {
-        episodeCommandBtn.EnableThisPatient = false;
-        episodeCommandBtn.PatientID = patientID;
-      }
-      PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
-      //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
-      thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
-
-      QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
-      qh.ReadOnly = false;
-      qh.EpisodeID = episodeID;
-      qh.StageTitle = stageTitle;
-      qh.StageCode = stage;
-      qh.FacilityID = facilityID;
-      qh.PatientID = patientID;
-      qh.PatientName = patientName;
-      qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
-      qh.CurrentAction = $"{action} Mode";
-      qh.ModeColorCssClass = actionBtnColor;
-      qh.WebApiBaseUrl = ApiBaseUrl;
-      return View(qh);
-    }
-
-    // POST: QuestionController/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit([FromBody] PostbackModel postbackModel)
-    {
-      if (ModelState.IsValid)
-      {
-        List<UserAnswer> newAnswers = postbackModel.NewAnswers;
-        List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
-        List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
-
-        //forward the postbackModel to web api Answer controller
-        Uri uri = new($"{ApiBaseUrl}/api/Answer/Post");
-
-        var Res = await APIAgent.PostDataAsync(uri, postbackModel);
-        if (Res.IsSuccessStatusCode)
+        public QuestionController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<QuestionController> logger)
+          : base(environment, configuration, logger)
         {
-          Response.StatusCode = (int)Res.StatusCode;
-          //return Json("Data saved successfully");
-          return new JsonResult("Data saved successfully");
         }
-        else
+
+        /// <summary>
+        /// https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns> 
+        // GET: QuestionController/Edit/5
+        //public async Task<ActionResult> Edit1(string stage, string patientID, string patientName, int episodeID)
+        //{
+        //  stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
+        //  patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
+        //  string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
+
+        //  string action = "Edit";
+        //  ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
+        //  ViewBag.Action = $"{action} Mode";
+
+        //  List<QuestionDTO> questions = new List<QuestionDTO>();
+        //  bool includeAnswer = (action == "Edit");
+
+        //  RehabActionViewModel actionButtonVM = new()
+        //  {
+        //    HostingPage = "Question",
+        //    EpisodeID = episodeID,
+        //  };
+
+        //  ViewBag.ActionBtnVM = actionButtonVM;
+
+        //  string apiEndpoint;
+        //  string badgeBackgroundColor;
+        //  switch (stage)
+        //  {
+        //    case null:
+        //    case "":
+        //    case "Full":
+        //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
+        //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+        //      break;
+        //    default:
+        //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
+        //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
+        //      break;
+        //  }
+        //  ViewBag.ModeColor = badgeBackgroundColor;
+
+        //  questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", base.BaseOptions);
+
+        //  List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
+        //  foreach (var dto in questions)
+        //  {
+        //    QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
+        //    vm.Add(qws);
+        //  }
+
+        //  //model for section navigator side bar
+        //  var distinctSections = HydrateVM.GetDistinctSections(vm);
+        //  ViewBag.QuestionSections = distinctSections;
+
+        //  //returning the question list to view  
+        //  return View(vm);
+        //}
+
+        public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy)
         {
-          Response.StatusCode = (int)Res.StatusCode;
-          return new JsonResult($"Data not saved. {Res}");
+            bool useTreatingSpecialtyForPatient = true;
+            string healthFactoreApiEndpoint = string.Empty;
+            string treatingSpecialtyEndpoint = string.Empty;
+            string questionApiEndpoint = string.Empty;
+            string facilityID = string.Empty;
+            string currentUserID = ViewBag.CurrentUserID;
+            string patientName = string.Empty;
+            stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
+
+
+            //to enforce PHI/PII, no patient ID nor patient name can be used in querystring
+            //so use episode id to search for the target patient
+
+            if (useTreatingSpecialtyForPatient)
+            {
+                PatientDTOTreatingSpecialty patientstreatingSpecialty = await PatientsFromTreatingSpecialty(episodeID, patientID, currentUserID);
+                patientID = patientstreatingSpecialty.PTFSSN;
+                patientName = patientstreatingSpecialty.Name;
+                facilityID = patientstreatingSpecialty.Sta6a;
+            }
+            else
+            {
+                PatientDTO patientsFromHealthFactor = await PatientsFromHealthFactor(episodeID, patientID, currentUserID);
+                patientID = patientsFromHealthFactor.PTFSSN;
+                patientName = patientsFromHealthFactor.Name;
+                facilityID = patientsFromHealthFactor.Facility;
+            }
+
+            string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
+            string action = nameof(Edit);
+            bool includeAnswer = (action == "Edit");
+            if (stage == "New")
+            {
+                includeAnswer = false;
+            }
+
+            List<QuestionDTO> questions = new();
+
+            questionApiEndpoint = stage switch
+            {
+                null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
+                _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}",
+            };
+
+            questions = await SerializationGeneric<List<QuestionDTO>>.DeserializeAsync($"{questionApiEndpoint}", base.BaseOptions);
+
+            string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
+
+            RehabActionViewModel episodeCommandBtn = new()
+            {
+                HostingPage = "Question",
+                SearchCriteria = searchCriteria,
+                PageNumber = pageNumber,
+                EpisodeID = episodeID,
+            };
+
+            if (episodeID == -1)
+            {
+                episodeCommandBtn.EnableThisPatient = false;
+                episodeCommandBtn.PatientID = patientID;
+            }
+            PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
+            //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
+            thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+
+            QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
+            qh.ReadOnly = false;
+            qh.EpisodeID = episodeID;
+            qh.StageTitle = stageTitle;
+            qh.StageCode = stage;
+            qh.FacilityID = facilityID;
+            qh.PatientID = patientID;
+            qh.PatientName = patientName;
+            qh.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
+            qh.CurrentAction = $"{action} Mode";
+            qh.ModeColorCssClass = actionBtnColor;
+            qh.WebApiBaseUrl = ApiBaseUrl;
+            return View(qh);
         }
-      }
-      else
-      {
-        Response.StatusCode = StatusCodes.Status400BadRequest;
-        return new JsonResult("Data not saved.  The post back model is not valid.");
-      }
-    }
 
-    // GET: QuestionController/Delete/5
-    //public ActionResult Delete(int id)
-    //{
-    //  return View();
-    //}
+        // POST: QuestionController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit([FromBody] PostbackModel postbackModel)
+        {
+            if (ModelState.IsValid)
+            {
+                List<UserAnswer> newAnswers = postbackModel.NewAnswers;
+                List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
+                List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
 
-    // POST: QuestionController/Delete/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Delete(int id, IFormCollection collection)
-    {
-      return RedirectToAction(nameof(Edit));
+                //forward the postbackModel to web api Answer controller
+                Uri uri = new($"{ApiBaseUrl}/api/Answer/Post");
+
+                var Res = await APIAgent.PostDataAsync(uri, postbackModel);
+                if (Res.IsSuccessStatusCode)
+                {
+                    Response.StatusCode = (int)Res.StatusCode;
+                    //return Json("Data saved successfully");
+                    return new JsonResult("Data saved successfully");
+                }
+                else
+                {
+                    Response.StatusCode = (int)Res.StatusCode;
+                    return new JsonResult($"Data not saved. {Res}");
+                }
+            }
+            else
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return new JsonResult("Data not saved.  The post back model is not valid.");
+            }
+        }
+
+        // GET: QuestionController/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //  return View();
+        //}
+
+        // POST: QuestionController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
+        {
+            return RedirectToAction(nameof(Edit));
+        }
+
+        private async Task<PatientDTO> PatientsFromHealthFactor(int episodeID, string patientID, string currentUserID)
+        {
+            PatientDTO patient = new();
+            if (!GetFromSession())
+            {
+                if (episodeID <= 0)
+                {
+                    string healthFactoreApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}/?networkID={currentUserID}&pageSize={base.PageSize}";
+                    patient = await SerializationGeneric<PatientDTO>.DeserializeAsync($"{healthFactoreApiEndpoint}", base.BaseOptions);
+                }
+                else
+                {
+                    string healthFactoreApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
+                    return await SerializationGeneric<PatientDTO>.DeserializeAsync($"{healthFactoreApiEndpoint}", base.BaseOptions);
+                }
+            }
+            //else
+            //{
+            //    //ToDo: get from session
+            //}
+
+            return patient;
+        }
+
+        private async Task<PatientDTOTreatingSpecialty> PatientsFromTreatingSpecialty(int episodeID, string patientID, string currentUserID)
+        {
+            PatientDTOTreatingSpecialty patient = new();
+            if (!GetFromSession())
+            {
+                string url = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
+                patient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{url}", base.BaseOptions);
+                //patient = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
+                
+                //cache the patient in HttpContext.Session.Set("")
+            }
+            //else
+            //{
+            //    //ToDo: get from session
+            //}
+            return patient;
+        }
+
+        private bool GetFromSession()
+        {
+
+            string sessionKey = "EveryFacilityPatients";
+            string sessionAllPatients = HttpContext.Session.GetString(sessionKey);
+            if (string.IsNullOrEmpty(sessionAllPatients))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
-  }
 }

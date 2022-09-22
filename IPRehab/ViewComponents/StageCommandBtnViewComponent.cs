@@ -50,7 +50,7 @@ namespace IPRehab.ViewComponents
                     cmdBtnTemplateVM.TextNode = "Patient List";
                     RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
                     clonedPatientActionVM.ControllerName = "Patient";
-                    clonedPatientActionVM.ActionName = "Index";
+                    clonedPatientActionVM.ActionName = "IndexTreatingSpecailty";
                     clonedPatientActionVM.PatientID = string.Empty;
                     clonedPatientActionVM.EpisodeID = -1;
                     cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;  //use cloned

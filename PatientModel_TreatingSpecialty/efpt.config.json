@@ -1,0 +1,51 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "DMTreatingSpecialtyContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "ProjectRootNamespace": "PatientModel_TreatingSpecialty",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[dbo].[FactTSAll_CDW]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[FactTSAll_CDW_2yrs]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[FactTSAll_Day_CDW_2yrs]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[FactTSAll_recent]",
+         "ObjectType": 3
+      }
+   ],
+   "UiHint": "VHAAUSBI13.DMTreatingSpecialty",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}

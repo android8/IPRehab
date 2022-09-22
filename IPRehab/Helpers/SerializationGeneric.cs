@@ -6,56 +6,47 @@ using System.Threading.Tasks;
 
 namespace IPRehab.Helpers
 {
-  public static class SerializationGeneric<T> where T : class
-  {
-    public static HttpResponseMessage Res { get; set; }
-
-    public static async Task<T> SerializeAsync(string url, JsonSerializerOptions serializerOptions)
+    public static class SerializationGeneric<T> where T : class
     {
-      string httpMsgContentReadMethod = "ReadAsStreamAsync";
-      T theList = null;
-      Res = await APIAgent.GetDataAsync(new Uri(url));
+        public static HttpResponseMessage Res { get; set; }
 
-      if (Res == null)
-        return null;
-      else
-      {
-        if (Res.Content is not null)
+        public static async Task<T> DeserializeAsync(string url, JsonSerializerOptions serializerOptions)
         {
-          switch (Res.Content.Headers.ContentType.MediaType)
-          {
-            case "application/json":
-              {
+            string httpMsgContentReadMethod = "ReadAsStreamAsync";
+            T theList = null;
+
+            Res = await APIAgent.GetDataAsync(new Uri(url));
+
+            if (Res.IsSuccessStatusCode)
+            {
                 switch (httpMsgContentReadMethod)
                 {
-                  case "ReadAsAsync":
-                    theList = await Res.Content.ReadAsAsync<T>();
-                    break;
+                    case "ReadAsAsync":
+                        theList = await Res.Content.ReadAsAsync<T>();
+                        break;
 
-                  //use .Net 5 built-in deserializer
-                  case "ReadAsStreamAsync":
-                    Stream contentStream = await Res.Content.ReadAsStreamAsync();
-                    theList = await JsonSerializer.DeserializeAsync<T>(contentStream, serializerOptions);
-                    break;
+                    //use .Net 5 built-in deserializer
+                    case "ReadAsStreamAsync":
+                        Stream contentStream = await Res.Content.ReadAsStreamAsync();
+                        theList = await JsonSerializer.DeserializeAsync<T>(contentStream, serializerOptions);
+                        
+                        break;
                 }
-                break;
-              }
-          }
+            }
+
+            return theList;
         }
-        return theList;
-      }
-    }
 
     public static async Task<Stream> SerializeAsync(T typedObject)
     {
-      using var stream = new MemoryStream();
-      await JsonSerializer.SerializeAsync(stream, typedObject, typedObject.GetType());
-      return stream;
+        using var stream = new MemoryStream();
+        await JsonSerializer.SerializeAsync(stream, typedObject, typedObject.GetType());
+        return stream;
     }
 
     public static async Task<T> DeserializeAsync(Stream stream, JsonSerializerOptions deserializerOptions)
     {
-      return await JsonSerializer.DeserializeAsync<T>(stream, deserializerOptions);
+        return await JsonSerializer.DeserializeAsync<T>(stream, deserializerOptions);
     }
-  }
+}
 }

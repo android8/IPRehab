@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblCodeSet", Schema = "app")]
-    [Index(nameof(CodeSetParent), nameof(CodeValue), Name = "IX_tblCodeSet", IsUnique = true)]
+    [Index("CodeSetParent", "CodeValue", Name = "IX_tblCodeSet", IsUnique = true)]
     public partial class tblCodeSet
     {
         public tblCodeSet()
@@ -28,35 +28,38 @@ namespace IPRehabModel
         public int? CodeSetParent { get; set; }
         [Required]
         [StringLength(30)]
+        [Unicode(false)]
         public string CodeValue { get; set; }
         [Required]
         [StringLength(400)]
+        [Unicode(false)]
         public string CodeDescription { get; set; }
         public int? HierarchyType { get; set; }
         public bool? Active { get; set; }
         public int? FyConstraint { get; set; }
         public int? SortOrder { get; set; }
         [StringLength(200)]
+        [Unicode(false)]
         public string Comment { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(CodeSetParent))]
-        [InverseProperty(nameof(tblCodeSet.InverseCodeSetParentNavigation))]
+        [ForeignKey("CodeSetParent")]
+        [InverseProperty("InverseCodeSetParentNavigation")]
         public virtual tblCodeSet CodeSetParentNavigation { get; set; }
-        [InverseProperty(nameof(tblCodeSet.CodeSetParentNavigation))]
+        [InverseProperty("CodeSetParentNavigation")]
         public virtual ICollection<tblCodeSet> InverseCodeSetParentNavigation { get; set; }
         [InverseProperty("AnswerCodeSetFKNavigation")]
         public virtual ICollection<tblAnswer> tblAnswer { get; set; }
         [InverseProperty("AnswerCodeSetFKNavigation")]
         public virtual ICollection<tblQuestion> tblQuestion { get; set; }
-        [InverseProperty(nameof(tblQuestionInstruction.DisplayLocationFKNavigation))]
+        [InverseProperty("DisplayLocationFKNavigation")]
         public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionDisplayLocationFKNavigation { get; set; }
-        [InverseProperty(nameof(tblQuestionInstruction.StageCodeSetIDFKNavigation))]
+        [InverseProperty("StageCodeSetIDFKNavigation")]
         public virtual ICollection<tblQuestionInstruction> tblQuestionInstructionStageCodeSetIDFKNavigation { get; set; }
-        [InverseProperty(nameof(tblQuestionMeasure.MeasureCodeSetIDFKNavigation))]
+        [InverseProperty("MeasureCodeSetIDFKNavigation")]
         public virtual ICollection<tblQuestionMeasure> tblQuestionMeasureMeasureCodeSetIDFKNavigation { get; set; }
-        [InverseProperty(nameof(tblQuestionMeasure.StageFKNavigation))]
+        [InverseProperty("StageFKNavigation")]
         public virtual ICollection<tblQuestionMeasure> tblQuestionMeasureStageFKNavigation { get; set; }
     }
 }

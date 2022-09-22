@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblAnswer", Schema = "app")]
-    [Index(nameof(QuestionIDFK), Name = "IX_tblAnswer_QuestionIDFK")]
+    [Index("QuestionIDFK", Name = "IX_tblAnswer_QuestionIDFK")]
     public partial class tblAnswer
     {
         [Key]
@@ -19,24 +19,26 @@ namespace IPRehabModel
         public int MeasureIDFK { get; set; }
         public int AnswerCodeSetFK { get; set; }
         public int AnswerSequenceNumber { get; set; }
+        [Unicode(false)]
         public string Description { get; set; }
         [Required]
         [StringLength(50)]
+        [Unicode(false)]
         public string AnswerByUserID { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(AnswerCodeSetFK))]
-        [InverseProperty(nameof(tblCodeSet.tblAnswer))]
+        [ForeignKey("AnswerCodeSetFK")]
+        [InverseProperty("tblAnswer")]
         public virtual tblCodeSet AnswerCodeSetFKNavigation { get; set; }
-        [ForeignKey(nameof(EpsideOfCareIDFK))]
-        [InverseProperty(nameof(tblEpisodeOfCare.tblAnswer))]
+        [ForeignKey("EpsideOfCareIDFK")]
+        [InverseProperty("tblAnswer")]
         public virtual tblEpisodeOfCare EpsideOfCareIDFKNavigation { get; set; }
-        [ForeignKey(nameof(MeasureIDFK))]
-        [InverseProperty(nameof(tblQuestionMeasure.tblAnswer))]
+        [ForeignKey("MeasureIDFK")]
+        [InverseProperty("tblAnswer")]
         public virtual tblQuestionMeasure MeasureIDFKNavigation { get; set; }
-        [ForeignKey(nameof(QuestionIDFK))]
-        [InverseProperty(nameof(tblQuestion.tblAnswer))]
+        [ForeignKey("QuestionIDFK")]
+        [InverseProperty("tblAnswer")]
         public virtual tblQuestion QuestionIDFKNavigation { get; set; }
     }
 }

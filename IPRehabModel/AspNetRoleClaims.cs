@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("AspNetRoleClaims", Schema = "app")]
-    [Index(nameof(RoleId), Name = "IX_AspNetRoleClaims_RoleId")]
+    [Index("RoleId", Name = "IX_AspNetRoleClaims_RoleId")]
     public partial class AspNetRoleClaims
     {
         [Key]
@@ -19,8 +19,8 @@ namespace IPRehabModel
         public string ClaimType { get; set; }
         public string ClaimValue { get; set; }
 
-        [ForeignKey(nameof(RoleId))]
-        [InverseProperty(nameof(AspNetRoles.AspNetRoleClaims))]
+        [ForeignKey("RoleId")]
+        [InverseProperty("AspNetRoleClaims")]
         public virtual AspNetRoles Role { get; set; }
     }
 }

@@ -14,15 +14,7 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "Name": "[Apps].[tbl_VSSCMainContent]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[Apps].[uspVSSCMain_SelectAccessInformationFromNSSD]",
-         "ObjectType": 1
-      },
-      {
-         "Name": "[Apps].[uspVSSCMain_SelectAllProducts]",
          "ObjectType": 1
       }
    ],
@@ -32,9 +24,12 @@
    "UseDbContextSplitting": false,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
+   "UseHierarchyId": false,
    "UseInflector": false,
    "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
    "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
    "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,

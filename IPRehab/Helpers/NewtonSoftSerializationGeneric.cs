@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace IPRehab.Helpers
 {
-  public static class NewtonSoftSerializationGeneric<T> where T : class
+    public static class NewtonSoftSerializationGeneric<T> where T : class
   {
     public static string Serialize(T typeObject) => JsonConvert.SerializeObject(typeObject);
 

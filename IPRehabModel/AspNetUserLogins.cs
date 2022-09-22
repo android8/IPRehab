@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("AspNetUserLogins", Schema = "app")]
-    [Index(nameof(UserId), Name = "IX_AspNetUserLogins_UserId")]
+    [Index("UserId", Name = "IX_AspNetUserLogins_UserId")]
     public partial class AspNetUserLogins
     {
         [Key]
@@ -22,8 +22,8 @@ namespace IPRehabModel
         [Required]
         public string UserId { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(AspNetUsers.AspNetUserLogins))]
+        [ForeignKey("UserId")]
+        [InverseProperty("AspNetUserLogins")]
         public virtual AspNetUsers User { get; set; }
     }
 }

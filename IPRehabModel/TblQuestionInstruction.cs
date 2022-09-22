@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IPRehabModel
 {
     [Table("tblQuestionInstruction", Schema = "app")]
-    [Index(nameof(QuestionIDFK), nameof(Order), Name = "IX_tblInstruction", IsUnique = true)]
+    [Index("QuestionIDFK", "Order", Name = "IX_tblInstruction", IsUnique = true)]
     public partial class tblQuestionInstruction
     {
         [Key]
@@ -19,18 +19,19 @@ namespace IPRehabModel
         public int? Order { get; set; }
         public int DisplayLocationFK { get; set; }
         [Required]
+        [Unicode(false)]
         public string Instruction { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime LastUpdate { get; set; }
 
-        [ForeignKey(nameof(DisplayLocationFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestionInstructionDisplayLocationFKNavigation))]
+        [ForeignKey("DisplayLocationFK")]
+        [InverseProperty("tblQuestionInstructionDisplayLocationFKNavigation")]
         public virtual tblCodeSet DisplayLocationFKNavigation { get; set; }
-        [ForeignKey(nameof(QuestionIDFK))]
-        [InverseProperty(nameof(tblQuestion.tblQuestionInstruction))]
+        [ForeignKey("QuestionIDFK")]
+        [InverseProperty("tblQuestionInstruction")]
         public virtual tblQuestion QuestionIDFKNavigation { get; set; }
-        [ForeignKey(nameof(StageCodeSetIDFK))]
-        [InverseProperty(nameof(tblCodeSet.tblQuestionInstructionStageCodeSetIDFKNavigation))]
+        [ForeignKey("StageCodeSetIDFK")]
+        [InverseProperty("tblQuestionInstructionStageCodeSetIDFKNavigation")]
         public virtual tblCodeSet StageCodeSetIDFKNavigation { get; set; }
     }
 }

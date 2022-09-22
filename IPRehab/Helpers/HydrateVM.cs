@@ -69,9 +69,9 @@ namespace IPRehab.Helpers
       /* Sections */
       foreach (SectionInfo thisSection in distinctSections)
       {
-        var questionInTheSection = qwsList.Where(q => q.SectionTitle == thisSection.SectionTitle).ToList();
-
-        var questionWithHeaderInstruction = questionInTheSection.Where(q => q.Instructions.Any(i => i.DisplayLocation == "SectionHeader")).FirstOrDefault();
+        List<QuestionWithSelectItems> questionInTheSection = qwsList.Where(q => q.SectionTitle == thisSection.SectionTitle).ToList();
+        
+        QuestionWithSelectItems questionWithHeaderInstruction   = questionInTheSection.Where(q => q.Instructions != null && q.Instructions.Any(i => i.DisplayLocation == "SectionHeader")).FirstOrDefault();
 
         if (questionWithHeaderInstruction != null)
         {
@@ -82,7 +82,7 @@ namespace IPRehab.Helpers
           thisSection.SectionInstruction = thisSection.SectionInstruction.Trim();
         }
 
-        var questionWithAggregateInstruction = questionInTheSection.Where(q => q.Instructions.Any(i => i.DisplayLocation == "SectionFooter")).FirstOrDefault();
+        QuestionWithSelectItems questionWithAggregateInstruction = questionInTheSection.Where(q => q.Instructions != null && q.Instructions.Any(i => i.DisplayLocation == "SectionFooter")).FirstOrDefault();
 
         if (questionWithAggregateInstruction != null)
         {
@@ -139,7 +139,7 @@ namespace IPRehab.Helpers
           var groupKey = questionInTheGroup.First().QuestionKey;
           questionGroup.SharedQuestionKey = groupKey;
 
-          var groupInstruction = questionInTheGroup.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
+          var groupInstruction = questionInTheGroup.Where(q => q.Instructions != null && q.Instructions.Any(i => i.DisplayLocation == "QuestionBody")).ToList();
           if (groupInstruction != null)
           {
             foreach (var q in groupInstruction)
@@ -168,7 +168,7 @@ namespace IPRehab.Helpers
             }
             GG0170SSBreakoutGroup.Questions = questionInBreakoutGroup;
 
-            groupInstruction = questionInBreakoutGroup.Where(q => q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
+            groupInstruction = questionInBreakoutGroup.Where(q => q.Instructions != null && q.Instructions.Any(qi => qi.DisplayLocation == "QuestionBody")).ToList();
             if (groupInstruction != null)
             {
               foreach (var q in groupInstruction)
