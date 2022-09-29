@@ -240,7 +240,7 @@ namespace IPRehabWebAPI2.Helpers
                 string testSite = _appSettings.Value.TestSite;
                 string[] bedSection = _appSettings.Value.BedSection;
                 string[] c_los = _appSettings.Value.C_LOS;
-                string[] staType = _appSettings.Value.STAType;
+                //string[] staType = _appSettings.Value.STAType;
                 if (!string.IsNullOrEmpty(testSite))
                 {
                     //use default test site patients
@@ -356,19 +356,8 @@ namespace IPRehabWebAPI2.Helpers
             var thisEpisode = _episodeRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
             if (thisEpisode != null)
             {
-                foreach (int thisPeriod in GetQuarterOfInterest())
-                {
-                    patients = await _patientRepository.FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK)
-                              .Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToListAsync();
-
-                    if (patients.Any())
-                    {
-                        break;
-                    }
-                }
-
-                //patient not in the last 4 consecutive quarters, so just search by Patient ICN
-                patients = await _patientRepository.FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK).Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToListAsync();
+                patients = await _patientRepository.FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
+                    .Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToListAsync();
             }
 
             return patients.FirstOrDefault();

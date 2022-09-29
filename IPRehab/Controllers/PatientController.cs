@@ -153,47 +153,27 @@ namespace IPRehab.Controllers
         {
             searchCriteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(searchCriteria));
 
-            string sessionSearchCriteria;
             string sessionKey = "SearchCriteria";
-            CancellationToken cancellationToken = new();
-            await HttpContext.Session.LoadAsync(cancellationToken);
-            sessionSearchCriteria = HttpContext.Session.GetString(sessionKey);
-            if (searchCriteria != sessionSearchCriteria)
-            {
-                if (string.IsNullOrEmpty(searchCriteria))
-                    HttpContext.Session.Remove(sessionKey);
-                else
-                    HttpContext.Session.SetString(sessionKey, searchCriteria);
-            }
-
-            string url;
             string currentUserID = ViewBag.CurrentUserID;
+
+            string webApiEndpoint;
             //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
             if (!string.IsNullOrEmpty(currentUserID))
             {
-                url = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
+                webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
 
             }
             else
             {
-                url = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
+                webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
             }
-
-            PatientTreatingSpecialtyListViewModel patientListVM = new()
-            {
-                PageTitle = "In-patient Rehab",
-                PageSysTitle = "In_Patient_Rehab",
-                SearchCriteria = searchCriteria,
-                PageNumber = pageNumber,
-                OrderBy = orderBy
-            };
 
             IEnumerable<PatientDTOTreatingSpecialty> patients = null;
             string sessionAllPatients = HttpContext.Session.GetString(sessionKey);
             if (string.IsNullOrEmpty(sessionAllPatients))
             {
-                patients = await SerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(url, base.BaseOptions);
-                //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(url);
+                patients = await SerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint, base.BaseOptions);
+                //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
 
                 //Session["EveryFacilityPatients"] = patients;
             }
@@ -203,10 +183,32 @@ namespace IPRehab.Controllers
             //}
 
             patients = patients.OrderBy(x => x.Name);
+
+            string sessionSearchCriteria;
+            CancellationToken cancellationToken = new();
+            await HttpContext.Session.LoadAsync(cancellationToken);
+            sessionSearchCriteria = HttpContext.Session.GetString(sessionKey);
+            if (searchCriteria != sessionSearchCriteria)
+            {
+                if (string.IsNullOrEmpty(searchCriteria))
+                    HttpContext.Session.Remove(sessionKey);
+                else
+                    HttpContext.Session.SetString(sessionKey, searchCriteria);
+            }            
+            
+            PatientTreatingSpecialtyListViewModel patientListVM = new()
+            {
+                PageTitle = "In-patient Rehab",
+                PageSysTitle = "In_Patient_Rehab",
+                SearchCriteria = searchCriteria,
+                PageNumber = pageNumber,
+                OrderBy = orderBy
+            };
+
             patientListVM.TotalPatients = patients.Count();
             if (patientListVM.TotalPatients == 0)
             {
-               return View("NoDataTreatingSpecialty", patientListVM);
+                return View("NoDataTreatingSpecialty", patientListVM);
             }
             else
             {
@@ -215,55 +217,46 @@ namespace IPRehab.Controllers
                     PatientTreatingSpecialtyViewModel thisPatVM = new();
                     thisPatVM.Patient = pat;
 
-                    //don't use FSODSSN, it may be null
-                    string rawSSN = pat.PTFSSN;
-
                     //ToDo: encrypt the SSN, only when patient has no existing episode
-                    thisPatVM.Patient.PTFSSN = rawSSN.Substring(rawSSN.Length - 4, 4);
+                    thisPatVM.Patient.PatientICN = pat.PatientICN;
+                    if (!string.IsNullOrEmpty(pat.PTFSSN)
+                        thisPatVM.Patient.PTFSSN = pat.PTFSSN.Substring(pat.PTFSSN.Length - 4, 4);
+                    RehabActionViewModel episodeCommandBtn = new()
+                    {
+                        //since no episode ID we have to use patient ID to find patient
+                        HostingPage = "Patient",
+                        SearchCriteria = searchCriteria,
+                        PageNumber = pageNumber,
+                        OrderBy = orderBy,
+                    };
 
 
                     if (!pat.CareEpisodes.Any())
                     /* no episode */
                     {
-                        RehabActionViewModel episodeCommandBtn = new()
-                        {
-                            //since no episode ID we have to use patient ID to find patient
-                            PatientID = rawSSN,
-                            HostingPage = "Patient",
-                            SearchCriteria = searchCriteria,
-                            PageNumber = pageNumber,
-                            OrderBy = orderBy,
-                            EpisodeID = -1,
-                            EnableThisPatient = false
-                        };
-
-                        PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
+                        episodeCommandBtn.PatientID = pat.PatientICN;
                         //Don't assign episode properties for patient without episode
-                        thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
-                        thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
+                        episodeCommandBtn.EpisodeID = -1;
+                        episodeCommandBtn.EnableThisPatient = false;
+
+                        thisPatVM.EpisodeBtnConfig.Add(new()
+                        {
+                            ActionButtonVM = episodeCommandBtn
+                        });
                     }
                     else
                     /* has episode */
                     {
                         foreach (EpisodeOfCareDTO episode in pat.CareEpisodes)
                         {
-                            episode.PatientIcnFK = rawSSN.Substring(rawSSN.Length - 4, 4);
-
-                            RehabActionViewModel episodeCommandBtn = new()
-                            {
-                                //to avoid exposing PHI/PII, leave the PatientID blank and use the EpisodeID to search for patient ID
-                                PatientID = string.Empty,
-                                HostingPage = "Patient",
-                                SearchCriteria = searchCriteria,
-                                PageNumber = pageNumber,
-                                OrderBy = orderBy,
-                                EpisodeID = episode.EpisodeOfCareID,
-                                EnableThisPatient = true
-                            };
+                            //to avoid exposing PHI/PII, leave the PatientID blank and use the EpisodeID to search for patient ID
+                            episodeCommandBtn.PatientID = string.Empty;
+                            episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
+                            episodeCommandBtn.EnableThisPatient = true;
 
                             //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
 
-                            PatientEpisodeAndCommandVM thisEpisodeAndCommands = new()
+                            thisPatVM.EpisodeBtnConfig.Add(new()
                             {
                                 EpisodeOfCareID = episode.EpisodeOfCareID,
                                 OnsetDate = episode.OnsetDate,
@@ -271,11 +264,10 @@ namespace IPRehab.Controllers
                                 PatientIcnFK = episode.PatientIcnFK,
                                 FormIsComplete = episode.FormIsComplete,
                                 ActionButtonVM = episodeCommandBtn
-                            };
-
-                            thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
+                            });
                         }
                     }
+
                     patientListVM.Patients.Add(thisPatVM);
                 }
 

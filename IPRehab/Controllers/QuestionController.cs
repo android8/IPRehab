@@ -237,11 +237,16 @@ namespace IPRehab.Controllers
 
         private async Task<PatientDTOTreatingSpecialty> PatientsFromTreatingSpecialty(int episodeID, string patientID, string currentUserID)
         {
+            string webAPIendpoint;
             PatientDTOTreatingSpecialty patient = new();
             if (!GetFromSession())
             {
-                string url = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
-                patient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{url}", base.BaseOptions);
+                if(episodeID <= 0)
+                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
+                else
+                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
+
+                patient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
                 //patient = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
                 
                 //cache the patient in HttpContext.Session.Set("")

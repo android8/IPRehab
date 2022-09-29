@@ -80,7 +80,7 @@ namespace IPRehabWebAPI2.Controllers
                     foreach (PatientDTOTreatingSpecialty p in patients)
                     {
                         //p.CareEpisodes = new();
-                        var episodes = _episodeOfCareRepository.FindByCondition(episode => episode.PatientICNFK == p.PTFSSN);
+                        var episodes = _episodeOfCareRepository.FindByCondition(episode => episode.PatientICNFK == p.PTFSSN || episode.PatientICNFK == p.PatientICN);
                         //.OrderBy(x => x.AdmissionDate).ToListAsync();
 
                         foreach (var episode in episodes)
