@@ -77,6 +77,7 @@ const formController = (function () {
                     //when post to MVC (not WebAPI) controller, the antiforerytoken must be named 'RequestVerificationToken' in the header
                     'RequestVerificationToken': $('input[name=X-CSRF-TOKEN-IPREHAB]').val().toString(),
                     'Accept': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
                 },
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -169,8 +170,9 @@ const formController = (function () {
         //because each answer in .map() will use the same episode onset date and admission date
         const onsetDate = new Date($('.persistable[id^=Q23]').val().toString());
         const admissionDate = new Date($('.persistable[id^=Q12_]').val().toString());
-        if (facilityID) {
-            const tmp = facilityID.split('(')[2];
+        console.log('facilityID', facilityID);
+        if (facilityID && facilityID.indexOf('(') !== -1) {
+            const tmp = facilityID.split('(')[1];
             const tmp2pos = tmp.indexOf(')');
             facilityID = tmp.substr(0, tmp2pos);
         }

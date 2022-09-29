@@ -115,7 +115,6 @@ export class Utility implements ICommonUtility {
             case ((currentValue && oldValue) && (currentValue !== oldValue)):
                 console.log('(U)pdate old value = ' + oldValue + ' because new value = ' + currentValue);
                 return 'U';
-                break;
         }
     }
 

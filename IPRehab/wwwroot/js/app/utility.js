@@ -101,7 +101,6 @@ export class Utility {
             case ((currentValue && oldValue) && (currentValue !== oldValue)):
                 console.log('(U)pdate old value = ' + oldValue + ' because new value = ' + currentValue);
                 return 'U';
-                break;
         }
     }
     getControlValue($thisControl, behavior = EnumGetControlValueBehavior.Elaborated /*use other if no valueSource */) {
