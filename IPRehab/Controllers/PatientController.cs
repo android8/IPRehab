@@ -219,7 +219,7 @@ namespace IPRehab.Controllers
 
                     //ToDo: encrypt the SSN, only when patient has no existing episode
                     thisPatVM.Patient.PatientICN = pat.PatientICN;
-                    if (!string.IsNullOrEmpty(pat.PTFSSN)
+                    if (!string.IsNullOrEmpty(pat.PTFSSN))
                         thisPatVM.Patient.PTFSSN = pat.PTFSSN.Substring(pat.PTFSSN.Length - 4, 4);
                     RehabActionViewModel episodeCommandBtn = new()
                     {

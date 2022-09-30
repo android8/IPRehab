@@ -111,8 +111,8 @@ namespace IPRehabWebAPI2
                     policyBuilder =>
                     {
                         policyBuilder
-                        //.WithOrigins("https://localhost:44381","https://vhaausweb3.vha.med.va.gov","https://https://vaww.vssc.med.va.gov/") 
-                        .AllowAnyOrigin() //comment out for testing on localhost
+                        .WithOrigins("https://localhost:44381","https://vhaausweb3.vha.med.va.gov","https://https://vaww.vssc.med.va.gov/") 
+                        //.AllowAnyOrigin() //comment out for testing on localhost
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                     });
@@ -194,8 +194,7 @@ namespace IPRehabWebAPI2
             {
                 //UseCors() must be btween UseRouting and UseAuthorization
                 app.UseCors(MyAllowSpecificOrigins);
-                //app.UseCors();
-            }
+             }
 
             //app.UseAuthentication();
             app.UseAuthorization();

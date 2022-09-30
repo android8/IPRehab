@@ -145,7 +145,7 @@ namespace IPRehabWebAPI2.Helpers
             {
                 Sta6a = p.bsta6a,
                 Name = p.PatientName,
-                PTFSSN = p.scrssn.Value.ToString(),
+                PTFSSN = p.scrssn.HasValue? p.scrssn.Value.ToString() : String.Empty,
                 PatientICN = p.PatientICN,
                 DoB = p.DoB,
                 Bedsecn = p.bedsecn,
@@ -172,6 +172,7 @@ namespace IPRehabWebAPI2.Helpers
             EpisodeOfCareDTO thisDTO = new EpisodeOfCareDTO
             {
                 EpisodeOfCareID = e.EpisodeOfCareID,
+                FacilityID6 = e.FacilityID6,
                 AdmissionDate = admissionDate,
                 OnsetDate = onsetDate,
                 PatientIcnFK = e.PatientICNFK,

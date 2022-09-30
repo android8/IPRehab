@@ -1,11 +1,10 @@
-﻿using IPRehabModel;
-using IPRehabRepository.Contracts;
+﻿using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IPRehabWebAPI2.Controllers
@@ -80,16 +79,18 @@ namespace IPRehabWebAPI2.Controllers
                     foreach (PatientDTOTreatingSpecialty p in patients)
                     {
                         //p.CareEpisodes = new();
-                        var episodes = _episodeOfCareRepository.FindByCondition(episode => episode.PatientICNFK == p.PTFSSN || episode.PatientICNFK == p.PatientICN);
+                        var episodes = _episodeOfCareRepository.FindByCondition(episode => episode.PatientICNFK == p.PTFSSN || episode.PatientICNFK == p.PatientICN).OrderBy(e=>e.EpisodeOfCareID);
                         //.OrderBy(x => x.AdmissionDate).ToListAsync();
 
-                        foreach (var episode in episodes)
+                        if (episodes is not null)
                         {
-                            EpisodeOfCareDTO thisEpisode = HydrateDTO.HydrateEpisodeOfCare(episode);
-                            //hydrate and add the dates from the tblAnswer because they are more up-to-date than the episode dates
-                            p.CareEpisodes.Add(thisEpisode);
+                            foreach (var episode in episodes)
+                            {
+                                EpisodeOfCareDTO thisEpisode = HydrateDTO.HydrateEpisodeOfCare(episode);
+                                //hydrate and add the dates from the tblAnswer because they are more up-to-date than the episode dates
+                                p.CareEpisodes.Add(thisEpisode);
+                            }
                         }
-                        p.CareEpisodes?.Sort();
                     }
                 }
                 return Ok(patients);
