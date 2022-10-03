@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 namespace IPRehab.Controllers
 {
     //ToDo: [Authorize]
+    [ResponseCache(CacheProfileName = "PrivateCache")]
     public class PatientController : BaseController
     {
         public PatientController(IWebHostEnvironment environment, ILogger<PatientController> logger, IConfiguration configuration)
@@ -63,13 +64,15 @@ namespace IPRehab.Controllers
             //patients = await SerializationGeneric<IEnumerable<PatientDTO>>.SerializeAsync(url, base.BaseOptions);
             patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
             patients = patients.OrderBy(x => x.Name);
-            PatientListViewModel patientListVM = new();
-            patientListVM.TotalPatients = patients.Count();
-            patientListVM.PageTitle = "In-patient Rehab";
-            patientListVM.PageSysTitle = "In_Patient_Rehab";
-            patientListVM.SearchCriteria = searchCriteria;
-            patientListVM.PageNumber = pageNumber;
-            patientListVM.OrderBy = orderBy;
+            PatientListViewModel patientListVM = new()
+            {
+                TotalPatients = patients.Count(),
+                PageTitle = "In-patient Rehab",
+                PageSysTitle = "In_Patient_Rehab",
+                SearchCriteria = searchCriteria,
+                PageNumber = pageNumber,
+                OrderBy = orderBy
+            };
 
             if (patients == null || !patients.Any())
             {
@@ -153,11 +156,12 @@ namespace IPRehab.Controllers
         {
             searchCriteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(searchCriteria));
 
-            string sessionKey = "SearchCriteria";
             string currentUserID = ViewBag.CurrentUserID;
 
             string webApiEndpoint;
-            //Sending request to find web api REST service resource FSODPatient using HttpClient in the APIAgent
+
+            IEnumerable<PatientDTOTreatingSpecialty> patients = null;
+
             if (!string.IsNullOrEmpty(currentUserID))
             {
                 webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
@@ -167,34 +171,25 @@ namespace IPRehab.Controllers
             {
                 webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
             }
+                
+            //Sending request to find web api REST service resource TreatingSpecialtyPatientController using HttpClient in the APIAgent
+            patients = await SerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint, base.BaseOptions);
+            //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
 
-            IEnumerable<PatientDTOTreatingSpecialty> patients = null;
-            string sessionAllPatients = HttpContext.Session.GetString(sessionKey);
-            if (string.IsNullOrEmpty(sessionAllPatients))
-            {
-                patients = await SerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint, base.BaseOptions);
-                //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
-
-                //Session["EveryFacilityPatients"] = patients;
-            }
-            //else
-            //{
-            //    patients = HttpContext.Session.GetString(sessionAllPatients);
-            //}
 
             patients = patients.OrderBy(x => x.Name);
 
-            string sessionSearchCriteria;
-            CancellationToken cancellationToken = new();
-            await HttpContext.Session.LoadAsync(cancellationToken);
-            sessionSearchCriteria = HttpContext.Session.GetString(sessionKey);
-            if (searchCriteria != sessionSearchCriteria)
-            {
-                if (string.IsNullOrEmpty(searchCriteria))
-                    HttpContext.Session.Remove(sessionKey);
-                else
-                    HttpContext.Session.SetString(sessionKey, searchCriteria);
-            }            
+            //string sessionSearchCriteria;
+            //CancellationToken cancellationToken = new();
+            //await HttpContext.Session.LoadAsync(cancellationToken);
+            //sessionSearchCriteria = HttpContext.Session.GetString("SearchCriteria");
+            //if (searchCriteria != sessionSearchCriteria)
+            //{
+            //    if (string.IsNullOrEmpty(searchCriteria))
+            //        HttpContext.Session.Remove("SearchCriteria");
+            //    else
+            //        HttpContext.Session.SetString("SearchCriteria", searchCriteria);
+            //}            
             
             PatientTreatingSpecialtyListViewModel patientListVM = new()
             {
@@ -202,10 +197,10 @@ namespace IPRehab.Controllers
                 PageSysTitle = "In_Patient_Rehab",
                 SearchCriteria = searchCriteria,
                 PageNumber = pageNumber,
-                OrderBy = orderBy
+                OrderBy = orderBy,
+                TotalPatients = patients.Count()
             };
 
-            patientListVM.TotalPatients = patients.Count();
             if (patientListVM.TotalPatients == 0)
             {
                 return View("NoDataTreatingSpecialty", patientListVM);

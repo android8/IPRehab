@@ -76,7 +76,6 @@ namespace IPRehabWebAPI2
             services.AddScoped<AnswerHelper, AnswerHelper>();
             #endregion
 
-
             services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             #region SWAGGER interface
@@ -111,7 +110,7 @@ namespace IPRehabWebAPI2
                     policyBuilder =>
                     {
                         policyBuilder
-                        .WithOrigins("https://localhost:44381","https://vhaausweb3.vha.med.va.gov","https://https://vaww.vssc.med.va.gov/") 
+                        .WithOrigins("https://localhost:44381", "https://vhaausweb3.vha.med.va.gov", "https://https://vaww.vssc.med.va.gov/")
                         //.AllowAnyOrigin() //comment out for testing on localhost
                         .AllowAnyHeader()
                         .AllowAnyMethod();
@@ -120,7 +119,6 @@ namespace IPRehabWebAPI2
             #endregion
 
             #region API Controller behaviors
-            services.AddResponseCaching();
             services.AddControllers(o =>
             {
                 o.EnableEndpointRouting = true;
@@ -194,12 +192,11 @@ namespace IPRehabWebAPI2
             {
                 //UseCors() must be btween UseRouting and UseAuthorization
                 app.UseCors(MyAllowSpecificOrigins);
-             }
+            }
 
             //app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseResponseCaching();
             app.UseEndpoints(endpoints =>
             {
                 //enforce CORS for all web api controlers without [CORS] attribute

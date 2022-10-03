@@ -2,14 +2,12 @@ using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Linq;
 using System.Text.Json.Serialization;
-using IEmailSender = Mailer.IEmailSender;
 
 namespace IPRehab
 {
@@ -47,12 +45,20 @@ namespace IPRehab
 
             //services.AddDistributedMemoryCache(); //do not use because out of process 
             //services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
+            services.AddResponseCaching();
 
-            services.AddControllersWithViews().AddJsonOptions(o =>
-            {
-                o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; //preserve circular reference
-            });
+            services.AddControllersWithViews()
+                .AddJsonOptions(o =>
+                {
+                    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; //preserve circular reference
+                })
+                .AddMvcOptions(options =>
+                {
+                    options.CacheProfiles.Add("PrivateCache",
+                        new CacheProfile() { Duration = 60 * 24, Location = ResponseCacheLocation.Client, VaryByQueryKeys = new[] {"*"} });
+                });
 
+            #region web optimization
             // https://github.com/ligershark/WebOptimizer
             if (Env.IsDevelopment())
             {
@@ -64,28 +70,24 @@ namespace IPRehab
                 services.AddWebOptimizer(pipeline =>
                 {
                     // Creates a CSS and a JS bundle. Globbing patterns supported.
-                    pipeline.AddScssBundle("/css/siteCssBundle.css",
-              new string[] {
-              "css/**/site.css",
-              "css/**/transition.css",
-              "css/**/app.css"
+                    pipeline.AddScssBundle("/css/siteCssBundle.css", new string[] {
+                      "css/**/site.css",
+                      "css/**/transition.css",
+                      "css/**/app.css"
                     });
 
-                    pipeline.AddJavaScriptBundle("/js/siteJsBundle.js",
-              new string[] {
-              "js/**/animateBanner.js",
-              "js/**/cookieConsent.js"});
+                    pipeline.AddJavaScriptBundle("/js/siteJsBundle.js", new string[] {
+                      "js/**/animateBanner.js",
+                      "js/**/cookieConsent.js"});
 
-                    pipeline.AddJavaScriptBundle("/js/patientBundle.js",
-              new string[] {
-              "js/**/commandBtns.js",
-              "js/**/patientList.js"});
+                    pipeline.AddJavaScriptBundle("/js/patientBundle.js", new string[] {
+                      "js/**/commandBtns.js",
+                      "js/**/patientList.js"});
 
-                    pipeline.AddJavaScriptBundle("/js/questionBundle.js",
-              new string[] {
-              "js/**/commandBtns.js",
-              "js/**/branching.js",
-              "js/**/form.js" });
+                    pipeline.AddJavaScriptBundle("/js/questionBundle.js", new string[] {
+                      "js/**/commandBtns.js",
+                      "js/**/branching.js",
+                      "js/**/form.js" });
 
                     // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
                     //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")
@@ -108,13 +110,15 @@ namespace IPRehab
                     .MinifyCss();
                 });
             }
+            #endregion
 
-            services.AddResponseCaching();
             services.AddRazorPages();
 
+            #region IoC
             /* IoC for mailer.  It's not WebAPI's concern so it should not register there */
             services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
             services.AddSingleton<Mailer.IEmailSender, EmailSender>();
+            #endregion
 
             /* Implement ProblemDetailsFactory
               MVC uses Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory to produce all instances of ProblemDetails and ValidationProblemDetails. This includes client error responses, validation failure error responses, and the ControllerBase.Problem and ControllerBase.ValidationProblem helper methods.
@@ -136,28 +140,36 @@ namespace IPRehab
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            #region Exception Handler
             if (env.IsDevelopment())
             {
                 //app.UseDeveloperExceptionPage();
+
+                //route to ErrorController action that has [Route("/error-local-development")]
                 app.UseExceptionHandler("/error-local-development");
             }
             else
             {
+                //route to ErrorController action that has [Route("/error")]
                 app.UseExceptionHandler("/error");
+
                 //app.UseExceptionHandler(appBuilder =>
                 //{
-                //     override the current Path
-                //    appBuilder.Use(async (ctx, next) =>
-                //    {
-                //        ctx.Request.Path = "/error";
-                //        await next();
-                //    });
-                //     let the staticFiles middleware to serve the sth-wrong.html
-                //    appBuilder.UseStaticFiles();
+                //  override the current Path
+                //  appBuilder.Use(async (ctx, next) =>
+                //  {
+                //      ctx.Request.Path = "/error";
+                //      await next();
+                //  });
+
+                //  let the staticFiles middleware to serve the sth-wrong.html
+                //  appBuilder.UseStaticFiles();
                 //});
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            #endregion
 
             app.UseHttpsRedirection();
 
