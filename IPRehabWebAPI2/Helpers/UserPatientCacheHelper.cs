@@ -282,11 +282,12 @@ namespace IPRehabWebAPI2.Helpers
                                 }
                                 break; //break case
                             case "non-numeric":
+                                criteria = criteria.Trim().ToLower();
                                 filteredPatients = facilityPatients.FindAll(p =>
-                                                    p.Last_Name.Contains(criteria) ||
-                                                    p.First_Name.Contains(criteria) ||
-                                                    p.scrssn.ToString().Contains(criteria) ||
-                                                    p.PatientICN.Contains(criteria)
+                                                    p.Last_Name.Trim().ToLower().Contains(criteria) ||
+                                                    p.First_Name.Trim().ToLower().Contains(criteria) ||
+                                                    p.scrssn.ToString().Trim().Contains(criteria) ||
+                                                    p.PatientICN.Trim().Contains(criteria)
                                                 );
 
                                 if (filteredPatients.Any())
