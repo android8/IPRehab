@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "PatientModel_TreatingSpecialty": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:17267;http://localhost:17268"
+    }
+  }
+}

@@ -1,7 +1,6 @@
 ﻿using IPRehabModel;
 using IPRehabWebAPI2.Models;
 using PatientModel;
-using PatientModel_TreatingSpecialty;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +16,15 @@ namespace IPRehabWebAPI2.Helpers
         //ToDo: should use AutoMapper
         public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
         {
-            QuestionDTO questionDTO = new();
-            questionDTO.FormName = stageName;
-            questionDTO.StageID = stageID;
-            questionDTO.QuestionID = q.QuestionID;
-            questionDTO.QuestionKey = q.QuestionKey;
-            questionDTO.QuestionSection = q.QuestionSection;
-            questionDTO.Question = q.Question;
+            QuestionDTO questionDTO = new()
+            {
+                FormName = stageName,
+                StageID = stageID,
+                QuestionID = q.QuestionID,
+                QuestionKey = q.QuestionKey,
+                QuestionSection = q.QuestionSection,
+                Question = q.Question
+            };
 
             if (measureCodeSet == null)
             {
@@ -169,7 +170,7 @@ namespace IPRehabWebAPI2.Helpers
                 }
             }
 
-            EpisodeOfCareDTO thisDTO = new EpisodeOfCareDTO
+            EpisodeOfCareDTO thisDTO = new()
             {
                 EpisodeOfCareID = e.EpisodeOfCareID,
                 FacilityID6 = e.FacilityID6,
