@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\IPRehabModel\IPRehabModel.csproj" />
     <ProjectReference Include="..\PatientModel\PatientModel_HealthFactor.csproj" />
-    <ProjectReference Include="..\PatientModel_TreatingSpecialty\PatientModel_TreatingSpecialty.csproj" />
     <ProjectReference Include="..\UserModel\UserModel.csproj" />
   </ItemGroup>
 

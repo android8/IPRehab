@@ -1,6 +1,5 @@
 ﻿using IPRehabModel;
 using PatientModel;
-using PatientModel_TreatingSpecialty;
 
 namespace IPRehabRepository.Contracts
 {

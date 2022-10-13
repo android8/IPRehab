@@ -132,7 +132,7 @@ namespace IPRehabWebAPI2.Controllers
                     var episodes = _episodeOfCareRepository.FindByCondition(p => p.PatientICNFK == p.PatientICNFK);
                     if (episodes != null)
                     {
-                        List<EpisodeOfCareDTO> listOfEpisodes = new List<EpisodeOfCareDTO>();
+                        List<EpisodeOfCareDTO> listOfEpisodes = new();
                         foreach (var episode in episodes)
                         {
                             listOfEpisodes.Add(HydrateDTO.HydrateEpisodeOfCare(episode));

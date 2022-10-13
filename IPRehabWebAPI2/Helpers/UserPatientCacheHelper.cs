@@ -46,12 +46,12 @@ namespace IPRehabWebAPI2.Helpers
 
             SqlParameter[] paramNetworkID = new SqlParameter[]
             {
-        new SqlParameter(){
-          ParameterName = "@UserName",
-          SqlDbType = System.Data.SqlDbType.VarChar,
-          Direction = System.Data.ParameterDirection.Input,
-          Value = userName
-        }
+                new SqlParameter(){
+                  ParameterName = "@UserName",
+                  SqlDbType = System.Data.SqlDbType.VarChar,
+                  Direction = System.Data.ParameterDirection.Input,
+                  Value = userName
+                }
             };
 
             //use dbContext extension method
@@ -60,6 +60,10 @@ namespace IPRehabWebAPI2.Helpers
             var distinctFacilities = userPermission
               .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
               .Select(x => HydrateDTO.HydrateUser(x)).ToList();
+
+            //using var MasterReportsDb = new MasterreportsContext();
+            //var procedure = new MasterreportsContextProcedures(MasterReportsDb);
+            //var accessLevel = procedure.uspVSSCMain_SelectAccessInformationFromNSSDAsync(userName);
 
             return distinctFacilities;
         }
@@ -193,8 +197,8 @@ namespace IPRehabWebAPI2.Helpers
                         }
 
                         if (!string.IsNullOrEmpty(patientID))
-                        viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
-                   }
+                            viewablePatients = viewablePatients.Where(x => x.PTFSSN == patientID);
+                    }
                 }
                 //PatientSearchResultDTO meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
                 //return (meta);
@@ -216,11 +220,11 @@ namespace IPRehabWebAPI2.Helpers
         public async Task<List<PatientDTOTreatingSpecialty>> GetPatients(ITreatingSpecialtyPatientRepository _treatingSpecialtyPatientRepository, string networkName, string criteria, string orderBy, int pageNumber, int pageSize, string patientID)
         {
             List<PatientDTOTreatingSpecialty> patients = null;
-            var distinctUserFacilities = await GetUserAccessLevels(networkName);
+            var distinctUserFacilities = await DistinctUserFacilities(networkName);
 
             if (distinctUserFacilities != null && distinctUserFacilities.Any())
             {
-                List<string> userFacilitySta3 = distinctUserFacilities.Select(x => x.Facility).Distinct().ToList();
+                var userFacilitySta3 = distinctUserFacilities.Select(x => x.Facility).Distinct().ToArray().ToString();
 
                 string cacheKey = criteria;
                 if (string.IsNullOrEmpty(criteria))
@@ -241,6 +245,7 @@ namespace IPRehabWebAPI2.Helpers
                 string[] bedSection = _appSettings.Value.BedSection;
                 string[] c_los = _appSettings.Value.C_LOS;
                 //string[] staType = _appSettings.Value.STAType;
+
                 if (!string.IsNullOrEmpty(testSite))
                 {
                     //use default test site patients
@@ -260,13 +265,13 @@ namespace IPRehabWebAPI2.Helpers
 
                     if (facilityPatients.Any())
                     {
-                        List<vTreatingSpecialtyRecent3Yrs> filteredPatients = new List<vTreatingSpecialtyRecent3Yrs>();
+                        List<vTreatingSpecialtyRecent3Yrs> filteredPatients = new();
 
                         switch (searchCriteriaType)
                         {
                             case "none":
                                 //get single patient if patientID is not blank
-                                facilityPatientsCount = facilityPatients.Count();
+                                facilityPatientsCount = facilityPatients.Count;
                                 filteredPatients = facilityPatients;
                                 break; //break case
                             case "numeric":
@@ -278,7 +283,7 @@ namespace IPRehabWebAPI2.Helpers
 
                                 if (filteredPatients.Any())
                                 {
-                                    facilityPatientsCount = facilityPatients.Count();
+                                    facilityPatientsCount = facilityPatients.Count;
                                 }
                                 break; //break case
                             case "non-numeric":
@@ -292,7 +297,7 @@ namespace IPRehabWebAPI2.Helpers
 
                                 if (filteredPatients.Any())
                                 {
-                                    facilityPatientsCount = filteredPatients.Count();
+                                    facilityPatientsCount = filteredPatients.Count;
                                 }
                                 break;
                         }
