@@ -83,8 +83,10 @@ namespace IPRehab.Controllers
             {
                 foreach (PatientDTO pat in patients)
                 {
-                    PatientViewModel thisPatVM = new();
-                    thisPatVM.Patient = pat;
+                    PatientViewModel thisPatVM = new()
+                    {
+                        Patient = pat
+                    };
 
                     //don't use FSODSSN, it may be null
                     string rawSSN = pat.PTFSSN;
@@ -106,9 +108,11 @@ namespace IPRehab.Controllers
                             EnableThisPatient = false
                         };
 
-                        PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
-                        //Don't assign episode properties for patient without episode
-                        thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+                        PatientEpisodeAndCommandVM thisEpisodeAndCommands = new()
+                        {
+                            //Don't assign episode properties for patient without episode
+                            ActionButtonVM = episodeCommandBtn
+                        };
                         thisPatVM.EpisodeBtnConfig.Add(thisEpisodeAndCommands);
                     }
                     else
@@ -209,8 +213,10 @@ namespace IPRehab.Controllers
             {
                 foreach (PatientDTOTreatingSpecialty pat in patients)
                 {
-                    PatientTreatingSpecialtyViewModel thisPatVM = new();
-                    thisPatVM.Patient = pat;
+                    PatientTreatingSpecialtyViewModel thisPatVM = new()
+                    {
+                        Patient = pat
+                    };
 
                     //ToDo: encrypt the SSN, only when patient has no existing episode
                     thisPatVM.Patient.PatientICN = pat.PatientICN;
