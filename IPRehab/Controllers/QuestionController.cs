@@ -144,9 +144,11 @@ namespace IPRehab.Controllers
                 episodeCommandBtn.EnableThisPatient = false;
                 episodeCommandBtn.PatientID = patientID;
             }
-            PatientEpisodeAndCommandVM thisEpisodeAndCommands = new();
-            //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
-            thisEpisodeAndCommands.ActionButtonVM = episodeCommandBtn;
+            PatientEpisodeAndCommandVM thisEpisodeAndCommands = new()
+            {
+                //PatientEpisodeAndCommandVM inherit from EpisodeOfCareDTo so just explicit cast the episode instance
+                ActionButtonVM = episodeCommandBtn
+            };
 
             QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
             qh.ReadOnly = false;
@@ -170,9 +172,9 @@ namespace IPRehab.Controllers
         {
             if (ModelState.IsValid)
             {
-                List<UserAnswer> newAnswers = postbackModel.NewAnswers;
-                List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
-                List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
+                //List<UserAnswer> newAnswers = postbackModel.NewAnswers;
+                //List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
+                //List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
 
                 //forward the postbackModel to web api Answer controller
                 Uri uri = new($"{ApiBaseUrl}/api/Answer/Post");

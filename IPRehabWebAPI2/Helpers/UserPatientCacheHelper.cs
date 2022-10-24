@@ -222,15 +222,14 @@ namespace IPRehabWebAPI2.Helpers
             List<PatientDTOTreatingSpecialty> patients = null;
             var distinctUserFacilities = await DistinctUserFacilities(networkName);
 
-            if (distinctUserFacilities != null && distinctUserFacilities.Any())
+            if (distinctUserFacilities != null)
             {
-                var userFacilitySta3 = distinctUserFacilities.Select(x => x.Facility).Distinct().ToArray().ToString();
+                string userFacilitySta3 = String.Join(',',distinctUserFacilities.Select(f=>f.Facility).ToArray());
 
                 string cacheKey = criteria;
                 if (string.IsNullOrEmpty(criteria))
                     cacheKey = "No Criteria";
 
-                int facilityPatientsCount = 0;
                 string searchCriteriaType = string.Empty;
                 int numericCriteria = -1;
 
@@ -253,67 +252,45 @@ namespace IPRehabWebAPI2.Helpers
                 else
                 {
                     //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
-                    var facilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
+                    var allFacilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
 
-                    facilityPatients = facilityPatients.FindAll(p => userFacilitySta3.Any(f => f.Contains(p.bsta6a) || p.bsta6a.Contains(f)));
-                    //var facilityPatients = viewablePatients.FindAll(p => p.bsta6a.Contains("501"));
+                    var thisFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a) || p.bsta6a.Contains(userFacilitySta3));
+                    //thisFacilityPatients = thisFacilityPatients.FindAll(p => p.bsta6a.Contains("501"));
 
                     if (!string.IsNullOrEmpty(patientID))
                     {
-                        facilityPatients = facilityPatients.FindAll(p => p.scrssn.Value.ToString() == patientID || p.PatientICN == patientID);
+                        thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID || p.PatientICN == patientID);
                     }
 
-                    if (facilityPatients.Any())
+                    switch (searchCriteriaType)
                     {
-                        List<vTreatingSpecialtyRecent3Yrs> filteredPatients = new();
+                        case "numeric":
+                            thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                                p.scrssn == numericCriteria ||
+                                                p.bedsecn == numericCriteria ||
+                                                p.bsta6a.Contains(numericCriteria.ToString())
+                                            );
 
-                        switch (searchCriteriaType)
-                        {
-                            case "none":
-                                //get single patient if patientID is not blank
-                                facilityPatientsCount = facilityPatients.Count;
-                                filteredPatients = facilityPatients;
-                                break; //break case
-                            case "numeric":
-                                filteredPatients = facilityPatients.FindAll(p =>
-                                                    p.scrssn == numericCriteria ||
-                                                    p.bedsecn == numericCriteria ||
-                                                    p.bsta6a.Contains(numericCriteria.ToString())
-                                                );
+                            break; //break case
 
-                                if (filteredPatients.Any())
-                                {
-                                    facilityPatientsCount = facilityPatients.Count;
-                                }
-                                break; //break case
-                            case "non-numeric":
-                                criteria = criteria.Trim().ToLower();
-                                filteredPatients = facilityPatients.FindAll(p =>
-                                                    p.Last_Name.Trim().ToLower().Contains(criteria) ||
-                                                    p.First_Name.Trim().ToLower().Contains(criteria) ||
-                                                    p.scrssn.ToString().Trim().Contains(criteria) ||
-                                                    p.PatientICN.Trim().Contains(criteria)
-                                                );
-
-                                if (filteredPatients.Any())
-                                {
-                                    facilityPatientsCount = filteredPatients.Count;
-                                }
-                                break;
-                        }
-
-                        filteredPatients = filteredPatients.OrderBy(o => o.PatientName).ToList();
-                        patients = filteredPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList();
-
-                        if (pageNumber <= 0)
-                            patients = patients.Take(pageSize).ToList();
-                        else
-                            patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                        case "non-numeric":
+                            criteria = criteria.Trim().ToLower();
+                            thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                                p.Last_Name.Trim().ToLower().Contains(criteria) ||
+                                                p.First_Name.Trim().ToLower().Contains(criteria) ||
+                                                p.scrssn.ToString().Trim().Contains(criteria) ||
+                                                p.PatientICN.Trim().Contains(criteria)
+                                            );
+                            break;
                     }
-                }
 
-                //PatientSearchResultDTO meta = new() { Patients = patients.ToList(), TotalCount = totalViewablePatientCount };
-                //return (meta);
+                    patients = thisFacilityPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList().OrderBy(p=>p.Name).ToList();
+
+                    if (pageNumber <= 0)
+                        patients = patients.Take(pageSize).ToList();
+                    else
+                        patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                }
             }
             return patients;
         }

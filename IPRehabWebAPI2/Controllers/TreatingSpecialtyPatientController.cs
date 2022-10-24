@@ -76,21 +76,14 @@ namespace IPRehabWebAPI2.Controllers
             {
                 if (withEpisode)
                 {
-                    foreach (PatientDTOTreatingSpecialty p in patients)
+                    var distinctPatientsInEepisode = _episodeOfCareRepository.FindAll();
+                    
+                    //improve peformance by looping through the smaller episode dataset to find the target record in a much bigger patient dataset
+                    foreach (var pe in distinctPatientsInEepisode)
                     {
-                        //p.CareEpisodes = new();
-                        var episodes = _episodeOfCareRepository.FindByCondition(episode => episode.PatientICNFK == p.PTFSSN || episode.PatientICNFK == p.PatientICN).OrderBy(e=>e.EpisodeOfCareID);
-                        //.OrderBy(x => x.AdmissionDate).ToListAsync();
-
-                        if (episodes is not null)
-                        {
-                            foreach (var episode in episodes)
-                            {
-                                EpisodeOfCareDTO thisEpisode = HydrateDTO.HydrateEpisodeOfCare(episode);
-                                //hydrate and add the dates from the tblAnswer because they are more up-to-date than the episode dates
-                                p.CareEpisodes.Add(thisEpisode);
-                            }
-                        }
+                        var thisEpisodeOfCare = HydrateDTO.HydrateEpisodeOfCare(pe);
+                        //attach episode directly to patient
+                        patients.Where(p => p.PTFSSN == pe.PatientICNFK && p.AdmitDate == pe.AdmissionDate).Distinct().SingleOrDefault()?.CareEpisodes.Add(thisEpisodeOfCare);
                     }
                 }
                 return Ok(patients);
