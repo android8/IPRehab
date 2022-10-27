@@ -150,7 +150,7 @@ namespace IPRehabWebAPI2.Helpers
                 PatientICN = p.PatientICN,
                 DoB = p.DoB,
                 Bedsecn = p.bedsecn,
-                AdmitDate = p.admitday,
+                AdmitDate = new() { p.admitday.Value }
             };
         }
 

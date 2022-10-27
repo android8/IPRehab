@@ -284,12 +284,31 @@ namespace IPRehabWebAPI2.Helpers
                             break;
                     }
 
-                    patients = thisFacilityPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList().OrderBy(p=>p.Name).ToList();
+                    if (thisFacilityPatients.Any())
+                    {
+                        //patients = thisFacilityPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList().OrderBy(p=>p.Name).ToList();
 
-                    if (pageNumber <= 0)
-                        patients = patients.Take(pageSize).ToList();
-                    else
-                        patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                        thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
+ 
+                        PatientDTOTreatingSpecialty hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(thisFacilityPatients.First());
+                        foreach (var p in thisFacilityPatients)
+                        {
+                            if (p.PatientICN != hydratedPat.PTFSSN || p.scrssn.ToString() != hydratedPat.PTFSSN)
+                            {
+                                patients.Add(hydratedPat);
+                                hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                            }
+                            else
+                            {
+                                hydratedPat.AdmitDate.Add(p.admitday.Value);
+                            }
+                        }
+
+                        if (pageNumber <= 0)
+                            patients = patients.Take(pageSize).ToList();
+                        else
+                            patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    }
                 }
             }
             return patients;
@@ -335,15 +354,18 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<PatientDTOTreatingSpecialty> GetPatientByEpisode(IEpisodeOfCareRepository _episodeRepository, ITreatingSpecialtyPatientRepository _patientRepository, int episodeID)
         {
-            List<PatientDTOTreatingSpecialty> patients = null;
+            PatientDTOTreatingSpecialty patient = null;
             var thisEpisode = _episodeRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
             if (thisEpisode != null)
             {
-                patients = await _patientRepository.FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
-                    .Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToListAsync();
+                var patientInThisEpisode = await _patientRepository
+                    .FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
+                    .FirstOrDefaultAsync();
+                if (patientInThisEpisode != null)
+                    patient = HydrateDTO.HydrateTreatingSpecialtyPatient(patientInThisEpisode);
             }
 
-            return patients.FirstOrDefault();
+            return patient;
         }
 
         private async Task<List<MastUserDTO>> DistinctUserFacilities(string networkName)
