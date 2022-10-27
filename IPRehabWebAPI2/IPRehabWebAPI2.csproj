@@ -38,25 +38,30 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="6.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="6.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IPRehabRepository\IPRehabRepository.csproj" />
-    <ProjectReference Include="..\UserModel\UserModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UserModel">
+      <HintPath>..\UserModel\bin\Release\net6.0\UserModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

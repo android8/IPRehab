@@ -1,5 +1,4 @@
-﻿using IPRehabModel;
-using IPRehabRepository.Contracts;
+﻿using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -219,7 +218,7 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<List<PatientDTOTreatingSpecialty>> GetPatients(ITreatingSpecialtyPatientRepository _treatingSpecialtyPatientRepository, string networkName, string criteria, string orderBy, int pageNumber, int pageSize, string patientID)
         {
-            List<PatientDTOTreatingSpecialty> patients = null;
+            List<PatientDTOTreatingSpecialty> patients = new();
             var distinctUserFacilities = await DistinctUserFacilities(networkName);
 
             if (distinctUserFacilities != null)
@@ -255,7 +254,6 @@ namespace IPRehabWebAPI2.Helpers
                     var allFacilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
 
                     var thisFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a) || p.bsta6a.Contains(userFacilitySta3));
-                    //thisFacilityPatients = thisFacilityPatients.FindAll(p => p.bsta6a.Contains("501"));
 
                     if (!string.IsNullOrEmpty(patientID))
                     {
@@ -286,21 +284,20 @@ namespace IPRehabWebAPI2.Helpers
 
                     if (thisFacilityPatients.Any())
                     {
-                        //patients = thisFacilityPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList().OrderBy(p=>p.Name).ToList();
-
                         thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
  
                         PatientDTOTreatingSpecialty hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(thisFacilityPatients.First());
+                        hydratedPat.AdmitDates.Clear();
                         foreach (var p in thisFacilityPatients)
                         {
-                            if (p.PatientICN != hydratedPat.PTFSSN || p.scrssn.ToString() != hydratedPat.PTFSSN)
+                            if (p.scrssn.ToString() == hydratedPat.PTFSSN || p.PatientICN == hydratedPat.PTFSSN)  
                             {
-                                patients.Add(hydratedPat);
-                                hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                                hydratedPat.AdmitDates.Add(p.admitday.Value);
                             }
                             else
                             {
-                                hydratedPat.AdmitDate.Add(p.admitday.Value);
+                                patients.Add(hydratedPat);
+                                hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
                             }
                         }
 

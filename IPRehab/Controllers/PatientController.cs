@@ -105,6 +105,7 @@ namespace IPRehab.Controllers
                             PageNumber = pageNumber,
                             OrderBy = orderBy,
                             EpisodeID = -1,
+                            AdmitDate = pat.AdmitDate,
                             EnableThisPatient = false
                         };
 
@@ -130,6 +131,7 @@ namespace IPRehab.Controllers
                                 PageNumber = pageNumber,
                                 OrderBy = orderBy,
                                 EpisodeID = episode.EpisodeOfCareID,
+                                AdmitDate = episode.AdmissionDate,
                                 EnableThisPatient = true
                             };
 
@@ -175,7 +177,7 @@ namespace IPRehab.Controllers
             {
                 webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
             }
-                
+
             //Sending request to find web api REST service resource TreatingSpecialtyPatientController using HttpClient in the APIAgent
             patients = await SerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint, base.BaseOptions);
             //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
@@ -194,7 +196,7 @@ namespace IPRehab.Controllers
             //    else
             //        HttpContext.Session.SetString("SearchCriteria", searchCriteria);
             //}            
-            
+
             PatientTreatingSpecialtyListViewModel patientListVM = new()
             {
                 PageTitle = "In-patient Rehab",
@@ -209,79 +211,69 @@ namespace IPRehab.Controllers
             {
                 return View("NoDataTreatingSpecialty", patientListVM);
             }
-            else
+
+            foreach (PatientDTOTreatingSpecialty pat in patients)
             {
-                foreach (PatientDTOTreatingSpecialty pat in patients)
+                PatientTreatingSpecialtyViewModel thisPatVM = new()
                 {
-                    PatientTreatingSpecialtyViewModel thisPatVM = new()
-                    {
-                        Patient = pat
-                    };
+                    Patient = pat
+                };
 
-                    //ToDo: encrypt the SSN, only when patient has no existing episode
-                    thisPatVM.Patient.PatientICN = pat.PatientICN;
-                    if (!string.IsNullOrEmpty(pat.PTFSSN))
-                        thisPatVM.Patient.PTFSSN = pat.PTFSSN.Substring(pat.PTFSSN.Length - 4, 4);
-                    RehabActionViewModel episodeCommandBtn = new()
-                    {
-                        //since no episode ID we have to use patient ID to find patient
-                        HostingPage = "Patient",
-                        SearchCriteria = searchCriteria,
-                        PageNumber = pageNumber,
-                        OrderBy = orderBy,
-                    };
+                //ToDo: encrypt the SSN, only when patient has no existing episode
+                thisPatVM.Patient.PatientICN = pat.PatientICN;
+                if (!string.IsNullOrEmpty(pat.PTFSSN))
+                {
+                    thisPatVM.Patient.PTFSSN = pat.PTFSSN.Substring(pat.PTFSSN.Length - 4, 4);
+                }
 
+                RehabActionViewModel episodeCommandBtn = new()
+                {
+                    //since no episode ID we have to use patient ID to find patient
+                    HostingPage = "Patient",
+                    SearchCriteria = searchCriteria,
+                    PageNumber = pageNumber,
+                    OrderBy = orderBy,
+                };
 
-                    if (!pat.CareEpisodes.Any())
-                    /* no episode */
+                /* add new button for each admit date that has no associated episode */
+                foreach (var thisAdmission in pat.AdmitDates)
+                {
+                    var episodeForThisAdmission = pat.CareEpisodes.Where(e => e.AdmissionDate == thisAdmission).FirstOrDefault();
+                    if (episodeForThisAdmission == null)
                     {
                         episodeCommandBtn.PatientID = pat.PatientICN;
-                        //Don't assign episode properties for patient without episode
-                        episodeCommandBtn.EpisodeID = -1;
-                        episodeCommandBtn.EnableThisPatient = false;
-
+                        episodeCommandBtn.EpisodeID = -1;   //Don't assign episode properties for patient without episode
+                        episodeCommandBtn.EnableThisPatient = true;
+                        episodeCommandBtn.AdmitDate = thisAdmission;
                         thisPatVM.EpisodeBtnConfig.Add(new()
                         {
                             ActionButtonVM = episodeCommandBtn
                         });
                     }
                     else
-                    /* has episode */
                     {
-                        foreach (EpisodeOfCareDTO episode in pat.CareEpisodes)
+                        //to avoid exposing PHI/PII, leave the PatientID blank and use the EpisodeID to search for patient ID
+                        episodeCommandBtn.PatientID = pat.PatientICN;
+                        episodeCommandBtn.EpisodeID = episodeForThisAdmission.EpisodeOfCareID;
+                        episodeCommandBtn.EnableThisPatient = true;
+                        episodeCommandBtn.AdmitDate= thisAdmission;
+
+                        //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
+
+                        thisPatVM.EpisodeBtnConfig.Add(new()
                         {
-                            //to avoid exposing PHI/PII, leave the PatientID blank and use the EpisodeID to search for patient ID
-                            episodeCommandBtn.PatientID = string.Empty;
-                            episodeCommandBtn.EpisodeID = episode.EpisodeOfCareID;
-                            episodeCommandBtn.EnableThisPatient = true;
-
-                            //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
-
-                            thisPatVM.EpisodeBtnConfig.Add(new()
-                            {
-                                EpisodeOfCareID = episode.EpisodeOfCareID,
-                                OnsetDate = episode.OnsetDate,
-                                AdmissionDate = episode.AdmissionDate,
-                                PatientIcnFK = episode.PatientIcnFK,
-                                FormIsComplete = episode.FormIsComplete,
-                                ActionButtonVM = episodeCommandBtn
-                            });
-                        }
+                            EpisodeOfCareID = episodeForThisAdmission.EpisodeOfCareID,
+                            OnsetDate = episodeForThisAdmission.OnsetDate,
+                            AdmissionDate = episodeForThisAdmission.AdmissionDate,
+                            PatientIcnFK = episodeForThisAdmission.PatientIcnFK,
+                            FormIsComplete = episodeForThisAdmission.FormIsComplete,
+                            ActionButtonVM = episodeCommandBtn
+                        });
                     }
-
-                    patientListVM.Patients.Add(thisPatVM);
                 }
-
-                return View("IndexTreatingSpecialty", patientListVM);
+                patientListVM.Patients.Add(thisPatVM);
             }
+            return View("IndexTreatingSpecialty", patientListVM);
         }
-
-        // POST: PatientController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //  return View();
-        //}
     }
 }

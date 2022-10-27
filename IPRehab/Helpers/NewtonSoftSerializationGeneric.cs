@@ -20,7 +20,7 @@ namespace IPRehab.Helpers
     {
       HttpResponseMessage Res = await APIAgent.GetDataAsync(new Uri(url));
 
-      if (Res == null || Res.Content is not object)
+      if (Res == null || Res.Content is null)
         return null;
       else
       {

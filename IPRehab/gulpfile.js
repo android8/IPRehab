@@ -1,4 +1,4 @@
-/// <binding AfterBuild='cleaMyJs, minifyAppJs, copyAppJsMap, cleanMyCss, compileMySassStyles, minifyMyCss' />
+/// <binding AfterBuild='cleanMyCss, cleanMyJs, minifyAppJs, copyAppJsMap, copyAppTs, compileMySassStyles, minifyMyCss' />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 /*
@@ -11,88 +11,88 @@ var sass = require('gulp-sass')(require('sass'));
 var gulp = require('gulp');
 var del = require('del');
 
-var scriptSources = {
-  myMap: ['./Scripts/app/**/*.map'],
-  myJs: ['./Scripts/app/*.js'],
-  myTs: ['./Scripts/app/*.ts'],
-  destinations: ['./wwwroot/js/app']
+var script = {
+    myMap: ['./Scripts/app/*.map'],
+    myJs: ['./Scripts/app/*.js'],
+    myTs: ['./Scripts/app/*.ts'],
+    output: './wwwroot/js/app'
 };
 
-var styleSources = {
-  mySass: ['./wwwroot/css/**/*.scss'],
-  myCssOnly: ['./wwwroot/css/**/*.css', '!./wwwroot/css/**/site.css'],
-  destinations: ['./wwwroot/css']
+var style = {
+    mySass: ['./wwwroot/css/*.scss'],
+    myCssOnly: ['./wwwroot/css/**/*.css', '!./wwwroot/css/**/site.css'],
+    output: './wwwroot/css'
 }
 
 gulp.task('cleanMyCss', function () {
-  return del(styleSources.myCssOnly); /* don't clean .scss */
+    return del(style.myCssOnly); /* don't clean .scss */
 });
 
 
 gulp.task('cleanMyJs', function () {
-  return del(scriptSources.destinations);
+    return del(script.output);
 });
 
 
 gulp.task('minifyAppJs', function () {
-  return gulp.src(scriptSources.myJs, { allowEmpty: true })
-    .pipe(minify({
-      noSource: false,
-      ext: {
-        min: '.min.js'
-      }
-    }))
-    .pipe(gulp.dest(scriptSources.destinations));
+    return gulp.src(script.myJs, { allowEmpty: true })
+        .pipe(minify({
+            noSource: false,
+            ext: {
+                min: '.min.js'
+            }
+        }))
+        .pipe(gulp.dest(script.output));
 });
 
 gulp.task('copyAppJsMap', function () {
-  return gulp.src(scriptSources.myMap)
-    .pipe(gulp.dest(scriptSources.destinations));
+    return gulp.src(script.myMap)
+        .pipe(gulp.dest(script.output));
 });
 
 gulp.task('copyAppTs', function () {
-  return gulp.src(scriptSources.myTs)
-    .pipe(gulp.dest(scriptSources.destinations));
+    return gulp.src(script.myTs)
+        .pipe(gulp.dest(script.output));
 });
 
 //gulp.task('minifyAppModelsJs', function () {
-//  return gulp.src(scriptSources.myJs[1], { allowEmpty: true })
+//  return gulp.src(script.myJs[1], { allowEmpty: true })
 //    .pipe(minify({
 //      noSource: false,
 //      ext: {
 //        min: '.min.js'
 //      }
 //    }))
-//    .pipe(gulp.dest(scriptSources.destinations[0]));
+//    .pipe(gulp.dest(script.output[0]));
 //});
 
 //gulp.task('copyAppModelsJsMap', function () {
-//    return gulp.src(scriptSources.myMap[1])
-//    .pipe(gulp.dest(scriptSources.destinations[0]));
+//    return gulp.src(script.myMap[1])
+//    .pipe(gulp.dest(script.output[0]));
 //});
 
 
 gulp.task('compileMySassStyles', function (done) {
-  gulp.src(styleSources.mySass)
-    .pipe(
-      sass() /*compile sass */
-      .on('error', sass.logError)
-    ) 
-    .pipe(
-      gulp.dest(styleSources.destinations)
-    );
-  done();
+    gulp.src(style.mySass)
+        .pipe(
+            sass() /*compile sass */
+                .on('error', sass.logError)
+        )
+        .pipe(
+            gulp.dest(style.output)
+        );
+    done();
 });
 
 gulp.task('minifyMyCss', function () {
-  return gulp.src(styleSources.myCssOnly, { allowEmpty: true })
-    .pipe(minify({
-      noSource: false,
-      ext: {
-        min: '.min.css'
-      }
-    }))
-    .pipe(gulp.dest(styleSources.destinations));
+    return gulp.src(style.myCssOnly, { allowEmpty: true })
+        .pipe(minify({
+            noSource: false,
+            ext: {
+                min: '.min.css'
+            }
+        }))
+        .pipe(gulp.dest(style.output));
 });
 
 

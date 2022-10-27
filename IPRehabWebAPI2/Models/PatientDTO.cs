@@ -7,49 +7,52 @@ using System.ComponentModel;
 
 namespace IPRehabWebAPI2.Models
 {
-  public partial class PatientDTO
-  {
-    [DisplayName("VISN")]
-    public string VISN { get; set; }
+    public partial class PatientDTO
+    {
+        [DisplayName("VISN")]
+        public string VISN { get; set; }
 
-    [DisplayName("Facility")]
-    public string Facility { get; set; }
+        [DisplayName("Facility")]
+        public string Facility { get; set; }
 
-    [DisplayName("District")]
-    public string District { get; set; }
+        [DisplayName("District")]
+        public string District { get; set; }
 
-    [DisplayName("Division")]
-    public string Division { get; set; }
+        [DisplayName("Division")]
+        public string Division { get; set; }
 
-    [DisplayName("ADM Parent Key")]
-    public int? ADMParent_Key { get; set; }
+        [DisplayName("ADM Parent Key")]
+        public int? ADMParent_Key { get; set; }
 
-    [DisplayName("Sta6")]
-    public int Sta6aKey { get; set; }
+        [DisplayName("Sta6")]
+        public int Sta6aKey { get; set; }
 
-    [DisplayName("Bed Section")]
-    public int? Bedsecn { get; set; }
+        [DisplayName("Bed Section")]
+        public int? Bedsecn { get; set; }
 
-    [DisplayName("Name")]
-    public string Name { get; set; }
+        [DisplayName("Name")]
+        public string Name { get; set; }
 
-    [DisplayName("SSN")]
-    public string PTFSSN { get; set; }
+        [DisplayName("SSN")]
+        public string PTFSSN { get; set; }
 
-    [DisplayName("FSOD SSN")]
-    public string FSODSSN { get; set; }
+        [DisplayName("FSOD SSN")]
+        public string FSODSSN { get; set; }
 
-    [DisplayName("Fiscal Period")]
-    public string FiscalPeriod { get; set; }
+        [DisplayName("Fiscal Period")]
+        public string FiscalPeriod { get; set; }
 
-    [DisplayName("Numeric Fiscal Period")]
-    public int FiscalPeriodInt { get; set; }
+        [DisplayName("Numeric Fiscal Period")]
+        public int FiscalPeriodInt { get; set; }
 
-    [DisplayName("Episode of Care")]
-    public List<EpisodeOfCareDTO> CareEpisodes { get; set; }
+        public DateTime AdmitDate { get; set; }
 
-    public PatientDTO() {
-      CareEpisodes = new();
+        [DisplayName("Episode of Care")]
+        public List<EpisodeOfCareDTO> CareEpisodes { get; set; }
+
+        public PatientDTO()
+        {
+            CareEpisodes = new();
+        }
     }
-  }
 }

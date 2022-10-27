@@ -28,7 +28,7 @@ namespace IPRehabWebAPI2.Models
         public int? Bedsecn { get; set; }
 
         [DisplayName("Admit Date")]
-        public List<DateTime> AdmitDate { get; set; }
+        public List<DateTime> AdmitDates { get; set; }
 
         [DisplayName("Episode of Care")]
         public List<EpisodeOfCareDTO> CareEpisodes { get; set; }
@@ -36,7 +36,7 @@ namespace IPRehabWebAPI2.Models
         public PatientDTOTreatingSpecialty()
         {
             CareEpisodes = new();
-            AdmitDate = new();
+            AdmitDates = new();
         }
     }
 }

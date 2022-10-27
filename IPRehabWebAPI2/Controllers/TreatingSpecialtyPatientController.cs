@@ -53,10 +53,10 @@ namespace IPRehabWebAPI2.Controllers
             //networkName = "VHALEBBIDELD";
 
             //get all patient with criteria and quarter filter
-            List<PatientDTOTreatingSpecialty> patients;
-            patients = await _cacheHelper.GetPatients(_treatingSpecialtyRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
+            List<PatientDTOTreatingSpecialty> facilityPatients;
+            facilityPatients = await _cacheHelper.GetPatients(_treatingSpecialtyRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
 
-            if (patients is null)
+            if (facilityPatients is null)
             {
                 //string noDataMesage = "No patient is found in rehab in your facility in the past 90 days";
 
@@ -68,26 +68,38 @@ namespace IPRehabWebAPI2.Controllers
                 //};
 
                 //return NotFound(noDataMesage);
-                patients = new();
+                facilityPatients = new();
 
-                return Ok(patients);
+                return Ok(facilityPatients);
             }
             else
             {
                 if (withEpisode)
                 {
-                    //select distinct patients in episodes
-                    var distinctPatientsInEepisode = _episodeOfCareRepository.FindAll().DistinctBy(x=>x.PatientICNFK);
-                    
-                    //improve peformance by looping through the smaller episode dataset to find the target record in a much bigger patient dataset
-                    foreach (var pe in distinctPatientsInEepisode)
+                    var facilityPatientEpisodes = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
+                        p => p.PTFSSN, e => e.PatientICNFK,
+                        (p, e) => new
+                        {
+                            patient = p,
+                            episode = HydrateDTO.HydrateEpisodeOfCare(e)
+                        }).ToList();
+
+                    var currentPatient = facilityPatientEpisodes.First();
+                    List<EpisodeOfCareDTO> episodeForCurrentPatient = new();
+                    foreach (var pe in facilityPatientEpisodes)
                     {
-                        var thisEpisodeOfCare = HydrateDTO.HydrateEpisodeOfCare(pe);
-                        //attach episode directly to patient
-                        patients.Where(p => p.PTFSSN == pe.PatientICNFK && p.AdmitDate.Contains(pe.AdmissionDate)).Distinct().SingleOrDefault()?.CareEpisodes.Add(thisEpisodeOfCare);
+                        if (currentPatient != pe)
+                        {
+                            facilityPatients.Where(fp => fp == pe.patient).Single().CareEpisodes = episodeForCurrentPatient;
+                            currentPatient = pe;
+                        }
+                        else
+                        {
+                            episodeForCurrentPatient.Add(pe.episode);
+                        }
                     }
                 }
-                return Ok(patients);
+                return Ok(facilityPatients);
             }
         }
 

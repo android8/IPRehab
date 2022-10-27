@@ -48,9 +48,7 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Patients.First().Patient.PatientICN)
-                </th>                <th>
-                    @Html.DisplayNameFor(model => model.Patients.First().Patient.AdmitDate)
-                </th>
+                </th>                
             </tr>
         </thead>
         <tbody>
@@ -76,15 +74,11 @@
                         <td>
                             @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
                         </td>                        
-                        <td>
-                            @Html.DisplayFor(modelItem => pat.Patient.AdmitDate)
-                        </td>
                     </tr>
-
                     <!--Episode of Care row-->
                     @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
                     <tr>
-                        <td colspan="10">
+                        <td colspan="6">
                             <div class="flex-start-row-nowrap episode">
                                 <table class="table-striped table-responsive-md">
                                     <thead>
