@@ -3,6 +3,8 @@ using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,32 +76,34 @@ namespace IPRehabWebAPI2.Controllers
             }
             else
             {
+                List<PatientDTOTreatingSpecialty> jaggedPatient = new();
                 if (withEpisode)
                 {
-                    var facilityPatientEpisodes = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
-                        p => p.PTFSSN, e => e.PatientICNFK,
-                        (p, e) => new
-                        {
-                            patient = p,
-                            episode = HydrateDTO.HydrateEpisodeOfCare(e)
-                        }).ToList();
+                    //inner join
+                    //var facilityPatientEpisodes1 = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
+                    //    p => p.PTFSSN, e => e.PatientICNFK,
+                    //    (p, e) => new
+                    //    {
+                    //        patient = p,
+                    //        episode = HydrateDTO.HydrateEpisodeOfCare(e)
+                    //    }).ToList();
 
-                    var currentPatient = facilityPatientEpisodes.First();
-                    List<EpisodeOfCareDTO> episodeForCurrentPatient = new();
-                    foreach (var pe in facilityPatientEpisodes)
+                    //left join
+                    var facilityPatientEpisodes = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll().ToList(),
+                        p => p.PTFSSN, e => e.PatientICNFK, (p, e) => new { p, e })
+                        .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { patient = p.p, episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) })
+                        .ToList();
+
+                    foreach (var fpe in facilityPatientEpisodes)
                     {
-                        if (currentPatient != pe)
+                        if (fpe.episode != null)
                         {
-                            facilityPatients.Where(fp => fp == pe.patient).Single().CareEpisodes = episodeForCurrentPatient;
-                            currentPatient = pe;
+                            fpe.patient.CareEpisodes.Add(fpe.episode);
                         }
-                        else
-                        {
-                            episodeForCurrentPatient.Add(pe.episode);
-                        }
+                        jaggedPatient.Add(fpe.patient);
                     }
                 }
-                return Ok(facilityPatients);
+                return Ok(jaggedPatient);
             }
         }
 
@@ -132,10 +136,10 @@ namespace IPRehabWebAPI2.Controllers
             }
             else
             {
-                PatientDTOTreatingSpecialty thisPatient = patients.Find(x => x.PTFSSN == patientID || x.PatientICN == patientID);
+                PatientDTOTreatingSpecialty thisPatient = patients.First();
                 if (withEpisode)
                 {
-                    var episodes = _episodeOfCareRepository.FindByCondition(p => p.PatientICNFK == p.PatientICNFK);
+                    var episodes = _episodeOfCareRepository.FindByCondition(e => e.PatientICNFK == thisPatient.PatientICN || e.PatientICNFK == thisPatient.PTFSSN);
                     if (episodes != null)
                     {
                         List<EpisodeOfCareDTO> listOfEpisodes = new();

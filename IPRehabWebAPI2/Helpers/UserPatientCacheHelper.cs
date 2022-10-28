@@ -1,7 +1,9 @@
-﻿using IPRehabRepository.Contracts;
+﻿using IPRehabModel;
+using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PatientModel;
@@ -223,7 +225,7 @@ namespace IPRehabWebAPI2.Helpers
 
             if (distinctUserFacilities != null)
             {
-                string userFacilitySta3 = String.Join(',',distinctUserFacilities.Select(f=>f.Facility).ToArray());
+                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility).ToArray());
 
                 string cacheKey = criteria;
                 if (string.IsNullOrEmpty(criteria))
@@ -285,19 +287,24 @@ namespace IPRehabWebAPI2.Helpers
                     if (thisFacilityPatients.Any())
                     {
                         thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
- 
-                        PatientDTOTreatingSpecialty hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(thisFacilityPatients.First());
-                        hydratedPat.AdmitDates.Clear();
+
+                        vTreatingSpecialtyRecent3Yrs currentPatient = thisFacilityPatients.First();
+                        var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(currentPatient);
+                        hydratedPatient.AdmitDates.Clear();
                         foreach (var p in thisFacilityPatients)
                         {
-                            if (p.scrssn.ToString() == hydratedPat.PTFSSN || p.PatientICN == hydratedPat.PTFSSN)  
+                            if (p != currentPatient)
                             {
-                                hydratedPat.AdmitDates.Add(p.admitday.Value);
+                                patients.Add(hydratedPatient);
+                                currentPatient = p;
+                                //create a new hydraedPatient from current p
+                                hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                                hydratedPatient.AdmitDates.Clear();
+                                hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
                             }
                             else
                             {
-                                patients.Add(hydratedPat);
-                                hydratedPat = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                                hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
                             }
                         }
 

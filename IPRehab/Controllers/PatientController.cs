@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -183,7 +184,7 @@ namespace IPRehab.Controllers
             //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
 
 
-            patients = patients.OrderBy(x => x.Name);
+             patients = patients.OrderBy(x => x.Name);
 
             //string sessionSearchCriteria;
             //CancellationToken cancellationToken = new();
@@ -223,7 +224,7 @@ namespace IPRehab.Controllers
                 thisPatVM.Patient.PatientICN = pat.PatientICN;
                 if (!string.IsNullOrEmpty(pat.PTFSSN))
                 {
-                    thisPatVM.Patient.PTFSSN = pat.PTFSSN.Substring(pat.PTFSSN.Length - 4, 4);
+                    thisPatVM.Patient.PTFSSN = pat.PTFSSN;//.Substring(pat.PTFSSN.Length - 4, 4);
                 }
 
                 RehabActionViewModel episodeCommandBtn = new()
@@ -236,7 +237,7 @@ namespace IPRehab.Controllers
                 };
 
                 /* add new button for each admit date that has no associated episode */
-                foreach (var thisAdmission in pat.AdmitDates)
+                foreach (DateTime thisAdmission in pat.AdmitDates)
                 {
                     var episodeForThisAdmission = pat.CareEpisodes.Where(e => e.AdmissionDate == thisAdmission).FirstOrDefault();
                     if (episodeForThisAdmission == null)
@@ -245,10 +246,13 @@ namespace IPRehab.Controllers
                         episodeCommandBtn.EpisodeID = -1;   //Don't assign episode properties for patient without episode
                         episodeCommandBtn.EnableThisPatient = true;
                         episodeCommandBtn.AdmitDate = thisAdmission;
-                        thisPatVM.EpisodeBtnConfig.Add(new()
+                        PatientEpisodeAndCommandVM thisEpisodeBtnConfig = new()
                         {
+                            AdmissionDate = thisAdmission,
+                            PatientIcnFK = pat.PatientICN,
                             ActionButtonVM = episodeCommandBtn
-                        });
+                        };
+                        thisPatVM.EpisodeBtnConfig.Add(thisEpisodeBtnConfig);
                     }
                     else
                     {
@@ -259,16 +263,16 @@ namespace IPRehab.Controllers
                         episodeCommandBtn.AdmitDate= thisAdmission;
 
                         //PatientEpisodeAndCommandVM derivedClass = episode as PatientEpisodeAndCommandVM;
-
-                        thisPatVM.EpisodeBtnConfig.Add(new()
+                        PatientEpisodeAndCommandVM thisEpisodeBtnConfig = new()
                         {
                             EpisodeOfCareID = episodeForThisAdmission.EpisodeOfCareID,
                             OnsetDate = episodeForThisAdmission.OnsetDate,
-                            AdmissionDate = episodeForThisAdmission.AdmissionDate,
+                            AdmissionDate = thisAdmission,
                             PatientIcnFK = episodeForThisAdmission.PatientIcnFK,
                             FormIsComplete = episodeForThisAdmission.FormIsComplete,
                             ActionButtonVM = episodeCommandBtn
-                        });
+                        };
+                        thisPatVM.EpisodeBtnConfig.Add(thisEpisodeBtnConfig);
                     }
                 }
                 patientListVM.Patients.Add(thisPatVM);
