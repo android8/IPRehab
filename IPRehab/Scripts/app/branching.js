@@ -1332,7 +1332,7 @@ $(function () {
     /* event handler, add this last to raise change chain */
     function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
         console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q12 = $('.persistable[id^=Q12_]').prop('disabled', false);
+        const Q12 = $('.persistable[id^=Q12_]').prop('disabled', true);
         const Q23 = $('.persistable[id^=Q23_]').prop('disabled', false);
         const otherPersistables = $('.persistable').not(Q12).not(Q23);
         const minDate = new Date('2020-01-01 00:00:00');

@@ -1,5 +1,6 @@
 ﻿using IPRehab.Models;
 using IPRehabWebAPI2.Models;
+using MessagePack.Formatters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,10 @@ namespace IPRehab.Helpers
 {
     public class HydrateVM
     {
-        public static QuestionWithSelectItems Hydrate(QuestionDTO questionDto)
+        public static QuestionWithSelectItems Hydrate(QuestionDTO questionDto, DateTime admitDate)
         {
+            bool isQ12 = questionDto.QuestionKey == "Q12";
+            bool isQ23 = questionDto.QuestionKey == "Q23";
             QuestionWithSelectItems qws = new()
             {
                 Form = questionDto.FormName,
@@ -22,10 +25,10 @@ namespace IPRehab.Helpers
                 QuestionID = questionDto.QuestionID,
 
                 /* turn on key question */
-                KeyQuestion = questionDto.QuestionKey == "Q12" || questionDto.QuestionKey == "Q23",
-                
+                KeyQuestion = isQ12 || isQ23,
+
                 /* set Q12 read only because it will be pre-filled with from patient admission date */
-                ReadOnly = questionDto.QuestionKey == "Q12",
+                ReadOnly = isQ12,
 
                 /* do not show key for AssessmentCompleted */
                 QuestionKey = questionDto.QuestionKey,
@@ -41,25 +44,25 @@ namespace IPRehab.Helpers
 
                 ChoiceList = SetSelectedChoice(questionDto),
 
-                ChoicesAnswers = SetChoicesAnswers(questionDto),
+                ChoicesAnswers = SetChoicesAnswers(questionDto, admitDate),
 
                 Instructions = questionDto.QuestionInsructions,
                 MeasureDescription = string.IsNullOrEmpty(questionDto.MeasureDescription) ?
-          string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
+      string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
                 MeasureID = questionDto.MeasureID
             };
 
             return qws;
         }
 
-        public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions)
+        public static QuestionHierarchy HydrateHierarchically(List<QuestionDTO> questions, DateTime admitDate)
         {
             QuestionHierarchy qh = new();
 
             List<QuestionWithSelectItems> qwsList = new();
             foreach (var questionDto in questions)
             {
-                QuestionWithSelectItems qws = Hydrate(questionDto);
+                QuestionWithSelectItems qws = Hydrate(questionDto, admitDate);
                 qwsList.Add(qws);
             }
 
@@ -271,7 +274,7 @@ namespace IPRehab.Helpers
             return selectedChoices;
         }
 
-        private static List<ChoiceAndAnswer> SetChoicesAnswers(QuestionDTO questionDTO)
+        private static List<ChoiceAndAnswer> SetChoicesAnswers(QuestionDTO questionDTO, DateTime admitDate)
         {
             List<ChoiceAndAnswer> choiceAndAnswers = new();
             string text = string.Empty, value = string.Empty;
@@ -279,7 +282,12 @@ namespace IPRehab.Helpers
             if (questionDTO.ChoiceList.Count == 0)
             {
                 var thisAnswer = questionDTO.Answers.SingleOrDefault(a => a.AnswerCodeSet.CodeSetID == questionDTO.AnswerCodeSetID);
+                if (questionDTO.QuestionKey == "Q12")
+                {
+                    thisAnswer = new();
+                    thisAnswer.Description = admitDate.ToString("MM/dd/yyyy");
 
+                }
                 /* make choice list with only one codeset id */
                 SelectListItem thisChice = new()
                 {

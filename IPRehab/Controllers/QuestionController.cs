@@ -81,7 +81,7 @@ namespace IPRehab.Controllers
         //  return View(vm);
         //}
 
-        public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy)
+        public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy, string admitDate)
         {
             bool useTreatingSpecialtyForPatient = true;
             string healthFactoreApiEndpoint = string.Empty;
@@ -124,7 +124,7 @@ namespace IPRehab.Controllers
             questionApiEndpoint = stage switch
             {
                 null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
-                _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}",
+                _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}",
             };
 
             questions = await SerializationGeneric<List<QuestionDTO>>.DeserializeAsync($"{questionApiEndpoint}", base.BaseOptions);
@@ -150,7 +150,9 @@ namespace IPRehab.Controllers
                 ActionButtonVM = episodeCommandBtn
             };
 
-            QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions);
+            DateTime thisDate;
+            DateTime.TryParse(admitDate, out thisDate);
+            QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, thisDate);
             qh.ReadOnly = false;
             qh.EpisodeID = episodeID;
             qh.StageTitle = stageTitle;

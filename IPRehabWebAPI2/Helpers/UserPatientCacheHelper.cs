@@ -287,26 +287,39 @@ namespace IPRehabWebAPI2.Helpers
                     if (thisFacilityPatients.Any())
                     {
                         thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
-
-                        vTreatingSpecialtyRecent3Yrs currentPatient = thisFacilityPatients.First();
-                        var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(currentPatient);
-                        hydratedPatient.AdmitDates.Clear();
-                        foreach (var p in thisFacilityPatients)
+                        var distinctedPatientsInThisFacility = thisFacilityPatients.Select(p => new { patientName = p.PatientName, patientICN = p.PatientICN }).Distinct();
+                        foreach(var thisDistinctP in distinctedPatientsInThisFacility)
                         {
-                            if (p != currentPatient)
+                            var admissions = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN && p.admitday.HasValue).Select(p=>p.admitday).ToList();
+                            var thisPatient = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN).First();
+                            var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisPatient);
+                            hydratedPatient.AdmitDates.Clear();
+                            foreach(DateTime? d in admissions)
                             {
-                                patients.Add(hydratedPatient);
-                                currentPatient = p;
-                                //create a new hydraedPatient from current p
-                                hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
-                                hydratedPatient.AdmitDates.Clear();
-                                hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
+                                hydratedPatient.AdmitDates.Add(d.Value);
                             }
-                            else
-                            {
-                                hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
-                            }
+                            patients.Add(hydratedPatient);
                         }
+
+                        //vTreatingSpecialtyRecent3Yrs currentPatient = thisFacilityPatients.First();
+                        //var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(currentPatient);
+                        //hydratedPatient.AdmitDates.Clear();
+                        //foreach (var p in thisFacilityPatients)
+                        //{
+                        //    if (p != currentPatient)
+                        //    {
+                        //        patients.Add(hydratedPatient);
+                        //        currentPatient = p;
+                        //        //create a new hydraedPatient from current p
+                        //        hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                        //        hydratedPatient.AdmitDates.Clear();
+                        //        hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
+                        //    }
+                        //    else
+                        //    {
+                        //        hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
+                        //    }
+                        //}
 
                         if (pageNumber <= 0)
                             patients = patients.Take(pageSize).ToList();

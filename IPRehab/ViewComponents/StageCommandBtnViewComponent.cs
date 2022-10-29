@@ -92,7 +92,7 @@ namespace IPRehab.ViewComponents
                                 cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
                                 button.Value.ButtonTitle.Replace("Create new", $"Edit existing {admissionDate}") : button.Value.ButtonTitle;
                                 cmdBtnTemplateVM.TextNode = button.Value.ButtonTitle == "Base" ?
-                                  $"Episode of Care {admissionDate}" : button.Value.ButtonTitle;
+                                  $"Episode of Care" : button.Value.ButtonTitle;
                                 cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter
                             }
                             break;
