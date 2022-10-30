@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <None Include="..\IPRehab\.editorconfig" Link=".editorconfig" />
+    <None Include="Properties\PublishProfiles\VHAAusWeb3 %28DEV%29.pubxml.user" />
   </ItemGroup>
 
   <ItemGroup>
