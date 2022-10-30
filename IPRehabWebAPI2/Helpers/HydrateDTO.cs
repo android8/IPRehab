@@ -146,17 +146,16 @@ namespace IPRehabWebAPI2.Helpers
             {
                 Sta6a = p.bsta6a,
                 Name = p.PatientName,
-                PTFSSN = p.scrssn.HasValue? p.scrssn.Value.ToString() : String.Empty,
+                PTFSSN = p.scrssn.HasValue ? p.scrssn.Value.ToString() : String.Empty,
                 PatientICN = p.PatientICN,
                 DoB = p.DoB,
                 Bedsecn = p.bedsecn,
-                AdmitDate = p.admitday,
+                AdmitDates = new() { p.admitday.Value }
             };
         }
 
         public static EpisodeOfCareDTO HydrateEpisodeOfCare(tblEpisodeOfCare e)
         {
-            DateTime admissionDate = new(DateTime.MinValue.Ticks);
             DateTime onsetDate = new(DateTime.MinValue.Ticks);
             bool formIsCompeted = false;
             var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted");
@@ -173,29 +172,24 @@ namespace IPRehabWebAPI2.Helpers
             EpisodeOfCareDTO thisDTO = new()
             {
                 EpisodeOfCareID = e.EpisodeOfCareID,
+                /* use admit date from episode */
                 FacilityID6 = e.FacilityID6,
-                AdmissionDate = admissionDate,
+                AdmissionDate = e.AdmissionDate,
                 OnsetDate = onsetDate,
                 PatientIcnFK = e.PatientICNFK,
                 FormIsComplete = formIsCompeted
             };
 
-            /* check if Q12 and Q23 have answers and, if yes, trump the episode dates */
+            /* get Q23 for onset date */
             IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
-               a.QuestionIDFKNavigation.QuestionKey == "Q12" || a.QuestionIDFKNavigation.QuestionKey == "Q23")
-              .OrderBy(a => a.QuestionIDFKNavigation.QuestionKey);
+               a.EpsideOfCareIDFK == e.EpisodeOfCareID && a.QuestionIDFKNavigation.QuestionKey == "Q23");
 
             if (keyDates.Any())
             {
-                /* there is only one admission date and one onset date, so first must be Q12 admission date*/
-                if (DateTime.TryParse(ParseDateString(keyDates.First().Description), out admissionDate))
-                    thisDTO.AdmissionDate = admissionDate;
-
                 /* the Last() must be onset date */
                 if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))
                     thisDTO.OnsetDate = onsetDate;
             }
-
             return thisDTO;
         }
 

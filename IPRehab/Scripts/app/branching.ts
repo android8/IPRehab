@@ -1530,7 +1530,7 @@ $(function () {
     /* event handler, add this last to raise change chain */
     function Q12_Q23_blank_then_Lock_All(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
         console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q12: any = $('.persistable[id^=Q12_]').prop('disabled', false);
+        const Q12: any = $('.persistable[id^=Q12_]');
         const Q23: any = $('.persistable[id^=Q23_]').prop('disabled', false);
         const otherPersistables: any = $('.persistable').not(Q12).not(Q23);
         const minDate = new Date('2020-01-01 00:00:00');
@@ -1597,16 +1597,15 @@ $(function () {
             }
             default: {
                 //see branchingTree.txt
-                const controlledByHandlers = $('.persistable[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
+                const controlledByHandlers = $('.persistable[id^=Q12_],[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
 
                 /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
 
                 console.log('Onset Date and Admit Date are not empty, unlock ' + $('.persistable').not(controlledByHandlers).length + ' fields');
 
                 $('.persistable').not(controlledByHandlers).each(function () {
-                    const unlockThis = $(this);
                     //just enable the no handler persistables and persistables with handler but don't raise change event to prevent infinite loop
-                    unlockThis.prop('disabled', false);
+                    $(this).prop('disabled', false);
                 });
 
                 //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
@@ -1696,5 +1695,5 @@ $(function () {
         });
     })();
 
-    $('.persistable[id^=Q12_]').change().focus();
+    $('.persistable[id^=Q23_]').change().focus();
 })

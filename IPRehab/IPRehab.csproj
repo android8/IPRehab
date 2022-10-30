@@ -24,22 +24,27 @@
   
   <ItemGroup>
     <Compile Remove="%2a%2a\**" />
+    <Compile Remove=".wwwroot\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="logs\**" />
     <Compile Remove="Scripts\typings\**" />
     <Content Remove="%2a%2a\**" />
+    <Content Remove=".wwwroot\**" />
     <Content Remove="Data\**" />
     <Content Remove="logs\**" />
     <Content Remove="Scripts\typings\**" />
     <EmbeddedResource Remove="%2a%2a\**" />
+    <EmbeddedResource Remove=".wwwroot\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="logs\**" />
     <EmbeddedResource Remove="Scripts\typings\**" />
     <None Remove="%2a%2a\**" />
+    <None Remove=".wwwroot\**" />
     <None Remove="Data\**" />
     <None Remove="logs\**" />
     <None Remove="Scripts\typings\**" />
     <TypeScriptCompile Remove="%2a%2a\**" />
+    <TypeScriptCompile Remove=".wwwroot\**" />
     <TypeScriptCompile Remove="logs\**" />
     <TypeScriptCompile Remove="node_modules\**" />
     <TypeScriptCompile Remove="Scripts\typings\**" />
@@ -115,15 +120,15 @@
   <ItemGroup>
     <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
     <PackageReference Include="jquery.validation.TypeScript.DefinitelyTyped" Version="0.4.6" />
-    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.368" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.372" />
     <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.91" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -131,8 +136,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
-    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>

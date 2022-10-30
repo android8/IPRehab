@@ -3,6 +3,7 @@ using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PatientModel;
@@ -219,12 +220,12 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<List<PatientDTOTreatingSpecialty>> GetPatients(ITreatingSpecialtyPatientRepository _treatingSpecialtyPatientRepository, string networkName, string criteria, string orderBy, int pageNumber, int pageSize, string patientID)
         {
-            List<PatientDTOTreatingSpecialty> patients = null;
+            List<PatientDTOTreatingSpecialty> patients = new();
             var distinctUserFacilities = await DistinctUserFacilities(networkName);
 
             if (distinctUserFacilities != null)
             {
-                string userFacilitySta3 = String.Join(',',distinctUserFacilities.Select(f=>f.Facility).ToArray());
+                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility).ToArray());
 
                 string cacheKey = criteria;
                 if (string.IsNullOrEmpty(criteria))
@@ -255,7 +256,6 @@ namespace IPRehabWebAPI2.Helpers
                     var allFacilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
 
                     var thisFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a) || p.bsta6a.Contains(userFacilitySta3));
-                    //thisFacilityPatients = thisFacilityPatients.FindAll(p => p.bsta6a.Contains("501"));
 
                     if (!string.IsNullOrEmpty(patientID))
                     {
@@ -284,12 +284,48 @@ namespace IPRehabWebAPI2.Helpers
                             break;
                     }
 
-                    patients = thisFacilityPatients.Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToList().OrderBy(p=>p.Name).ToList();
+                    if (thisFacilityPatients.Any())
+                    {
+                        thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
+                        var distinctedPatientsInThisFacility = thisFacilityPatients.Select(p => new { patientName = p.PatientName, patientICN = p.PatientICN }).Distinct();
+                        foreach(var thisDistinctP in distinctedPatientsInThisFacility)
+                        {
+                            var admissions = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN && p.admitday.HasValue).Select(p=>p.admitday).ToList();
+                            var thisPatient = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN).First();
+                            var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisPatient);
+                            hydratedPatient.AdmitDates.Clear();
+                            foreach(DateTime? d in admissions)
+                            {
+                                hydratedPatient.AdmitDates.Add(d.Value);
+                            }
+                            patients.Add(hydratedPatient);
+                        }
 
-                    if (pageNumber <= 0)
-                        patients = patients.Take(pageSize).ToList();
-                    else
-                        patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                        //vTreatingSpecialtyRecent3Yrs currentPatient = thisFacilityPatients.First();
+                        //var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(currentPatient);
+                        //hydratedPatient.AdmitDates.Clear();
+                        //foreach (var p in thisFacilityPatients)
+                        //{
+                        //    if (p != currentPatient)
+                        //    {
+                        //        patients.Add(hydratedPatient);
+                        //        currentPatient = p;
+                        //        //create a new hydraedPatient from current p
+                        //        hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(p);
+                        //        hydratedPatient.AdmitDates.Clear();
+                        //        hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
+                        //    }
+                        //    else
+                        //    {
+                        //        hydratedPatient.AdmitDates.Add(currentPatient.admitday.Value);
+                        //    }
+                        //}
+
+                        if (pageNumber <= 0)
+                            patients = patients.Take(pageSize).ToList();
+                        else
+                            patients = patients.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    }
                 }
             }
             return patients;
@@ -335,15 +371,18 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<PatientDTOTreatingSpecialty> GetPatientByEpisode(IEpisodeOfCareRepository _episodeRepository, ITreatingSpecialtyPatientRepository _patientRepository, int episodeID)
         {
-            List<PatientDTOTreatingSpecialty> patients = null;
+            PatientDTOTreatingSpecialty patient = null;
             var thisEpisode = _episodeRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
             if (thisEpisode != null)
             {
-                patients = await _patientRepository.FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
-                    .Select(p => HydrateDTO.HydrateTreatingSpecialtyPatient(p)).ToListAsync();
+                var patientInThisEpisode = await _patientRepository
+                    .FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
+                    .FirstOrDefaultAsync();
+                if (patientInThisEpisode != null)
+                    patient = HydrateDTO.HydrateTreatingSpecialtyPatient(patientInThisEpisode);
             }
 
-            return patients.FirstOrDefault();
+            return patient;
         }
 
         private async Task<List<MastUserDTO>> DistinctUserFacilities(string networkName)

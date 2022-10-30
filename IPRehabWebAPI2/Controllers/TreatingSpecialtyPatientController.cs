@@ -3,6 +3,8 @@ using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,10 +55,10 @@ namespace IPRehabWebAPI2.Controllers
             //networkName = "VHALEBBIDELD";
 
             //get all patient with criteria and quarter filter
-            List<PatientDTOTreatingSpecialty> patients;
-            patients = await _cacheHelper.GetPatients(_treatingSpecialtyRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
+            List<PatientDTOTreatingSpecialty> facilityPatients;
+            facilityPatients = await _cacheHelper.GetPatients(_treatingSpecialtyRepository, networkID, criteria, orderBy, pageNumber, pageSize, patientID);
 
-            if (patients is null)
+            if (facilityPatients is null)
             {
                 //string noDataMesage = "No patient is found in rehab in your facility in the past 90 days";
 
@@ -68,25 +70,40 @@ namespace IPRehabWebAPI2.Controllers
                 //};
 
                 //return NotFound(noDataMesage);
-                patients = new();
+                facilityPatients = new();
 
-                return Ok(patients);
+                return Ok(facilityPatients);
             }
             else
             {
+                List<PatientDTOTreatingSpecialty> jaggedPatient = new();
                 if (withEpisode)
                 {
-                    var distinctPatientsInEepisode = _episodeOfCareRepository.FindAll();
-                    
-                    //improve peformance by looping through the smaller episode dataset to find the target record in a much bigger patient dataset
-                    foreach (var pe in distinctPatientsInEepisode)
+                    //inner join
+                    //var facilityPatientEpisodes1 = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
+                    //    p => p.PTFSSN, e => e.PatientICNFK,
+                    //    (p, e) => new
+                    //    {
+                    //        patient = p,
+                    //        episode = HydrateDTO.HydrateEpisodeOfCare(e)
+                    //    }).ToList();
+
+                    //left join
+                    var facilityPatientEpisodes = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll().ToList(),
+                        p => p.PTFSSN, e => e.PatientICNFK, (p, e) => new { p, e })
+                        .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { patient = p.p, episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) })
+                        .ToList();
+
+                    foreach (var fpe in facilityPatientEpisodes)
                     {
-                        var thisEpisodeOfCare = HydrateDTO.HydrateEpisodeOfCare(pe);
-                        //attach episode directly to patient
-                        patients.Where(p => p.PTFSSN == pe.PatientICNFK && p.AdmitDate == pe.AdmissionDate).Distinct().SingleOrDefault()?.CareEpisodes.Add(thisEpisodeOfCare);
+                        if (fpe.episode != null)
+                        {
+                            fpe.patient.CareEpisodes.Add(fpe.episode);
+                        }
+                        jaggedPatient.Add(fpe.patient);
                     }
                 }
-                return Ok(patients);
+                return Ok(jaggedPatient);
             }
         }
 
@@ -119,10 +136,10 @@ namespace IPRehabWebAPI2.Controllers
             }
             else
             {
-                PatientDTOTreatingSpecialty thisPatient = patients.Find(x => x.PTFSSN == patientID || x.PatientICN == patientID);
+                PatientDTOTreatingSpecialty thisPatient = patients.First();
                 if (withEpisode)
                 {
-                    var episodes = _episodeOfCareRepository.FindByCondition(p => p.PatientICNFK == p.PatientICNFK);
+                    var episodes = _episodeOfCareRepository.FindByCondition(e => e.PatientICNFK == thisPatient.PatientICN || e.PatientICNFK == thisPatient.PTFSSN);
                     if (episodes != null)
                     {
                         List<EpisodeOfCareDTO> listOfEpisodes = new();
