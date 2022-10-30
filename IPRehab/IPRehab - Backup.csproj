@@ -1,0 +1,191 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>aspnet-IPRehab-54583FFC-5AB9-4644-B920-87211850A94C</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>$(MSBuildProjectDirectory)\.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants></DefineConstants>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="%2a%2a\**" />
+    <Compile Remove=".wwwroot\**" />
+    <Compile Remove="Data\**" />
+    <Compile Remove="logs\**" />
+    <Compile Remove="Scripts\typings\**" />
+    <Content Remove="%2a%2a\**" />
+    <Content Remove=".wwwroot\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="logs\**" />
+    <Content Remove="Scripts\typings\**" />
+    <EmbeddedResource Remove="%2a%2a\**" />
+    <EmbeddedResource Remove=".wwwroot\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <EmbeddedResource Remove="Scripts\typings\**" />
+    <None Remove="%2a%2a\**" />
+    <None Remove=".wwwroot\**" />
+    <None Remove="Data\**" />
+    <None Remove="logs\**" />
+    <None Remove="Scripts\typings\**" />
+    <TypeScriptCompile Remove="%2a%2a\**" />
+    <TypeScriptCompile Remove=".wwwroot\**" />
+    <TypeScriptCompile Remove="logs\**" />
+    <TypeScriptCompile Remove="node_modules\**" />
+    <TypeScriptCompile Remove="Scripts\typings\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Helpers\EpisodeCommand.cs" />
+    <Compile Remove="Helpers\HydrateHierarchically1.cs" />
+    <Compile Remove="Helpers\StateManager.cs" />
+    <Compile Remove="ViewComponents\Checkbox2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\Dropdown2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\Input2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\RadioButton2ViewComponent.cs" />
+    <Compile Remove="ViewComponents\SubmitButtonViewComponent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+    <Content Remove="Views\Question\Edit - Copy.cshtml" />
+    <Content Remove="Views\Question\Edit1.cshtml" />
+    <Content Remove="Views\Question\Edit2.cshtml" />
+    <Content Remove="Views\Question\_EpisodeKeyRows.cshtml" />
+    <Content Remove="Views\Question\_EpisodeKeysModal.cshtml" />
+    <Content Remove="Views\Shared\Components\Input\MaterialInputDate1.cshtml" />
+    <Content Remove="Views\Shared\Components\Input\MDNumberBeforeHeader.cshtml" />
+    <Content Remove="Views\Shared\_RehabActionBtns.cshtml" />
+    <Content Remove="wwwroot\%2a%2a" />
+    <Content Remove="wwwroot\css\snowyBackground.html" />
+    <Content Remove="wwwroot\js\file.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".eslintrc.json.bak" />
+    <None Remove="Scripts\app\AjaxPostbackModel.js" />
+    <None Remove="Scripts\app\AjaxPostbackModel.js.map" />
+    <None Remove="Scripts\app\animateBanner.js" />
+    <None Remove="Scripts\app\animateBanner.js.map" />
+    <None Remove="Scripts\app\branching.js" />
+    <None Remove="Scripts\app\branching.js.map" />
+    <None Remove="Scripts\app\commandBtns.js" />
+    <None Remove="Scripts\app\commandBtns.js.map" />
+    <None Remove="Scripts\app\commonImport.js" />
+    <None Remove="Scripts\app\commonImport.js.map" />
+    <None Remove="Scripts\app\cookieConsent.js" />
+    <None Remove="Scripts\app\cookieConsent.js.map" />
+    <None Remove="Scripts\app\enums.js" />
+    <None Remove="Scripts\app\enums.js.map" />
+    <None Remove="Scripts\app\form.js" />
+    <None Remove="Scripts\app\form.js.map" />
+    <None Remove="Scripts\app\patientDataTable.js" />
+    <None Remove="Scripts\app\patientDataTable.js.map" />
+    <None Remove="Scripts\app\patientList.js" />
+    <None Remove="Scripts\app\patientList.js.map" />
+    <None Remove="Scripts\app\userAnswer.js" />
+    <None Remove="Scripts\app\userAnswer.js.map" />
+    <None Remove="Scripts\app\utility.js" />
+    <None Remove="Scripts\app\utility.js.map" />
+    <None Remove="Scripts\app\validationRules.js" />
+    <None Remove="Scripts\app\validationRules.js.map" />
+    <None Remove="Scripts\cascadeDropdown\cascadeDropdown.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Remove="%2a%2a\%2a.ts" />
+    <TypeScriptCompile Remove="%2a%2a\%2a.tsx" />
+    <TypeScriptCompile Remove="Scripts\app\validationRules.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Scripts\TypeScriptSupport.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
+    <PackageReference Include="jquery.validation.TypeScript.DefinitelyTyped" Version="0.4.6" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.372" />
+    <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.91" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IPRehabWebAPI2\IPRehabWebAPI2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="Properties\PublishProfiles\VHAPORWBD06.pubxml.user" />
+    <None Include="Views\Shared\Components\Input\DropDown.cshtml" />
+    <None Include="Views\Shared\Components\Input\MaterialInputText.cshtml" />
+    <None Include="Views\Shared\Components\Input\MDNumberAfterHeader.cshtml" />
+    <None Include="Views\Shared\Components\Input\MaterialTextArea.cshtml" />
+    <None Include="Views\Shared\Components\Input\RadioFlexDirectionColumnLongText2.cshtml" />
+    <None Include="wwwroot\js\app\animateBanner.js" />
+    <None Include="wwwroot\js\app\form.js" />
+    <None Include="wwwroot\js\app\patientList.js" />
+    <None Include="wwwroot\materialize-css\CHANGELOG.md" />
+    <None Include="wwwroot\materialize-css\dist\.DS_Store" />
+    <None Include="wwwroot\materialize-css\dist\css\.DS_Store" />
+    <None Include="wwwroot\materialize-css\dist\fonts\.DS_Store" />
+    <None Include="wwwroot\materialize-css\dist\js\materialize.js" />
+    <None Include="wwwroot\materialize-css\dist\js\materialize.min.js" />
+    <None Include="wwwroot\materialize-css\Gruntfile.js" />
+    <None Include="wwwroot\materialize-css\LICENSE" />
+    <None Include="wwwroot\materialize-css\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mailer">
+      <HintPath>..\..\..\CommonLibrary\Mailer\bin\Debug\net5.0\Mailer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\cascadeDropdown\cascadeDropdown.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\app - Copy %282%29.min.css">
+      <DependentUpon>app.min.css</DependentUpon>
+    </Content>
+    <Content Update="wwwroot\css\app - Copy - Copy.min.css">
+      <DependentUpon>app - Copy.min.css</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+</Project>
