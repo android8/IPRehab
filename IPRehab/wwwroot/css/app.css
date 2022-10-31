@@ -1042,9 +1042,9 @@ button.calendarReset, button.calendarReset:disabled {
 }
 
 .disabled, :disabled {
-  opacity: 0.3 !important;
+  opacity: 1 !important;
   color: black !important;
-  background-color: red !important;
+  background-color: rgba(255, 0, 0, 0.3607843137) !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
