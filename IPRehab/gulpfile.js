@@ -20,7 +20,7 @@ var script = {
 
 var style = {
     mySass: ['./wwwroot/css/*.scss'],
-    myCssOnly: ['./wwwroot/css/**/*.css', '!./wwwroot/css/**/site.css'],
+    myCssOnly: ['./wwwroot/css/*.css', '!./wwwroot/css/site.css','!./wwwroot/cube annimation'],
     output: './wwwroot/css'
 }
 
