@@ -155,7 +155,7 @@ $(function () {
         let dialogText: string;
 
         if (!isDischarged) {
-            dialogText = 'Q12B is not a discharge date. Reset and lock related discharge fields:  Q15B,Q16B, Q17B, Q21B, Q41, Q44C';
+            dialogText = 'When Q12B is not a answered with a valid discharge date, the application rseset and locks related discharge fields:  Q15B, Q16B, Q17B, Q21B, Q41, and Q44C';
 
             console.log(dialogText);
 
