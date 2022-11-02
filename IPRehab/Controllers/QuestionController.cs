@@ -127,6 +127,9 @@ namespace IPRehab.Controllers
                 _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}",
             };
 
+            DateTime thisDate;
+            DateTime.TryParse(admitDate, out thisDate);
+
             questions = await SerializationGeneric<List<QuestionDTO>>.DeserializeAsync($"{questionApiEndpoint}", base.BaseOptions);
 
             string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
@@ -137,6 +140,7 @@ namespace IPRehab.Controllers
                 SearchCriteria = searchCriteria,
                 PageNumber = pageNumber,
                 EpisodeID = episodeID,
+                AdmitDate = thisDate
             };
 
             if (episodeID == -1)
@@ -150,8 +154,6 @@ namespace IPRehab.Controllers
                 ActionButtonVM = episodeCommandBtn
             };
 
-            DateTime thisDate;
-            DateTime.TryParse(admitDate, out thisDate);
             QuestionHierarchy qh = HydrateVM.HydrateHierarchically(questions, thisDate);
             qh.ReadOnly = false;
             qh.EpisodeID = episodeID;
