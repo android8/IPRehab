@@ -225,7 +225,7 @@ namespace IPRehabWebAPI2.Helpers
 
             if (distinctUserFacilities != null)
             {
-                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility).ToArray());
+                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
 
                 string cacheKey = criteria;
                 if (string.IsNullOrEmpty(criteria))
@@ -255,11 +255,13 @@ namespace IPRehabWebAPI2.Helpers
                     //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
                     var allFacilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
 
-                    var thisFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a) || p.bsta6a.Contains(userFacilitySta3));
+                    var thisFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a.Substring(0,3)));
 
                     if (!string.IsNullOrEmpty(patientID))
                     {
-                        thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID || p.PatientICN == patientID);
+                        thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID);
+                        if (!thisFacilityPatients.Any())
+                            thisFacilityPatients = thisFacilityPatients.Where(p => p.PatientICN == patientID);
                     }
 
                     switch (searchCriteriaType)
@@ -376,8 +378,13 @@ namespace IPRehabWebAPI2.Helpers
             if (thisEpisode != null)
             {
                 var patientInThisEpisode = await _patientRepository
-                    .FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK)
-                    .FirstOrDefaultAsync();
+                    .FindByCondition(p => p.PatientICN == thisEpisode.PatientICNFK).FirstOrDefaultAsync();
+
+                if (patientInThisEpisode == null) {
+                    patientInThisEpisode = await _patientRepository
+                        .FindByCondition(p => p.scrssn.Value.ToString() == thisEpisode.PatientICNFK).FirstOrDefaultAsync();
+                }
+
                 if (patientInThisEpisode != null)
                     patient = HydrateDTO.HydrateTreatingSpecialtyPatient(patientInThisEpisode);
             }
