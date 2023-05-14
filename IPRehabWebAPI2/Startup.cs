@@ -33,6 +33,8 @@ namespace IPRehabWebAPI2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             #region custom appsettings
 
             //https://www.bing.com/ck/a?!&&p=9f40ffcae2103a86JmltdHM9MTY2MjQyMjQwMCZpZ3VpZD0yMGE2ODFkNi05OTNiLTZiN2YtMThjYS05M2MxOThiZjZhNTEmaW5zaWQ9NTQ0MA&ptn=3&hsh=3&fclid=20a681d6-993b-6b7f-18ca-93c198bf6a51&u=a1aHR0cHM6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vYXJ0aWNsZS9yZWFkaW5nLXZhbHVlcy1mcm9tLWFwcHNldHRpbmdzLWpzb24taW4tYXNwLW5ldC1jb3JlLyM6fjp0ZXh0PVRoZXJlJTIwYXJlJTIwdHdvJTIwbWV0aG9kcyUyMHRvJTIwcmV0cmlldmUlMjBvdXIlMjB2YWx1ZXMlMkMsYXJlJTIwZ2V0dGluZyUyMGFub3RoZXIlMjBzZWN0aW9uJTIwdGhhdCUyMGNvbnRhaW5zJTIwdGhlJTIwdmFsdWUu&ntb=1
@@ -43,16 +45,11 @@ namespace IPRehabWebAPI2
             #region db setup
 
             string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
-            string FSODPatientConnectionString = Configuration.GetConnectionString("FSODPatientDetail");
             string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
 
             //register the internal IPRehab DB context
             services.AddDbContext<IPRehabContext>(
                o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
-
-            //register the external Dmhealthfactors DB context for patients
-            services.AddDbContext<DmhealthfactorsContext>(
-               o => o.UseLazyLoadingProxies().UseSqlServer(FSODPatientConnectionString));
 
             //register the external Masterreports DB context for users
             services.AddDbContext<MasterreportsContext>(
@@ -71,15 +68,10 @@ namespace IPRehabWebAPI2
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISignatureRepository, SignatureRepository>();
             services.AddScoped<IQuestionMeasureRepository, QuestionMeasureRepository>();
-            services.AddScoped<IFSODPatientRepository, FSODPatientRepository>();
             services.AddScoped<ITreatingSpecialtyPatientRepository, TreatingSpecialtyPatientRepository>();
 
             //https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-providers
             services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
-
-
-            /* ToDO: to be deleted after test */
-            services.AddScoped<ITestUserPatientCacheHelper, TestUserPatientCacheHelper>();
 
             services.AddScoped<AnswerHelper, AnswerHelper>();
 
@@ -92,7 +84,6 @@ namespace IPRehabWebAPI2
             /* https://docs.microsoft.com/en-us/samples/dotnet/aspnetcore.docs/getstarted-swashbuckle-aspnetcore/?tabs=visual-studio
              * In properties\launchSettimgs.json set 
              * "launchUrl": "api/TreatingSpecialtyPatient to start with TreatingSpecialtyPatient patient page
-             * "launchUrl": "api/FSODPatient" to start with FSODPatient page 
              * "launchUrl": "swagger" to start with Swagger interface */
 
             services.AddSwaggerGen(c =>
@@ -180,22 +171,24 @@ namespace IPRehabWebAPI2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //https://medium.com/@niteshsinghal85/how-i-have-handled-exception-globally-in-asp-net-core-api-7b8c2603af72
+            app.ConfigureExceptionHandler(env); //use ExceptionMiddleware extension of IApplicationBuilder
 
             app.UseStatusCodePages();
 
-            string apiAppSettings = string.Empty;
-            if (env.IsDevelopment())
-            {
-                //app.UseDeveloperExceptionPage();
+            string apiAppSettings = env.IsDevelopment()? "D": string.Empty;
 
-                //or use custom Error controller
-                app.UseExceptionHandler("/error-local-development");
-                apiAppSettings = "D";
-            }
-            else
-            {
-                app.UseExceptionHandler("/error");
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    //app.UseDeveloperExceptionPage();
+
+            //    //or use custom Error controller
+            //    app.UseExceptionHandler("/error-local-development");
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/error");
+            //}
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

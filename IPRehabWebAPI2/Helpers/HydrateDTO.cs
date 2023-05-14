@@ -109,37 +109,6 @@ namespace IPRehabWebAPI2.Helpers
             return answerDTO;
         }
 
-        public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)
-        {
-            UserFacilityGrant grants = new();
-            grants.District.Add(p.District);
-            grants.Division.Add(p.Division);
-            grants.Facility.Add(p.Facility);
-
-            return grants;
-        }
-
-        public static PatientDTO HydratePatient(FSODPatient p)
-        {
-            return new PatientDTO
-            {
-                VISN = p.VISN,
-                Facility = p.Facility,
-                District = p.District,
-                Division = p.Division,
-                ADMParent_Key = p.ADMParent_Key,
-                Sta6aKey = p.Sta6aKey,
-                Bedsecn = p.bedsecn,
-                Name = p.Name,
-
-                PTFSSN = p.PTFSSN,
-                FSODSSN = p.FSODSSN,
-
-                FiscalPeriod = p.FiscalPeriod,
-                FiscalPeriodInt = p.FiscalPeriodInt
-            };
-        }
-
         public static PatientDTOTreatingSpecialty HydrateTreatingSpecialtyPatient(vTreatingSpecialtyRecent3Yrs p)
         {
             return new PatientDTOTreatingSpecialty
@@ -184,7 +153,7 @@ namespace IPRehabWebAPI2.Helpers
             IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
                a.EpsideOfCareIDFK == e.EpisodeOfCareID && a.QuestionIDFKNavigation.QuestionKey == "Q23");
 
-            if (keyDates.Any())
+            if (keyDates != null && keyDates.Any())
             {
                 /* the Last() must be onset date */
                 if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))

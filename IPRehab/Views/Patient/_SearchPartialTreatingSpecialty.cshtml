@@ -28,7 +28,7 @@
 
   @*the Model.Patients.Count() is total matched records that are Viewable in the current pager.
     The Model.TotalPatients is total matched records in the repository*@
-  @if (Model.Patients.Any())
+    @if (Model.Patients != null && Model.Patients.Any())
   {
     <div id="recordCount">@($"{Model.Patients.Count()} of {Model.TotalPatients} records")</div>
   }

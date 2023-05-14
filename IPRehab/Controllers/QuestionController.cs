@@ -1,13 +1,15 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
+using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
@@ -15,75 +17,29 @@ namespace IPRehab.Controllers
     //ToDo: [Authorize]
     public class QuestionController : BaseController
     {
-        public QuestionController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<QuestionController> logger)
-          : base(environment, configuration, logger)
+        private readonly IMemoryCache _memoryCache;
+        private readonly IUserPatientCacheHelper _userPatientCacheHelper;
+        public QuestionController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration,
+            IUserPatientCacheHelper userPatientCacheHelper)
+          : base(environment, memoryCache, configuration)
         {
+            _memoryCache = memoryCache;
+            _userPatientCacheHelper = userPatientCacheHelper;
         }
 
         /// <summary>
         /// https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="stage"></param>
+        /// <param name="patientID"></param>
+        /// <param name="episodeID"></param>
+        /// <param name="searchCriteria"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="admitDate"></param>
         /// <returns></returns> 
-        // GET: QuestionController/Edit/5
-        //public async Task<ActionResult> Edit1(string stage, string patientID, string patientName, int episodeID)
-        //{
-        //  stage = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(stage));
-        //  patientID = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientID));
-        //  string encodedPatientName = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(patientName));
-
-        //  string action = "Edit";
-        //  ViewBag.StageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : $"{stage}");
-        //  ViewBag.Action = $"{action} Mode";
-
-        //  List<QuestionDTO> questions = new List<QuestionDTO>();
-        //  bool includeAnswer = (action == "Edit");
-
-        //  RehabActionViewModel actionButtonVM = new()
-        //  {
-        //    HostingPage = "Question",
-        //    EpisodeID = episodeID,
-        //  };
-
-        //  ViewBag.ActionBtnVM = actionButtonVM;
-
-        //  string apiEndpoint;
-        //  string badgeBackgroundColor;
-        //  switch (stage)
-        //  {
-        //    case null:
-        //    case "":
-        //    case "Full":
-        //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}";
-        //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
-        //      break;
-        //    default:
-        //      apiEndpoint = $"{apiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}";
-        //      badgeBackgroundColor = EpisodeCommandButtonSettings.actionBtnColor[stage];
-        //      break;
-        //  }
-        //  ViewBag.ModeColor = badgeBackgroundColor;
-
-        //  questions = await SerializationGeneric<List<QuestionDTO>>.SerializeAsync($"{apiEndpoint}", base.BaseOptions);
-
-        //  List<QuestionWithSelectItems> vm = new List<QuestionWithSelectItems>();
-        //  foreach (var dto in questions)
-        //  {
-        //    QuestionWithSelectItems qws = HydrateVM.Hydrate(dto);
-        //    vm.Add(qws);
-        //  }
-
-        //  //model for section navigator side bar
-        //  var distinctSections = HydrateVM.GetDistinctSections(vm);
-        //  ViewBag.QuestionSections = distinctSections;
-
-        //  //returning the question list to view  
-        //  return View(vm);
-        //}
-
         public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy, string admitDate)
         {
-            bool useTreatingSpecialtyForPatient = true;
             string healthFactoreApiEndpoint = string.Empty;
             string treatingSpecialtyEndpoint = string.Empty;
             string questionApiEndpoint = string.Empty;
@@ -96,20 +52,15 @@ namespace IPRehab.Controllers
             //to enforce PHI/PII, no patient ID nor patient name can be used in querystring
             //so use episode id to search for the target patient
 
-            if (useTreatingSpecialtyForPatient)
-            {
-                PatientDTOTreatingSpecialty patientstreatingSpecialty = await PatientsFromTreatingSpecialty(episodeID, patientID, currentUserID);
-                patientID = patientstreatingSpecialty.PTFSSN;
-                patientName = patientstreatingSpecialty.Name;
-                facilityID = patientstreatingSpecialty.Sta6a;
+            PatientDTOTreatingSpecialty patientstreatingSpecialty = await PatientsFromTreatingSpecialty(episodeID, patientID, currentUserID);
+
+            if (patientstreatingSpecialty == null) {
+                return PartialView("_QestionNoPatient");
             }
-            else
-            {
-                PatientDTO patientsFromHealthFactor = await PatientsFromHealthFactor(episodeID, patientID, currentUserID);
-                patientID = patientsFromHealthFactor.PTFSSN;
-                patientName = patientsFromHealthFactor.Name;
-                facilityID = patientsFromHealthFactor.Facility;
-            }
+
+            patientID = patientstreatingSpecialty.PTFSSN;
+            patientName = patientstreatingSpecialty.Name;
+            facilityID = patientstreatingSpecialty.Sta6a;
 
             string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
             string action = nameof(Edit);
@@ -127,9 +78,6 @@ namespace IPRehab.Controllers
                 _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}",
             };
 
-            DateTime thisDate;
-            DateTime.TryParse(admitDate, out thisDate);
-
             questions = await SerializationGeneric<List<QuestionDTO>>.DeserializeAsync($"{questionApiEndpoint}", base.BaseOptions);
 
             string actionBtnColor = EpisodeCommandButtonSettings.CommandBtnConfigDictionary[stage].ButtonCss;
@@ -139,9 +87,11 @@ namespace IPRehab.Controllers
                 HostingPage = "Question",
                 SearchCriteria = searchCriteria,
                 PageNumber = pageNumber,
-                EpisodeID = episodeID,
-                AdmitDate = thisDate
+                EpisodeID = episodeID
             };
+
+            if (DateTime.TryParse(System.Web.HttpUtility.UrlDecode(admitDate), out DateTime thisDate))
+                episodeCommandBtn.AdmitDate = thisDate;
 
             if (episodeID == -1)
             {
@@ -217,66 +167,120 @@ namespace IPRehab.Controllers
             return RedirectToAction(nameof(Edit));
         }
 
-        private async Task<PatientDTO> PatientsFromHealthFactor(int episodeID, string patientID, string currentUserID)
-        {
-            PatientDTO patient = new();
-            if (!GetFromSession())
-            {
-                if (episodeID <= 0)
-                {
-                    string healthFactoreApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/{patientID}/?networkID={currentUserID}&pageSize={base.PageSize}";
-                    patient = await SerializationGeneric<PatientDTO>.DeserializeAsync($"{healthFactoreApiEndpoint}", base.BaseOptions);
-                }
-                else
-                {
-                    string healthFactoreApiEndpoint = $"{ApiBaseUrl}/api/FSODPatient/Episode/{episodeID}?pageSize={base.PageSize}";
-                    return await SerializationGeneric<PatientDTO>.DeserializeAsync($"{healthFactoreApiEndpoint}", base.BaseOptions);
-                }
-            }
-            //else
-            //{
-            //    //ToDo: get from session
-            //}
-
-            return patient;
-        }
-
         private async Task<PatientDTOTreatingSpecialty> PatientsFromTreatingSpecialty(int episodeID, string patientID, string currentUserID)
         {
-            string webAPIendpoint;
-            PatientDTOTreatingSpecialty patient = new();
-            if (!GetFromSession())
-            {
-                if(episodeID <= 0)
-                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
-                else
-                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
+            List<MastUserDTO> thisUserAccessLevel = await _userPatientCacheHelper.GetUserAccessLevels(currentUserID);
 
-                patient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
-                //patient = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTO>>.DeserializeAsync(url);
-                
-                //cache the patient in HttpContext.Session.Set("")
+            if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
+            {
+                return null;    //no access
             }
-            //else
-            //{
-            //    //ToDo: get from session
-            //}
-            return patient;
-        }
 
-        private bool GetFromSession()
-        {
-
-            string sessionKey = "EveryFacilityPatients";
-            string sessionAllPatients = HttpContext.Session.GetString(sessionKey);
-            if (string.IsNullOrEmpty(sessionAllPatients))
+            //PatientDTOTreatingSpecialty patient = GetFromMemoryCache(CacheKeys.CacheKeyAllPatients, patientID);
+            var thisFacilityPatients = await _userPatientCacheHelper.GetThisFacilityPatients(thisUserAccessLevel);
+            if (thisFacilityPatients == null || !thisFacilityPatients.Any())
             {
-                return false;
+                return null;    //no patient in this facility 
+            }
+
+            var inFacilityPatient = thisFacilityPatients.FirstOrDefault(p => p.scrssn.ToString() == patientID || p.PatientICN == patientID);
+            if (inFacilityPatient != null)
+            {
+                PatientDTOTreatingSpecialty thisPatient = new()
+                {
+                    Sta6a = inFacilityPatient.bsta6a,
+                    Name = inFacilityPatient.PatientName,
+                    PTFSSN = inFacilityPatient.scrssn.Value.ToString(),
+                    PatientICN = inFacilityPatient.PatientICN,
+                    DoB = inFacilityPatient.DoB,
+                    Bedsecn = inFacilityPatient.bedsecn
+                };
+                return thisPatient;
             }
             else
             {
-                return true;
+                PatientDTOTreatingSpecialty thisPatient = null;
+                string webAPIendpoint;
+
+                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                {
+                    if (episodeID <= 0)
+                    {
+                        webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
+                    }
+                    else
+                    {
+                        webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
+                    }
+
+                    thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
+
+                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
+                }
+
+                return thisPatient;
             }
         }
+
+        private PatientDTOTreatingSpecialty GetFromMemoryCache(string cacheKeyAllPatients, string patientID)
+        {
+            var memoryCachePatients = _memoryCache.Get<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(cacheKeyAllPatients);
+            if (memoryCachePatients != null && memoryCachePatients.Any())
+            {
+                //get single patient matching the patientID
+                var thisTS3rs = memoryCachePatients.FirstOrDefault(p => p.scrssn == int.Parse(patientID));
+
+                if (thisTS3rs == null)
+                    return null;
+
+                PatientDTOTreatingSpecialty thisPatient = new()
+                {
+                    Sta6a = thisTS3rs.bsta6a,
+                    Name = thisTS3rs.PatientName,
+                    PTFSSN = thisTS3rs.scrssn.Value.ToString(),
+                    PatientICN = thisTS3rs.PatientICN,
+                    DoB = thisTS3rs.DoB,
+                    Bedsecn = thisTS3rs.bedsecn
+                };
+
+                return thisPatient;
+            }
+            return null;
+        }
+
+        //private async Task<PatientDTOTreatingSpecialty> GetFromSession(string sessionKeyAllPatients, string patientID)
+        //{
+        //    string sessionAllPatients = HttpContext.Session.GetString(sessionKeyAllPatients);
+        //    if (string.IsNullOrEmpty(sessionAllPatients))
+        //    {
+        //        return null;
+        //    }
+        //    else
+        //    {
+        //        var patients = await HttpContext.Session.Get(sessionKeyAllPatients)?.DeserializeAsync<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(base.BaseOptions);
+        //        if (patients == null)
+        //        {
+        //            return null;
+        //        }
+
+        //        //get single patient matching the patientID
+        //        var thisTS3rs = patients.FirstOrDefault(p => p.scrssn == int.Parse(patientID));
+
+        //        if (thisTS3rs == null)
+        //            return null;
+
+        //        PatientDTOTreatingSpecialty thisPatient = new()
+        //        {
+        //            Sta6a = thisTS3rs.bsta6a,
+        //            Name = thisTS3rs.PatientName,
+        //            PTFSSN = thisTS3rs.scrssn.Value.ToString(),
+        //            PatientICN = thisTS3rs.PatientICN,
+        //            DoB = thisTS3rs.DoB,
+        //            Bedsecn = thisTS3rs.bedsecn
+        //        };
+
+        //        return thisPatient;
+        //    }
+        //}
     }
 }

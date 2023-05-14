@@ -1,24 +1,29 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace IPRehab
 {
-  public class Program
-  {
-    public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
+    public class Program
+    {
+        public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-          //.ConfigureLogging(loggingBuilder => {
-          //  loggingBuilder.ClearProviders();
-          //  loggingBuilder.AddConsole();
-          //})
-          //.ConfigureAppConfiguration(appConfig => { 
-          //  appConfig.AddIniFile("appsettings.ini");
-          //})
-          .ConfigureWebHostDefaults(webBuilder =>
-            {
-              webBuilder.UseStartup<Startup>();
-            });
-  }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+              .ConfigureLogging(loggingBuilder =>
+              {
+                  loggingBuilder.ClearProviders();
+                  loggingBuilder.AddEventLog();
+                  loggingBuilder.AddConsole();
+                  loggingBuilder.AddDebug();
+                  loggingBuilder.AddApplicationInsights();
+              })
+              //.ConfigureAppConfiguration(appConfig => { 
+              //  appConfig.AddIniFile("appsettings.ini");
+              //})
+              .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 }

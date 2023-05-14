@@ -44,7 +44,7 @@ namespace IPRehabWebAPI2.Controllers
       
       string exceptionMsg = string.Empty;
 
-      if (postbackModel.NewAnswers.Any())
+      if (postbackModel.NewAnswers != null && postbackModel.NewAnswers.Any())
       {
         try
         {
@@ -67,7 +67,7 @@ namespace IPRehabWebAPI2.Controllers
         }
       }
 
-      if (postbackModel.OldAnswers.Any())
+      if (postbackModel.OldAnswers != null && postbackModel.OldAnswers.Any())
       {
         try
         {
@@ -82,7 +82,7 @@ namespace IPRehabWebAPI2.Controllers
         }
       }
 
-      if (postbackModel.UpdatedAnswers.Any())
+      if (postbackModel.UpdatedAnswers != null && postbackModel.UpdatedAnswers.Any())
       {
         try
         {
@@ -126,7 +126,7 @@ namespace IPRehabWebAPI2.Controllers
       {
         return BadRequest();
       }
-      if (!postbackModel.NewAnswers.Any())
+      if (postbackModel.NewAnswers == null || !postbackModel.NewAnswers.Any())
       {
         return BadRequest();
       }

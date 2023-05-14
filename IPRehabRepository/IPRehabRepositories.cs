@@ -37,17 +37,6 @@ namespace IPRehabRepository
         }
     }
 
-    /// <summary>
-    /// This repository is derived from the FSOD sechema in VHAAUSBI25.vha.med.va.gov.DMHealthFactors database
-    /// </summary>
-    public class FSODPatientRepository : FSODRepositoryBase<FSODPatient>, IFSODPatientRepository
-    {
-        public FSODPatientRepository(DmhealthfactorsContext repositoryContext)
-              : base(repositoryContext)
-        {
-        }
-    }
-
     public class TreatingSpecialtyPatientRepository : RepositoryBase<vTreatingSpecialtyRecent3Yrs>, ITreatingSpecialtyPatientRepository
     {
         public TreatingSpecialtyPatientRepository(IPRehabContext repositoryContext)

@@ -36,9 +36,6 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("SSN")]
         public string PTFSSN { get; set; }
 
-        [DisplayName("FSOD SSN")]
-        public string FSODSSN { get; set; }
-
         [DisplayName("Fiscal Period")]
         public string FiscalPeriod { get; set; }
 

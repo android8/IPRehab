@@ -220,12 +220,12 @@ namespace IPRehab.Helpers
             var complete = sections.Where(s => s.SectionTitle == "Complete");
             sections = sections.Except(caseDetail).Except(complete).ToList();
 
-            if (caseDetail.Any())
+            if (caseDetail != null && caseDetail.Any())
             {
                 /* hoist case detail section to the top of the list */
                 sections.InsertRange(0, caseDetail);
             }
-            if (complete.Any())
+            if (complete != null && complete.Any())
             {
                 sections.Add(complete.First());
             }

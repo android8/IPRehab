@@ -1,16 +1,16 @@
 ﻿using IPRehab.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace IPRehab.Controllers
 {
-  //ToDo: [Authorize]
-  public class HomeController : BaseController
+    //ToDo: [Authorize]
+    public class HomeController : BaseController
   {
-    public HomeController(IWebHostEnvironment environment, ILogger<HomeController> logger, IConfiguration configuration) 
-      : base(environment, configuration, logger)
+    public HomeController(IWebHostEnvironment environment, IMemoryCache meoryCache, IConfiguration configuration) 
+      : base(environment, meoryCache, configuration)
     {
     }
 
