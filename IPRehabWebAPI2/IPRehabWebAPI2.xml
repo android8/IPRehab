@@ -122,11 +122,11 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetPatients(System.String,System.String,System.String,System.Int32,System.Int32,System.String)">
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetPatients(System.Collections.Generic.List{IPRehabWebAPI2.Models.MastUserDTO},System.String,System.String,System.Int32,System.Int32,System.String)">
             <summary>
             get patients from Treating Specialty using ITreatingSpecialtyPatientRepository
             </summary>
-            <param name="networkName"></param>
+            <param name="distinctUserFacilities"></param>
             <param name="criteria"></param>
             <param name="orderBy"></param>
             <param name="pageNumber"></param>

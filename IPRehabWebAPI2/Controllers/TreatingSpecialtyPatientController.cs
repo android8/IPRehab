@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,11 +53,16 @@ namespace IPRehabWebAPI2.Controllers
             //get all patient with criteria and quarter filter
             List<PatientDTOTreatingSpecialty> facilityPatients;
             string patientID = string.Empty;
-            facilityPatients = await _cacheHelper.GetPatients(networkID, criteria, orderBy, pageNumber, pageSize, patientID);
+            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(networkID);
+            if (distinctUserFacilities == null || !distinctUserFacilities.Any())
+                return NotFound("You have not permission to any facility");
+
+            facilityPatients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
 
             if (facilityPatients == null || !facilityPatients.Any())
             {
-                string noDataMesage = "No patient is found in your facility";
+                string permittedFacilities = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
+                string noDataMesage = $"No patient is found in the permitted facilities {permittedFacilities} ";
 
                 //Response.Headers.Location = new Uri("NoData").ToString();
                 //return new ContentResult
@@ -73,7 +79,14 @@ namespace IPRehabWebAPI2.Controllers
             else
             {
                 List<PatientDTOTreatingSpecialty> jaggedPatient = new();
-                if (withEpisode)
+                if (!withEpisode)
+                {
+                    foreach (var facilityPatient in facilityPatients)
+                    {
+                        jaggedPatient.Add(facilityPatient);
+                    }
+                }
+                else
                 {
                     //inner join
                     //var facilityPatientEpisodes1 = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
@@ -122,7 +135,10 @@ namespace IPRehabWebAPI2.Controllers
             networkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
 
             string criteria = string.Empty; //no criteria is needed for patient search based on id
-            List<PatientDTOTreatingSpecialty> patients = await _cacheHelper.GetPatients(networkID, criteria, orderBy, pageNumber, pageSize, patientID);
+
+            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(networkID);
+
+            List<PatientDTOTreatingSpecialty> patients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
             if (patients == null || !patients.Any())
             {
                 return NotFound($"The patient {patientID} is not found in your facility");

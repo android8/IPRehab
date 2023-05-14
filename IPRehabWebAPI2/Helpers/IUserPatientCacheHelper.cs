@@ -8,7 +8,7 @@ namespace IPRehabWebAPI2.Helpers
 {
     public interface IUserPatientCacheHelper
     {
-        Task<List<PatientDTOTreatingSpecialty>> GetPatients(string networkName, string criteria, string orderBy, int pageNumber, int PageSize, string patientID);
+        Task<List<PatientDTOTreatingSpecialty>> GetPatients(List<MastUserDTO> distinctUserFacilities, string criteria, string orderBy, int pageNumber, int PageSize, string patientID);
         Task<PatientDTOTreatingSpecialty> GetPatientByEpisode(int EpisodeID);
         Task<List<MastUserDTO>> GetUserAccessLevels(string networkID);
         Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients();

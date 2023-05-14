@@ -142,7 +142,10 @@ namespace IPRehabWebAPI2.Controllers
             //    s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
             //) 
             List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(
-              m => m.StageFK == stageID || (m.QuestionIDFKNavigation.QuestionKey == "Q12" || m.QuestionIDFKNavigation.QuestionKey == "Q23" || m.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted"))
+              m => m.StageFK == stageID 
+              || (m.QuestionIDFKNavigation.QuestionKey == "Q12" 
+              || m.QuestionIDFKNavigation.QuestionKey == "Q23" 
+              || m.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted"))
               .OrderBy(o => o.QuestionIDFKNavigation.Order)
               .ThenBy(q => q.QuestionIDFKNavigation.QuestionKey)
               .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureCodeSetIDFKNavigation)).ToList();

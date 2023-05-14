@@ -94,7 +94,7 @@ namespace IPRehabWebAPI2.Helpers
         /// <summary>
         /// get patients from Treating Specialty using ITreatingSpecialtyPatientRepository
         /// </summary>
-        /// <param name="networkName"></param>
+        /// <param name="distinctUserFacilities"></param>
         /// <param name="criteria"></param>
         /// <param name="orderBy"></param>
         /// <param name="pageNumber"></param>
@@ -102,10 +102,8 @@ namespace IPRehabWebAPI2.Helpers
         /// <param name="patientID"></param>
         /// <returns></returns>
         public async Task<List<PatientDTOTreatingSpecialty>> GetPatients(
-            string networkName, string criteria, string orderBy, int pageNumber, int pageSize, string patientID)
+            List<MastUserDTO> distinctUserFacilities, string criteria, string orderBy, int pageNumber, int pageSize, string patientID)
         {
-            var distinctUserFacilities = await GetUserAccessLevels(networkName);
-
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
                 return null;    //no access
 
@@ -315,8 +313,14 @@ namespace IPRehabWebAPI2.Helpers
                 var allFacilityPatients = await GetAllFacilityPatients();
 
                 //filter this facility patients
-                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                thisFacilityPatients = (List<vTreatingSpecialtyRecent3Yrs>)allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a[..2]));
+                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility))?.Trim();
+                allFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a[..2])).ToList();
+                
+                thisFacilityPatients = new();
+                foreach(var p in allFacilityPatients)
+                {
+                    thisFacilityPatients.Add(p);    
+                }
 
                 if (thisFacilityPatients != null && thisFacilityPatients.Any())
                 {
