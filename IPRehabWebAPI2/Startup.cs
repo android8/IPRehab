@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PatientModel;
 using System.Net.Mime;
@@ -48,12 +49,17 @@ namespace IPRehabWebAPI2
             string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
 
             //register the internal IPRehab DB context
+            //UseLoggerFactory output in debug window
             services.AddDbContext<IPRehabContext>(
-               o => o.UseLazyLoadingProxies().UseSqlServer(IPRehabConnectionString));
+               o => o.UseLazyLoadingProxies()
+               .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+               .UseSqlServer(IPRehabConnectionString));
 
             //register the external Masterreports DB context for users
             services.AddDbContext<MasterreportsContext>(
-              o => o.UseLazyLoadingProxies().UseSqlServer(MasterReportsConnectionString));
+              o => o.UseLazyLoadingProxies()
+              .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+              .UseSqlServer(MasterReportsConnectionString));
 
             #endregion db setup
 
@@ -71,6 +77,7 @@ namespace IPRehabWebAPI2
             services.AddScoped<ITreatingSpecialtyPatientRepository, TreatingSpecialtyPatientRepository>();
 
             //https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-providers
+
             services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
 
             services.AddScoped<AnswerHelper, AnswerHelper>();

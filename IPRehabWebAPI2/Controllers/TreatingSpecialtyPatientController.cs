@@ -55,14 +55,14 @@ namespace IPRehabWebAPI2.Controllers
             string patientID = string.Empty;
             var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(networkID);
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
-                return NotFound("You have not permission to any facility");
+                return NotFound("You do not have permission to view any facility patients");
 
             facilityPatients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
 
             if (facilityPatients == null || !facilityPatients.Any())
             {
                 string permittedFacilities = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                string noDataMesage = $"No patient is found in the permitted facilities {permittedFacilities} ";
+                string noDataMesage = $"No in-patient rehab in the following facilities ({permittedFacilities})";
 
                 //Response.Headers.Location = new Uri("NoData").ToString();
                 //return new ContentResult

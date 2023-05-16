@@ -109,9 +109,9 @@
             <summary>
             constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
             </summary>
-            <param name="context"></param>
-            <param name="memoryCache"></param>
             <param name="configuration"></param>
+            <param name="memoryCache"></param>
+            <param name="masterReportsContext"></param>
             <param name="episodeRepository"></param>
             <param name="treatingSpecialtyPatientRepository"></param>
         </member>
@@ -138,8 +138,6 @@
             <summary>
             get patient by Episode ID from Treating Specialty
             </summary>
-            <param name="_episodeRepository"></param>
-            <param name="_treatingSpecialty"></param>
             <param name="episodeID"></param>
             <returns></returns>
         </member>

@@ -1,13 +1,19 @@
+using IPRehabRepository.Contracts;
+using IPRehabRepository;
+using IPRehabWebAPI2.Helpers;
 using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text.Json.Serialization;
+using UserModel;
 
 namespace IPRehab
 {
@@ -114,10 +120,30 @@ namespace IPRehab
 
             services.AddRazorPages();
 
+            //register the external Masterreports DB context for users
+            string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
+
+            services.AddDbContext<MasterreportsContext>(
+              o => o.UseLazyLoadingProxies()
+              .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+              .UseSqlServer(MasterReportsConnectionString));
+
             #region IoC
             /* IoC for mailer.  It's not WebAPI's concern so it should not register there */
             services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
             services.AddSingleton<Mailer.IEmailSender, EmailSender>();
+
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<IAnswerRepository, AnswerRepository>();
+            services.AddScoped<ICodeSetRepository, CodeSetRepository>();
+            services.AddScoped<IEpisodeOfCareRepository, EpisodeOfCareRepository>();
+            services.AddScoped<IPatientRepository, PatientRepository>();
+            services.AddScoped<IQuestionInstructionRepository, QuestionInstructionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISignatureRepository, SignatureRepository>();
+            services.AddScoped<IQuestionMeasureRepository, QuestionMeasureRepository>();
+            services.AddScoped<ITreatingSpecialtyPatientRepository, TreatingSpecialtyPatientRepository>();
+            services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
             #endregion
 
             /* Implement ProblemDetailsFactory

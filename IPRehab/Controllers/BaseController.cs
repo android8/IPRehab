@@ -134,8 +134,8 @@ namespace IPRehab.Controllers
                 //if (string.IsNullOrEmpty(jsonStringFromSession))
                 if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
                 {
-                    string apiUrlBase = $"{ApiBaseUrl}/api/MasterReportsUser";
-                    thisUserAccessLevel = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrlBase}/{this.UserID}", this.BaseOptions);
+                    string apiUrl = $"{ApiBaseUrl}/api/MasterReportsUser/{this.UserID}";
+                    thisUserAccessLevel = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrl}", this.BaseOptions);
 
                     if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
                     {

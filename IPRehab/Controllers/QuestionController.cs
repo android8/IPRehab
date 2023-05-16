@@ -5,25 +5,31 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UserModel;
 
 namespace IPRehab.Controllers
 {
     //ToDo: [Authorize]
     public class QuestionController : BaseController
     {
-        private readonly IMemoryCache _memoryCache;
+        //private readonly IMemoryCache _memoryCache;
+        private readonly MasterreportsContext _masterReportsContext;
         private readonly IUserPatientCacheHelper _userPatientCacheHelper;
+
+        #region public
         public QuestionController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration,
-            IUserPatientCacheHelper userPatientCacheHelper)
-          : base(environment, memoryCache, configuration)
+           MasterreportsContext masterReportsContext, IUserPatientCacheHelper userPatientCacheHelper) : base(environment, memoryCache, configuration)
         {
-            _memoryCache = memoryCache;
+            //_memoryCache = memoryCache;
+            _masterReportsContext = masterReportsContext;
             _userPatientCacheHelper = userPatientCacheHelper;
         }
 
@@ -52,15 +58,21 @@ namespace IPRehab.Controllers
             //to enforce PHI/PII, no patient ID nor patient name can be used in querystring
             //so use episode id to search for the target patient
 
-            PatientDTOTreatingSpecialty patientstreatingSpecialty = await PatientsFromTreatingSpecialty(episodeID, patientID, currentUserID);
+            var thisUserAccessLevel = await ValidateThisUserAccess(currentUserID);
+            if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
+            {
+                return View("AccessDenied");
+            }
 
-            if (patientstreatingSpecialty == null) {
+            var thisPatient = await GetThisPatient(thisUserAccessLevel, episodeID, patientID, currentUserID);
+            if (thisPatient == null)
+            {
                 return PartialView("_QestionNoPatient");
             }
 
-            patientID = patientstreatingSpecialty.PTFSSN;
-            patientName = patientstreatingSpecialty.Name;
-            facilityID = patientstreatingSpecialty.Sta6a;
+            patientID = thisPatient.PTFSSN;
+            patientName = thisPatient.Name;
+            facilityID = thisPatient.Sta6a;
 
             string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
             string action = nameof(Edit);
@@ -71,12 +83,30 @@ namespace IPRehab.Controllers
             }
 
             List<QuestionDTO> questions = new();
-
-            questionApiEndpoint = stage switch
+            string apiUrlRoot = string.Empty, queryString = string.Empty;
+            switch (stage)
             {
-                null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
-                _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}",
-            };
+                case null:
+                case "":
+                case "FULL":
+                case "Full":
+                case "full":
+                    apiUrlRoot += $"{ApiBaseUrl}/api/Question/GetAll";
+                    queryString = $"includeAnswer={includeAnswer}&episodeID={episodeID}";
+                    break;
+                default:
+                    apiUrlRoot += $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}";
+                    queryString = $"includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}";
+                    break;
+            }
+
+            questionApiEndpoint = $"{apiUrlRoot}?{queryString}";
+
+            //questionApiEndpoint = stage switch
+            //{
+            //    null or "" or "Full" => $"{ApiBaseUrl}/api/Question/GetAll?includeAnswer={includeAnswer}&episodeID={episodeID}",
+            //    _ => $"{ApiBaseUrl}/api/Question/GetStageAsync/{stage}?includeAnswer={includeAnswer}&episodeID={episodeID}&admitDate={admitDate}",
+            //};
 
             questions = await SerializationGeneric<List<QuestionDTO>>.DeserializeAsync($"{questionApiEndpoint}", base.BaseOptions);
 
@@ -167,16 +197,92 @@ namespace IPRehab.Controllers
             return RedirectToAction(nameof(Edit));
         }
 
-        private async Task<PatientDTOTreatingSpecialty> PatientsFromTreatingSpecialty(int episodeID, string patientID, string currentUserID)
+        #endregion public
+
+        #region private
+        /// <summary>
+        /// this should be in a utility library
+        /// </summary>
+        /// <param name="networkID"></param>
+        /// <returns></returns>
+        private static string CleanUserName(string networkID)
         {
-            List<MastUserDTO> thisUserAccessLevel = await _userPatientCacheHelper.GetUserAccessLevels(currentUserID);
-
-            if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
+            string networkName = networkID;
+            if (string.IsNullOrEmpty(networkName))
+                return null;
+            else
             {
-                return null;    //no access
-            }
+                if (networkName.Contains('\\') || networkName.Contains("%2F") || networkName.Contains("//"))
+                {
+                    String[] separator = { "\\", "%2F", "//" };
+                    var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
-            //PatientDTOTreatingSpecialty patient = GetFromMemoryCache(CacheKeys.CacheKeyAllPatients, patientID);
+                    if (networkNameWithDomain.Length > 0)
+                        networkName = networkNameWithDomain[1];
+                    else
+                        networkName = networkNameWithDomain[0];
+                }
+                return networkName;
+            }
+        }
+
+        private async Task<List<MastUserDTO>> ValidateThisUserAccess(string networkID)
+        {
+            string userName = CleanUserName(networkID); //use network ID without domain
+
+            List<MastUserDTO> thisUserAccessLevel = base.MemoryCache.Get<List<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}");
+
+            if (thisUserAccessLevel != null && thisUserAccessLevel.Any())
+            {
+                return thisUserAccessLevel;
+            }
+            else
+            {
+                List<MastUserDTO> userAccessLevels = new();
+
+                SqlParameter[] paramNetworkID = new SqlParameter[]
+                {
+                    new SqlParameter(){
+                      ParameterName = "@UserName",
+                      SqlDbType = System.Data.SqlDbType.VarChar,
+                      Direction = System.Data.ParameterDirection.Input,
+                      Value = userName
+                    }
+                };
+
+                //use dbContext extension method
+                var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
+                  $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
+
+                if (userPermission == null || !userPermission.Any())
+                    return null;    //no permssion
+
+                var distinctFacilities = userPermission
+                  .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
+                  .Select(x => HydrateDTO.HydrateUser(x)).ToList();
+
+                if (distinctFacilities == null || !distinctFacilities.Any())
+                    return null;    //no permitted facilities
+
+                //using var MasterReportsDb = new MasterreportsContext();
+                //var procedure = new MasterreportsContextProcedures(MasterReportsDb);
+                //var accessLevel = procedure.uspVSSCMain_SelectAccessInformationFromNSSDAsync(userName);
+
+                base.MemoryCache.Set($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}", distinctFacilities, TimeSpan.FromHours(2));
+                return distinctFacilities;
+            }
+        }
+
+        /// <summary>
+        /// duplicated method of IPRehabWebAPI2.Helpers.UserPatientCacheHelper class
+        /// </summary>
+        /// <param name="thisUserAccessLevel"></param>
+        /// <param name="episodeID"></param>
+        /// <param name="patientID"></param>
+        /// <param name="currentUserID"></param>
+        /// <returns></returns>
+        private async Task<PatientDTOTreatingSpecialty> GetThisPatient(List<MastUserDTO> thisUserAccessLevel, int episodeID, string patientID, string currentUserID)
+        {
             var thisFacilityPatients = await _userPatientCacheHelper.GetThisFacilityPatients(thisUserAccessLevel);
             if (thisFacilityPatients == null || !thisFacilityPatients.Any())
             {
@@ -215,7 +321,7 @@ namespace IPRehab.Controllers
 
                     thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
 
-                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
+                    base.MemoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
                 }
 
                 return thisPatient;
@@ -224,7 +330,7 @@ namespace IPRehab.Controllers
 
         private PatientDTOTreatingSpecialty GetFromMemoryCache(string cacheKeyAllPatients, string patientID)
         {
-            var memoryCachePatients = _memoryCache.Get<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(cacheKeyAllPatients);
+            var memoryCachePatients = base.MemoryCache.Get<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(cacheKeyAllPatients);
             if (memoryCachePatients != null && memoryCachePatients.Any())
             {
                 //get single patient matching the patientID
@@ -248,39 +354,6 @@ namespace IPRehab.Controllers
             return null;
         }
 
-        //private async Task<PatientDTOTreatingSpecialty> GetFromSession(string sessionKeyAllPatients, string patientID)
-        //{
-        //    string sessionAllPatients = HttpContext.Session.GetString(sessionKeyAllPatients);
-        //    if (string.IsNullOrEmpty(sessionAllPatients))
-        //    {
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        var patients = await HttpContext.Session.Get(sessionKeyAllPatients)?.DeserializeAsync<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(base.BaseOptions);
-        //        if (patients == null)
-        //        {
-        //            return null;
-        //        }
-
-        //        //get single patient matching the patientID
-        //        var thisTS3rs = patients.FirstOrDefault(p => p.scrssn == int.Parse(patientID));
-
-        //        if (thisTS3rs == null)
-        //            return null;
-
-        //        PatientDTOTreatingSpecialty thisPatient = new()
-        //        {
-        //            Sta6a = thisTS3rs.bsta6a,
-        //            Name = thisTS3rs.PatientName,
-        //            PTFSSN = thisTS3rs.scrssn.Value.ToString(),
-        //            PatientICN = thisTS3rs.PatientICN,
-        //            DoB = thisTS3rs.DoB,
-        //            Bedsecn = thisTS3rs.bedsecn
-        //        };
-
-        //        return thisPatient;
-        //    }
-        //}
+        #endregion private
     }
 }

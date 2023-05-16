@@ -14,23 +14,43 @@ namespace IPRehabModel
         [StringLength(60)]
         [Unicode(false)]
         public string Last_Name { get; set; }
+
         [StringLength(75)]
         [Unicode(false)]
         public string First_Name { get; set; }
+
         [StringLength(120)]
         [Unicode(false)]
         public string PatientName { get; set; }
-        public int? scrssn { get; set; }
+
         [Column(TypeName = "datetime")]
         public DateTime? DoB { get; set; }
+
+         [StringLength(10)]
+        [Unicode(false)]
+        public string bsta6a { get; set; }
+
+        [StringLength(3)]
+        [Unicode(false)]
+        public string Sta3 { get; set; }
+
+        public int? bedsecn { get; set; }
+
+        [Column(TypeName = "datetime")]
+        public DateTime? admitday { get; set; }
+
+        [StringLength(38)]
+        [Unicode(false)]
+        public string ScrSSNT { get; set; }
+
+        public int? scrssn { get; set; }
+
+        public int? scrnum { get; set; }
+
+        public int? RealSSN { get; set; }
+
         [StringLength(50)]
         [Unicode(false)]
         public string PatientICN { get; set; }
-        [StringLength(10)]
-        [Unicode(false)]
-        public string bsta6a { get; set; }
-        public int? bedsecn { get; set; }
-        [Column(TypeName = "datetime")]
-        public DateTime? admitday { get; set; }
     }
 }

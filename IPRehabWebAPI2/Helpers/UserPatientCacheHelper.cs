@@ -1,5 +1,4 @@
 ﻿using IPRehabModel;
-using IPRehabRepository;
 using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
 using Microsoft.Data.SqlClient;
@@ -16,7 +15,7 @@ namespace IPRehabWebAPI2.Helpers
 {
     public class UserPatientCacheHelper : IUserPatientCacheHelper
     {
-        protected readonly MasterreportsContext _context;
+        protected readonly MasterreportsContext _masterReportsContext;
         protected readonly IConfiguration _configuration;
         private readonly IMemoryCache _memoryCache;
         private readonly ITreatingSpecialtyPatientRepository _treatingSpecialtyPatientRepository;
@@ -24,15 +23,15 @@ namespace IPRehabWebAPI2.Helpers
         /// <summary>
         /// constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
+        /// <param name="memoryCache"></param>
+        /// <param name="masterReportsContext"></param>
         /// <param name="episodeRepository"></param>
         /// <param name="treatingSpecialtyPatientRepository"></param>
-        public UserPatientCacheHelper(IConfiguration configuration, IMemoryCache memoryCache, MasterreportsContext context,
+        public UserPatientCacheHelper(IConfiguration configuration, IMemoryCache memoryCache, MasterreportsContext masterReportsContext,
             IEpisodeOfCareRepository episodeRepository, ITreatingSpecialtyPatientRepository treatingSpecialtyPatientRepository)
         {
-            _context = context;
+            _masterReportsContext = masterReportsContext;
             _configuration = configuration;
             _memoryCache = memoryCache;
             _episodeRepository = episodeRepository;
@@ -47,6 +46,8 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<List<MastUserDTO>> GetUserAccessLevels(string networkID)
         {
+            string userName = CleanUserName(networkID); //use network ID without domain
+
             List<MastUserDTO> thisUserAccessLevel = _memoryCache.Get<List<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}");
 
             if (thisUserAccessLevel != null && thisUserAccessLevel.Any())
@@ -55,7 +56,6 @@ namespace IPRehabWebAPI2.Helpers
             }
             else
             {
-                string userName = CleanUserName(networkID); //use network ID without domain
                 List<MastUserDTO> userAccessLevels = new();
 
                 SqlParameter[] paramNetworkID = new SqlParameter[]
@@ -69,7 +69,7 @@ namespace IPRehabWebAPI2.Helpers
                 };
 
                 //use dbContext extension method
-                var userPermission = await _context.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
+                var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
                   $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
 
                 if (userPermission == null || !userPermission.Any())
@@ -114,67 +114,60 @@ namespace IPRehabWebAPI2.Helpers
                 return null;    //no patient in the permitted facilities list
 
             //when patientID is not blank then return a list containing single patient
-            string returnAmountOfPatients = string.IsNullOrEmpty(patientID) ? "Single Patient" : "Multiple Patients";
-            switch (returnAmountOfPatients)
+            bool getSinglePatient = !string.IsNullOrEmpty(patientID) ? true : false;
+            if (getSinglePatient)
             {
-                case "Single Patient":
-                    {
-                        thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID).ToList();
-                        if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                            thisFacilityPatients = thisFacilityPatients.Where(p => p.PatientICN == patientID).ToList();
+                thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID).ToList();
+                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                    thisFacilityPatients = thisFacilityPatients.Where(p => p.PatientICN == patientID).ToList();
 
-                        if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                            return null;    //no patient matches the patientID in permitted facilities list
-                    }
-                    break;
-                case "Multiple Patients":
-                    {
-                        string searchCriteriaType = string.Empty;
-                        int numericCriteria = -1;
-
-                        if (string.IsNullOrEmpty(criteria))
-                            searchCriteriaType = "none";
-                        else if (int.TryParse(criteria, out numericCriteria))
-                            searchCriteriaType = "numeric";
-                        else
-                            searchCriteriaType = "non-numeric";
-
-                        switch (searchCriteriaType)
-                        {
-                            case "numeric":
-                                thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                                    p.scrssn == numericCriteria ||
-                                                    p.bedsecn == numericCriteria ||
-                                                    p.bsta6a.Contains(numericCriteria.ToString())
-                                                ).ToList();
-
-                                break; //break case
-
-                            case "non-numeric":
-                                criteria = criteria.Trim().ToLower();
-                                thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                                    p.Last_Name.Trim().ToLower().Contains(criteria) ||
-                                                    p.First_Name.Trim().ToLower().Contains(criteria) ||
-                                                    p.scrssn.ToString().Trim().Contains(criteria) ||
-                                                    p.PatientICN.Trim().Contains(criteria)
-                                                ).ToList();
-                                break;
-                        }
-
-                        if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                            return null;    //no patient matches the search criteria in permitted facilities list
-
-                    }
-                    break;
+                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                    return null;    //no patient matches the patientID in permitted facilities list
             }
+            else
+            {
+                string searchCriteriaType = string.Empty;
+                int numericCriteria = -1;
+
+                if (string.IsNullOrEmpty(criteria))
+                    searchCriteriaType = "none";
+                else if (int.TryParse(criteria, out numericCriteria))
+                    searchCriteriaType = "numeric";
+                else
+                    searchCriteriaType = "non-numeric";
+
+                switch (searchCriteriaType)
+                {
+                    case "numeric":
+                        thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                            p.scrssn == numericCriteria ||
+                                            p.bedsecn == numericCriteria ||
+                                            p.bsta6a.Contains(numericCriteria.ToString())
+                                        ).ToList();
+
+                        break; //break case
+
+                    case "non-numeric":
+                        criteria = criteria.Trim().ToLower();
+                        thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                            p.Last_Name.Trim().ToLower().Contains(criteria) ||
+                                            p.First_Name.Trim().ToLower().Contains(criteria) ||
+                                            p.scrssn.ToString().Trim().Contains(criteria) ||
+                                            p.PatientICN.Trim().Contains(criteria)
+                                        ).ToList();
+                        break;
+                }
+
+                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                    return null;    //no patient matches the search criteria in permitted facilities list
+            }
+            
             return ConvertToPatientDTO(thisFacilityPatients, pageNumber, pageSize);
         }
 
         /// <summary>
         /// get patient by Episode ID from Treating Specialty
         /// </summary>
-        /// <param name="_episodeRepository"></param>
-        /// <param name="_treatingSpecialty"></param>
         /// <param name="episodeID"></param>
         /// <returns></returns>
         public async Task<PatientDTOTreatingSpecialty> GetPatientByEpisode(int episodeID)
@@ -313,13 +306,15 @@ namespace IPRehabWebAPI2.Helpers
                 var allFacilityPatients = await GetAllFacilityPatients();
 
                 //filter this facility patients
-                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility))?.Trim();
-                allFacilityPatients = allFacilityPatients.Where(p => userFacilitySta3.Contains(p.bsta6a[..2])).ToList();
-                
+                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
+                //currently userFacilitySta3 always contain one facility so use StartWith (SQL Like) will be ok
+                //in the future the userFacilitySta3 may contain comma delimited facility IDs, so StartWith will not work
+                allFacilityPatients = allFacilityPatients.Where(p => p.bsta6a.StartsWith(userFacilitySta3)).ToList();
+
                 thisFacilityPatients = new();
-                foreach(var p in allFacilityPatients)
+                foreach (var p in allFacilityPatients)
                 {
-                    thisFacilityPatients.Add(p);    
+                    thisFacilityPatients.Add(p);
                 }
 
                 if (thisFacilityPatients != null && thisFacilityPatients.Any())
