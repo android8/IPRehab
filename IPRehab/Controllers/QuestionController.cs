@@ -20,7 +20,6 @@ namespace IPRehab.Controllers
     //ToDo: [Authorize]
     public class QuestionController : BaseController
     {
-        //private readonly IMemoryCache _memoryCache;
         private readonly MasterreportsContext _masterReportsContext;
         private readonly IUserPatientCacheHelper _userPatientCacheHelper;
 
@@ -28,7 +27,6 @@ namespace IPRehab.Controllers
         public QuestionController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration,
            MasterreportsContext masterReportsContext, IUserPatientCacheHelper userPatientCacheHelper) : base(environment, memoryCache, configuration)
         {
-            //_memoryCache = memoryCache;
             _masterReportsContext = masterReportsContext;
             _userPatientCacheHelper = userPatientCacheHelper;
         }
@@ -205,72 +203,75 @@ namespace IPRehab.Controllers
         /// </summary>
         /// <param name="networkID"></param>
         /// <returns></returns>
-        private static string CleanUserName(string networkID)
-        {
-            string networkName = networkID;
-            if (string.IsNullOrEmpty(networkName))
-                return null;
-            else
-            {
-                if (networkName.Contains('\\') || networkName.Contains("%2F") || networkName.Contains("//"))
-                {
-                    String[] separator = { "\\", "%2F", "//" };
-                    var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+        //private static string CleanUserName(string networkID)
+        //{
+        //    string networkName = networkID;
+        //    if (string.IsNullOrEmpty(networkName))
+        //        return null;
+        //    else
+        //    {
+        //        if (networkName.Contains('\\') || networkName.Contains("%2F") || networkName.Contains("//"))
+        //        {
+        //            String[] separator = { "\\", "%2F", "//" };
+        //            var networkNameWithDomain = networkName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (networkNameWithDomain.Length > 0)
-                        networkName = networkNameWithDomain[1];
-                    else
-                        networkName = networkNameWithDomain[0];
-                }
-                return networkName;
-            }
-        }
+        //            if (networkNameWithDomain.Length > 0)
+        //                networkName = networkNameWithDomain[1];
+        //            else
+        //                networkName = networkNameWithDomain[0];
+        //        }
+        //        return networkName;
+        //    }
+        //}
 
         private async Task<List<MastUserDTO>> ValidateThisUserAccess(string networkID)
         {
-            string userName = CleanUserName(networkID); //use network ID without domain
+            var distinctFacilities = await _userPatientCacheHelper.GetUserAccessLevels(networkID);
 
-            List<MastUserDTO> thisUserAccessLevel = base.MemoryCache.Get<List<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}");
+            return distinctFacilities;
 
-            if (thisUserAccessLevel != null && thisUserAccessLevel.Any())
-            {
-                return thisUserAccessLevel;
-            }
-            else
-            {
-                List<MastUserDTO> userAccessLevels = new();
+            //string userName = CleanUserName(networkID); //use network ID without domain
 
-                SqlParameter[] paramNetworkID = new SqlParameter[]
-                {
-                    new SqlParameter(){
-                      ParameterName = "@UserName",
-                      SqlDbType = System.Data.SqlDbType.VarChar,
-                      Direction = System.Data.ParameterDirection.Input,
-                      Value = userName
-                    }
-                };
+            //List<MastUserDTO> thisUserAccessLevel = base.MemoryCache.Get<List<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}");
 
-                //use dbContext extension method
-                var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
-                  $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
+            //if (thisUserAccessLevel != null && thisUserAccessLevel.Any())
+            //{
+            //    return thisUserAccessLevel;
+            //}
+            //else
+            //{
+            //    List<MastUserDTO> userAccessLevels = new();
 
-                if (userPermission == null || !userPermission.Any())
-                    return null;    //no permssion
+            //    SqlParameter[] paramNetworkID = new SqlParameter[]
+            //    {
+            //        new SqlParameter(){
+            //          ParameterName = "@UserName",
+            //          SqlDbType = System.Data.SqlDbType.VarChar,
+            //          Direction = System.Data.ParameterDirection.Input,
+            //          Value = userName
+            //        }
+            //    };
 
-                var distinctFacilities = userPermission
-                  .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
-                  .Select(x => HydrateDTO.HydrateUser(x)).ToList();
+            //    //use dbContext extension method
+            //    var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
+            //      $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
 
-                if (distinctFacilities == null || !distinctFacilities.Any())
-                    return null;    //no permitted facilities
+            //    if (userPermission == null || !userPermission.Any())
+            //        return null;    //no permssion
 
-                //using var MasterReportsDb = new MasterreportsContext();
-                //var procedure = new MasterreportsContextProcedures(MasterReportsDb);
-                //var accessLevel = procedure.uspVSSCMain_SelectAccessInformationFromNSSDAsync(userName);
+            //    var distinctFacilities = userPermission
+            //      .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
+            //      .Select(x => HydrateDTO.HydrateUser(x)).ToList();
 
-                base.MemoryCache.Set($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}", distinctFacilities, TimeSpan.FromHours(2));
-                return distinctFacilities;
-            }
+            //    if (distinctFacilities == null || !distinctFacilities.Any())
+            //        return null;    //no permitted facilities
+
+            //    //using var MasterReportsDb = new MasterreportsContext();
+            //    //var procedure = new MasterreportsContextProcedures(MasterReportsDb);
+            //    //var accessLevel = procedure.uspVSSCMain_SelectAccessInformationFromNSSDAsync(userName);
+
+            //    return distinctFacilities;
+            //}
         }
 
         /// <summary>
@@ -320,38 +321,10 @@ namespace IPRehab.Controllers
                     }
 
                     thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
-
-                    base.MemoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
                 }
 
                 return thisPatient;
             }
-        }
-
-        private PatientDTOTreatingSpecialty GetFromMemoryCache(string cacheKeyAllPatients, string patientID)
-        {
-            var memoryCachePatients = base.MemoryCache.Get<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(cacheKeyAllPatients);
-            if (memoryCachePatients != null && memoryCachePatients.Any())
-            {
-                //get single patient matching the patientID
-                var thisTS3rs = memoryCachePatients.FirstOrDefault(p => p.scrssn == int.Parse(patientID));
-
-                if (thisTS3rs == null)
-                    return null;
-
-                PatientDTOTreatingSpecialty thisPatient = new()
-                {
-                    Sta6a = thisTS3rs.bsta6a,
-                    Name = thisTS3rs.PatientName,
-                    PTFSSN = thisTS3rs.scrssn.Value.ToString(),
-                    PatientICN = thisTS3rs.PatientICN,
-                    DoB = thisTS3rs.DoB,
-                    Bedsecn = thisTS3rs.bedsecn
-                };
-
-                return thisPatient;
-            }
-            return null;
         }
 
         #endregion private

@@ -53,7 +53,7 @@ namespace IPRehabWebAPI2.Controllers
             }
 
             //get questions from the cache
-            List<QuestionDTO> questions = _memoryCache.Get<List<QuestionDTO>>($"{CacheKeys.CacheKeyAllQuestions}");
+            List<QuestionDTO> questions = _memoryCache.Get<List<QuestionDTO>>($"{CacheKeysBase.CacheKeyAllQuestions}");
 
             if (questions != null && questions.Any())
             {
@@ -74,7 +74,7 @@ namespace IPRehabWebAPI2.Controllers
                 }
 
                 //cache the questions but not the answers because they may change frequently
-                _memoryCache.Set(CacheKeys.CacheKeyAllQuestions, questions, TimeSpan.FromDays(1));
+                _memoryCache.Set(CacheKeysBase.CacheKeyAllQuestions, questions, TimeSpan.FromDays(1));
 
                 if (includeAnswer)
                 {

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using IPRehabWebAPI2.Helpers;
+using Microsoft.AspNetCore.Identity;
 
 namespace IPRehab.Controllers
 {
@@ -68,19 +69,45 @@ namespace IPRehab.Controllers
             get { return _office; }
         }
 
-        //private readonly List<MastUserDTO> _userAccessLevels;
-        //protected List<MastUserDTO> UserAccessLevels { get { return _userAccessLevels; }}
-
         private readonly IMemoryCache _memoryCache;
         protected IMemoryCache MemoryCache
         {
             get { return _memoryCache; }
         }
 
+        private List<MastUserDTO> _thisUserAccessLevels;
+        protected IEnumerable<MastUserDTO> ThisUserAccessLevels
+        {
+            get { return _thisUserAccessLevels; }
+            set { _thisUserAccessLevels = (List<MastUserDTO>)value; }
+        }
+
         private string _userID;
         protected string UserID
         {
             get { return _userID; }
+            set { _userID = value; }
+        }
+
+        private string _cacheKeyThisUserAccessLevel = CacheKeysBase.CacheKeyThisUserAccessLevel;
+        protected string CacheKeyThisUserAccessLevel
+        {
+            get { return _cacheKeyThisUserAccessLevel; }
+            set { _cacheKeyThisUserAccessLevel = value; }
+        }
+
+        private string _cacheKeyThisFacilityPatients = CacheKeysBase.CacheKeyThisFacilityPatients;
+        protected string CacheKeyThisFacilityPatients
+        {
+            get { return _cacheKeyThisFacilityPatients; }
+            set { _cacheKeyThisFacilityPatients = value; }
+        }
+
+        private string _cacheKeyThisPatient = CacheKeysBase.CacheKeyThisPatient;
+        protected string CacheKeyThisPatient
+        {
+            get { return _cacheKeyThisPatient; }
+            set { _cacheKeyThisPatient = value; }
         }
 
         protected BaseController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration)
@@ -95,7 +122,7 @@ namespace IPRehab.Controllers
             if (!string.IsNullOrEmpty(_impersonated))
             {
                 //get impersonated user from appSettings.json
-                _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(_impersonated));
+                this.UserID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(_impersonated));
             }
 
             _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
@@ -121,43 +148,38 @@ namespace IPRehab.Controllers
             //get user ID from Windows Identity
             if (string.IsNullOrEmpty(this.UserID))
             {
-                this._userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
+                this.UserID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
             }
+            this.CacheKeyThisUserAccessLevel += $"_{this.UserID}";
 
             //get userAccessLevels from session
             //string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
-            IEnumerable<MastUserDTO> thisUserAccessLevel = MemoryCache.Get<IEnumerable<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{this.UserID}");
+            ThisUserAccessLevels = MemoryCache.Get<IEnumerable<MastUserDTO>>($"{this.CacheKeyThisUserAccessLevel}");
 
             if (sourceOfCredential == "Master Report")
             {
-                //get userAccessLevel from web API, if not in the HttpContext.Session
-                //if (string.IsNullOrEmpty(jsonStringFromSession))
-                if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
+                //user is in the cache 
+                if (ThisUserAccessLevels != null || ThisUserAccessLevels.Any())
                 {
+                    sourceOfCredential = "(Cached)";
+                    viewBagCurrentUserName = $"{ThisUserAccessLevels.First().LName}, {ThisUserAccessLevels.First().FName}";
+                }
+                else
+                {
+                    //get userAccessLevel from web API
                     string apiUrl = $"{ApiBaseUrl}/api/MasterReportsUser/{this.UserID}";
-                    thisUserAccessLevel = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrl}", this.BaseOptions);
+                    ThisUserAccessLevels = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrl}", this.BaseOptions);
 
-                    if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
+                    if (ThisUserAccessLevels == null || !ThisUserAccessLevels.Any())
                     {
-                        sourceOfCredential = "(WebAPI: access level is null)";
+                        sourceOfCredential = "(WebAPI: no access level)";
                         viewBagCurrentUserName = "Unknown";
                     }
                     else
                     {
-                        MemoryCache.Set($"{CacheKeys.CacheKeyThisUserAccessLevel}_{this.UserID}", thisUserAccessLevel, TimeSpan.FromHours(2));
-
-                        MastUserDTO thisUser = thisUserAccessLevel.First(u => !string.IsNullOrEmpty(u.NTUserName));
                         sourceOfCredential = "(WebAPI)";
-                        viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
-                        //update session key UserAccessLevels value
+                        viewBagCurrentUserName = $"{ThisUserAccessLevels.First().LName}, {ThisUserAccessLevels.First().FName}";
                     }
-                }
-                //user is in the cache 
-                else
-                {
-                    MastUserDTO thisUser = thisUserAccessLevel.FirstOrDefault();
-                    sourceOfCredential = "(Session)";
-                    viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
                 }
             }
 

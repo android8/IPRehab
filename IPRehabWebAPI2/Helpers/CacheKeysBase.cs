@@ -1,6 +1,6 @@
 ﻿namespace IPRehabWebAPI2.Helpers
 {
-    public static class CacheKeys
+    public static class CacheKeysBase
     {
         private static readonly string _cacheKeyThisUserAccessLevel = "ThisUserAccessLevel";
         public static string CacheKeyThisUserAccessLevel

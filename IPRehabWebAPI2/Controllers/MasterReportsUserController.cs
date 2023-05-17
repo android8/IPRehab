@@ -3,6 +3,7 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UserModel;
 
@@ -31,6 +32,11 @@ namespace IPRehabWebAPI2.Controllers
         public async Task<ActionResult<IEnumerable<MastUserDTO>>> GetUserPermission(string networkID)
         {
             var userAccessLevels = await _userPatientCacheHelper.GetUserAccessLevels(networkID);
+            if (userAccessLevels == null || !userAccessLevels.Any())
+            {
+                return NotFound(@"You don't have any access level (access denied)");
+            }
+
             return Ok(userAccessLevels);
         }
     }

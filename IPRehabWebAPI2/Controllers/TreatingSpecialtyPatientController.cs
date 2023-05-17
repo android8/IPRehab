@@ -62,7 +62,7 @@ namespace IPRehabWebAPI2.Controllers
             if (facilityPatients == null || !facilityPatients.Any())
             {
                 string permittedFacilities = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                string noDataMesage = $"No in-patient rehab in the following facilities ({permittedFacilities})";
+                string noDataMesage = $"No patients in the facilities ({permittedFacilities}) of your access level";
 
                 //Response.Headers.Location = new Uri("NoData").ToString();
                 //return new ContentResult
