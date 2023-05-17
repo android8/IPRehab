@@ -114,8 +114,7 @@ namespace IPRehabWebAPI2.Helpers
                 return null;    //no patient in the permitted facilities list
 
             //when patientID is not blank then return a list containing single patient
-            bool getSinglePatient = !string.IsNullOrEmpty(patientID) ? true : false;
-            if (getSinglePatient)
+            if (!string.IsNullOrEmpty(patientID))
             {
                 thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID).ToList();
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
@@ -337,7 +336,7 @@ namespace IPRehabWebAPI2.Helpers
             }
         }
 
-        private List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<vTreatingSpecialtyRecent3Yrs> thisFacilityPatients, int pageNumber, int pageSize)
+        private static List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<vTreatingSpecialtyRecent3Yrs> thisFacilityPatients, int pageNumber, int pageSize)
         {
             List<PatientDTOTreatingSpecialty> patients = new();
 
