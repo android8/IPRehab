@@ -152,8 +152,6 @@ namespace IPRehab.Controllers
             }
             this.CacheKeyThisUserAccessLevel += $"_{this.UserID}";
 
-            //get userAccessLevels from session
-            //string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
             ThisUserAccessLevels = MemoryCache.Get<IEnumerable<MastUserDTO>>($"{this.CacheKeyThisUserAccessLevel}");
 
             if (sourceOfCredential == "Master Report")
