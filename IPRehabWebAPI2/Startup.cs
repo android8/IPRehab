@@ -52,13 +52,13 @@ namespace IPRehabWebAPI2
             //UseLoggerFactory output in debug window
             services.AddDbContext<IPRehabContext>(
                o => o.UseLazyLoadingProxies()
-               .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+               //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
                .UseSqlServer(IPRehabConnectionString));
 
             //register the external Masterreports DB context for users
             services.AddDbContext<MasterreportsContext>(
               o => o.UseLazyLoadingProxies()
-              .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+              //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
               .UseSqlServer(MasterReportsConnectionString));
 
             #endregion db setup

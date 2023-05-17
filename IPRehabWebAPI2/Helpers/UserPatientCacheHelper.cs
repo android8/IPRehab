@@ -295,34 +295,45 @@ namespace IPRehabWebAPI2.Helpers
         public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetThisFacilityPatients(List<MastUserDTO> distinctUserFacilities)
         {
             //get smaller set of this facility patients from the memory cache
-            var thisFacilityPatients = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyThisFacilityPatients);
+            string cacheKeyOfThisFacility = $"{CacheKeys.CacheKeyThisFacilityPatients}_{distinctUserFacilities.First().Facility}";
+
+            var thisFacilityPatients = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(cacheKeyOfThisFacility);
 
             if (thisFacilityPatients != null && thisFacilityPatients.Any())
+            {
+                //return from the cache
                 return thisFacilityPatients;
+            }
             else
             {
-                //get larger set of all facilities patients
+                //get all facilities patients
                 //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
                 var allFacilityPatients = await GetAllFacilityPatients();
 
-                //filter this facility patients
-                string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                //currently userFacilitySta3 always contain one facility so use StartWith (SQL Like) will be ok
-                //in the future the userFacilitySta3 may contain comma delimited facility IDs, so StartWith will not work
-                allFacilityPatients = allFacilityPatients.Where(p => p.bsta6a.StartsWith(userFacilitySta3)).ToList();
-
-                thisFacilityPatients = new();
-                foreach (var p in allFacilityPatients)
+                if (allFacilityPatients == null && !allFacilityPatients.Any())
                 {
-                    thisFacilityPatients.Add(p);
+                    return null;    //no patients in any facility
                 }
-
-                if (thisFacilityPatients != null && thisFacilityPatients.Any())
+                else
                 {
-                    //update cache for 24 hours
-                    _memoryCache.Set(CacheKeys.CacheKeyThisFacilityPatients, thisFacilityPatients, TimeSpan.FromDays(1));
+                    //filter this facility pateints
+                    string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
+
+                    //currently userFacilitySta3 always contain one facility so use StartWith (SQL Like) will be ok
+                    //in the future the userFacilitySta3 may contain comma delimited facility IDs, so StartWith will not work
+                    thisFacilityPatients = allFacilityPatients.Where(p => p.bsta6a.StartsWith(userFacilitySta3)).ToList();
+
+                    if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                    {
+                        return null;    //no patients for this facility
+                    }
+                    else
+                    {
+                        //update cache for 24 hours
+                        _memoryCache.Set(cacheKeyOfThisFacility, thisFacilityPatients, TimeSpan.FromDays(1));
+                        return thisFacilityPatients;
+                    }
                 }
-                return thisFacilityPatients;
             }
         }
 
