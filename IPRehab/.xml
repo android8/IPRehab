@@ -9,12 +9,35 @@
             https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-5.0
             </summary>
         </member>
-        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.Int32,System.String,System.Int32,System.String)">
+        <member name="M:IPRehab.Controllers.QuestionController.Edit(System.String,System.String,System.Int32,System.String,System.Int32,System.String,System.String)">
             <summary>
             https://www.stevejgordon.co.uk/sending-and-receiving-json-using-httpclient-with-system-net-http-json
             </summary>
-            <param name="id"></param>
+            <param name="stage"></param>
+            <param name="patientID"></param>
+            <param name="episodeID"></param>
+            <param name="searchCriteria"></param>
+            <param name="pageNumber"></param>
+            <param name="orderBy"></param>
+            <param name="admitDate"></param>
             <returns></returns> 
+        </member>
+        <member name="M:IPRehab.Controllers.QuestionController.CleanUserName(System.String)">
+            <summary>
+            this should be in a utility library
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehab.Controllers.QuestionController.GetThisPatient(System.Collections.Generic.List{IPRehabWebAPI2.Models.MastUserDTO},System.Int32,System.String,System.String)">
+            <summary>
+            duplicated method of IPRehabWebAPI2.Helpers.UserPatientCacheHelper class
+            </summary>
+            <param name="thisUserAccessLevel"></param>
+            <param name="episodeID"></param>
+            <param name="patientID"></param>
+            <param name="currentUserID"></param>
+            <returns></returns>
         </member>
         <member name="M:IPRehab.Helpers.NewtonSoftSerializationGeneric`1.DeserializeAsync(System.String)">
             <summary>
@@ -26,6 +49,11 @@
         <member name="M:IPRehab.Helpers.UserAudit.AuditUserAsync(Microsoft.Extensions.Configuration.IConfiguration,System.String,Microsoft.AspNetCore.Routing.RouteData,System.Net.IPAddress)">
             <summary>
             send audit data to Centurion
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.InputViewComponenViewModel.ReadOnly">
+            <summary>
+            Q12 is read only field that should be prefilled with patient admission date
             </summary>
         </member>
         <member name="P:IPRehab.Models.InputViewComponenViewModel.TherapyHoursCodeSetID">
@@ -41,6 +69,16 @@
         <member name="P:IPRehab.Models.QuestionGroup.Questions">
             <summary>
             questions in the group have one shared question text, but may have many form input controls model bound to QuestionWithSelectItems
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.QuestionHierarchy.ReadOnly">
+            <summary>
+            set ReadOnly to true if no editing is allowed for all questions
+            </summary>
+        </member>
+        <member name="P:IPRehab.Models.QuestionWithSelectItems.ReadOnly">
+            <summary>
+            set ReadOnly to true if this question is not editable such as Q12.
             </summary>
         </member>
         <member name="P:IPRehab.Models.RehabActionViewModel.PatientID">

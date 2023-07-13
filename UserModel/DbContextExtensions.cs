@@ -20,7 +20,7 @@ namespace UserModel
                 parameters = new object[] { };
             }
 
-            if (typeof(T).GetProperties().Any())
+            if (typeof(T).GetProperties() != null && typeof(T).GetProperties().Any())
             {
                 return await db.Set<T>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
             }

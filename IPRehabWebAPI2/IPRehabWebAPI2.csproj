@@ -19,10 +19,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\ApiBaseController.cs" />
     <Compile Remove="Controllers\ErrorController.cs" />
     <Compile Remove="Controllers\PatientController.cs" />
     <Compile Remove="Controllers\TodoItemsController.cs" />
     <Compile Remove="Controllers\WeatherForecastController.cs" />
+    <Compile Remove="Helpers\ITestUserPatientCacheHelper.cs" />
+    <Compile Remove="Helpers\TestUserPatientCacheHelper.cs" />
     <Compile Remove="Models\PatientSearchCriteria.cs" />
     <Compile Remove="Startup - new.cs" />
     <Compile Remove="Startup - V3.cs" />
@@ -48,6 +51,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="6.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

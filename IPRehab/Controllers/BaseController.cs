@@ -12,6 +12,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using IPRehabWebAPI2.Helpers;
 
 namespace IPRehab.Controllers
 {
@@ -53,12 +56,6 @@ namespace IPRehab.Controllers
             get { return _options; }
         }
 
-        private readonly ILogger _logger;
-        protected ILogger Logger
-        {
-            get { return _logger; }
-        }
-
         private readonly int _pageSize;
         protected int PageSize
         {
@@ -74,20 +71,26 @@ namespace IPRehab.Controllers
         //private readonly List<MastUserDTO> _userAccessLevels;
         //protected List<MastUserDTO> UserAccessLevels { get { return _userAccessLevels; }}
 
+        private readonly IMemoryCache _memoryCache;
+        protected IMemoryCache MemoryCache
+        {
+            get { return _memoryCache; }
+        }
+
         private string _userID;
         protected string UserID
         {
             get { return _userID; }
         }
 
-        protected BaseController(IWebHostEnvironment environment, IConfiguration configuration, ILogger logger)
+        protected BaseController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration)
         {
             _environment = environment;
             _configuration = configuration;
-            _logger = logger;
             _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
             _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
             _impersonated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
+            _memoryCache = memoryCache;
 
             if (!string.IsNullOrEmpty(_impersonated))
             {
@@ -109,7 +112,6 @@ namespace IPRehab.Controllers
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            string userAccessLevelSessionKey = "UserAccessLevel";
             List<MastUserDTO> accessLevels = new();
             string viewBagCurrentUserName = "Sun, Jonathan";
             string sourceOfCredential = "Master Report";
@@ -123,72 +125,42 @@ namespace IPRehab.Controllers
             }
 
             //get userAccessLevels from session
-            string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
+            //string jsonStringFromSession = HttpContext.Session.GetString(userAccessLevelSessionKey);
+            IEnumerable<MastUserDTO> thisUserAccessLevel = MemoryCache.Get<IEnumerable<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{this.UserID}");
 
             if (sourceOfCredential == "Master Report")
             {
-
                 //get userAccessLevel from web API, if not in the HttpContext.Session
-                if (string.IsNullOrEmpty(jsonStringFromSession))
+                //if (string.IsNullOrEmpty(jsonStringFromSession))
+                if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
                 {
-                    string apiUrlBase = $"{ApiBaseUrl}/api/MasterReportsUser";
-                    accessLevels = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrlBase}/{this.UserID}", this.BaseOptions);
-                    if (accessLevels == null && !accessLevels.Any())
+                    string apiUrl = $"{ApiBaseUrl}/api/MasterReportsUser/{this.UserID}";
+                    thisUserAccessLevel = await SerializationGeneric<List<MastUserDTO>>.DeserializeAsync($"{apiUrl}", this.BaseOptions);
+
+                    if (thisUserAccessLevel == null || !thisUserAccessLevel.Any())
                     {
                         sourceOfCredential = "(WebAPI: access level is null)";
                         viewBagCurrentUserName = "Unknown";
                     }
                     else
                     {
-                        MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-                        if (thisUser == null)
-                        {
-                            sourceOfCredential = "(WebAPI: user not contained in access level)";
-                            viewBagCurrentUserName = "Unknown";
-                        }
-                        else
-                        {
-                            sourceOfCredential = "(WebAPI)";
-                            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
-                            //update session key UserAccessLevels value
-                            string serializedString = JsonSerializer.Serialize(accessLevels);
-                            HttpContext.Session.SetString(userAccessLevelSessionKey, serializedString);
-                        }
+                        MemoryCache.Set($"{CacheKeys.CacheKeyThisUserAccessLevel}_{this.UserID}", thisUserAccessLevel, TimeSpan.FromHours(2));
+
+                        MastUserDTO thisUser = thisUserAccessLevel.First(u => !string.IsNullOrEmpty(u.NTUserName));
+                        sourceOfCredential = "(WebAPI)";
+                        viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
+                        //update session key UserAccessLevels value
                     }
                 }
-                //user in HttpContext.Session then don't call web API
+                //user is in the cache 
                 else
                 {
-                    accessLevels = JsonSerializer.Deserialize<IEnumerable<MastUserDTO>>(jsonStringFromSession).ToList();
-                    if (accessLevels == null || accessLevels.Count == 0)
-                    {
-                        sourceOfCredential = "(Session: deserialization issue)";
-                        viewBagCurrentUserName = "Unknown";
-                    }
-                    else
-                    {
-                        MastUserDTO thisUser = accessLevels.FirstOrDefault(u => !string.IsNullOrEmpty(u.NTUserName));
-                        if (thisUser == null)
-                        {
-                            sourceOfCredential = "(Session: has no user information)";
-                            viewBagCurrentUserName = "Unknown";
-                        }
-                        else
-                        {
-                            sourceOfCredential = "(Session)";
-                            viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
-                        }
-                    }
+                    MastUserDTO thisUser = thisUserAccessLevel.FirstOrDefault();
+                    sourceOfCredential = "(Session)";
+                    viewBagCurrentUserName = $"{thisUser.LName}, {thisUser.FName}";
                 }
-
             }
 
-            ViewBag.Environment = BaseEnvironment.EnvironmentName;
-            ViewBag.SourceOfCredential = sourceOfCredential;
-            ViewBag.CurrentUserID = $"{this.UserID}";
-            ViewBag.CurrentUserName = viewBagCurrentUserName;
-            ViewBag.AppVersion = $"Version {AppVersion}";
-            ViewBag.Office = this.Office;
             if (viewBagCurrentUserName == "Unknown")
             {
                 //string thisContent = "Access Denied";
@@ -198,6 +170,12 @@ namespace IPRehab.Controllers
             }
             else
             {
+                ViewBag.Environment = BaseEnvironment.EnvironmentName;
+                ViewBag.SourceOfCredential = sourceOfCredential;
+                ViewBag.CurrentUserID = $"{this.UserID}";
+                ViewBag.CurrentUserName = viewBagCurrentUserName;
+                ViewBag.AppVersion = $"Version {AppVersion}";
+                ViewBag.Office = this.Office;
                 var routeData = this.RouteData;
                 var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
                 //don't await the external audit result

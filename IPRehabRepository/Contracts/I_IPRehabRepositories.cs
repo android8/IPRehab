@@ -23,18 +23,6 @@ namespace IPRehabRepository.Contracts
     {
     }
 
-    /// <summary>
-    /// external patient data source from BI13.DMHealthFactors
-    /// only needed for CRUD operation which would never happen other than select
-    /// </summary>
-    public interface IFSODPatientRepository : IRepositoryBase<FSODPatient>
-    {
-    }
-
-    /// <summary>
-    /// DB9 internal view with remote query of BI25.DMHealthFactors
-    /// only needed for CRUD operation which would never happen other than select
-    /// </summary>
     public interface ITreatingSpecialtyPatientRepository : IRepositoryBase<vTreatingSpecialtyRecent3Yrs>
     {
     }

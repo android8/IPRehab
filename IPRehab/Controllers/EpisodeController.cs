@@ -3,8 +3,8 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -13,10 +13,10 @@ using System.Threading.Tasks;
 
 namespace IPRehab.Controllers
 {
-  public class EpisodeController : BaseController
+    public class EpisodeController : BaseController
   {
-    public EpisodeController(IWebHostEnvironment environment, IConfiguration configuration, ILogger<EpisodeController> logger) 
-      : base(environment, configuration, logger)
+    public EpisodeController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration) 
+      : base(environment, memoryCache, configuration)
     {
     }
     // GET: EpisodeController

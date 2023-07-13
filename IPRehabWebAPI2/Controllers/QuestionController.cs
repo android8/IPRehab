@@ -5,10 +5,10 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,14 +20,16 @@ namespace IPRehabWebAPI2.Controllers
     [ApiController]
     public class QuestionController : ControllerBase
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly IQuestionRepository _questionRepository;
         private readonly IEpisodeOfCareRepository _episodeRepository;
         private readonly ICodeSetRepository _codeSetRepository;
         private readonly IAnswerRepository _answerRepository;
         private readonly IQuestionMeasureRepository _questionMeasureRepository;
-
-        public QuestionController(IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository, ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository, IQuestionMeasureRepository questionMeasureRepository)
+        public QuestionController(IMemoryCache memoryCache, IQuestionRepository questionRepository, IEpisodeOfCareRepository episodeRepository,
+            ICodeSetRepository codeSetRepository, IAnswerRepository answerRepository, IQuestionMeasureRepository questionMeasureRepository)
         {
+            _memoryCache = memoryCache;
             _questionRepository = questionRepository;
             _episodeRepository = episodeRepository;
             _codeSetRepository = codeSetRepository;
@@ -42,52 +44,79 @@ namespace IPRehabWebAPI2.Controllers
         [HttpGet()]
         public async Task<IActionResult> GetAll(bool includeAnswer, int episodeID, string admitDate)
         {
-            int stageID = _codeSetRepository.FindByCondition(x => x.CodeValue == "All").FirstOrDefault().CodeSetID;
-            var questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
-              .OrderBy(x => x.Order).ThenBy(x => x.QuestionKey).ThenBy(x => x.QuestionKey)
-              .Select(q => HydrateDTO.HydrateQuestion(q, "All", stageID, null)
-            ).ToList();
-            if (includeAnswer)
+            //get CodeSetID for stage All
+            var stageCode = _codeSetRepository.FindByCondition(x => x.CodeValue == "All").FirstOrDefault();
+
+            if (stageCode == null)
             {
-                //the answer keys are contained in the episode then use episodeID to find all the answers to each question
-                foreach (var q in questions)
+                return NotFound("Stage 'All' is not found");
+            }
+
+            //get questions from the cache
+            List<QuestionDTO> questions = _memoryCache.Get<List<QuestionDTO>>($"{CacheKeys.CacheKeyAllQuestions}");
+
+            if (questions != null && questions.Any())
+            {
+                //return cached questions
+                return Ok(questions);
+            }
+            else
+            {
+                //get from database repository
+                questions = _questionRepository.FindByCondition(x => x.Active.Value != false)
+                  .OrderBy(x => x.Order).ThenBy(x => x.QuestionKey)
+                  .Select(q => HydrateDTO.HydrateQuestion(q, stageCode.CodeValue, stageCode.CodeSetID, null)
+                ).ToList();
+
+                if (questions == null || !questions.Any())
                 {
-                    var thisEpisode = await _episodeRepository.FindByCondition(episode =>
-                      episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
+                    return NotFound($"No question in this stage ({stageCode.CodeValue})");
+                }
 
-                    var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(a => a.QuestionIDFK == q.QuestionID)
-                      .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToList();
+                //cache the questions but not the answers because they may change frequently
+                _memoryCache.Set(CacheKeys.CacheKeyAllQuestions, questions, TimeSpan.FromDays(1));
 
-                    if (thisQuestionAnswers == null)
+                if (includeAnswer)
+                {
+                    //the answer keys are contained in the episode then use episodeID to find all the answers to each question
+                    foreach (var q in questions)
                     {
-                        //ToDo: create app.tblQuestionDependency
-                        //find the question dependencies
-                        //if determining question has enabling answers then set the q.Enabled = true, otherwise, false
-                        q.Enabled = false;
-                    }
-                    else
-                    {
-                        q.Enabled = true;
-                        if (thisQuestionAnswers.Any())
+                        var thisEpisode = await _episodeRepository.FindByCondition(episode =>
+                          episode.EpisodeOfCareID == episodeID).FirstOrDefaultAsync();
+
+                        var thisQuestionAnswers = thisEpisode?.tblAnswer?.Where(ans => ans.QuestionIDFK == q.QuestionID)
+                          .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToList();
+
+                        if (thisQuestionAnswers == null || !thisQuestionAnswers.Any())
                         {
+                            //ToDo: create app.tblQuestionDependency
+                            //find the question dependencies
+                            //if determining question has enabling answers then set the q.Enabled = true, otherwise, false
+                            q.Enabled = false;
+                        }
+                        else
+                        {
+                            q.Enabled = true;
                             if (q.QuestionKey == "Q12")
                             {
-                                DateTime thisAdmitDate;
-                                DateTime.TryParse(admitDate, out thisAdmitDate);
-                                if (thisEpisode.AdmissionDate != thisAdmitDate)
-                                    //use the admit date from the patient
-                                    thisQuestionAnswers.First().Description = admitDate;
-                                else
-                                    //use the admit date from the episode
-                                    thisQuestionAnswers.First().Description = thisEpisode.AdmissionDate.ToString();
+                                string decodedAdmitDate = System.Web.HttpUtility.UrlDecode(admitDate);
+                                if (DateTime.TryParse(decodedAdmitDate, out DateTime thisAdmitDate))
+                                {
+                                    if (thisEpisode.AdmissionDate != thisAdmitDate)
+                                        //use the admit date from the patient
+                                        thisQuestionAnswers.First().Description = decodedAdmitDate;
+                                    else
+                                        //use the admit date from the episode
+                                        thisQuestionAnswers.First().Description = thisEpisode.AdmissionDate.ToString();
+                                }
                             }
                             q.Answers = thisQuestionAnswers;
                         }
                     }
                 }
 
+                return Ok(questions);
             }
-            return Ok(questions);
         }
 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -113,13 +142,16 @@ namespace IPRehabWebAPI2.Controllers
             //    s.StageFKNavigation.CodeValue.Trim().ToUpper() == stageName)
             //) 
             List<QuestionDTO> questions = _questionMeasureRepository.FindByCondition(
-              m => m.StageFK == stageID || (m.QuestionIDFKNavigation.QuestionKey == "Q12" || m.QuestionIDFKNavigation.QuestionKey == "Q23" || m.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted"))
+              m => m.StageFK == stageID 
+              || (m.QuestionIDFKNavigation.QuestionKey == "Q12" 
+              || m.QuestionIDFKNavigation.QuestionKey == "Q23" 
+              || m.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted"))
               .OrderBy(o => o.QuestionIDFKNavigation.Order)
               .ThenBy(q => q.QuestionIDFKNavigation.QuestionKey)
               .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m.MeasureCodeSetIDFKNavigation)).ToList();
 
             List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();
-            if (keyQuestions.Any())
+            if (keyQuestions != null && keyQuestions.Any())
             {
                 keyQuestions = keyQuestions.OrderBy(o => o.DisplayOrder).ThenBy(o => o.QuestionKey).ToList();
                 questions = questions.Except(keyQuestions).ToList();
@@ -139,18 +171,20 @@ namespace IPRehabWebAPI2.Controllers
                       .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK == episodeID &&
                         a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeValue == q.MeasureCodeValue)
                       .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToListAsync();
-                    if (thisQuestionAnswers.Any())
+                    if (thisQuestionAnswers != null && thisQuestionAnswers.Any())
                     {
                         if (q.QuestionKey == "Q12")
                         {
-                            DateTime thisAdmitDate;
-                            DateTime.TryParse(admitDate, out thisAdmitDate);
-                            if (thisEpisode.AdmissionDate != thisAdmitDate)
-                                //use the admit date from the patient
-                                thisQuestionAnswers.First().Description = admitDate;
-                            else
-                                //use the admit date from the episode
-                                thisQuestionAnswers.First().Description = thisEpisode.AdmissionDate.ToString();
+                            string decodedAdmitDate = System.Web.HttpUtility.UrlDecode(admitDate);
+                            if (DateTime.TryParse(decodedAdmitDate, out DateTime thisAdmitDate))
+                            {
+                                if (thisEpisode.AdmissionDate != thisAdmitDate)
+                                    //use the admit date from the patient
+                                    thisQuestionAnswers.First().Description = decodedAdmitDate;
+                                else
+                                    //use the admit date from the episode
+                                    thisQuestionAnswers.First().Description = thisEpisode.AdmissionDate.ToString();
+                            }
                         }
                         q.Answers = thisQuestionAnswers;
                     }

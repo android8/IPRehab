@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Custom Partials\IPRehabContext.cs" />
+    <Compile Remove="Custom Partials\SqlGeneratedCommands.cs" />
     <Compile Remove="Migrations\IPRehabContextModelSnapshot - 1.cs" />
     <Compile Remove="Migrations\IPRehabContextModelSnapshot - Copy.cs" />
     <Compile Remove="TblQuestionStage.cs" />

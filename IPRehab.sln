@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserModel", "UserModel\User
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientModel_TreatingSpecialty", "PatientModel_TreatingSpecialty\PatientModel_TreatingSpecialty.csproj", "{642770B9-FF27-492B-9AA3-435BEE4D7E6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF_StoreProc", "EF_StoreProc\EF_StoreProc.csproj", "{89B6EEC3-BE33-4CC0-88B1-8506FDA39673}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{642770B9-FF27-492B-9AA3-435BEE4D7E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{642770B9-FF27-492B-9AA3-435BEE4D7E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{642770B9-FF27-492B-9AA3-435BEE4D7E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89B6EEC3-BE33-4CC0-88B1-8506FDA39673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89B6EEC3-BE33-4CC0-88B1-8506FDA39673}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89B6EEC3-BE33-4CC0-88B1-8506FDA39673}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89B6EEC3-BE33-4CC0-88B1-8506FDA39673}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{B47F5B1E-8CD6-4A33-A180-35EB4030DF48} = {C986486A-E37D-4639-8DEF-FDAC478BAFF3}
 		{47638C78-EF33-4E85-B462-E756C2E96C21} = {C986486A-E37D-4639-8DEF-FDAC478BAFF3}
 		{642770B9-FF27-492B-9AA3-435BEE4D7E6E} = {C986486A-E37D-4639-8DEF-FDAC478BAFF3}
+		{89B6EEC3-BE33-4CC0-88B1-8506FDA39673} = {C986486A-E37D-4639-8DEF-FDAC478BAFF3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB713F9B-EC7A-49CF-8320-8EB2DF03F5AD}

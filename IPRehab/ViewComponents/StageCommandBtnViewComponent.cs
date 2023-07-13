@@ -38,15 +38,18 @@ namespace IPRehab.ViewComponents
                 string HostingPage = EpisodeBtnConfig.ActionButtonVM.HostingPage;
                 switch (button.Key)
                 {
+                    //Patient button
                     case "Patient":
                         {
                             switch (HostingPage)
                             {
+                                //do not show patient button in patient listing
                                 case "Patient":
                                     {
                                         cmdBtnTemplateVM.ShowThisButton = false;
                                         break;
                                     }
+                                //show patient button with name as "Patient List" in questions page
                                 case "Question":
                                     {
                                         cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
@@ -63,6 +66,8 @@ namespace IPRehab.ViewComponents
                             }
                             break;
                         }
+
+                    //New button
                     case "New":
                         {
                             cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
@@ -81,6 +86,8 @@ namespace IPRehab.ViewComponents
                                 cmdBtnTemplateVM.ShowThisButton = true;
                             break;
                         }
+
+                    //other buttons
                     default:
                         {
                             /* don't use EpisodeBtnConfig.EpisodeOfCareID here */

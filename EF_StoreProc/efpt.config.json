@@ -1,0 +1,61 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "RehabAssessmentCareToolContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "EF_StoreProc",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[shared].[vTreatingSpecialtyPatNoName]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[shared].[vTreatingSpecialtyRecent3Yrs]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[shared].[vTreatingSpecialtyRecent3YrsNew]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[app].[spQuestionAnswers]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[shared].[sp_TreatingSpecialtiyPatients]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[shared].[sp_UserAccessLevel]",
+         "ObjectType": 1
+      }
+   ],
+   "UiHint": "vhaausdb9.RehabAssessmentCareTool",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

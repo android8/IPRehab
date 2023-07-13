@@ -13,6 +13,8 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     public class HydrateDTO
     {
+        static int measureCounter = 0;
+        static int currentQuestionID;
         //ToDo: should use AutoMapper
         public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
         {
@@ -26,28 +28,53 @@ namespace IPRehabWebAPI2.Helpers
                 Question = q.Question
             };
 
-            if (measureCodeSet == null)
+            if (measureCodeSet == null) //each question may or may not have measure
+                                        //use measureCounter and currentQuestion to control multi-measure questions 
             {
-                questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID)?.Required;
-                questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).Id;
+                var thisMeasures = q.tblQuestionMeasure.Where(m =>
+                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).OrderBy(m=>m.MeasureCodeSetIDFK);
+                if (thisMeasures != null && thisMeasures.Any())
+                {
+                    switch (thisMeasures.Count())
+                    {
+                        case 1: //only one measure so take First()
+                            {
+                                questionDTO.Required = thisMeasures.First().Required;
+                                questionDTO.MeasureID = thisMeasures.First().Id;
+                            }
+                            break;
+                        case > 1: //increment the measurCounter if not the same question, else reset the measureCounter 
+                            {
+                                if (currentQuestionID != q.QuestionID)
+                                {
+                                    currentQuestionID = q.QuestionID;
+                                    measureCounter = 0;
+                                }
+
+                                //temporarily take first from the ordered measures until a better way is found
+                                var thisMeasure = thisMeasures.ToArray()[measureCounter];
+                                questionDTO.Required = thisMeasure.Required;
+                                questionDTO.MeasureID = thisMeasure.Id;
+                                measureCounter++;
+                            }
+                            break;
+                    }
+                }
             }
             else
             {
-                questionDTO.Required = q.tblQuestionMeasure.FirstOrDefault(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID)?.Required;
-                questionDTO.MeasureID = q.tblQuestionMeasure.FirstOrDefault(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID).Id;
+                var thisMeasure = q.tblQuestionMeasure.FirstOrDefault(m =>
+                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID);
+                if (thisMeasure != null)
+                {
+                    questionDTO.Required = thisMeasure.Required;
+                    questionDTO.MeasureID = thisMeasure.Id;
+                    questionDTO.MeasureDescription = thisMeasure.MeasureCodeSetIDFKNavigation.CodeDescription; //GetGroupTitle(q, questionStage);
+                    questionDTO.MeasureCodeSetID = thisMeasure.MeasureCodeSetIDFKNavigation.CodeSetID;
+                    questionDTO.MeasureCodeValue = thisMeasure.MeasureCodeSetIDFKNavigation.CodeValue;
+                }
             }
 
-            //use question measures
-            if (measureCodeSet != null)
-            {
-                questionDTO.MeasureDescription = measureCodeSet.CodeDescription; //GetGroupTitle(q, questionStage);
-                questionDTO.MeasureCodeSetID = measureCodeSet.CodeSetID;
-                questionDTO.MeasureCodeValue = measureCodeSet.CodeValue;
-            }
             questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
             questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
             questionDTO.DisplayOrder = q.Order;
@@ -109,37 +136,6 @@ namespace IPRehabWebAPI2.Helpers
             return answerDTO;
         }
 
-        public static UserFacilityGrant HydrateUserFacilityGrant(FSODPatient p)
-        {
-            UserFacilityGrant grants = new();
-            grants.District.Add(p.District);
-            grants.Division.Add(p.Division);
-            grants.Facility.Add(p.Facility);
-
-            return grants;
-        }
-
-        public static PatientDTO HydratePatient(FSODPatient p)
-        {
-            return new PatientDTO
-            {
-                VISN = p.VISN,
-                Facility = p.Facility,
-                District = p.District,
-                Division = p.Division,
-                ADMParent_Key = p.ADMParent_Key,
-                Sta6aKey = p.Sta6aKey,
-                Bedsecn = p.bedsecn,
-                Name = p.Name,
-
-                PTFSSN = p.PTFSSN,
-                FSODSSN = p.FSODSSN,
-
-                FiscalPeriod = p.FiscalPeriod,
-                FiscalPeriodInt = p.FiscalPeriodInt
-            };
-        }
-
         public static PatientDTOTreatingSpecialty HydrateTreatingSpecialtyPatient(vTreatingSpecialtyRecent3Yrs p)
         {
             return new PatientDTOTreatingSpecialty
@@ -184,7 +180,7 @@ namespace IPRehabWebAPI2.Helpers
             IEnumerable<tblAnswer> keyDates = e.tblAnswer.Where(a =>
                a.EpsideOfCareIDFK == e.EpisodeOfCareID && a.QuestionIDFKNavigation.QuestionKey == "Q23");
 
-            if (keyDates.Any())
+            if (keyDates != null && keyDates.Any())
             {
                 /* the Last() must be onset date */
                 if (DateTime.TryParse(ParseDateString(keyDates.Last().Description), out onsetDate))

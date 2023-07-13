@@ -50,7 +50,7 @@ namespace IPRehab
       });
 
       //services.AddDistributedMemoryCache(); //do not use because out of process 
-      //services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
+      services.AddMemoryCache(); //do not use because the server may not have the same DLL versions
 
       services.AddControllersWithViews().AddJsonOptions(o =>
       {
