@@ -120,7 +120,12 @@ namespace IPRehabWebAPI2
                     policyBuilder =>
                     {
                         policyBuilder
-                        //.WithOrigins("https://localhost:44381", "https://vhaausweb3.vha.med.va.gov", "https://https://vaww.vssc.med.va.gov/")
+                        //The allowed URL must not contain a trailing slash (/)
+                        //.WithOrigins("https://localhost:44381",
+                        //              "https://vhaausweb3.vha.med.va.gov",
+                        //              "https://vaww.vssc.med.va.gov",
+                        //              "https://secure.vssc.med.va.gov"
+                        //              )
                         .AllowAnyOrigin() //comment out for testing on localhost
                         .AllowAnyHeader()
                         .AllowAnyMethod();
@@ -218,11 +223,11 @@ namespace IPRehabWebAPI2
 
             app.UseRouting();
 
-            if (env.IsProduction())
-            {
-                //UseCors() must be btween UseRouting and UseAuthorization
+            //if (env.IsProduction())
+            //{
+                //UseCors() must be after UseRouting and before UseAuthorization, and must call before UseResponseCaching, if used.
                 app.UseCors(MyAllowSpecificOrigins);
-            }
+            //}
 
             //app.UseAuthentication();
             app.UseAuthorization();

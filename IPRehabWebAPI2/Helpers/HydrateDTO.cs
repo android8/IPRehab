@@ -1,6 +1,5 @@
 ﻿using IPRehabModel;
 using IPRehabWebAPI2.Models;
-using PatientModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

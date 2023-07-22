@@ -160,7 +160,9 @@ namespace IPRehab.Controllers
                 //List<UserAnswer> oldAnswers = postbackModel.OldAnswers;
                 //List<UserAnswer> updatedAnswers = postbackModel.UpdatedAnswers;
 
-                //forward the postbackModel to web api Answer controller
+                //forward the postbackModel to web api Answer controller.
+                //the {ApiBAseUrl} is read from appSetting.development.json if launch setting is DEVELOPMENT,
+                //otherwise from appSetting.json
                 Uri uri = new($"{ApiBaseUrl}/api/Answer/Post");
 
                 var Res = await APIAgent.PostDataAsync(uri, postbackModel);
