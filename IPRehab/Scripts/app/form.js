@@ -29,7 +29,7 @@ const formController = (function () {
     }
     /* private function */
     function breakLongSentence(thisSelectElement) {
-        //console.log('thisSelectElement', thisSelectElement);
+        console.log('breakLongSentence() thisSelectElement', thisSelectElement);
         const maxLength = 50;
         const longTextOptionDIV = thisSelectElement.next('div.longTextOption');
         //console.log('longTextOptionDIV', longTextOptionDIV);
@@ -46,10 +46,9 @@ const formController = (function () {
                 const oldText = $thisOption.text();
                 const font = $thisOption.css('font');
                 const oldTextInPixel = commonUtility.getTextPixels(oldText, font);
-                //console.log('oldTextInPixel', oldTextInPixel);
-                //console.log('thisSelectWidth', thisSelectWidth);
-                longTextOptionDIV.text('');
                 if (oldTextInPixel > thisSelectWidth) {
+                    console.log('oldTextInPixel', oldTextInPixel);
+                    console.log('thisSelectWidth', thisSelectWidth);
                     let newStr = oldText.replace(regX, "$1\n");
                     newStr = newStr.trim();
                     const startWithNumber = $.isNumeric(newStr.substring(0, 1));
@@ -61,6 +60,9 @@ const formController = (function () {
                     longTextOptionDIV.text(newStr);
                     longTextOptionDIV.removeClass("invisible");
                 }
+                else
+                    console.log('set blank for short text');
+                longTextOptionDIV.text('');
             });
         }
     }

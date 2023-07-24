@@ -83,36 +83,37 @@ $(function () {
         function actQ12B(dischargeState) {
             const dischargeRelatedDropdown = $('.persistable[id^=Q15B_], .persistable[id^=Q16B_],.persistable[id^=Q17B_], .persistable[id^=Q21B_]');
             const dischargeRelatedCheckboxes = $('.persistable[id^=Q41_],.persistable[id^=Q44C_]');
+            //enable or disable related .persistable elements
             dischargeRelatedDropdown.each(function () {
                 const thisDropdown = $(this);
                 console.log('reset ' + thisDropdown.prop('id'), thisDropdown);
-                thisDropdown.val(-1);
                 if (dischargeState) {
                     console.log('enable ' + thisDropdown.prop('id'), thisDropdown);
                     thisDropdown.prop('disabled', false).removeAttr('disabled');
                 }
                 else {
                     console.log('disable ' + thisDropdown.prop('id'), thisDropdown);
+                    thisDropdown.val(-1);
                     thisDropdown.prop('disabled', true);
+                    thisDropdown.siblings('.longTextOption').text('');
                 }
                 console.log('raise chage() on ' + thisDropdown.prop('id'), thisDropdown);
             });
             dischargeRelatedCheckboxes.each(function () {
                 const thisCheckbox = $(this);
                 console.log('uncheck ' + thisCheckbox.prop('id'), thisCheckbox);
-                thisCheckbox.prop('checked', false);
                 if (dischargeState) {
                     console.log('enable ' + thisCheckbox.prop('id'), thisCheckbox);
                     thisCheckbox.prop('disabled', false).removeAttr('disabled');
                 }
                 else {
                     console.log('disable ' + thisCheckbox.prop('id'), thisCheckbox);
+                    thisCheckbox.prop('checked', false);
                     thisCheckbox.prop('disabled', true);
                 }
                 console.log('raise change() ' + thisCheckbox.prop('id'), thisCheckbox);
             });
         }
-        //lock all field with pertaining discharge Q15B,Q16B, Q17B, Q21B, Q41, Q44C
         function DischargeRelatedButtonClosure() {
             return function (dischargeState) {
                 return {
@@ -132,6 +133,7 @@ $(function () {
         const isDischarged = Q12B.val() !== '';
         let dialogText;
         if (!isDischarged) {
+            //lock all field with pertaining discharge Q15B,Q16B, Q17B, Q21B, Q41, Q44C
             dialogText = 'When Q12B is not a answered with a valid discharge date, the application rseset and locks related discharge fields:  Q15B, Q16B, Q17B, Q21B, Q41, and Q44C';
             console.log(dialogText);
             if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
