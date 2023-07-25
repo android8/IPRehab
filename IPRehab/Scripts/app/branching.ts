@@ -113,8 +113,7 @@ $(function () {
         else {
           console.log('disable ' + thisDropdown.prop('id'), thisDropdown);
           thisDropdown.val(-1);
-          thisDropdown.prop('disabled', true);
-          thisDropdown.siblings('.longTextOption').text('');
+          thisDropdown.prop('disabled', true).siblings('.longTextOption').text('');
         }
         console.log('raise chage() on ' + thisDropdown.prop('id'), thisDropdown);
       });
@@ -335,7 +334,7 @@ $(function () {
         Q17.prop('disabled', isDisabled);
         if (isDisabled) {
           //commonUtility.resetControlValue(Q17);
-          Q17.val(-1)
+          Q17.val(-1).siblings('.longTextOption').text('');
         }
         else {
           console.log('focus on Q17', Q17);
