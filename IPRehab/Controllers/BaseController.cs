@@ -15,73 +15,48 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using IPRehabWebAPI2.Helpers;
+using System.IO;
+using System.Reflection;
 
 namespace IPRehab.Controllers
 {
     public class BaseController : Controller
     {
+        private string _gitVersion;
+        protected string GitVersion { get => _gitVersion; set => _gitVersion = value; } 
+
         private readonly IWebHostEnvironment _environment;
-        protected IWebHostEnvironment BaseEnvironment
-        {
-            get { return _environment; }
-        }
+        protected IWebHostEnvironment BaseEnvironment => _environment;
 
         private readonly IConfiguration _configuration;
-        protected IConfiguration BaseConfiguration
-        {
-            get { return _configuration; }
-        }
+        protected IConfiguration BaseConfiguration => _configuration;
 
         private readonly string _apiBaseUrl;
-        protected string ApiBaseUrl
-        {
-            get { return _apiBaseUrl; }
-        }
+        protected string ApiBaseUrl=> _apiBaseUrl;
 
         private readonly string _appVersion;
-        protected string AppVersion
-        {
-            get { return _appVersion; }
-        }
+        protected string AppVersion => _appVersion;
 
         private readonly string _impersonated;
-        protected string Impersonated
-        {
-            get { return _impersonated; }
-        }
+        protected string Impersonated => _impersonated;
 
         private readonly JsonSerializerOptions _options;
-        protected JsonSerializerOptions BaseOptions
-        {
-            get { return _options; }
-        }
+        protected JsonSerializerOptions BaseOptions => _options;
 
         private readonly int _pageSize;
-        protected int PageSize
-        {
-            get { return _pageSize; }
-        }
+        protected int PageSize => _pageSize; 
 
         private readonly string _office;
-        protected string Office
-        {
-            get { return _office; }
-        }
+        protected string Office =>_office;
 
         //private readonly List<MastUserDTO> _userAccessLevels;
         //protected List<MastUserDTO> UserAccessLevels { get { return _userAccessLevels; }}
 
         private readonly IMemoryCache _memoryCache;
-        protected IMemoryCache MemoryCache
-        {
-            get { return _memoryCache; }
-        }
+        protected IMemoryCache MemoryCache => _memoryCache; 
 
         private string _userID;
-        protected string UserID
-        {
-            get { return _userID; }
-        }
+        protected string UserID =>_userID;
 
         protected BaseController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration)
         {
@@ -91,6 +66,15 @@ namespace IPRehab.Controllers
             _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
             _impersonated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
             _memoryCache = memoryCache;
+            
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("IPRehab.GitVersion.txt"))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    GitVersion = reader.ReadToEnd();
+                    ViewBag.GitVersion = GitVersion;
+                }
+            }
 
             if (!string.IsNullOrEmpty(_impersonated))
             {

@@ -1,58 +1,59 @@
 ﻿@model string
 
 @{
-  Layout = null;
+    Layout = null;
 }
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Inpatient Rehab</title>
-  <link rel="stylesheet" href="~/css/app.css" />
-  <style>
-    html, body {
-      padding: 0px;
-      margin: 0px;
-      overflow: hidden !important;
-    }
+    <meta charset="utf-8" />
+    <title>Inpatient Rehab</title>
+    <link rel="stylesheet" href="~/css/app.css" />
+    <style>
+        html, body {
+            padding: 0px;
+            margin: 0px;
+            overflow: hidden !important;
+        }
 
-    body {
-      /*width: 100vw;
-      height: 100vh;*/
-      overflow-x: hidden !important;
-      overflow-y: hidden !important;
-    }
-  </style>
+        body {
+            /*width: 100vw;
+              height: 100vh;*/
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+        }
+    </style>
 </head>
 <body>
-  <main role="main" class="pb-3 main">
-    <div class="container">
-      <div class="splashscreen">
-        <div id="flashText">Inpatient Rehab Assessment Tool</div>
-        <div class="waitMessage">@Model</div>
-        <div class="waitMessage">Starting.....</div>
-      </div>
-    </div>
-  </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-          asp-fallback-src="~/lib/jquery/dist/jquery.min.js"></script>
-  <script type="text/javascript">
-    $(function () {
-      setTimeout(function () {
-        //var isLocalHost = window.location.host.indexOf('localhost') !== -1;
-        var lastChar = window.location.href.slice(-1);
-        if (lastChar === '/') {
-          //var chleanUrl = window.location.href.replace(/\/$/, "")
-          //window.location = window.location + 'patient/index';
-          window.location = window.location + 'patient/IndexTreatingSpecailty';
-        }
-        else {
-          //window.location = window.location + '/patient/index';
-            window.location = window.location + '/patient/IndexTreatingSpecailty';
+    <main role="main" class="pb-3 main">
+        <div class="container">
+            <div class="splashscreen">
+                <div id="flashText">Inpatient Rehab Assessment Tool</div>
+                <div class="waitMessage">@Model</div>
+                <div class="waitMessage">Starting.....</div>
+            </div>
+        </div>
+    </main>
+    <footer>Version: @ViewBag.GitVersion</footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            asp-fallback-src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            setTimeout(function () {
+                //var isLocalHost = window.location.host.indexOf('localhost') !== -1;
+                var lastChar = window.location.href.slice(-1);
+                if (lastChar === '/') {
+                    //var chleanUrl = window.location.href.replace(/\/$/, "")
+                    //window.location = window.location + 'patient/index';
+                    window.location = window.location + 'patient/IndexTreatingSpecailty';
+                }
+                else {
+                    //window.location = window.location + '/patient/index';
+                    window.location = window.location + '/patient/IndexTreatingSpecailty';
 
-        }
-      }, 1000);
-    });
-  </script>
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

@@ -28,7 +28,9 @@ namespace IPRehab.Controllers
 
             return Problem(
                 detail: context.Error.StackTrace,
-                title: context.Error.Message);
+                title: $"{context.Error.Message}{Environment.NewLine}" +
+                $"{context.Error.InnerException?.Message}" +
+                $"{context.Error.InnerException?.InnerException?.Message}");
         }
 
         [HttpGet]

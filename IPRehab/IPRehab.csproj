@@ -79,6 +79,7 @@
 
   <ItemGroup>
     <None Remove=".eslintrc.json.bak" />
+    <None Remove="GitVersion.txt" />
     <None Remove="Scripts\app\AjaxPostbackModel.js" />
     <None Remove="Scripts\app\AjaxPostbackModel.js.map" />
     <None Remove="Scripts\app\animateBanner.js" />
@@ -116,6 +117,12 @@
 
   <ItemGroup>
     <Content Include="Scripts\TypeScriptSupport.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="GitVersion.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -189,5 +196,9 @@
       <DependentUpon>app - Copy.min.css</DependentUpon>
     </Content>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="&quot;C:\Program Files\Git\bin\git.exe&quot; describe --tags &gt; &quot;$(ProjectDir)\GitVersion.txt&quot;" />
+  </Target>
 
 </Project>
