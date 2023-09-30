@@ -18,6 +18,9 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("SSN/ScrSSN")]
         public string PTFSSN { get; set; }
 
+        [DisplayName("Real SSN")]
+        public string RealSSN { get; set; }
+
         [DisplayName("ICN")]
         public string PatientICN { get; set; }
 

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,8 +18,10 @@ namespace IPRehabWebAPI2.Controllers
         private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
         private readonly IUserPatientCacheHelper _cacheHelper;
 
+        protected string CurrentNetworkID { get; set; }
+
         public TreatingSpecialtyPatientController(
-            IEpisodeOfCareRepository episodeOfCareRepository, 
+            IEpisodeOfCareRepository episodeOfCareRepository,
             IUserPatientCacheHelper cacheHelper)
         {
             _episodeOfCareRepository = episodeOfCareRepository;
@@ -48,12 +49,12 @@ namespace IPRehabWebAPI2.Controllers
 
             //internally retrieve windows identity from User.Claims
             //string networkName = string.IsNullOrEmpty(impersonatedUserName) ? HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value : impersonatedUserName;
-            networkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
+            CurrentNetworkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
 
             //get all patient with criteria and quarter filter
             List<PatientDTOTreatingSpecialty> facilityPatients;
             string patientID = string.Empty;
-            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(networkID);
+            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
                 return NotFound("You do not have permission to view any facility patients");
 
@@ -132,11 +133,11 @@ namespace IPRehabWebAPI2.Controllers
         [HttpGet("{patientID:int}")]
         public async Task<ActionResult<PatientDTOTreatingSpecialty>> GetPatient(string patientID, string networkID, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 1)
         {
-            networkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
+            CurrentNetworkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
 
             string criteria = string.Empty; //no criteria is needed for patient search based on id
 
-            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(networkID);
+            var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
 
             List<PatientDTOTreatingSpecialty> patients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
             if (patients == null || !patients.Any())
