@@ -15,10 +15,10 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("Name")]
         public string Name { get; set; }
 
-        [DisplayName("ScrSSN")]
+        [DisplayName("Scr SSN")]
         public string PTFSSN { get; set; }
 
-        [DisplayName("RealSSN")]
+        [DisplayName("Real SSN")]
         public string RealSSN { get; set; }
 
         [DisplayName("ICN")]
