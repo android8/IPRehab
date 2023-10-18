@@ -160,7 +160,7 @@ namespace IPRehabWebAPI2.Helpers
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                     return null;    //no patient matches the search criteria in permitted facilities list
             }
-            
+
             return ConvertToPatientDTO(thisFacilityPatients, pageNumber, pageSize);
         }
 
@@ -344,7 +344,11 @@ namespace IPRehabWebAPI2.Helpers
             var distinctedPatientsInThisFacility = thisFacilityPatients.Select(p => new { patientName = p.PatientName, patientICN = p.PatientICN }).Distinct();
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
-                var admissions = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN && p.admitday.HasValue).Select(p => p.admitday).ToList();
+                var admissions = thisFacilityPatients.Where(p =>
+                    p.PatientName == thisDistinctP.patientName &&
+                    p.PatientICN == thisDistinctP.patientICN &&
+                    p.admitday.HasValue)
+                    .Select(p => p.admitday).ToList();
                 var thisPatient = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN).First();
                 var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisPatient);
                 hydratedPatient.AdmitDates.Clear();

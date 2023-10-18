@@ -12,8 +12,8 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     public class HydrateDTO
     {
-        static int measureCounter = 0;
-        static int currentQuestionID;
+        private static int measureCounter = 0;
+        private static int currentQuestionID;
         //ToDo: should use AutoMapper
         public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
         {
@@ -31,7 +31,7 @@ namespace IPRehabWebAPI2.Helpers
                                         //use measureCounter and currentQuestion to control multi-measure questions 
             {
                 var thisMeasures = q.tblQuestionMeasure.Where(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).OrderBy(m=>m.MeasureCodeSetIDFK);
+                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).OrderBy(m => m.MeasureCodeSetIDFK);
                 if (thisMeasures != null && thisMeasures.Any())
                 {
                     switch (thisMeasures.Count())
@@ -142,6 +142,7 @@ namespace IPRehabWebAPI2.Helpers
                 Sta6a = p.bsta6a,
                 Name = p.PatientName,
                 PTFSSN = p.scrssn.HasValue ? p.scrssn.Value.ToString() : String.Empty,
+                RealSSN = p.RealSSN.HasValue ? p.RealSSN.Value.ToString() : string.Empty,
                 PatientICN = p.PatientICN,
                 DoB = p.DoB,
                 Bedsecn = p.bedsecn,

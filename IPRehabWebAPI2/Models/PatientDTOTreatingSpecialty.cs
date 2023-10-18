@@ -15,8 +15,11 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("Name")]
         public string Name { get; set; }
 
-        [DisplayName("SSN/ScrSSN")]
+        [DisplayName("ScrSSN")]
         public string PTFSSN { get; set; }
+
+        [DisplayName("RealSSN")]
+        public string RealSSN { get; set; }
 
         [DisplayName("ICN")]
         public string PatientICN { get; set; }

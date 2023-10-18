@@ -44,6 +44,9 @@
                     @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.RealSSN)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
                 </th>
                 <th>
@@ -69,8 +72,12 @@
                             @Html.DisplayFor(modelItem => pat.Patient.Name)
                         </td>
                         <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
                         </td>
+
                         <td>
                             @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
                         </td>                        
@@ -78,7 +85,7 @@
                     <!--Episode of Care row-->
                     @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="flex-start-row-nowrap episode">
                                 <table class="table-striped table-responsive-md">
                                     <thead>
