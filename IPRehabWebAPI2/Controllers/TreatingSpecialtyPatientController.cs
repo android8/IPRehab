@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace IPRehabWebAPI2.Controllers
         private readonly IUserPatientCacheHelper _cacheHelper;
 
         public TreatingSpecialtyPatientController(
-            IEpisodeOfCareRepository episodeOfCareRepository, 
+            IEpisodeOfCareRepository episodeOfCareRepository,
             IUserPatientCacheHelper cacheHelper)
         {
             _episodeOfCareRepository = episodeOfCareRepository;
@@ -62,7 +61,7 @@ namespace IPRehabWebAPI2.Controllers
             if (facilityPatients == null || !facilityPatients.Any())
             {
                 string permittedFacilities = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                string noDataMesage = $"No in-patient rehab in the following facilities ({permittedFacilities})";
+                string noDataMesage = $"No in-patient rehab in your facilities ({permittedFacilities})";
 
                 //Response.Headers.Location = new Uri("NoData").ToString();
                 //return new ContentResult
@@ -81,10 +80,7 @@ namespace IPRehabWebAPI2.Controllers
                 List<PatientDTOTreatingSpecialty> jaggedPatient = new();
                 if (!withEpisode)
                 {
-                    foreach (var facilityPatient in facilityPatients)
-                    {
-                        jaggedPatient.Add(facilityPatient);
-                    }
+                    jaggedPatient.AddRange(facilityPatients);
                 }
                 else
                 {
@@ -98,18 +94,19 @@ namespace IPRehabWebAPI2.Controllers
                     //    }).ToList();
 
                     //left join
-                    var facilityPatientEpisodes = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll().ToList(),
+                    var facilityPatientEpisodes = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll(),
                         p => p.PTFSSN, e => e.PatientICNFK, (p, e) => new { p, e })
                         .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { patient = p.p, episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) })
                         .ToList();
 
-                    foreach (var fpe in facilityPatientEpisodes)
+                    foreach (var p in facilityPatients)
                     {
-                        if (fpe.episode != null)
+                        var episodeForThisP = facilityPatientEpisodes.Where(fpe => fpe.patient.Name == p.Name).Select(p => p.episode);
+                        if (episodeForThisP.Any())
                         {
-                            fpe.patient.CareEpisodes.Add(fpe.episode);
+                            p.CareEpisodes.AddRange(episodeForThisP);
                         }
-                        jaggedPatient.Add(fpe.patient);
+                        jaggedPatient.Add(p);
                     }
                 }
                 return Ok(jaggedPatient);
