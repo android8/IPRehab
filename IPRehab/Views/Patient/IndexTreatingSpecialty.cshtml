@@ -126,10 +126,10 @@
                                                     <td>@*episode-node-symbol*@</td>
                                                     <td>&nbsp;</td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap episode">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
                                                     </td>
                                                     <td colspan="3">
-                                                        <div class="flex-start-row-nowrap episode">
+                                                        <div class="flex-start-row-nowrap">
                                                             <div>
                                                                 @{
                                                                     string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
@@ -147,19 +147,19 @@
                                                 <tr class="episode">
                                                     <td>@*episode-node-symbol*@</td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap episode">@Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)</div>
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)</div>
                                                     </td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap episode">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
                                                     </td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap episode">@Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)</div>
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)</div>
                                                     </td>
                                                     <td>
                                                         @{
                                                             if (thisEpisodeConfig.FormIsComplete)
                                                             {
-                                                                <div class="flex-start-row-nowrap episode"><span>Yes</span></div>
+                                                                <div class="flex-start-row-nowrap"><span>Yes</span></div>
                                                             }
                                                         }
                                                     </td>
@@ -169,7 +169,7 @@
                                                             string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
                                                             /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                                                         }
-                                                        <div class="flex-start-row-nowrap episode">
+                                                        <div class="flex-start-row-nowrap">
                                                             @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                         </div>
                                                     </td>
