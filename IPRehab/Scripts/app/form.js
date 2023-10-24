@@ -288,7 +288,7 @@ const formController = (function () {
     }
     /* private function */
     function updateScore(thisControl, newScore) {
-        console.log('thisControl score = ' + newScore, thisControl);
+        console.log('thisControl (' + thisControl('id') + ') = ' + newScore);
         const i_score_element = thisControl.siblings('i.score');
         switch (true) {
             case ((newScore <= 0 || isNaN(newScore)) && i_score_element.length > 0): {
@@ -534,10 +534,6 @@ const formController = (function () {
     //}
     /* internal function */
     function Score_GG0170AtoP_Performance(performanceType) {
-        /* select only GG0170I matching the performance type parameter */
-        const GG0170I_Only = $('.persistable[id^=GG0170I][id*=' + performanceType + ']');
-        const GG0170I_Only_Score = commonUtility.getControlValue(GG0170I_Only);
-        console.log(GG0170I_Only.prop('id') + ' score = ' + GG0170I_Only_Score);
         /* select only GG0170 matching the performance type parameter excluding Q, R and S */
         const targetELs = $('.persistable[id^=GG0170][id*=' + performanceType + ']:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
         //console.log('targetELs', targetELs);
@@ -545,43 +541,54 @@ const formController = (function () {
         targetELs.each(function () {
             const thisEL = $(this);
             console.log('----- begin update score for ', thisEL.prop('id'));
-            const thisELScore = commonUtility.getControlValue(thisEL);
-            const isThisGG0170I = thisEL.prop('id').indexOf('GG0170I_' + performanceType) >= 0;
+            const thisControl_id = thisEL.prop('id');
+            const thisControl_Value = commonUtility.getControlValue(thisEL);
+            const isThisGG0170I = thisControl_id.indexOf('GG0170I_' + performanceType) >= 0;
+            const isThisGG0170M = thisControl_id.indexOf('GG0170M_' + performanceType) >= 0;
+            const isThisGG0170N = thisControl_id.indexOf('GG0170N_' + performanceType) >= 0;
             switch (true) {
-                case (thisELScore >= 7):
-                    if (isThisGG0170I) {
-                        console.log('\t Score_GG0170AtoP_Performance::: path 1');
-                        updateScore(thisEL, 0); //don't count GG0170I when I >= 7 per customer 12/8/2021
-                    }
-                    else {
-                        console.log('\t Score_GG0170AtoP_Performance::: path 2');
-                        updateScore(thisEL, 1);
-                        PerformanceScore += 1;
+                case (thisControl_Value >= 7):
+                    {
+                        if (isThisGG0170I) {
+                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 1');
+                            updateScore(thisEL, 0); //don't count GG0170I when I >= 7 per customer 12/8/2021
+                        }
+                        else if (isThisGG0170M) {
+                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 2');
+                            updateScore(thisEL, 1);
+                            /* when M >= 7 add 1 point for M, N, and O each*/
+                            PerformanceScore += 3;
+                        }
+                        else if (isThisGG0170N) {
+                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 3');
+                            updateScore(thisEL, 1);
+                            /* when N >= 7 add 1 point for N and O each*/
+                            PerformanceScore += 2;
+                        }
+                        else {
+                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 4');
+                            updateScore(thisEL, 1);
+                            PerformanceScore += 1;
+                        }
                     }
                     break;
-                case thisELScore > 0 && thisELScore < 7:
+                case thisControl_Value > 0 && thisControl_Value < 7:
+                    console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value < 7 ');
+                    PerformanceScore += thisControl_Value;
+                    updateScore(thisEL, thisControl_Value);
                     if (isThisGG0170I) {
-                        console.log('\t Score_GG0170AtoP_Performance::: path 3 update I, R, S');
-                        PerformanceScore += GG0170I_Only_Score; /* count GG0170I only */
-                        updateScore(thisEL, thisELScore);
+                        //set R and S value to 0 when 0 < I < 7
                         const GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
-                        updateScore(GG0170R, 0); //ignore by resetting R to 0
+                        updateScore(GG0170R, 0);
                         const GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
-                        updateScore(GG0170S, 0); //ignore by resetting S to 0
-                    }
-                    else {
-                        console.log('\t Score_GG0170AtoP_Performance::: path 4');
-                        updateScore(thisEL, thisELScore);
-                        /* count non-I score as is */
-                        PerformanceScore += thisELScore;
+                        updateScore(GG0170S, 0);
                     }
                     break;
                 default:
-                    console.log('\t Score_GG0170AtoP_Performance::: default');
+                    console.log('\t Score_GG0170AtoP_Performance::: control value has no value');
                     updateScore(thisEL, 0);
                     break;
             }
-            console.log('\t after update ' + thisEL.prop('id') + ' score = ' + thisELScore);
         });
         return PerformanceScore;
     }
