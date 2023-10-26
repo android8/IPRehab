@@ -176,7 +176,7 @@ namespace IPRehabWebAPI2.Helpers
 
             if (thisEpisode != null)
             {
-                var allFacilityPatients = await GetAllFacilityPatients();
+                var allFacilityPatients = await GetAllFacilityPatients(null);
 
                 var patientInThisEpisode = allFacilityPatients.Where(p =>
                     p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK).FirstOrDefault();
@@ -270,25 +270,46 @@ namespace IPRehabWebAPI2.Helpers
         /// get the treating speciatlty patients cohort base from session, otherwise get them from the WebAPI
         /// </summary>
         /// <returns></returns>
-        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients()
+        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients(List<MastUserDTO> distinctUserFacilities)
         {
             //get all facilities patients from the memory cache
-            var allFacilityPatients = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyAllPatients);
+            var allPatientsFromCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyAllPatients);
 
-            //get from repository
-            if (allFacilityPatients == null || !allFacilityPatients.Any())
+            if (allPatientsFromCache != null && allPatientsFromCache.Any())
             {
-                //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
-                allFacilityPatients = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
-
-                if (allFacilityPatients != null && allFacilityPatients.Any())
+                //renew cache for 24 hours
+                _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromCache, TimeSpan.FromDays(1));
+                return allPatientsFromCache;
+            }
+            else
+            {
+                //get from sql view without user facilities filter
+                if (distinctUserFacilities == null || !distinctUserFacilities.Any())
                 {
+                    var allPatientsFromSqlView = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
                     //update cache for 24 hours
-                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allFacilityPatients, TimeSpan.FromDays(1));
+                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlView, TimeSpan.FromDays(1));
+                    return allPatientsFromSqlView;
+                }
+                else
+                {
+                    List<vTreatingSpecialtyRecent3Yrs> allPatientsFromSqlViewFilteredByCurrentUserFacility = new();
+                    //get from sql view with user facilities filter on bsta6
+                    //this cannot be done at server side and must use {column}.StartWith()
+                    foreach (var fac in distinctUserFacilities)
+                    {
+                        var thisFacilityPatients = await _treatingSpecialtyPatientRepository
+                            .FindByCondition(p => p.bsta6a.StartsWith(fac.Facility)).ToListAsync();
+
+                        if (thisFacilityPatients != null && thisFacilityPatients.Any())
+                            allPatientsFromSqlViewFilteredByCurrentUserFacility.AddRange(thisFacilityPatients);
+                    }
+
+                    //update cache for 24 hours
+                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlViewFilteredByCurrentUserFacility, TimeSpan.FromDays(1));
+                    return allPatientsFromSqlViewFilteredByCurrentUserFacility;
                 }
             }
-
-            return allFacilityPatients;
         }
 
         public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetThisFacilityPatients(List<MastUserDTO> distinctUserFacilities)
@@ -296,42 +317,25 @@ namespace IPRehabWebAPI2.Helpers
             //get smaller set of this facility patients from the memory cache
             string cacheKeyOfThisFacility = $"{CacheKeys.CacheKeyThisFacilityPatients}_{distinctUserFacilities.First().Facility}";
 
-            var thisFacilityPatients = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(cacheKeyOfThisFacility);
+            var thisFacilityPatientsInCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(cacheKeyOfThisFacility);
 
-            if (thisFacilityPatients != null && thisFacilityPatients.Any())
+            if (thisFacilityPatientsInCache != null && thisFacilityPatientsInCache.Any())
             {
-                //return from the cache
-                return thisFacilityPatients;
+                //get patient in current user facilities with cache key cacheKeyOfThisFacility
+                return thisFacilityPatientsInCache;
             }
             else
             {
                 //get all facilities patients
-                //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
-                var allFacilityPatients = await GetAllFacilityPatients();
+                var thisFacilityPatients = await GetAllFacilityPatients(distinctUserFacilities);
 
-                if (allFacilityPatients == null && !allFacilityPatients.Any())
+                if (thisFacilityPatients == null && !thisFacilityPatients.Any())
                 {
                     return null;    //no patients in any facility
                 }
                 else
                 {
-                    //filter this facility pateints
-                    string userFacilitySta3 = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-
-                    //currently userFacilitySta3 always contain one facility so use StartWith (SQL Like) will be ok
-                    //in the future the userFacilitySta3 may contain comma delimited facility IDs, so StartWith will not work
-                    thisFacilityPatients = allFacilityPatients.Where(p => p.bsta6a.StartsWith(userFacilitySta3)).ToList();
-
-                    if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                    {
-                        return null;    //no patients for this facility
-                    }
-                    else
-                    {
-                        //update cache for 24 hours
-                        _memoryCache.Set(cacheKeyOfThisFacility, thisFacilityPatients, TimeSpan.FromDays(1));
-                        return thisFacilityPatients;
-                    }
+                    return thisFacilityPatients;
                 }
             }
         }

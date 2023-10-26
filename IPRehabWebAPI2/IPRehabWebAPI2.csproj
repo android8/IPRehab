@@ -65,7 +65,7 @@
 
   <ItemGroup>
     <Reference Include="UserModel">
-      <HintPath>..\UserModel\bin\Release\net6.0\UserModel.dll</HintPath>
+      <HintPath>..\UserModel\bin\Debug\net7.0\UserModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

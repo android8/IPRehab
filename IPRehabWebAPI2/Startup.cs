@@ -12,9 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using PatientModel;
 using System.Net.Mime;
 using System.Text.Json;
 using UserModel;
@@ -24,8 +22,13 @@ namespace IPRehabWebAPI2
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+        private readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -84,8 +87,6 @@ namespace IPRehabWebAPI2
 
             #endregion IoC
 
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
-
             #region SWAGGER interface
 
             /* https://docs.microsoft.com/en-us/samples/dotnet/aspnetcore.docs/getstarted-swashbuckle-aspnetcore/?tabs=visual-studio
@@ -95,11 +96,11 @@ namespace IPRehabWebAPI2
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v4", new OpenApiInfo
+                c.SwaggerDoc("v5", new OpenApiInfo
                 {
                     Title = "IPRehabWebAPI2",
-                    Version = "v4",
-                    Description = "A .Net 6 Web API and EF CORE 6 servicing in patient rehab using Treating Specialty data",
+                    Version = "v5",
+                    Description = "A .Net 7 Web API and Entity Framework CORE servicing in patient rehab using Treating Specialty data",
                     Contact = new OpenApiContact
                     {
                         Name = "C. Jonathan Sun",
@@ -115,24 +116,35 @@ namespace IPRehabWebAPI2
             //services.AddCors();
             services.AddCors(options =>
             {
-                options.AddPolicy(
-                    name: MyAllowSpecificOrigins,
-                    policyBuilder =>
-                    {
-                        policyBuilder
-                        //The allowed URL must not contain a trailing slash (/)
-                        //.WithOrigins("https://localhost:44381",
-                        //              "https://vhaausweb3.vha.med.va.gov",
-                        //              "https://vaww.vssc.med.va.gov",
-                        //              "https://secure.vssc.med.va.gov"
-                        //              )
-                        .AllowAnyOrigin() //comment out for testing on localhost
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                    });
+                //use default policy
+                options.AddDefaultPolicy(builder => builder
+                    .WithOrigins("https://localhost:44381",
+                                 "https://vhaausweb3.vha.med.va.gov",
+                                 "https://vaww.vssc.med.va.gov",
+                                 "https://secure.vssc.med.va.gov")
+                    .AllowAnyHeader().AllowAnyMethod());
+
+                //use custom policy
+                //options.AddPolicy(
+                //name: MyAllowSpecificOrigins,
+                //policyBuilder =>
+                //{
+                //    policyBuilder
+                //    //The allowed URL must not contain a trailing slash (/)
+                //    .WithOrigins("https://localhost:44381",
+                //                  "https://vhaausweb3.vha.med.va.gov",
+                //                  "https://vaww.vssc.med.va.gov",
+                //                  "https://secure.vssc.med.va.gov"
+                //                  )
+                //    .AllowAnyOrigin() //comment out for testing on localhost
+                //    .AllowAnyHeader()
+                //    .AllowAnyMethod();
+                //});
             });
 
             #endregion CORS
+
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             #region API Controller behaviors
 
@@ -188,7 +200,7 @@ namespace IPRehabWebAPI2
 
             app.UseStatusCodePages();
 
-            string apiAppSettings = env.IsDevelopment()? "D": string.Empty;
+            string apiAppSettings = env.IsDevelopment() ? "D" : string.Empty;
 
             //if (env.IsDevelopment())
             //{
@@ -210,10 +222,10 @@ namespace IPRehabWebAPI2
                 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
                 // specifying the Swagger JSON endpoint.
                 // For Debug in Kestrel
-                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v4/swagger.json", $"Web API V4 {apiAppSettings}");
+                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v5/swagger.json", $"Web API V5 {apiAppSettings}");
 #else
                 // To deploy on IIS
-                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v4/swagger.json", $"Web API V4 {apiAppSettings}");
+                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v5/swagger.json", $"Web API V5 {apiAppSettings}");
 #endif
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string:
                 //c.RoutePrefix = string.Empty;
@@ -223,13 +235,13 @@ namespace IPRehabWebAPI2
 
             app.UseRouting();
 
-            //if (env.IsProduction())
-            //{
-                //UseCors() must be after UseRouting and before UseAuthorization, and must call before UseResponseCaching, if used.
+            if (env.IsProduction())
+            {
+                //UseCors() must be placed after UseRouting, but before UseAuthorization and must call before UseResponseCaching, if used.
                 app.UseCors(MyAllowSpecificOrigins);
-            //}
+            }
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
