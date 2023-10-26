@@ -103,8 +103,8 @@ namespace IPRehabWebAPI2.Controllers
 
                     foreach (var p in facilityPatients)
                     {
-                        var episodeForThisP = facilityPatientEpisodes.Where(fpe => fpe.patient.Name == p.Name).Select(p => p.episode);
-                        if (episodeForThisP.Any())
+                        var episodeForThisP = facilityPatientEpisodes.Where(fpe => fpe.patient.Name == p.Name && fpe.episode != null).Select(p => p.episode);
+                        if (episodeForThisP != null && episodeForThisP.Count() != 0)
                         {
                             p.CareEpisodes.AddRange(episodeForThisP);
                         }

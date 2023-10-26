@@ -323,7 +323,7 @@ namespace IPRehabWebAPI2.Helpers
                     }
                 }
 
-                if (patientsInCurrentUserFacility == null || patientsInCurrentUserFacility.Count == 0)
+                if (patientsInCurrentUserFacility.Count == 0)
                     patientsInCurrentUserFacility = null;
                 else
                 {
