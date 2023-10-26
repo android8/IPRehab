@@ -330,7 +330,7 @@ const formController = (function () {
 
     /* private function */
     function updateScore(thisControl: any, newScore: number) {
-        console.log('thisControl (' + thisControl('id') + ') = ' + newScore);
+        console.log('thisControl (' + thisControl.prop('id') + ') = ' + newScore);
         const i_score_element: any = thisControl.siblings('i.score');
 
         switch (true) {
@@ -609,7 +609,7 @@ const formController = (function () {
     function Score_GG0170AtoP_Performance(performanceType: string): number {
         /* select only GG0170 matching the performance type parameter excluding Q, R and S */
         const targetELs: any = $('.persistable[id^=GG0170][id*=' + performanceType + ']:not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])');
-        //console.log('targetELs', targetELs);
+        console.log('targetELs', targetELs);
 
         let PerformanceScore: number = 0;
         targetELs.each(function () {
