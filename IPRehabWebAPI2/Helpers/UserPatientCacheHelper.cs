@@ -293,7 +293,7 @@ namespace IPRehabWebAPI2.Helpers
                 }
                 else
                 {
-                    List<vTreatingSpecialtyRecent3Yrs> allPatientsFromSqlViewFilteredByCurrentUserFacility = new();
+                    List<vTreatingSpecialtyRecent3Yrs> allPatientsFromSqlViewFilteredByCurrentUserFacility = null;
                     //get from sql view with user facilities filter on bsta6
                     //this cannot be done at server side and must use {column}.StartWith()
                     foreach (var fac in distinctUserFacilities)
@@ -329,7 +329,7 @@ namespace IPRehabWebAPI2.Helpers
                 //get all facilities patients
                 var thisFacilityPatients = await GetAllFacilityPatients(distinctUserFacilities);
 
-                if (thisFacilityPatients == null && !thisFacilityPatients.Any())
+                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                 {
                     return null;    //no patients in any facility
                 }
