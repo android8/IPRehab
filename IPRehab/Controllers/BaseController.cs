@@ -1,90 +1,71 @@
 ﻿using IPRehab.Helpers;
+using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using System;
-using IPRehabWebAPI2.Helpers;
-using System.IO;
-using System.Reflection;
 
 namespace IPRehab.Controllers
 {
     public class BaseController : Controller
     {
-        private string _gitVersion;
-        protected string GitVersion { get => _gitVersion; set => _gitVersion = value; } 
+        protected string GitVersion { get; set; }
+        protected IWebHostEnvironment BaseEnvironment { get; }
 
-        private readonly IWebHostEnvironment _environment;
-        protected IWebHostEnvironment BaseEnvironment => _environment;
+        protected IConfiguration BaseConfiguration { get; }
 
-        private readonly IConfiguration _configuration;
-        protected IConfiguration BaseConfiguration => _configuration;
+        protected string ApiBaseUrl { get; }
 
-        private readonly string _apiBaseUrl;
-        protected string ApiBaseUrl=> _apiBaseUrl;
+        protected string AppVersion { get; }
 
-        private readonly string _appVersion;
-        protected string AppVersion => _appVersion;
+        protected string Impersonated { get; }
 
-        private readonly string _impersonated;
-        protected string Impersonated => _impersonated;
+        protected JsonSerializerOptions BaseOptions { get; }
 
-        private readonly JsonSerializerOptions _options;
-        protected JsonSerializerOptions BaseOptions => _options;
+        protected int PageSize { get; }
+        protected string Office { get; }
 
-        private readonly int _pageSize;
-        protected int PageSize => _pageSize; 
-
-        private readonly string _office;
-        protected string Office =>_office;
-
-        //private readonly List<MastUserDTO> _userAccessLevels;
-        //protected List<MastUserDTO> UserAccessLevels { get { return _userAccessLevels; }}
-
-        private readonly IMemoryCache _memoryCache;
-        protected IMemoryCache MemoryCache => _memoryCache; 
-
-        private string _userID;
-        protected string UserID =>_userID;
+        protected IMemoryCache MemoryCache { get; }
+        protected string UserID { get; private set; }
 
         protected BaseController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration)
         {
-            _environment = environment;
-            _configuration = configuration;
-            _apiBaseUrl = _configuration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
-            _appVersion = _configuration.GetSection("AppSettings").GetValue<string>("Version");
-            _impersonated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
-            _memoryCache = memoryCache;
-            
+            BaseEnvironment = environment;
+            BaseConfiguration = configuration;
+            ApiBaseUrl = BaseConfiguration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
+            AppVersion = BaseConfiguration.GetSection("AppSettings").GetValue<string>("Version");
+            Impersonated = BaseConfiguration.GetSection("AppSettings").GetValue<string>("Impersonate");
+            MemoryCache = memoryCache;
+
             using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("IPRehab.GitVersion.txt"))
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
                     GitVersion = reader.ReadToEnd();
-                    ViewBag.GitVersion = GitVersion;
                 }
             }
 
-            if (!string.IsNullOrEmpty(_impersonated))
+            if (!string.IsNullOrEmpty(Impersonated))
             {
                 //get impersonated user from appSettings.json
-                _userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(_impersonated));
+                UserID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(Impersonated));
             }
 
-            _pageSize = _configuration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
-            _office = _configuration.GetSection("AppSettings").GetValue<string>("Office");
-            _options = new JsonSerializerOptions()
+            PageSize = BaseConfiguration.GetSection("AppSettings").GetValue<int>("DefaultPageSize");
+            Office = BaseConfiguration.GetSection("AppSettings").GetValue<string>("Office");
+            BaseOptions = new JsonSerializerOptions()
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 ReferenceHandler = ReferenceHandler.Preserve,
@@ -105,7 +86,7 @@ namespace IPRehab.Controllers
             //get user ID from Windows Identity
             if (string.IsNullOrEmpty(this.UserID))
             {
-                this._userID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
+                this.UserID = ParseNetworkID.CleanUserName(System.Web.HttpUtility.UrlDecode(HttpContext.User.Identity.Name));
             }
 
             //get userAccessLevels from session
@@ -159,11 +140,12 @@ namespace IPRehab.Controllers
                 ViewBag.CurrentUserID = $"{this.UserID}";
                 ViewBag.CurrentUserName = viewBagCurrentUserName;
                 ViewBag.AppVersion = $"Version {AppVersion}";
+                ViewBag.GitVersion = GitVersion;
                 ViewBag.Office = this.Office;
                 var routeData = this.RouteData;
                 var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
                 //don't await the external audit result
-                UserAudit.AuditUserAsync(_configuration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress);
+                UserAudit.AuditUserAsync(BaseConfiguration, HttpContext.User.Identity.Name, RouteData, remoteIpAddress);
                 await next();
             }
         }

@@ -348,13 +348,16 @@ namespace IPRehabWebAPI2.Helpers
             var distinctedPatientsInThisFacility = thisFacilityPatients.Select(p => new { patientName = p.PatientName, patientICN = p.PatientICN }).Distinct();
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
-                var admissions = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN && p.admitday.HasValue).Select(p => p.admitday).ToList();
-                var thisPatient = thisFacilityPatients.Where(p => p.PatientName == thisDistinctP.patientName && p.PatientICN == thisDistinctP.patientICN).First();
+                //the annonymous thisDistinctP cannot be hydrated, so get vTreatingSpecialtyRecent3Yrs type
+                var thisPatient = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.patientICN).First();
                 var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisPatient);
-                hydratedPatient.AdmitDates.Clear();
-                foreach (DateTime? d in admissions)
+
+                var admissions = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.patientICN).Select(p => p.admitday.Value).ToList();
+
+                if (admissions.Any())
                 {
-                    hydratedPatient.AdmitDates.Add(d.Value);
+                    hydratedPatient.AdmitDates.Clear();
+                    hydratedPatient.AdmitDates.AddRange(admissions);
                 }
                 patients.Add(hydratedPatient);
             }

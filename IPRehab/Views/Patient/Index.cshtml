@@ -1,199 +1,209 @@
 ﻿@model PatientListViewModel
 
 @{
-  ViewData["Title"] = Model.PageTitle;
+    ViewData["Title"] = Model.PageTitle;
 }
 
 @section VendorScripts{
-  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
 
 <environment include="Production">
-  @section MyScripts_prod {
-    @*<script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>*@
-    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
-  }
+    @section MyScripts_prod {
+        @*<script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>*@
+        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
+    }
 </environment>
 
 <environment include="Development">
-  @section MyScripts_dev {
-    <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
-  }
+    @section MyScripts_dev {
+        <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+    }
 </environment>
 
 <div class="flex-start-column-nowrap paddingTop">
-  @{await Html.RenderPartialAsync("_SearchPartial", Model);}
-  <table class="table-responsive-md table-bordered patients">
-    <thead>
-      <tr>
-        <th></th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.VISN)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.Facility)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.District)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.Division)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
-        </th>
-        <th class="bedSection">
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
-        </th>
-        <th>
-          @Html.DisplayNameFor(model => model.Patients.First().Patient.FiscalPeriod)
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      @{
-        int patientRowIndex = 0;
-        foreach (var pat in Model.Patients)
-        {
-          <!--Patient row-->
-          <tr class="patientRow">
-            <td class="rowCounter">@(++patientRowIndex)</td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.VISN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.Facility)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.District)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.Division)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
-            </td>
-            <td class="bedSection">
-              @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.Name)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
-            </td>
-            <td>
-              @Html.DisplayFor(modelItem => pat.Patient.FiscalPeriod)
-            </td>
-          </tr>
-
-          <!--Episode of Care row-->
-          @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
-          <tr>
-            <td colspan="10">
-              <div class="flex-start-row-nowrap episode">
-                <table class="table-striped table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th>
-                        <div>
-                          <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        </div>
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
-                      </th>
-                      <th>
-                        @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
-                      </th>
-                      <th>
-                        Completed
-                      </th>
-                      <th>@* stage command buttons view component controller *@</th>
+    @{
+        await Html.RenderPartialAsync("_SearchPartial", Model);
+    }
+    <table class="table-responsive-md table-bordered patients">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.VISN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.Facility)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.District)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.Division)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.Sta6aKey)
+                </th>
+                <th class="bedSection">
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.Bedsecn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.RealSSN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.FiscalPeriod)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int patientRowIndex = 0;
+                foreach (var pat in Model.Patients)
+                {
+                    <!--Patient row-->
+                    <tr class="patientRow">
+                        <td class="rowCounter">@(++patientRowIndex)</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.VISN)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.Facility)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.District)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.Division)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.Sta6aKey)
+                        </td>
+                        <td class="bedSection">
+                            @Html.DisplayFor(modelItem => pat.Patient.Bedsecn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => pat.Patient.FiscalPeriod)
+                        </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
-                    {
-                      if (thisEpisodeConfig.EpisodeOfCareID <= 0)
-                      {
-                        <tr>
-                          <td>@*episode-node-symbol*@</td>
-                          <td class="text-danger" colspan="5">
+
+                    <!--Episode of Care row-->
+                    @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
+                    <tr>
+                        <td colspan="10">
                             <div class="flex-start-row-nowrap episode">
-                              <div>
-                                No episode of care&nbsp;
-                              </div>
-                              <div>
-                                @{
-                                  string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                <table class="table-striped table-responsive-md">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div>
+                                                    <span class="episode-node-symbol">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().EpisodeOfCareID)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().AdmissionDate)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().OnsetDate)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(modelItem => pat.Patient.CareEpisodes.First().PatientIcnFK)
+                                            </th>
+                                            <th>
+                                                Completed
+                                            </th>
+                                            <th>@* stage command buttons view component controller *@</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
+                                        {
+                                            if (thisEpisodeConfig.EpisodeOfCareID <= 0)
+                                            {
+                                                <tr>
+                                                    <td>@*episode-node-symbol*@</td>
+                                                    <td class="text-danger" colspan="5">
+                                                        <div class="flex-start-row-nowrap episode">
+                                                            <div>
+                                                                No episode of care&nbsp;
+                                                            </div>
+                                                            <div>
+                                                                @{
+                                                                    string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                                  /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                                }
+                        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                                                }
 
-                                @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
-                              </div>
+                                                                @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr class="episode">
+                                                    <td>@*episode-node-symbol*@</td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
+                                                    </td>
+                                                    <td>
+                                                        @{
+                                                            if (thisEpisodeConfig.FormIsComplete)
+                                                            {
+                                                                <span>Yes</span>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @{
+                                                            /* stage command buttons view component controller */
+                                                            string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                                            /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                                        }
+
+                                                        @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
-                          </td>
-                        </tr>
-                      }
-                      else
-                      {
-                        <tr class="episode">
-                          <td>@*episode-node-symbol*@</td>
-                          <td>
-                            @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
-                          </td>
-                          <td>
-                            @Html.DisplayFor(modelItem => thisEpisodeConfig.PatientIcnFK)
-                          </td>
-                          <td>
-                            @{
-                                if (thisEpisodeConfig.FormIsComplete)
-                                {
-                                    <span>Yes</span>
-                                }
-                            }
-                          </td>
-                          <td>
-                            @{
-                              /* stage command buttons view component controller */
-                              string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-                              /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                            }
-
-                            @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
-                          </td>
-                        </tr>
-                      }
-                    }
-                  </tbody>
-                </table>
-              </div>
-            </td>
-          </tr>
-        }
-      }
-    </tbody>
-  </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 </div>

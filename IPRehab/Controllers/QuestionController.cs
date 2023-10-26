@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -76,7 +75,7 @@ namespace IPRehab.Controllers
 
             string stageTitle = string.IsNullOrEmpty(stage) ? "Full" : (stage == "Followup" ? "Follow Up" : (stage == "Base" ? "Episode Of Care" : $"{stage}"));
             string action = nameof(Edit);
-            bool includeAnswer = (action == "Edit");
+            bool includeAnswer = action == "Edit";
             if (stage == "New")
             {
                 includeAnswer = false;
@@ -291,43 +290,39 @@ namespace IPRehab.Controllers
                 return null;    //no patient in this facility 
             }
 
-            var inFacilityPatient = thisFacilityPatients.FirstOrDefault(p => p.scrssn.ToString() == patientID || p.PatientICN == patientID);
-            if (inFacilityPatient != null)
+            var patientInFacility = thisFacilityPatients.FirstOrDefault(p => p.scrssn.ToString() == patientID || p.PatientICN == patientID);
+            PatientDTOTreatingSpecialty thisPatient;
+            if (patientInFacility != null)
             {
-                PatientDTOTreatingSpecialty thisPatient = new()
+                thisPatient = new()
                 {
-                    Sta6a = inFacilityPatient.bsta6a,
-                    Name = inFacilityPatient.PatientName,
-                    PTFSSN = inFacilityPatient.scrssn.Value.ToString(),
-                    PatientICN = inFacilityPatient.PatientICN,
-                    DoB = inFacilityPatient.DoB,
-                    Bedsecn = inFacilityPatient.bedsecn
+                    Sta6a = patientInFacility.bsta6a,
+                    Name = patientInFacility.PatientName,
+                    PTFSSN = patientInFacility.scrssn.Value.ToString(),
+                    PatientICN = patientInFacility.PatientICN,
+                    DoB = patientInFacility.DoB,
+                    Bedsecn = patientInFacility.bedsecn
                 };
-                return thisPatient;
             }
             else
             {
-                PatientDTOTreatingSpecialty thisPatient = null;
                 string webAPIendpoint;
 
-                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                if (episodeID > 0)
                 {
-                    if (episodeID <= 0)
-                    {
-                        webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
-                    }
-                    else
-                    {
-                        webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
-                    }
-
-                    thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
-
-                    base.MemoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
+                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
+                }
+                else
+                {
+                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
                 }
 
-                return thisPatient;
+                thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
+
+                base.MemoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
+
             }
+            return thisPatient;
         }
 
         private PatientDTOTreatingSpecialty GetFromMemoryCache(string cacheKeyAllPatients, string patientID)

@@ -10,28 +10,32 @@
     }
     }
 
-    <environment include="Production">
-        @section MyScripts_prod {
+<environment include="Production">
+    @section MyScripts_prod {
         @*<script type="module" src="~/js/patientBundle.js" asp-append-version="true" async></script>*@
         <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
     }
-    </environment>
+</environment>
 
-    <environment include="Development">
-        @section MyScripts_dev {
+<environment include="Development">
+    @section MyScripts_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
     }
-    </environment>
+</environment>
 
-    <div class="flex-start-column-nowrap paddingTop">
-        @{
+<div class="flex-start-column-nowrap paddingTop">
+    @{
         await Html.RenderPartialAsync("_SearchPartialTreatingSpecialty", Model);
     }
     <table class="table-responsive-md table-bordered patients">
         <thead>
-            <tr><td colspan="7" class="alert-info">This page is cached. If it doesn't show the newly added episode, please press CTRL and F5 keys together to force page fresh.</td></tr>
+            <tr>
+                <td colspan="5" class="alert-info">
+                    This page is cached. If it doesn't show the newly added episode, please press CTRL and F5 keys together to force page fresh.
+                </td>
+            </tr>
             <tr>
                 <th></th>
                 <th>
@@ -44,11 +48,16 @@
                     @Html.DisplayNameFor(model => model.Patients.First().Patient.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
+                    @Html.DisplayNameFor(model => model.Patients.First().Patient.RealSSN)
+                </th>
+                @*
+                <th>
+                @Html.DisplayNameFor(model => model.Patients.First().Patient.PTFSSN)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Patients.First().Patient.PatientICN)
-                </th>                
+                @Html.DisplayNameFor(model => model.Patients.First().Patient.PatientICN)
+                </th>
+                *@
             </tr>
         </thead>
         <tbody>
@@ -69,16 +78,21 @@
                             @Html.DisplayFor(modelItem => pat.Patient.Name)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+                            @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
-                        </td>                        
+                        @*
+                <td>
+                @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+                </td>
+                <td>
+                @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
+                </td>
+                *@
                     </tr>
                     <!--Episode of Care row-->
                     @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="flex-start-row-nowrap episode">
                                 <table class="table-striped table-responsive-md">
                                     <thead>
@@ -110,15 +124,18 @@
                                             {
                                                 <tr>
                                                     <td>@*episode-node-symbol*@</td>
-                                                    <td class="text-danger" colspan="5">
-                                                        <div class="flex-start-row-nowrap episode">
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
+                                                    </td>
+                                                    <td colspan="3">
+                                                        <div class="flex-start-row-nowrap">
                                                             <div>
                                                                 @{
                                                                     string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                                                /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                                                                 }
-
                                                                 @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                             </div>
                                                         </div>
@@ -130,19 +147,19 @@
                                                 <tr class="episode">
                                                     <td>@*episode-node-symbol*@</td>
                                                     <td>
-                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)</div>
                                                     </td>
                                                     <td>
-                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
                                                     </td>
                                                     <td>
-                                                        @Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)
+                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)</div>
                                                     </td>
                                                     <td>
                                                         @{
                                                             if (thisEpisodeConfig.FormIsComplete)
                                                             {
-                                                                <span>Yes</span>
+                                                                <div class="flex-start-row-nowrap"><span>Yes</span></div>
                                                             }
                                                         }
                                                     </td>
@@ -152,8 +169,9 @@
                                                             string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
                                                             /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                                                         }
-
-                                                        @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                                        <div class="flex-start-row-nowrap">
+                                                            @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             }

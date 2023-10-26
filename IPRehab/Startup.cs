@@ -1,7 +1,7 @@
-using IPRehabRepository.Contracts;
 using IPRehabRepository;
+using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Helpers;
-using Mailer;
+//using Mailer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -61,7 +61,7 @@ namespace IPRehab
                 .AddMvcOptions(options =>
                 {
                     options.CacheProfiles.Add("PrivateCache",
-                        new CacheProfile() { Duration = 60 * 24, Location = ResponseCacheLocation.Client, VaryByQueryKeys = new[] {"*"} });
+                        new CacheProfile() { Duration = 60 * 24, Location = ResponseCacheLocation.Client, VaryByQueryKeys = new[] { "*" } });
                 });
 
             #region web optimization
@@ -130,8 +130,8 @@ namespace IPRehab
 
             #region IoC
             /* IoC for mailer.  It's not WebAPI's concern so it should not register there */
-            services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
-            services.AddSingleton<Mailer.IEmailSender, EmailSender>();
+            //services.AddSingleton<IMailerConfiguration, MailerConfiguration>();
+            //services.AddSingleton<Mailer.IEmailSender, EmailSender>();
 
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IAnswerRepository, AnswerRepository>();
