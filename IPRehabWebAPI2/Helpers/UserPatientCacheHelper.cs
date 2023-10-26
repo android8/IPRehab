@@ -176,7 +176,7 @@ namespace IPRehabWebAPI2.Helpers
 
             if (thisEpisode != null)
             {
-                var allFacilityPatients = await GetAllFacilityPatients(null);
+                var allFacilityPatients = await GetAllFacilityPatients();
 
                 var patientInThisEpisode = allFacilityPatients.Where(p =>
                     p.PatientICN == thisEpisode.PatientICNFK || p.scrssn.Value.ToString() == thisEpisode.PatientICNFK).FirstOrDefault();
@@ -270,7 +270,7 @@ namespace IPRehabWebAPI2.Helpers
         /// get the treating speciatlty patients cohort base from session, otherwise get them from the WebAPI
         /// </summary>
         /// <returns></returns>
-        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients(List<MastUserDTO> distinctUserFacilities)
+        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients()
         {
             //get all facilities patients from the memory cache
             var allPatientsFromCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyAllPatients);
@@ -284,31 +284,10 @@ namespace IPRehabWebAPI2.Helpers
             else
             {
                 //get from sql view without user facilities filter
-                if (distinctUserFacilities == null || !distinctUserFacilities.Any())
-                {
-                    var allPatientsFromSqlView = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
-                    //update cache for 24 hours
-                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlView, TimeSpan.FromDays(1));
-                    return allPatientsFromSqlView;
-                }
-                else
-                {
-                    List<vTreatingSpecialtyRecent3Yrs> allPatientsFromSqlViewFilteredByCurrentUserFacility = null;
-                    //get from sql view with user facilities filter on bsta6
-                    //this cannot be done at server side and must use {column}.StartWith()
-                    foreach (var fac in distinctUserFacilities)
-                    {
-                        var thisFacilityPatients = await _treatingSpecialtyPatientRepository
-                            .FindByCondition(p => p.bsta6a.StartsWith(fac.Facility)).ToListAsync();
-
-                        if (thisFacilityPatients != null && thisFacilityPatients.Any())
-                            allPatientsFromSqlViewFilteredByCurrentUserFacility.AddRange(thisFacilityPatients);
-                    }
-
-                    //update cache for 24 hours
-                    _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlViewFilteredByCurrentUserFacility, TimeSpan.FromDays(1));
-                    return allPatientsFromSqlViewFilteredByCurrentUserFacility;
-                }
+                var allPatientsFromSqlView = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
+                //update cache for 24 hours
+                _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlView, TimeSpan.FromDays(1));
+                return allPatientsFromSqlView;
             }
         }
 
@@ -327,16 +306,32 @@ namespace IPRehabWebAPI2.Helpers
             else
             {
                 //get all facilities patients
-                var thisFacilityPatients = await GetAllFacilityPatients(distinctUserFacilities);
+                var allFacilityPatients = await GetAllFacilityPatients();
 
-                if (thisFacilityPatients == null || !thisFacilityPatients.Any())
+                List<vTreatingSpecialtyRecent3Yrs> patientsInCurrentUserFacility = new();
+
+                //get from sql view with user facilities filter on bsta6
+                //this cannot be done at server side and must use {column}.StartWith()
+                foreach (var fac in distinctUserFacilities)
                 {
-                    return null;    //no patients in any facility
+                    var thisFacilityPatients = allFacilityPatients
+                        .Where(p => p.bsta6a.StartsWith(fac.Facility));
+
+                    if (thisFacilityPatients != null)
+                    {
+                        patientsInCurrentUserFacility.AddRange(thisFacilityPatients);
+                    }
                 }
+
+                if (patientsInCurrentUserFacility == null || patientsInCurrentUserFacility.Count == 0)
+                    patientsInCurrentUserFacility = null;
                 else
                 {
-                    return thisFacilityPatients;
+                    //update cache for 24 hours
+                    _memoryCache.Set(cacheKeyOfThisFacility, patientsInCurrentUserFacility, TimeSpan.FromDays(1));
                 }
+
+                return patientsInCurrentUserFacility;
             }
         }
 

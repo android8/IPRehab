@@ -148,7 +148,7 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetAllFacilityPatients(System.Collections.Generic.List{IPRehabWebAPI2.Models.MastUserDTO})">
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetAllFacilityPatients">
             <summary>
             get the treating speciatlty patients cohort base from session, otherwise get them from the WebAPI
             </summary>
