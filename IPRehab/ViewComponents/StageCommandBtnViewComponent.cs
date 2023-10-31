@@ -28,72 +28,64 @@ namespace IPRehab.ViewComponents
                 string HostingPage = EpisodeBtnConfig.ActionButtonVM.HostingPage;
                 switch (button.Key)
                 {
-                    //Patient button
-                    case "Patient":
+                    case "Patient": //Patient button
                         {
-                            switch (HostingPage)
+                            if (HostingPage == "Patient")    //do not show patient button in patient listing
+                                cmdBtnTemplateVM.ShowThisButton = false;
+                            else if (HostingPage == "Question")
+                                cmdBtnTemplateVM.ShowThisButton = true;
+
+                            if (cmdBtnTemplateVM.ShowThisButton)
                             {
-                                //do not show patient button in patient listing
-                                case "Patient":
-                                    {
-                                        cmdBtnTemplateVM.ShowThisButton = false;
-                                        break;
-                                    }
-                                //show patient button with name as "Patient List" in questions page
-                                case "Question":
-                                    {
-                                        cmdBtnTemplateVM.ShowThisButton = true;
-                                        cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
-                                        cmdBtnTemplateVM.TextNode = "Patient List";
-                                        RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
-                                        clonedPatientActionVM.ControllerName = "Patient";
-                                        clonedPatientActionVM.ActionName = "IndexTreatingSpecailty";
-                                        clonedPatientActionVM.PatientID = string.Empty;
-                                        clonedPatientActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
-                                        cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;  //use cloned
-                                        break;
-                                    }
+                                RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;   //use cloned
+                                clonedPatientActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
+                                clonedPatientActionVM.ControllerName = "Patient";
+                                clonedPatientActionVM.ActionName = "IndexTreatingSpecailty";
+                                clonedPatientActionVM.PatientID = string.Empty;
+                                cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
+                                cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
+                                cmdBtnTemplateVM.TextNode = "Patient List";
                             }
                             break;
                         }
-
-                    //New button
-                    case "New":
+                    case "New": //New button
                         {
-                            /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
-                            if (EpisodeBtnConfig.EpisodeOfCareID > 0)
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
-                            {
                                 cmdBtnTemplateVM.ShowThisButton = true;
-                                cmdBtnTemplateVM.ActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
+
+                            if (cmdBtnTemplateVM.ShowThisButton)
+                            {
+                                cmdBtnTemplateVM.ActionVM.EpisodeID = -1;
                                 cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
                                 cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter as is
                                 cmdBtnTemplateVM.Stage = button.Key;
-                                cmdBtnTemplateVM.TextNode = (button.Value.ButtonTitle == "Base") ? $"Episode of Care" :
-                                  $"{button.Value.ButtonTitle} for {admissionDate}";
+                                cmdBtnTemplateVM.TextNode = (button.Value.ButtonTitle == "Base") ?
+                                    $"Episode of Care" : $"{button.Value.ButtonTitle} for {admissionDate}";
                                 cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
-                                  button.Value.ButtonTitle.Replace("New", $"Edit episode") :
-                                  $"{button.Value.ButtonTitle} for {admissionDate}";
+                                  button.Value.ButtonTitle.Replace("New", $"Edit episode") : $"{button.Value.ButtonTitle} for {admissionDate}";
                             }
                             break;
                         }
 
-                    //other buttons
-                    default:
+                    default:    //other buttons
                         {
-                            /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
-                            if (EpisodeBtnConfig.EpisodeOfCareID > 0)
-                            {
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
                                 cmdBtnTemplateVM.ShowThisButton = true;
+                            else
+                                cmdBtnTemplateVM.ShowThisButton = false;
+
+                            if (cmdBtnTemplateVM.ShowThisButton)
+                            {
                                 cmdBtnTemplateVM.ActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
                                 cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
+                                cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter
                                 cmdBtnTemplateVM.Stage = button.Key;
-                                cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
-                                button.Value.ButtonTitle.Replace("Create new", $"Edit existing {admissionDate}") : button.Value.ButtonTitle;
                                 cmdBtnTemplateVM.TextNode = button.Value.ButtonTitle == "Base" ?
                                   $"Episode of Care" : button.Value.ButtonTitle;
-                                cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter
+                                cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
+                                button.Value.ButtonTitle.Replace("Create new", $"Edit existing {admissionDate}") : button.Value.ButtonTitle;
                             }
                             break;
                         }

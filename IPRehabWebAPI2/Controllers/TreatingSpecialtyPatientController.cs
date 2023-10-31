@@ -106,7 +106,7 @@ namespace IPRehabWebAPI2.Controllers
                     //LINQ join operators(Join, GroupJoin) support only equi-joins. All other join types have to be implemented as correlated subqueries.
                     //left join (correlated subqueries) with SelectMany
                     var patientEpisodeJoin = facilityPatients.SelectMany(
-                        p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN.Trim() == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
+                        p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
                         .DefaultIfEmpty(),
                         (p, e) => new
                         {
@@ -123,8 +123,8 @@ namespace IPRehabWebAPI2.Controllers
                         if (currentPatient == null || currentPatient.Name != pe.Patient.Name)
                         {
                             currentPatient = pe.Patient;
-                            var theseEpisodes = patientEpisodeJoin.Where(x => x.Episode != null && x.Episode.PatientIcnFK == currentPatient.PTFSSN.Trim()).Select(x => x.Episode)?.ToList();
-                            if (theseEpisodes != null && theseEpisodes.Any() && theseEpisodes.Count() > 1)
+                            var theseEpisodes = patientEpisodeJoin.Where(x => x.Patient.Name == pe.Patient.Name && pe.Episode != null).Select(x => x.Episode)?.ToList();
+                            foreach (var thisEpisode in theseEpisodes)
                             {
                                 currentPatient.CareEpisodes.Clear();
                                 currentPatient.CareEpisodes.AddRange(theseEpisodes.OrderBy(x => x.AdmissionDate));
