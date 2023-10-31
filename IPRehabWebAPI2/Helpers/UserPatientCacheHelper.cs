@@ -116,7 +116,7 @@ namespace IPRehabWebAPI2.Helpers
             //when patientID is not blank then return a list containing single patient
             if (!string.IsNullOrEmpty(patientID))
             {
-                thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString() == patientID).ToList();
+                thisFacilityPatients = thisFacilityPatients.Where(p => p.scrssn.Value.ToString().Trim() == patientID).ToList();
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                     thisFacilityPatients = thisFacilityPatients.Where(p => p.PatientICN == patientID).ToList();
 
@@ -309,21 +309,26 @@ namespace IPRehabWebAPI2.Helpers
                 var allFacilityPatients = await GetAllFacilityPatients();
 
                 List<vTreatingSpecialtyRecent3Yrs> patientsInCurrentUserFacility = new();
+                List<vTreatingSpecialtyRecent3Yrs> thisFacilityPatients = null;
 
                 //get from sql view with user facilities filter on bsta6
                 //this cannot be done at server side and must use {column}.StartWith()
                 foreach (var fac in distinctUserFacilities)
                 {
-                    var thisFacilityPatients = allFacilityPatients
-                        .Where(p => p.bsta6a.StartsWith(fac.Facility));
 
-                    if (thisFacilityPatients != null)
+                    thisFacilityPatients = allFacilityPatients
+                        .Where(p => p.bsta6a.StartsWith(fac.Facility)).ToList();
+
+                    //thisFacilityPatients = allFacilityPatients
+                    //    .Where(p => fac.Facility == p.bsta6a).ToList();
+
+                    if (thisFacilityPatients != null && thisFacilityPatients.Any())
                     {
                         patientsInCurrentUserFacility.AddRange(thisFacilityPatients);
                     }
                 }
 
-                if (patientsInCurrentUserFacility.Count == 0)
+                if (!patientsInCurrentUserFacility.Any())
                     patientsInCurrentUserFacility = null;
                 else
                 {
@@ -339,15 +344,13 @@ namespace IPRehabWebAPI2.Helpers
         {
             List<PatientDTOTreatingSpecialty> patients = new();
 
-            thisFacilityPatients = thisFacilityPatients.ToList().OrderBy(x => x.PatientName);
-            var distinctedPatientsInThisFacility = thisFacilityPatients.Select(p => new { patientName = p.PatientName, patientICN = p.PatientICN }).Distinct();
+            var distinctedPatientsInThisFacility = thisFacilityPatients.DistinctBy(x => x.PatientICN).ToList();
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
                 //the annonymous thisDistinctP cannot be hydrated, so get vTreatingSpecialtyRecent3Yrs type
-                var thisPatient = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.patientICN).First();
-                var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisPatient);
+                var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisDistinctP);
 
-                var admissions = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.patientICN).Select(p => p.admitday.Value).ToList();
+                var admissions = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.PatientICN).Select(p => p.admitday.Value).ToList();
 
                 if (admissions.Any())
                 {

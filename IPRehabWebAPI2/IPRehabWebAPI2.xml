@@ -159,6 +159,12 @@
             record key
             </summary>
         </member>
+        <member name="P:IPRehabWebAPI2.Models.PatientDTOTreatingSpecialty.PTFSSN">
+            <summary>
+            PTFSSN was from the HealtFactor cube,
+            and is from SCRSSN in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
+            </summary>
+        </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientName">
             <summary>
             not peristable, inspection only

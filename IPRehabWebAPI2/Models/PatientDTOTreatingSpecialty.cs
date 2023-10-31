@@ -15,6 +15,10 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("Name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// PTFSSN was from the HealtFactor cube,
+        /// and is from SCRSSN in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
+        /// </summary>
         [DisplayName("Scr SSN")]
         public string PTFSSN { get; set; }
 

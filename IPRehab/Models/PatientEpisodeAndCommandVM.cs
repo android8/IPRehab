@@ -2,13 +2,13 @@
 
 namespace IPRehab.Models
 {
-  public class PatientEpisodeAndCommandVM: EpisodeOfCareDTO
-  {
-    public RehabActionViewModel ActionButtonVM { get; set; }
-
-    public PatientEpisodeAndCommandVM()
+    public class PatientEpisodeAndCommandVM : EpisodeOfCareDTO
     {
-      ActionButtonVM = new();
+        public RehabActionViewModel ActionButtonVM { get; set; }
+
+        public PatientEpisodeAndCommandVM()
+        {
+            ActionButtonVM = new();
+        }
     }
-  }
 }

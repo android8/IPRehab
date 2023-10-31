@@ -1,6 +1,5 @@
 ﻿using IPRehab.Helpers;
 using IPRehab.Models;
-using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,15 +14,6 @@ namespace IPRehab.ViewComponents
 
         public Task<IViewComponentResult> InvokeAsync(PatientEpisodeAndCommandVM EpisodeBtnConfig)
         {
-            if (EpisodeBtnConfig.EpisodeOfCareID > 0)
-            {
-                EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK.Substring(EpisodeBtnConfig.PatientIcnFK.Length - 4, 4);
-            }
-            else
-            {
-                EpisodeBtnConfig.PatientIcnFK = EpisodeBtnConfig.PatientIcnFK;
-            }
-
             string admissionDate = EpisodeBtnConfig.AdmissionDate.ToString("MM/dd/yyyy");
 
             Dictionary<string, CommandBtnConfig> commandBtnConfig = EpisodeCommandButtonSettings.CommandBtnConfigDictionary;
@@ -52,14 +42,14 @@ namespace IPRehab.ViewComponents
                                 //show patient button with name as "Patient List" in questions page
                                 case "Question":
                                     {
-                                        cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
                                         cmdBtnTemplateVM.ShowThisButton = true;
+                                        cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
                                         cmdBtnTemplateVM.TextNode = "Patient List";
                                         RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;
                                         clonedPatientActionVM.ControllerName = "Patient";
                                         clonedPatientActionVM.ActionName = "IndexTreatingSpecailty";
                                         clonedPatientActionVM.PatientID = string.Empty;
-                                        clonedPatientActionVM.EpisodeID = -1;
+                                        clonedPatientActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
                                         cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;  //use cloned
                                         break;
                                     }
@@ -70,20 +60,22 @@ namespace IPRehab.ViewComponents
                     //New button
                     case "New":
                         {
-                            cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
-                            cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter as is
-                            cmdBtnTemplateVM.Stage = button.Key;
-                            cmdBtnTemplateVM.TextNode = (button.Value.ButtonTitle == "Base") ? $"Episode of Care" :
-                              $"{button.Value.ButtonTitle} for {admissionDate}";
-                            cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
-                              button.Value.ButtonTitle.Replace("New", $"Edit episode") :
-                              $"{button.Value.ButtonTitle} for {admissionDate}";
-
                             /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
+                            if (EpisodeBtnConfig.EpisodeOfCareID > 0)
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
+                            {
                                 cmdBtnTemplateVM.ShowThisButton = true;
+                                cmdBtnTemplateVM.ActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
+                                cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
+                                cmdBtnTemplateVM.ActionVM = EpisodeBtnConfig.ActionButtonVM;  // use invoked parameter as is
+                                cmdBtnTemplateVM.Stage = button.Key;
+                                cmdBtnTemplateVM.TextNode = (button.Value.ButtonTitle == "Base") ? $"Episode of Care" :
+                                  $"{button.Value.ButtonTitle} for {admissionDate}";
+                                cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
+                                  button.Value.ButtonTitle.Replace("New", $"Edit episode") :
+                                  $"{button.Value.ButtonTitle} for {admissionDate}";
+                            }
                             break;
                         }
 
@@ -91,10 +83,11 @@ namespace IPRehab.ViewComponents
                     default:
                         {
                             /* don't use EpisodeBtnConfig.EpisodeOfCareID here */
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
+                            if (EpisodeBtnConfig.EpisodeOfCareID > 0)
                             {
-                                cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
                                 cmdBtnTemplateVM.ShowThisButton = true;
+                                cmdBtnTemplateVM.ActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
+                                cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
                                 cmdBtnTemplateVM.Stage = button.Key;
                                 cmdBtnTemplateVM.Title = (cmdBtnTemplateVM.Stage == "New") ?
                                 button.Value.ButtonTitle.Replace("Create new", $"Edit existing {admissionDate}") : button.Value.ButtonTitle;
