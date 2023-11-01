@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -29,12 +30,14 @@ namespace IPRehabWebAPI2.Models
         public string PatientICN { get; set; }
 
         [DisplayName("Date of Birth")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime? DoB { get; set; }
 
         [DisplayName("Bed Section")]
         public int? Bedsecn { get; set; }
 
         [DisplayName("Admit Date")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public List<DateTime> AdmitDates { get; set; }
 
         [DisplayName("Episode of Care")]

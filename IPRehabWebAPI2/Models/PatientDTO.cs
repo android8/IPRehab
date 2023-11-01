@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -45,6 +46,7 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("Numeric Fiscal Period")]
         public int FiscalPeriodInt { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime AdmitDate { get; set; }
 
         [DisplayName("Episode of Care")]
