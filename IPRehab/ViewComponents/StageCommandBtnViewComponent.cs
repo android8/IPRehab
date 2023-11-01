@@ -50,10 +50,12 @@ namespace IPRehab.ViewComponents
                         }
                     case "New": //New button
                         {
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0 || HostingPage == "Question")
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
+                            {
                                 cmdBtnTemplateVM.ShowThisButton = true;
+                            }
 
                             if (cmdBtnTemplateVM.ShowThisButton)
                             {
@@ -71,10 +73,10 @@ namespace IPRehab.ViewComponents
 
                     default:    //other buttons
                         {
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0)
-                                cmdBtnTemplateVM.ShowThisButton = true;
-                            else
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID < 0 && HostingPage == "Patient")
                                 cmdBtnTemplateVM.ShowThisButton = false;
+                            else
+                                cmdBtnTemplateVM.ShowThisButton = true;
 
                             if (cmdBtnTemplateVM.ShowThisButton)
                             {
