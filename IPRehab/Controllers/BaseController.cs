@@ -28,7 +28,7 @@ namespace IPRehab.Controllers
 
         protected string ApiBaseUrl { get; }
 
-        protected string AppVersion { get; }
+        protected string EnvironmentName { get; }
 
         protected string Impersonated { get; }
 
@@ -45,15 +45,16 @@ namespace IPRehab.Controllers
             BaseEnvironment = environment;
             BaseConfiguration = configuration;
             ApiBaseUrl = BaseConfiguration.GetSection("AppSettings").GetValue<string>("WebAPIBaseUrl");
-            AppVersion = BaseConfiguration.GetSection("AppSettings").GetValue<string>("Version");
+            EnvironmentName = environment.EnvironmentName;  //BaseConfiguration.GetSection("AppSettings").GetValue<string>("Version");
             Impersonated = BaseConfiguration.GetSection("AppSettings").GetValue<string>("Impersonate");
             MemoryCache = memoryCache;
 
+            //get GitVersion
             using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("IPRehab.GitVersion.txt"))
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    GitVersion = reader.ReadToEnd();
+                    GitVersion = $"{reader.ReadToEnd()} - {EnvironmentName}";
                 }
             }
 
@@ -139,7 +140,6 @@ namespace IPRehab.Controllers
                 ViewBag.SourceOfCredential = sourceOfCredential;
                 ViewBag.CurrentUserID = $"{this.UserID}";
                 ViewBag.CurrentUserName = viewBagCurrentUserName;
-                ViewBag.AppVersion = $"Version {AppVersion}";
                 ViewBag.GitVersion = GitVersion;
                 ViewBag.Office = this.Office;
                 var routeData = this.RouteData;

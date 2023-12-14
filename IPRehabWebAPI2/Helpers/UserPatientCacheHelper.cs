@@ -272,6 +272,11 @@ namespace IPRehabWebAPI2.Helpers
         /// <returns></returns>
         public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients()
         {
+            //List<vTreatingSpecialtyRecent3Yrs> allPatientsFromCache = null;
+            //var tmp = _memoryCache.Get(CacheKeys.CacheKeyAllPatients);
+            //if (tmp != null)
+            //    allPatientsFromCache = (List<vTreatingSpecialtyRecent3Yrs>)tmp;
+
             //get all facilities patients from the memory cache
             var allPatientsFromCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyAllPatients);
 
@@ -315,9 +320,8 @@ namespace IPRehabWebAPI2.Helpers
                 //this cannot be done at server side and must use {column}.StartWith()
                 foreach (var fac in distinctUserFacilities)
                 {
-
                     thisFacilityPatients = allFacilityPatients
-                        .Where(p => p.bsta6a.StartsWith(fac.Facility)).ToList();
+                        .Where(p => p.bsta6a.StartsWith(fac.Facility.Substring(0, 3))).ToList();
 
                     //thisFacilityPatients = allFacilityPatients
                     //    .Where(p => fac.Facility == p.bsta6a).ToList();
@@ -328,13 +332,8 @@ namespace IPRehabWebAPI2.Helpers
                     }
                 }
 
-                if (!patientsInCurrentUserFacility.Any())
-                    patientsInCurrentUserFacility = null;
-                else
-                {
-                    //update cache for 24 hours
-                    _memoryCache.Set(cacheKeyOfThisFacility, patientsInCurrentUserFacility, TimeSpan.FromDays(1));
-                }
+                //update cache for 24 hours
+                _memoryCache.Set(cacheKeyOfThisFacility, patientsInCurrentUserFacility, TimeSpan.FromDays(1));
 
                 return patientsInCurrentUserFacility;
             }

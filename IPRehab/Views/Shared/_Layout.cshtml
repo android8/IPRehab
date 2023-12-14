@@ -60,10 +60,7 @@
                     @*<partial name="_LoginPartial" />*@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <span>@($"{ViewBag.CurrentUserName}")</span>
-                            <span>@($"{ViewBag.CurrentUserID}")</span>
-                            <span>@($"{ViewBag.Environment}")</span>
-                            <span>@($"{ViewBag.SourceOfCredential}")</span>
+                            <span>@($"{ViewBag.CurrentUserName} ({ViewBag.CurrentUserID})")</span>
                         </li>
                     </ul>
                 </div>

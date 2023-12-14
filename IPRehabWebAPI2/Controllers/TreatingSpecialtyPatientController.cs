@@ -72,7 +72,8 @@ namespace IPRehabWebAPI2.Controllers
                 //    Content = noDataMesage
                 //};
 
-                return NotFound(noDataMesage);
+                //return NotFound(noDataMesage);
+                return NoContent();
 
                 //facilityPatients = new();
                 //return Ok(facilityPatients);
