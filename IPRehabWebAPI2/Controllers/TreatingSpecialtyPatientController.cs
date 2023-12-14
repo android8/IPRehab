@@ -72,7 +72,8 @@ namespace IPRehabWebAPI2.Controllers
                 //    Content = noDataMesage
                 //};
 
-                return NotFound(noDataMesage);
+                //return NotFound(noDataMesage);
+                return NoContent();
 
                 //facilityPatients = new();
                 //return Ok(facilityPatients);
@@ -95,20 +96,45 @@ namespace IPRehabWebAPI2.Controllers
                     //        episode = HydrateDTO.HydrateEpisodeOfCare(e)
                     //    }).ToList();
 
-                    //left join
-                    var facilityPatientEpisodes = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll(),
-                        p => p.PTFSSN, e => e.PatientICNFK, (p, e) => new { p, e })
-                        .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { patient = p.p, episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) })
-                        .ToList();
 
-                    foreach (var p in facilityPatients)
-                    {
-                        var episodeForThisP = facilityPatientEpisodes.Where(fpe => fpe.patient.Name == p.Name).Select(p => p.episode);
-                        if (episodeForThisP.Any())
+                    //left join with GroupJoin()
+                    //var patientEpisodeJoin = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll(),
+                    //    p => p.PTFSSN, 
+                    //    e => e.PatientICNFK, 
+                    //    (p, e) => new { p, e })
+                    //    .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { Patient = p.p, Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) });
+
+                    //LINQ join operators(Join, GroupJoin) support only equi-joins. All other join types have to be implemented as correlated subqueries.
+                    //left join (correlated subqueries) with SelectMany
+                    var patientEpisodeJoin = facilityPatients.SelectMany(
+                        p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
+                        .DefaultIfEmpty(),
+                        (p, e) => new
                         {
-                            p.CareEpisodes.AddRange(episodeForThisP);
+                            Patient = p,
+                            Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e)
+                        });
+
+                    if (patientEpisodeJoin != null)
+                        patientEpisodeJoin = patientEpisodeJoin.OrderBy(pe => pe.Patient.Name).ToList();
+
+                    PatientDTOTreatingSpecialty currentPatient = null;
+                    foreach (var pe in patientEpisodeJoin)
+                    {
+                        if (currentPatient == null || currentPatient.Name != pe.Patient.Name)
+                        {
+                            currentPatient = pe.Patient;
+                            var theseEpisodes = patientEpisodeJoin.Where(x => x.Patient.Name == pe.Patient.Name && pe.Episode != null).Select(x => x.Episode)?.ToList();
+                            foreach (var thisEpisode in theseEpisodes)
+                            {
+                                currentPatient.CareEpisodes.Clear();
+                                currentPatient.CareEpisodes.AddRange(theseEpisodes.OrderBy(x => x.AdmissionDate));
+                            }
+                            //cannot use DistinctBy() and cannot cast to List<EpisodeOfCareDTO>
+                            //thisPatient.CareEpisodes = (List<EpisodeOfCareDTO>)thisPatient.CareEpisodes.DistinctBy(x => x.EpisodeOfCareID);
+
+                            jaggedPatient.Add(currentPatient);
                         }
-                        jaggedPatient.Add(p);
                     }
                 }
                 return Ok(jaggedPatient);

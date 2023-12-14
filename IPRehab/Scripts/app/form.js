@@ -287,7 +287,7 @@ const formController = (function () {
         theForm.validate();
     }
     /* private function */
-    function updateScore(thisControl, newScore) {
+    function updateScore(thisControl, newScore, scoreMsg = '') {
         console.log('thisControl (' + thisControl.prop('id') + ') = ' + newScore);
         const i_score_element = thisControl.siblings('i.score');
         switch (true) {
@@ -298,12 +298,12 @@ const formController = (function () {
             }
             case (newScore > 0 && i_score_element.length === 0): {
                 console.log('path2: append the score');
-                thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + "<i>");
+                thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + " " + scoreMsg + "</i>");
                 break;
             }
             case (newScore > 0 && i_score_element.length > 0): {
                 console.log('path3: update existing score');
-                i_score_element.text('score: ' + newScore);
+                i_score_element.text('score: ' + newScore + ' ' + scoreMsg);
                 break;
             }
         }
@@ -555,15 +555,21 @@ const formController = (function () {
                         }
                         else if (isThisGG0170M) {
                             console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 2');
-                            updateScore(thisEL, 1);
+                            updateScore(thisEL, 1, '+2 for N and O');
                             /* when M >= 7 add 1 point for M, N, and O each*/
                             PerformanceScore += 3;
+                            const thisGG0170N = $('#GG0170N' + performanceType);
+                            updateScore(thisGG0170N, 0);
+                            const thisGG0170O = $('#GG0170O' + performanceType);
+                            updateScore(thisGG0170O, 0);
                         }
                         else if (isThisGG0170N) {
                             console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 3');
-                            updateScore(thisEL, 1);
+                            updateScore(thisEL, 1, '+1 for O');
                             /* when N >= 7 add 1 point for N and O each*/
                             PerformanceScore += 2;
+                            const thisGG0170O = $('#GG0170O' + performanceType);
+                            updateScore(thisGG0170O, 0);
                         }
                         else {
                             console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 4');

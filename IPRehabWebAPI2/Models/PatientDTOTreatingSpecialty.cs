@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -15,6 +16,10 @@ namespace IPRehabWebAPI2.Models
         [DisplayName("Name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// PTFSSN was from the HealtFactor cube,
+        /// and is from SCRSSN in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
+        /// </summary>
         [DisplayName("Scr SSN")]
         public string PTFSSN { get; set; }
 
@@ -25,12 +30,14 @@ namespace IPRehabWebAPI2.Models
         public string PatientICN { get; set; }
 
         [DisplayName("Date of Birth")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime? DoB { get; set; }
 
         [DisplayName("Bed Section")]
         public int? Bedsecn { get; set; }
 
         [DisplayName("Admit Date")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public List<DateTime> AdmitDates { get; set; }
 
         [DisplayName("Episode of Care")]

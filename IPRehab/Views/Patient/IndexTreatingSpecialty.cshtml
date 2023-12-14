@@ -150,10 +150,10 @@
                                                         <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.EpisodeOfCareID)</div>
                                                     </td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.AdmissionDate)</div>
+                                                        <div class="flex-start-row-nowrap">@thisEpisodeConfig.AdmissionDate.ToString($"{0:MM/dd/yyyy}")</div>
                                                     </td>
                                                     <td>
-                                                        <div class="flex-start-row-nowrap">@Html.DisplayFor(modelItem => thisEpisodeConfig.OnsetDate)</div>
+                                                        <div class="flex-start-row-nowrap">@thisEpisodeConfig.OnsetDate.ToString($"{0:MM/dd/yyyy}")</div>
                                                     </td>
                                                     <td>
                                                         @{

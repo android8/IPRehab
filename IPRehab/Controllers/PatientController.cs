@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@ namespace IPRehab.Controllers
             //patients = await NewtonSoftSerializationGeneric<IEnumerable<PatientDTOTreatingSpecialty>>.DeserializeAsync(webApiEndpoint);
 
 
-            patients = patients.OrderBy(x => x.Name);
+            //patients = patients.OrderBy(x => x.Name);
 
             //string sessionSearchCriteria;
             //CancellationToken cancellationToken = new();
@@ -60,7 +61,7 @@ namespace IPRehab.Controllers
             //        HttpContext.Session.SetString("SearchCriteria", searchCriteria);
             //}            
 
-            PatientTreatingSpecialtyListViewModel patientListVM = new()
+            PatientTreatingSpecialtyListViewModel patientListViewModel = new()
             {
                 PageTitle = "In-patient Rehab",
                 PageSysTitle = "In_Patient_Rehab",
@@ -70,49 +71,32 @@ namespace IPRehab.Controllers
                 TotalPatients = patients.Count()
             };
 
-            if (patientListVM.TotalPatients == 0)
+            if (patientListViewModel.TotalPatients == 0)
             {
-                return View("NoDataTreatingSpecialty", patientListVM);
+                return View("NoDataTreatingSpecialty", patientListViewModel);
             }
 
+            int tmpCounter = 0;
             foreach (PatientDTOTreatingSpecialty pat in patients)
             {
+                tmpCounter++;
+                //inside the foreach PatientDTOTreatingSpecialty loop, each episode must have its own episodeCommandBtn and must be new() here
+
+                //ToDo: encrypt the SSN, only when patient has no existing episode
+
                 PatientTreatingSpecialtyViewModel thisPatVM = new();
                 thisPatVM.Patient = pat;
 
-                //ToDo: encrypt the SSN, only when patient has no existing episode
-                //thisPatVM.Patient.PatientICN = pat.PatientICN;
-                //thisPatVM.Patient.PTFSSN = pat.PTFSSN;//.Substring(pat.PTFSSN.Length - 4, 4);
+                PatientEpisodeAndCommandVM thisEpisodeBtnConfig = null;
+                var admitDatesInPat = pat.AdmitDates.Distinct();    //pat admissions may be different than the episode admissions
+                foreach (DateTime thisAdmission in admitDatesInPat)
+                {
+                    /* must NEW button to create episode for each admission or some admission but not episode yet */
+                    thisEpisodeBtnConfig = new();   //the button set must be new() here for each admit date
+                    var EpisodesWithThisAdmitDate = pat.CareEpisodes.Where(e => e.AdmissionDate == thisAdmission).ToList();  //existing episodes may be duplicated due to the change from HealtherFactor to TreatingSpecialty cubes 
 
-                //PatientDTOTreatingSpecialty.CareEpisodes property is initialized with new() as empty list so we need to check if it is null
-                //if null then no episode is created yet
-                if (!pat.CareEpisodes.Any() || (pat.CareEpisodes.Count() == 1 && pat.CareEpisodes.First() == null))
-                {
-                    //inside the foreach PatientDTOTreatingSpecialty loop, each episode must have its own episodeCommandBtn and must be initiate here
-                    RehabActionViewModel episodeCommandBtn = new()
+                    if (EpisodesWithThisAdmitDate == null || EpisodesWithThisAdmitDate.Count() == 0)
                     {
-                        //since no episode ID we have to use patient ID to find patient
-                        HostingPage = "Patient",
-                        PatientID = pat.PatientICN,
-                        EnableThisPatient = true,
-                        SearchCriteria = searchCriteria,
-                        PageNumber = pageNumber,
-                        OrderBy = orderBy,
-                    };
-                    /* add NEW button to create episode for each admission */
-                    PatientEpisodeAndCommandVM thisEpisodeBtnConfig = new();   //the button set must be initiated here for each admit date
-                    episodeCommandBtn.EpisodeID = -1;   //New episode
-                    episodeCommandBtn.AdmitDate = pat.AdmitDates.FirstOrDefault();
-                    thisEpisodeBtnConfig.AdmissionDate = pat.AdmitDates.FirstOrDefault();
-                    thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
-                    thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
-                    thisPatVM.EpisodeBtnConfig.Add(thisEpisodeBtnConfig);
-                }
-                else
-                {
-                    foreach (DateTime thisAdmission in pat.AdmitDates)
-                    {
-                        //inside the foreach DateTime loop, each episode must have its own episodeCommandBtn and must be initiate here
                         RehabActionViewModel episodeCommandBtn = new()
                         {
                             //since no episode ID we have to use patient ID to find patient
@@ -122,33 +106,45 @@ namespace IPRehab.Controllers
                             SearchCriteria = searchCriteria,
                             PageNumber = pageNumber,
                             OrderBy = orderBy,
+                            EpisodeID = -1,   //New episode
+                            AdmitDate = thisAdmission
                         };
 
-                        PatientEpisodeAndCommandVM thisEpisodeBtnConfig = new();   //the button set must be initiated here for each admit date
-                        episodeCommandBtn.AdmitDate = thisAdmission;
+                        thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
                         thisEpisodeBtnConfig.AdmissionDate = thisAdmission;
+                        thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
+                    }
+                    else
+                    {
+                        foreach (var thisEpisode in EpisodesWithThisAdmitDate)   //existing episodes may be duplicated due to the change from HealtherFactor to TreatingSpecialty cubes 
+                        {
+                            RehabActionViewModel episodeCommandBtn = new()
+                            {
+                                HostingPage = "Patient",
+                                PatientID = pat.PatientICN,
+                                EnableThisPatient = true,
+                                SearchCriteria = searchCriteria,
+                                PageNumber = pageNumber,
+                                OrderBy = orderBy,
+                                EpisodeID = thisEpisode.EpisodeOfCareID,
+                                AdmitDate = thisEpisode.AdmissionDate   //could be duplicated admission. old duplicated episodes needs to be deleted
+                            };
 
-                        var thisEpisode = pat.CareEpisodes.SingleOrDefault(x => x.AdmissionDate == thisAdmission);
-                        if (thisEpisode == null)
-                        {
-                            /* add NEW button to create episode for each admission */
-                            episodeCommandBtn.EpisodeID = -1;   //New episode
-                        }
-                        else
-                        {
-                            episodeCommandBtn.EpisodeID = thisEpisode.EpisodeOfCareID;  //existing episode
+                            thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
+                            thisEpisodeBtnConfig.AdmissionDate = thisAdmission;
+                            thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
+
                             thisEpisodeBtnConfig.EpisodeOfCareID = thisEpisode.EpisodeOfCareID;
                             thisEpisodeBtnConfig.OnsetDate = thisEpisode.OnsetDate;
                             thisEpisodeBtnConfig.FormIsComplete = thisEpisode.FormIsComplete;
                         }
-                        thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
-                        thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
-                        thisPatVM.EpisodeBtnConfig.Add(thisEpisodeBtnConfig);
                     }
+
+                    thisPatVM.EpisodeBtnConfig.Add(thisEpisodeBtnConfig);
                 }
-                patientListVM.Patients.Add(thisPatVM);
+                patientListViewModel.Patients.Add(thisPatVM);
             }
-            return View("IndexTreatingSpecialty", patientListVM);
+            return View("IndexTreatingSpecialty", patientListViewModel);
         }
     }
 }

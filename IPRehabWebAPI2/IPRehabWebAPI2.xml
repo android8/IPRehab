@@ -148,7 +148,7 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetAllFacilityPatients(System.Collections.Generic.List{IPRehabWebAPI2.Models.MastUserDTO})">
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.GetAllFacilityPatients">
             <summary>
             get the treating speciatlty patients cohort base from session, otherwise get them from the WebAPI
             </summary>
@@ -157,6 +157,12 @@
         <member name="P:IPRehabWebAPI2.Models.AnswerDTO.AnswerID">
             <summary>
             record key
+            </summary>
+        </member>
+        <member name="P:IPRehabWebAPI2.Models.PatientDTOTreatingSpecialty.PTFSSN">
+            <summary>
+            PTFSSN was from the HealtFactor cube,
+            and is from SCRSSN in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientName">

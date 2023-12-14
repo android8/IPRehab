@@ -140,11 +140,11 @@ namespace IPRehabWebAPI2.Helpers
             return new PatientDTOTreatingSpecialty
             {
                 Sta6a = p.bsta6a,
-                Name = p.PatientName,
-                PTFSSN = p.scrssn.HasValue ? p.scrssn.Value.ToString() : String.Empty,
-                RealSSN = p.RealSSN.HasValue ? p.RealSSN.Value.ToString() : string.Empty,
-                PatientICN = p.PatientICN,
-                DoB = p.DoB,
+                Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
+                PTFSSN = p.scrssn.Value.ToString().Trim(),
+                RealSSN = p.RealSSN.Value.ToString().Trim(),
+                PatientICN = p.PatientICN?.Trim(),
+                DoB = p.DoB.Value,
                 Bedsecn = p.bedsecn,
                 AdmitDates = new() { p.admitday.Value }
             };

@@ -1122,6 +1122,8 @@ input[type=datetime], input[type=text] {
 }
 
 i.score {
+  color: blue;
+  font-weight: bolder;
   animation: fly-in-font 0.1s;
 }
 
