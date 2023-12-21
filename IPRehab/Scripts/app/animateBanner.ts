@@ -40,14 +40,14 @@ const sliderController = (function () {
     $('.hoverHeader').css({ 'top': topScrollY, 'z-index': '100', 'transition-duration': '2s' });
     $('.hoverFooter').css({ 'bottom': '-15px', 'z-index': '100', 'transition-duration': '2s' });
 
-    $(window).resize(function () {
+    $(window).on('resize',function () {
       topScrollY = getMediaWidth();
       //console.log('mouseOut topScrollY', topScrollY);
       $('.hoverHeader').css({ 'top': topScrollY, 'z-index': '100', 'transition-duration': '1s' });
       $('.hoverFooter').css({ 'bottom': '-15px', 'z-index': '100', 'transition-duration': '1s' });
     });
 
-    $(".hoverHeader, .hoverFooter, .pulldown").hover(
+    $(".hoverHeader, .hoverFooter, .pulldown").on('hover',
       function () {
         $('#logo').show();
         $('.hoverHeader').css({ 'top': '0px', 'z-index': '100', 'transition-duration': '1s' });

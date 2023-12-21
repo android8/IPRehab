@@ -46,6 +46,148 @@ $(function () {
                 },
             }]
     };
+    /* self executing event listener, add this last to raise change chain */
+    (function Q12_Q23_addListener() {
+        console.log('adding Q12_Q23_addListener()');
+        /* add onchange event listner */
+        let seenTheDialog = false;
+        /* add rule help */
+        const Q12_Q23rule = $('.branchingRule[data-target=Q12], .branchingRule[data-target=Q23]');
+        const Q12_Q23ruleText = 'If Q12 or Q23 is blank or Q12 date is later than Q23 date, lock all inputs and the save button';
+        Q12_Q23rule.prop('title', Q12_Q23ruleText).show();
+        Q12_Q23rule.on('click', function () {
+            $('#dialog')
+                .text(Q12_Q23ruleText)
+                .dialog(dialogOptions, {
+                title: 'Rules', buttons: {
+                    'Ok': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+        const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
+        primaryKeys.each(function () {
+            const thisPrimaryKey = $(this);
+            thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+                console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
+                //checkQ12_Q23(e.data.x);
+                seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+            });
+        });
+        console.log('Q12_Q23 listener added');
+    })();
+    //self executing arrow function test
+    (() => {
+        console.log('------ self executing arrow function test ------');
+        $('.questionRow').on('change', '.persistable', function (e) {
+            if (e.target !== undefined) {
+                console.log('e.target = ', e.target);
+                //const trigger: string = e.target.prop('id');
+                //switch (true) {
+                //  case (trigger.indexOf('Q12_') !== -1):
+                //    console.log('event triggered ', trigger);
+                //    break;
+                //  case (trigger.indexOf('Q23_') !== -1):
+                //    console.log('event triggered ', trigger);
+                //    break;
+                //  case (trigger.indexOf('Q12B_') !== -1):
+                //    console.log('event triggered ', trigger);
+                //    break;
+                //}
+                console.log('------ done self executing ------');
+            }
+        });
+    })();
+    $('.persistable[id^=Q23_]').trigger("change").trigger("focus");
+    /* event handler, add this last to raise change chain */
+    function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
+        console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+        const Q12 = $('.persistable[id^=Q12_]');
+        const Q23 = $('.persistable[id^=Q23_]').prop('disabled', false);
+        const otherPersistables = $('.persistable').not(Q12).not(Q23);
+        const minDate = new Date('2020-01-01 00:00:00');
+        const onsetDate = new Date(Q23.val());
+        const admitDate = new Date(Q12.val());
+        const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
+        const onset_is_later_than_admit = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
+        function setSeenTheDialog(value) {
+            //callback after async dialog is done and return the seenTheDialog to the caller
+            byRef.seenTheDialog = value;
+        }
+        const myButtons = {
+            "Ok": function () {
+                console.log('lock all other persistables');
+                otherPersistables.each(function () {
+                    $(this).prop("disabled", true);
+                });
+                $(this).dialog("close");
+                setSeenTheDialog(true); //callback function
+            },
+            "Cancel": function () {
+                $(this).dialog("close");
+                setSeenTheDialog(true); //callback function
+            }
+        };
+        switch (true) {
+            case (Q12_or_Q23_is_empty):
+            case (onset_is_later_than_admit): {
+                console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
+                $('#ajaxPost').prop('disabled', true);
+                if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+                    //with warning dialog
+                    console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+                    let dialogText;
+                    if (Q12_or_Q23_is_empty)
+                        dialogText = 'Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked';
+                    if (onset_is_later_than_admit)
+                        dialogText = 'Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later';
+                    dialogOptions.title = 'Date';
+                    $('#dialog')
+                        .text(dialogText)
+                        .dialog(dialogOptions, {
+                        title: 'Warning Q12 Q23', buttons: myButtons
+                    });
+                }
+                else { //without warning dialog
+                    console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+                    console.log('lock all other persistables');
+                    otherPersistables.each(function () {
+                        const thisPersistable = $(this);
+                        thisPersistable.prop('disabled', true);
+                    });
+                }
+                break;
+            }
+            default: {
+                //see branchingTree.txt
+                const controlledByHandlers = $('.persistable[id^=Q12_],[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
+                /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
+                console.log('Onset Date and Admit Date are not empty, unlock ' + $('.persistable').not(controlledByHandlers).length + ' fields');
+                $('.persistable').not(controlledByHandlers).each(function () {
+                    //just enable the no handler persistables and persistables with handler but don't raise change event to prevent infinite loop
+                    $(this).prop('disabled', false);
+                });
+                //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
+                //only raise change for the following to unlock or remain lock of the respective fields
+                $('.persistable[id^=Q12B_]').trigger('change');
+                $('.persistable[id^=Q14A_]').trigger('change');
+                $('.persistable[id^=Q16A_]').trigger('change');
+                $('.persistable[id^=Q42_]').trigger('change');
+                $('.persistable[id^=Q44C_]').trigger('change');
+                $('.persistable[id^=GG0170I_]').trigger('change');
+                $('.persistable[id^=GG0170M_]').trigger('change');
+                $('.persistable[id^=GG0170Q_]').trigger('change');
+                $('.persistable[id^=J0510]').trigger('change');
+                //set focus on Q12B after the above rule might have set focus somewhere else
+                $('.persistable[id^=Q12B_]').trigger('focus');
+                $('#ajaxPost').prop('disabled', false);
+                break;
+            }
+        }
+        console.log('------ done handling Q12 Q23 ' + eventType + '------');
+        return byRef.seenTheDialog;
+    }
     function scrollTo1(elementId) {
         console.log('branching::: scrollTo() elementId = ', elementId);
         const thisElement = $('#' + elementId);
@@ -530,7 +672,7 @@ $(function () {
                     const blankQ43s = $('.persistable[id^=Q43][value=""]');
                     if (blankQ43s.length > 0) {
                         const firstBlank = blankQ43s.first();
-                        firstBlank.prop('disabled', false).focus(); /* unlock this non-blank dates */
+                        firstBlank.prop('disabled', false).trigger('focus'); /* unlock this non-blank dates */
                         firstBlank.next('.bi-calendar-x').prop('disabled', false); /* unlock next reset button */
                         foundBlank = true;
                     }
@@ -932,7 +1074,7 @@ $(function () {
             factor = commonUtility.getControlValue(M);
             dialogText = 'M is unkown or M is greater than 7, reset and lock N and O then advance to P';
         }
-        if (M === undefined || M === null) {
+        else {
             N = $('.persistable[id^=GG0170N_' + measure + ']');
             factor = commonUtility.getControlValue(N);
             dialogText = 'N is unknow or N is greater than 7, reset and lock O then advance to P';
@@ -1117,7 +1259,7 @@ $(function () {
                 thisCompleted.prop('disabled', false);
             });
             scrollTo(completed_Yes.prop('id'));
-            completed_Yes.focus();
+            completed_Yes.trigger('focus');
         }
         //onload don't scroll to complete 
         console.log('------ done handling GG0170Q ' + eventType + '------');
@@ -1266,7 +1408,7 @@ $(function () {
             scrollTo(J1750_yes.prop('id'));
         }
         else {
-            J1750_yes.prop('disabled', false).focus();
+            J1750_yes.prop('disabled', false).trigger('focus');
         }
         console.log('------ done handling J0510 ' + eventType + '------');
         //no dialog is used so just return the original value of byRef.seenTheDialog
@@ -1319,7 +1461,7 @@ $(function () {
     function AddMore(stage) {
         console.log('branching::: inside of AddMore');
         const addMoreBtns = $('button[id^=btnMore]');
-        addMoreBtns.click(function () {
+        addMoreBtns.on('click', function () {
             const questionKey = $(this).data('questionkey');
             const lastInputIdx = $('.persistable[id^=' + questionKey + '_' + stage + ']').length;
             const lastInputDate = $('.persistable[id^=' + questionKey + '_' + stage + '_' + lastInputIdx + ']');
@@ -1330,147 +1472,5 @@ $(function () {
             lastInputDate.append(dateClone);
         });
     }
-    /* event handler, add this last to raise change chain */
-    function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
-        console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q12 = $('.persistable[id^=Q12_]');
-        const Q23 = $('.persistable[id^=Q23_]').prop('disabled', false);
-        const otherPersistables = $('.persistable').not(Q12).not(Q23);
-        const minDate = new Date('2020-01-01 00:00:00');
-        const onsetDate = new Date(Q23.val());
-        const admitDate = new Date(Q12.val());
-        const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-        const onset_is_later_than_admit = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
-        function setSeenTheDialog(value) {
-            //callback after async dialog is done and return the seenTheDialog to the caller
-            byRef.seenTheDialog = value;
-        }
-        const myButtons = {
-            "Ok": function () {
-                console.log('lock all other persistables');
-                otherPersistables.each(function () {
-                    $(this).prop("disabled", true);
-                });
-                $(this).dialog("close");
-                setSeenTheDialog(true); //callback function
-            },
-            "Cancel": function () {
-                $(this).dialog("close");
-                setSeenTheDialog(true); //callback function
-            }
-        };
-        switch (true) {
-            case (Q12_or_Q23_is_empty):
-            case (onset_is_later_than_admit): {
-                console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
-                $('#ajaxPost').prop('disabled', true);
-                if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-                    //with warning dialog
-                    console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                    let dialogText;
-                    if (Q12_or_Q23_is_empty)
-                        dialogText = 'Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked';
-                    if (onset_is_later_than_admit)
-                        dialogText = 'Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later';
-                    dialogOptions.title = 'Date';
-                    $('#dialog')
-                        .text(dialogText)
-                        .dialog(dialogOptions, {
-                        title: 'Warning Q12 Q23', buttons: myButtons
-                    });
-                }
-                else { //without warning dialog
-                    console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                    console.log('lock all other persistables');
-                    otherPersistables.each(function () {
-                        const thisPersistable = $(this);
-                        thisPersistable.prop('disabled', true);
-                    });
-                }
-                break;
-            }
-            default: {
-                //see branchingTree.txt
-                const controlledByHandlers = $('.persistable[id^=Q12_],[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
-                /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
-                console.log('Onset Date and Admit Date are not empty, unlock ' + $('.persistable').not(controlledByHandlers).length + ' fields');
-                $('.persistable').not(controlledByHandlers).each(function () {
-                    //just enable the no handler persistables and persistables with handler but don't raise change event to prevent infinite loop
-                    $(this).prop('disabled', false);
-                });
-                //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
-                //only raise change for the following to unlock or remain lock of the respective fields
-                $('.persistable[id^=Q12B_]').change();
-                $('.persistable[id^=Q14A_]').change();
-                $('.persistable[id^=Q16A_]').change();
-                $('.persistable[id^=Q42_]').change();
-                $('.persistable[id^=Q44C_]').change();
-                $('.persistable[id^=GG0170I_]').change();
-                $('.persistable[id^=GG0170M_]').change();
-                $('.persistable[id^=GG0170Q_]').change();
-                $('.persistable[id^=J0510]').change();
-                //set focus on Q12B after the above rule might have set focus somewhere else
-                $('.persistable[id^=Q12B_]').focus();
-                $('#ajaxPost').prop('disabled', false);
-                break;
-            }
-        }
-        console.log('------ done handling Q12 Q23 ' + eventType + '------');
-        return byRef.seenTheDialog;
-    }
-    /* self executing event listener, add this last to raise change chain */
-    (function Q12_Q23_addListener() {
-        console.log('adding Q12_Q23_addListener()');
-        /* add onchange event listner */
-        let seenTheDialog = false;
-        /* add rule help */
-        const Q12_Q23rule = $('.branchingRule[data-target=Q12], .branchingRule[data-target=Q23]');
-        const Q12_Q23ruleText = 'If Q12 or Q23 is blank or Q12 date is later than Q23 date, lock all inputs and the save button';
-        Q12_Q23rule.prop('title', Q12_Q23ruleText).show();
-        Q12_Q23rule.on('click', function () {
-            $('#dialog')
-                .text(Q12_Q23ruleText)
-                .dialog(dialogOptions, {
-                title: 'Rules', buttons: {
-                    'Ok': function () {
-                        $(this).dialog("close");
-                    }
-                }
-            });
-        });
-        const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
-        primaryKeys.each(function () {
-            const thisPrimaryKey = $(this);
-            thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-                console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
-                //checkQ12_Q23(e.data.x);
-                seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
-            });
-        });
-        console.log('Q12_Q23 listener added');
-    })();
-    //self executing arrow function test
-    (() => {
-        console.log('------ self executing arrow function test ------');
-        $('.questionRow').on('change', '.persistable', function (e) {
-            if (e.target !== undefined) {
-                console.log('e.target = ', e.target);
-                //const trigger: string = e.target.prop('id');
-                //switch (true) {
-                //  case (trigger.indexOf('Q12_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //  case (trigger.indexOf('Q23_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //  case (trigger.indexOf('Q12B_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //}
-                console.log('------ done self executing ------');
-            }
-        });
-    })();
-    $('.persistable[id^=Q23_]').change().focus();
 });
 //# sourceMappingURL=branching.js.map

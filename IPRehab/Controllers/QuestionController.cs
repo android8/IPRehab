@@ -319,7 +319,7 @@ namespace IPRehab.Controllers
 
                 thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
 
-                base.MemoryCache.Set(CacheKeys.CacheKeyAllPatients, thisPatient, TimeSpan.FromDays(1));
+                base.MemoryCache.Set(CacheKeys.CacheKeyThisPatient, thisPatient, TimeSpan.FromDays(1));
 
             }
             return thisPatient;

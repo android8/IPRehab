@@ -12,6 +12,19 @@ const formController = (function () {
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
     })(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
+    /***************************************************************************
+     * public functions exposing the private functions to outside of the closure
+    ***************************************************************************/
+    return {
+        'scrollToAnchor': scrollToAnchor,
+        'breakLongSentence': breakLongSentence,
+        'submitTheForm': submitTheForm,
+        'validate': validateForm,
+        'selfCareScore': selfCareScore,
+        'mobilityScore': mobilityScore,
+        'updateScore': updateScore,
+        'grandTotal': grandTotal
+    };
     function scrollTo(thisElement) {
         let scrollAmount = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
         if (thisElement.prop('id').indexOf('Q12') !== -1)
@@ -32,7 +45,7 @@ const formController = (function () {
         console.log('breakLongSentence() thisSelectElement', thisSelectElement);
         const maxLength = 50;
         const longTextOptionDIV = thisSelectElement.next('div.longTextOption');
-        //console.log('longTextOptionDIV', longTextOptionDIV);
+        console.log('longTextOptionDIV', longTextOptionDIV);
         const thisSelectWidth = thisSelectElement[0].clientWidth;
         const thisScope = thisSelectElement;
         const selectedValue = parseInt(thisSelectElement.prop('value'));
@@ -42,27 +55,30 @@ const formController = (function () {
         else {
             $.each($('option:selected', thisScope), function () {
                 const $thisOption = $(this);
-                const regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g");
                 const oldText = $thisOption.text();
                 const font = $thisOption.css('font');
+                console.log('option font', font);
                 const oldTextInPixel = commonUtility.getTextPixels(oldText, font);
-                if (oldTextInPixel > thisSelectWidth) {
+                if (oldTextInPixel > thisSelectWidth) { //the 50 characters is longer then the option box width
                     console.log('oldTextInPixel', oldTextInPixel);
                     console.log('thisSelectWidth', thisSelectWidth);
-                    let newStr = oldText.replace(regX, "$1\n");
-                    newStr = newStr.trim();
-                    const startWithNumber = $.isNumeric(newStr.substring(0, 1));
+                    const regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g"); //get first 50 characters
+                    let newStr = oldText.replace(regX, "$1\n"); //replace the last space with carriage return
+                    console.log('newStr', newStr);
+                    let firstCharacter = newStr.substring(0, 1);
+                    const startWithNumber = typeof +firstCharacter == 'number' && !Number.isNaN(+firstCharacter); //ensure the 1 character is numeric
                     if (startWithNumber) {
-                        newStr = newStr.substring(newStr.indexOf(" ") + 1);
+                        newStr = newStr.trim().substring(3); //if the 1st character is a number, then take the remaining string starting the 1st non-space character
+                        console.log('newStr after 1st numeric character', newStr);
                     }
                     //console.log('old ->', oldText);
                     //console.log('new ->', newStr);
-                    longTextOptionDIV.text(newStr);
-                    longTextOptionDIV.removeClass("invisible");
+                    longTextOptionDIV.text(newStr).removeClass("invisible");
                 }
-                else
+                else {
                     console.log('set blank for short text');
-                longTextOptionDIV.text('');
+                    longTextOptionDIV.text('');
+                }
             });
         }
     }
@@ -91,7 +107,7 @@ const formController = (function () {
                 .done(function (result) {
                 $('.spinnerContainer').hide();
                 console.log('postback result', result);
-                const jsonResult = $.parseJSON(result);
+                const jsonResult = JSON.parse(result);
                 let dialogText;
                 console.log('jsonResult', jsonResult);
                 if (episodeID === -1) {
@@ -176,7 +192,7 @@ const formController = (function () {
         if (facilityID && facilityID.indexOf('(') !== -1) {
             const tmp = facilityID.split('(')[1];
             const tmp2pos = tmp.indexOf(')');
-            facilityID = tmp.substr(0, tmp2pos);
+            facilityID = tmp.substring(0, tmp2pos);
         }
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         const persistables = $('.persistable');
@@ -658,19 +674,6 @@ const formController = (function () {
     //    updateScore(GG0170S, 0);
     //  return R_Performance + S_Performance;
     //}
-    /***************************************************************************
-     * public functions exposing the private functions to outside of the closure
-    ***************************************************************************/
-    return {
-        'scrollToAnchor': scrollToAnchor,
-        'breakLongSentence': breakLongSentence,
-        'submitTheForm': submitTheForm,
-        'validate': validateForm,
-        'selfCareScore': selfCareScore,
-        'mobilityScore': mobilityScore,
-        'updateScore': updateScore,
-        'grandTotal': grandTotal
-    };
 })();
 /******************************* end of closure ****************************/
 $(function () {
@@ -724,7 +727,7 @@ $(function () {
             thisResetButton.prop('disabled', true);
             if (isTargetOnQ12B) {
                 console.log('raise change() to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
-                thisTargetDate.change(); //else use the commonUtility to reset the value
+                thisTargetDate.trigger('change'); //else use the commonUtility to reset the value
             }
             else {
                 console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
@@ -744,7 +747,7 @@ $(function () {
         });
     });
     /* section nav */
-    $('#questionTab').hover(function () {
+    $('#questionTab').on('hover', function () {
         $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
     }, function () {
         $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
@@ -785,7 +788,7 @@ $(function () {
     /* jump to section anchor */
     $('.gotoSection').each(function () {
         const $this = $(this);
-        $this.click(function () {
+        $this.on('click', function () {
             const anchorID = $this.data("anchorid");
             if (anchorID != '') {
                 formController.scrollToAnchor(anchorID);
@@ -824,7 +827,7 @@ $(function () {
             $('#ajaxPost').removeAttr('disabled');
     });
     /* ajax post form */
-    $('#ajaxPost').click(function () {
+    $('#ajaxPost').on('click', function () {
         if (formController.validate) {
             formController.submitTheForm($(this), dialogOptions);
         }

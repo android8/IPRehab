@@ -188,13 +188,13 @@ $(function () {
         const $thisButton = $(this);
         //call closure
         //commandBtnController.addRipple($this);
-        $thisButton.click(function () {
+        $thisButton.on('click', function () {
             //call closure
             //commandBtnController.makeRequest($this);
             commandBtnController.makeRequestUsingFormAction($thisButton);
         });
     });
-    $('.commandTrigger').click(function () {
+    $('.commandTrigger').on('click', function () {
         const $this = $(this);
         const thisContainer = $this.parent(); //should be <div class="mdc-touch-target-wrapper">
         const hidden = $this.data('hidden');
