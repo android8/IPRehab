@@ -175,23 +175,23 @@ export class Utility implements ICommonUtility {
             case "select-one": {
                 const newValueInt: number = parseInt(newValue);
                 if (isNaN(newValueInt)) {
-                    $thisControl.val(-1).change();
+                    $thisControl.val(-1).trigger('change');
                 }
                 else {
-                    $thisControl.val(newValue).change();
+                    $thisControl.val(newValue).trigger('change');
                 }
                 console.log('changed ' + thisControlType + ' ' + $thisControl.prop('id') + ' value to ' + newValueInt);
                 break;
             }
             case "checkbox":
             case "radio": {
-                $thisControl.prop('checked', false).change();
+                $thisControl.prop('checked', false).trigger('change');
                 console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
                 break;
             }
             case "text":
             case "date": {
-                $thisControl.val('').change();
+                $thisControl.val('').trigger('change');
                 console.log('cleared ' + $thisControl.prop('id') + ' ' + thisControlType);
                 break;
             }
@@ -255,6 +255,6 @@ export class Utility implements ICommonUtility {
         if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
         console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-        thisElement.focus();
+        thisElement.trigger('focus');
     }
 }

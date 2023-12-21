@@ -31,7 +31,7 @@ const formController = (function () {
             scrollAmount = 0;
         console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-        thisElement.focus();
+        thisElement.trigger('focus');
     }
     /* private function */
     function scrollToAnchor(anchorID) {
@@ -726,12 +726,12 @@ $(function () {
             //after clear the date, disable the reset button since there is no date to clear
             thisResetButton.prop('disabled', true);
             if (isTargetOnQ12B) {
-                console.log('raise change() to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
+                console.log('trigger change event to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
                 thisTargetDate.trigger('change'); //else use the commonUtility to reset the value
             }
             else {
                 console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
-                commonUtility.resetControlValue(thisTargetDate); //raise change() commonUtility handle the event accordingly
+                commonUtility.resetControlValue(thisTargetDate); //raise trigger('change') commonUtility handle the event accordingly
             }
         }
         e.preventDefault();
@@ -747,9 +747,11 @@ $(function () {
         });
     });
     /* section nav */
-    $('#questionTab').on('hover', function () {
+    $('#questionTab')
+        .on('mouseenter', function () {
         $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
-    }, function () {
+    })
+        .on('mouseleave', function () {
         $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
     });
     /* aggregate scores container */

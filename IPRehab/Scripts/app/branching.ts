@@ -235,7 +235,7 @@ $(function () {
             console.log('scroll to ' + elementId + ', amount ' + scrollAmount, thisElement);
 
             $('html,body').stop().animate({ scrollTop: scrollAmount }, 'fast');
-            thisElement.focus();
+            thisElement.trigger('focus');
         }
         else {
             console.log(elementId + " doesn't exist in the current context, can not scroll to that element");
@@ -298,7 +298,7 @@ $(function () {
                     thisCheckbox.prop('disabled', true);
                 }
 
-                console.log('raise change() ' + thisCheckbox.prop('id'), thisCheckbox);
+                console.log('raise change ' + thisCheckbox.prop('id'), thisCheckbox);
             });
         }
 
@@ -357,7 +357,7 @@ $(function () {
     (function Q12B_addListener() {
         console.log('adding Q12B_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
         let seenTheDialog: boolean = false;
         const Q12B = $('.persistable[id^=Q12B_]');
@@ -457,7 +457,7 @@ $(function () {
     (function Q14A_addListener() {
         console.log('adding Q14A_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog: boolean = true;
@@ -506,7 +506,7 @@ $(function () {
                 }
                 else {
                     console.log('focus on Q17', Q17);
-                    Q17.focus();
+                    Q17.trigger('focus');
                 }
             }
         }
@@ -555,7 +555,7 @@ $(function () {
     (function Q16_addListener() {
         console.log('adding Q16_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only trigger by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog: boolean = true;
@@ -721,7 +721,7 @@ $(function () {
     (function Q42_addListener() {
         console.log('adding Q42_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only trigger by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog = true;
@@ -772,7 +772,7 @@ $(function () {
                         if (thisOtherQ43.val() === '')
                             foundBlank = true;
                     });
-                    thisQ43.prop('disabled', true); //don't call change(), otherwise it will cause infinite Q43_Rules() loop
+                    thisQ43.prop('disabled', true); //don't trigger change, otherwise it will cause infinite Q43_Rules() loop
                     thisQ43.next('.bi-calendar-x').prop('diabled', true);
                     break;
                 }
@@ -785,7 +785,7 @@ $(function () {
                         firstBlank.next('.bi-calendar-x').prop('disabled', false);  /* unlock next reset button */
                         foundBlank = true;
                     }
-                    thisQ43.prop('disabled', false);  //don't call change(), otherwise it will cause infinite Q43_Rules() loop
+                    thisQ43.prop('disabled', false);  //don't trigger change, otherwise it will cause infinite Q43_Rules() loop
                     thisQ43.next('.bi-calendar-x').prop('diabled', false);
                     break;
                 }
@@ -812,7 +812,7 @@ $(function () {
                             }
                         }
                         else {
-                            thisQ43.val('').prop('disabled', true); //don't call change(), otherwise it will cause infinite Q43_Rules() loop
+                            thisQ43.val('').prop('disabled', true); //don't trigger change, otherwise it will cause infinite Q43_Rules() loop
                         }
                         setSeenTheDialog(true); //callback
                         $(this).dialog("close");
@@ -858,7 +858,7 @@ $(function () {
                     //without warning dialog
                     console.log('Q42No without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
                     thisQ43.val('');
-                    thisQ43.prop('disabled', true); //don't call change(), otherwise it will cause infinite Q43_Rules() loop
+                    thisQ43.prop('disabled', true); //don't triggere change, otherwise it will cause infinite Q43_Rules() loop
                 }
                 break;
             }
@@ -874,9 +874,9 @@ $(function () {
     (function Q43_addListener() {
         console.log('adding Q43_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
-        /* on change. Q43 only raised by change() event manually here or programmmatically in Q42*/
+        /* on change. Q43 only triggered by change event manually here or programmmatically in Q42*/
 
         let seenTheDialog = true;
         let foundBlank: boolean;
@@ -922,7 +922,7 @@ $(function () {
             console.log('disable Q45');
             Q45.val(-1).prop('disabled', true);
             console.log('enable and focus on Q46');
-            Q46.val(-1).prop('disabled', false).focus();
+            Q46.val(-1).prop('disabled', false).trigger('focus');
         }
 
         /* nested event handler */
@@ -979,7 +979,7 @@ $(function () {
     (function Q44C_addListener() {
         console.log('adding Q44C_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog: boolean = true;
@@ -1106,7 +1106,7 @@ $(function () {
                     console.log('actGG0170I() no scroll but focus ', focusThis.prop('id'));
                     focusThis.prop('disabled', false);
                     scrollTo(focusThis.prop('id'));
-                    focusThis.focus();
+                    focusThis.trigger('focus');
                 }
                 else
                     console.log(focusThis.prop('id') + " dosen't exist in this context, can not set focus on that element");
@@ -1185,7 +1185,7 @@ $(function () {
     (function GG0170I_addListener() {
         console.log('adding GG0170I_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only trigger by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog: boolean = true;
@@ -1363,7 +1363,7 @@ $(function () {
     (function GG0170M_N_addListener() {
         console.log('adding GG0170M_N_addListener()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
         /* on change */
         const GG0170M_and_N = $('.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), .persistable[id^=GG0170N]:not([id*=Discharge_Goal])');
@@ -1496,7 +1496,7 @@ $(function () {
         }
         else {
             //without warning dialog
-            //thisGG0170R.prop('disabled', false).focus();
+            //thisGG0170R.prop('disabled', false).trigger('focus');
             thisGG0170R.prop('disabled', false);
             scrollTo(thisGG0170R.prop('id'));
         }
@@ -1510,7 +1510,7 @@ $(function () {
     (function GG0170Q_addListner() {
         console.log('adding GG0170Q_addListner()');
 
-        //no need to raise onload event, it is only raised by Q12_Q23 change() event chain
+        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
         /* on change */
         let seenTheDialog: boolean = true;
@@ -1691,7 +1691,7 @@ $(function () {
                 const dateClone: any = lastInputDate.clone();
                 //commonUtility.resetControlValue(dateClone);
                 dateClone.val('');
-                dateClone.focus();
+                dateClone.trigger('focus');
                 lastInputDate.append(dateClone);
             });
     }

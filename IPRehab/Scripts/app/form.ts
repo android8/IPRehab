@@ -35,7 +35,7 @@ const formController = (function () {
         if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0;
         console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
         $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-        thisElement.focus();
+        thisElement.trigger('focus');
     }
 
     /* private function */
@@ -823,12 +823,12 @@ $(function () {
             thisResetButton.prop('disabled', true);
 
             if (isTargetOnQ12B) {
-                console.log('raise change() to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
+                console.log('trigger change event to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
                 thisTargetDate.trigger('change');      //else use the commonUtility to reset the value
             }
             else {
                 console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
-                commonUtility.resetControlValue(thisTargetDate); //raise change() commonUtility handle the event accordingly
+                commonUtility.resetControlValue(thisTargetDate); //raise trigger('change') commonUtility handle the event accordingly
             }
         }
         e.preventDefault();
@@ -846,14 +846,13 @@ $(function () {
     });
 
     /* section nav */
-    $('#questionTab').on('hover', 
-        function () { /* slide into the viewing area*/
+    $('#questionTab')
+        .on('mouseenter', function () { /* slide into the viewing area*/
             $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
-        },
-        function () { /* slide out of the viewing area */
+        })
+        .on('mouseleave', function () { /* slide out of the viewing area */
             $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
-        }
-    );
+        });
 
     /* aggregate scores container */
     $('#rotateSlidingAggregatorHandle').on('click', function () {
@@ -892,7 +891,7 @@ $(function () {
     /* jump to section anchor */
     $('.gotoSection').each(function () {
         const $this = $(this);
-        $this.on('click',function () {
+        $this.on('click', function () {
             const anchorID: string = $this.data("anchorid");
             if (anchorID != '') {
                 formController.scrollToAnchor(anchorID);
