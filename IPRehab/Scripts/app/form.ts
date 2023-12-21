@@ -60,7 +60,7 @@ const formController = (function () {
                     console.log('thisSelectWidth', thisSelectWidth);
                     let newStr = oldText.replace(regX, "$1\n");
                     newStr = newStr.trim();
-                    const startWithNumber = $.isNumeric(newStr.substring(0, 1));
+                    const startWithNumber = typeof newStr.substring(0, 1) == "string";
                     if (startWithNumber) {
                         newStr = newStr.substring(newStr.indexOf(" ") + 1);
                     }
