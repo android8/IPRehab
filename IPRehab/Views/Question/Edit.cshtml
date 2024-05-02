@@ -25,15 +25,15 @@
 
         @* additional production environment minified css*@
         @section MyStyles_prod {
-        <link rel="stylesheet" href="~/css/snowAnimation.css" />
+        <link rel="stylesheet" href="~/css/snowAnimation.min.css" />
     }
 
         @* additional production environment minified css*@
         @section MyScripts_prod {
-        @*<script type="module" src="~/js/questionBundle.js" asp-append-version="true" async></script>*@
-        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/questionBundle.min.js" asp-append-version="true" async></script>
+        @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>*@
     }
     </environment>
 

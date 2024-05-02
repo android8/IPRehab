@@ -22,7 +22,7 @@
     <environment include="Production">
 
         @* css bundled minified production version *@
-        <link rel="stylesheet" href="~/css/siteCssBundle.css" />
+        <link rel="stylesheet" href="~/css/siteBundle.min.css" />
         @await RenderSectionAsync("MyStyles_prod", required: false)
 
     </environment>
@@ -117,14 +117,14 @@
 
     <environment include="Production">
         @* js bundled minified production version *@
-        <script type="text/javascript" src="~/js/siteJsBundle.js" asp-append-version="true"></script>
+        <script type="module" src="~/js/siteJsBundle.min.js" asp-append-version="true" async></script>
         @await RenderSectionAsync("MyScripts_prod", required: false)
     </environment>
 
     <environment include="Development">
         @* js unbundled unminified development version *@
-        <script type="text/javascript" src="~/js/app/animateBanner.js" asp-append-version="true"></script>
-        <script type="text/javascript" src="~/js/app/cookieConsent.js" asp-append-version="true"></script>
+        <script type="module" src="~/js/app/animateBanner.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/cookieConsent.js" asp-append-version="true" async></script>
         @await RenderSectionAsync("MyScripts_dev", required: false)
     </environment>
 
