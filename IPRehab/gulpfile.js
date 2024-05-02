@@ -1,4 +1,4 @@
-/// <binding AfterBuild='cleanMyCss, cleanMyJs, minifyAppJs, copyAppJsMap, copyAppTs, compileMySassStyles, minifyMyCss' />
+/// <binding AfterBuild='cleanMyCss, cleanMyJs, minifyAppJs, copyAppJsMap, compileMySassStyles, minifyMyCss, cleanMyAppModelJs, copyAppModelJsMap, copyMyAppModel, minifyAppModelJs' />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 /*
@@ -12,10 +12,10 @@ var gulp = require('gulp');
 var del = require('del');
 
 var script = {
-    myMap: ['./Scripts/app/*.map'],
-    myJs: ['./Scripts/app/*.js'],
-    myTs: ['./Scripts/app/*.ts'],
-    output: './wwwroot/js/app'
+    myMap: ['./Scripts/app/*.map','./Scripts/appModels/*.map'],
+    myJs: ['./Scripts/app/*.js', './Scripts/appModels/*.js'],
+    //myTs: ['./Scripts/app/*.ts'],
+    output: ['./wwwroot/js/app']
 };
 
 var style = {
@@ -28,49 +28,52 @@ gulp.task('cleanMyCss', function () {
     return del(style.myCssOnly); /* don't clean .scss */
 });
 
-
 gulp.task('cleanMyJs', function () {
-    return del(script.output);
+    return del(script.output[0]);
 });
 
-
 gulp.task('minifyAppJs', function () {
-    return gulp.src(script.myJs, { allowEmpty: true })
+    return gulp.src(script.myJs[0], { allowEmpty: true })
         .pipe(minify({
             noSource: false,
             ext: {
                 min: '.min.js'
             }
         }))
-        .pipe(gulp.dest(script.output));
+        .pipe(gulp.dest(script.output[0]));
 });
 
 gulp.task('copyAppJsMap', function () {
-    return gulp.src(script.myMap)
-        .pipe(gulp.dest(script.output));
+    return gulp.src(script.myMap[0])
+        .pipe(gulp.dest(script.output[0]));
 });
 
-gulp.task('copyAppTs', function () {
-    return gulp.src(script.myTs)
-        .pipe(gulp.dest(script.output));
+gulp.task('minifyAppModelJs', function () {
+  return gulp.src(script.myJs[1], { allowEmpty: true })
+    .pipe(minify({
+      noSource: false,
+      ext: {
+        min: '.min.js'
+      }
+    }))
+    .pipe(gulp.dest(script.output[0]));
+
 });
 
-//gulp.task('minifyAppModelsJs', function () {
-//  return gulp.src(script.myJs[1], { allowEmpty: true })
-//    .pipe(minify({
-//      noSource: false,
-//      ext: {
-//        min: '.min.js'
-//      }
-//    }))
-//    .pipe(gulp.dest(script.output[0]));
-//});
+gulp.task('copyMyAppModel', function () {
+    return gulp.src(script.myJs[1])
+        .pipe(gulp.dest(script.output[0]));
+});
 
-//gulp.task('copyAppModelsJsMap', function () {
-//    return gulp.src(script.myMap[1])
-//    .pipe(gulp.dest(script.output[0]));
-//});
+gulp.task('copyAppModelJsMap', function () {
+    return gulp.src(script.myMap[1])
+    .pipe(gulp.dest(script.output[0]));
+});
 
+//gulp.task('copyAppTs', function () {
+//    return gulp.src(script.myTs)
+//        .pipe(gulp.dest(script.output[0]));
+//});
 
 gulp.task('compileMySassStyles', function (done) {
     gulp.src(style.mySass)

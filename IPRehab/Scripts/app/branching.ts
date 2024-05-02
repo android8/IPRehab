@@ -1,9 +1,7 @@
-﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-
-import { event } from "jquery";
-import { setObserversEnabled } from "../../node_modules/@material/base/observer.js";
-import { isScrollAtBottom } from "../../node_modules/@material/dialog/util.js";
-import { Utility /*, EnumChangeEventArg*/ } from "./commonImport.js";
+﻿import { event } from "jquery";
+import { setObserversEnabled } from "./../../node_modules/@material/base/observer.js";
+import { isScrollAtBottom } from "./../../node_modules/@material/dialog/util.js";
+import { Utility } from "./commonImport.js";
 
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
@@ -97,7 +95,7 @@ $(function () {
 
         $('.questionRow').on('change', '.persistable', function (e) {
             if (e.target !== undefined) {
-                console.log('e.target = ', e.target);
+                //console.log('e.target = ', e.target);
                 //const trigger: string = e.target.prop('id');
                 //switch (true) {
                 //  case (trigger.indexOf('Q12_') !== -1):
@@ -221,6 +219,7 @@ $(function () {
         console.log('------ done handling Q12 Q23 ' + eventType + '------');
         return byRef.seenTheDialog;
     }
+
     function scrollTo1(elementId: string) {
         console.log('branching::: scrollTo() elementId = ', elementId);
 

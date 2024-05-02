@@ -1,8 +1,8 @@
-﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-/// <reference path="../../node_modules/@types/jqueryui/index.d.ts" />
+﻿/// <reference path="./../../node_modules/@types/jqueryui/index.d.ts" />
 
-import { Utility, UserAnswer, AjaxPostbackModel /*, EnumGetControlValueBehavior*/ } from "./commonImport.js";
+import { Utility, UserAnswer, AjaxPostbackModel } from "./commonImport.js";
 import { EnumChangeEventArg } from "./enums.js";
+import { EpisodeScore } from "./episodeScore.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
@@ -192,6 +192,7 @@ const formController = (function () {
         const oldAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const newAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const updatedAnswers: Array<UserAnswer> = new Array<UserAnswer>();
+        const episodeScores: Array<EpisodeScore> = new Array<EpisodeScore>();
 
         const theScope: any = $('#userAnswerForm');
         const stage: string = $('#stage', theScope).val()?.toString();
@@ -285,8 +286,18 @@ const formController = (function () {
                     break;
             }
 
-            console.log('(' + counter + ') ' + questionKey, thisAnswer);
+            /* question score */
+            const thisPersistableID: string = $thisPersistable.prop('id');
+            if (thisPersistableID.indexOf('GG0130') != -1 || thisPersistableID.indexOf('GG0170') != -1) {
+                const thisAnswerScoreElement: any = $("#" + thisPersistableID);
+                let thisAnswerScore: number;
+                if (thisAnswerScoreElement.prop('id').indexOf('GG0130') != -1 || thisAnswerScoreElement.prop('id').indexOf('GG0170') != -1) {
+                    thisAnswerScore = parseInt(thisAnswerScoreElement.data('score'));
+                }
+                thisAnswer.Score = thisAnswerScore;
+            }
 
+            console.log('(' + counter + ') ' + questionKey, thisAnswer);
             const CRUD: string = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
             switch (CRUD) {
                 case 'C':
@@ -302,6 +313,33 @@ const formController = (function () {
                     updatedAnswers.push(thisAnswer);
                     break;
             }
+
+            /* aggregate score */
+            let self_care_admission_score, self_care_discharge_score, mobility_admission_score, mobility_discharge_score: EpisodeScore;
+
+            self_care_admission_score = new EpisodeScore();
+            self_care_admission_score.Measure = "self_care_admission_score";
+            self_care_admission_score.Description = "self_care_admission_score";
+            self_care_admission_score.Score = parseInt($('#self_care_admission_score').text())
+            episodeScores.push(self_care_admission_score);
+
+            self_care_discharge_score = new EpisodeScore();
+            self_care_discharge_score.Measure = "self_care_discharge_score";
+            self_care_discharge_score.Description = "self_care_discharge_score";
+            self_care_discharge_score.Score = parseInt($('#self_care_discharge_score').text())
+            episodeScores.push(self_care_discharge_score);
+
+            mobility_admission_score = new EpisodeScore();
+            mobility_admission_score.Measure = "mobility_admission_score";
+            mobility_admission_score.Description = "mobility_admission_score";
+            mobility_admission_score.Score = parseInt($('#mobility_admission_score').text());
+            episodeScores.push(mobility_admission_score);
+
+            mobility_discharge_score = new EpisodeScore();
+            mobility_discharge_score.Measure = "mobility_discharge_score";
+            mobility_discharge_score.Description = "mobility_discharge_score";
+            mobility_discharge_score.Score = parseInt($('#mobility_discharge_score').text());
+            episodeScores.push(mobility_discharge_score);
         });
 
         if (newAnswers.length === 0 && oldAnswers.length === 0 && updatedAnswers.length === 0) {
@@ -318,6 +356,7 @@ const formController = (function () {
         postBackModel.NewAnswers = newAnswers;
         postBackModel.OldAnswers = oldAnswers;
         postBackModel.UpdatedAnswers = updatedAnswers;
+        postBackModel.EpisodeScores = episodeScores;
         console.log('postBackModel', postBackModel);
 
         const apiBaseUrl = thisPostBtn.data('apibaseurl');
@@ -356,7 +395,7 @@ const formController = (function () {
             }
             case (newScore > 0 && i_score_element.length === 0): {
                 console.log('path2: append the score');
-                thisControl.parent().closest('div').append("<i class='score'>score: " + newScore + " " + scoreMsg + "</i>");
+                thisControl.parent().closest('div').append("<i id='" + thisControl.prop('id') + "' class='persistable score' data-score='" + newScore + "'>score: " + newScore + " " + scoreMsg + "</i>");
                 break;
             }
             case (newScore > 0 && i_score_element.length > 0): {

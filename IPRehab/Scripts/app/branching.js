@@ -1,5 +1,4 @@
-/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-import { Utility /*, EnumChangeEventArg*/ } from "./commonImport.js";
+import { Utility } from "./commonImport.js";
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
@@ -82,7 +81,7 @@ $(function () {
         console.log('------ self executing arrow function test ------');
         $('.questionRow').on('change', '.persistable', function (e) {
             if (e.target !== undefined) {
-                console.log('e.target = ', e.target);
+                //console.log('e.target = ', e.target);
                 //const trigger: string = e.target.prop('id');
                 //switch (true) {
                 //  case (trigger.indexOf('Q12_') !== -1):

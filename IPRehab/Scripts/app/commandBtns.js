@@ -1,8 +1,6 @@
-/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 //don't need use strict because the script is loaded as module which by default is executed in strict mode
 //'use strict';
-//import { Utility } from "./commonImport.js";
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/

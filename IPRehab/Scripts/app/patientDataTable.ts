@@ -1,6 +1,4 @@
-﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-
-$(function () {
+﻿$(function () {
   let url: string = '';
   if (window.location.host.indexOf('localhost') == -1
     //|| $(location).attr('href').indexOf('localhost') == -1

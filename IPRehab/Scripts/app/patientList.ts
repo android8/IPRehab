@@ -1,6 +1,4 @@
-﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-
-//https://www.typescriptlang.org/docs/handbook/asp-net-core.html
+﻿//https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 $(function () {
   $('#searchBtn').on('click', function () {

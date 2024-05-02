@@ -6,5 +6,29 @@
   {
     "outputFile": "wwwroot/css/app.css",
     "inputFile": "wwwroot/css/app.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/transition.css",
+    "inputFile": "wwwroot/css/transition.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/neonButton.css",
+    "inputFile": "wwwroot/css/neonButton.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/parallax.css",
+    "inputFile": "wwwroot/css/parallax.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/snowAnimation.css",
+    "inputFile": "wwwroot/css/snowAnimation.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/app/animateBanner.es5.js",
+    "inputFile": "wwwroot/js/app/animateBanner.js"
+  },
+  {
+    "outputFile": "gulpfile.es5.js",
+    "inputFile": "gulpfile.js"
   }
 ]

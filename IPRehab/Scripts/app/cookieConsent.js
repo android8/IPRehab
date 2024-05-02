@@ -1,4 +1,3 @@
-/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 $(function () {
     const btnConsent = $("button.acceptConsent");
     const consentContainer = $('div.cookieConsent');

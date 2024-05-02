@@ -1,6 +1,4 @@
-﻿/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
-
-import { ICommonUtility /*, EnumGetControlValueBehavior */ } from "./commonImport.js";
+﻿import { ICommonUtility } from "./commonImport.js";
 
 enum EnumGetControlValueBehavior {
     Elaborated,

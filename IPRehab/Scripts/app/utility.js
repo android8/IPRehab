@@ -1,4 +1,3 @@
-/// <reference path="../../node_modules/@types/jquery/jquery.d.ts" />
 var EnumGetControlValueBehavior;
 (function (EnumGetControlValueBehavior) {
     EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";

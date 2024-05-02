@@ -1,44 +1,42 @@
-﻿[
-  {
-    "outputFileName": "wwwroot/css/siteBundle.min.css",
-    "inputFiles": [
-      "wwwroot/css/app.css",
-      "wwwroot/css/site.css",
-      "wwwroot/css/transition.css"
-    ]
-  },
+[
   {
     "outputFileName": "wwwroot/js/patientBundle.min.js",
     "inputFiles": [
-      "wwwroot/js/app/animateBanner.js",
       "wwwroot/js/app/commandBtns.js",
-      "wwwroot/js/app/cookieConsent.js",
-      "wwwroot/js/app/utility.js",
-      "wwwroot/js/app/patientDataTable.js",
       "wwwroot/js/app/patientList.js"
     ],
     "minify": {
       "enabled": true,
-      "renameLocals": true
-    },
-    "sourceMap": false
+      "renameLocals": true,
+      "sourceMap":true
+    }
   },
   {
     "outputFileName": "wwwroot/js/questionBundle.min.js",
     "inputFiles": [
-      "wwwroot/js/app/animateBanner.js",
       "wwwroot/js/app/commandBtns.js",
-      "wwwroot/js/app/cookieConsent.js",
-      "wwwroot/js/app/utility.js",
-      "wwwroot/js/app/ajaxPostbackModel.js",
       "wwwroot/js/app/branching.js",
-      "wwwroot/js/app/form.js",
-      "wwwroot/js/app/userAnswer.js"
+      "wwwroot/js/app/form.js"
     ],
     "minify": {
       "enabled": true,
-      "renameLocals": true
-    },
-    "sourceMap": false
+      "renameLocals": true,
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/siteBundle.min.css",
+    "inputFiles": [
+      "wwwroot/css/transition.css",
+      "wwwroot/css/site.css",
+      "wwwroot/css/app.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/siteJsBundle.min.js",
+    "inputFiles": [
+      "wwwroot/js/app/animateBanner.js",
+      "wwwroot/js/app/cookieConsent.js"
+    ]
   }
-] 
+]
