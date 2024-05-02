@@ -22,14 +22,17 @@ namespace IPRehab.Controllers
         //private readonly IMemoryCache _memoryCache;
         private readonly MasterreportsContext _masterReportsContext;
         private readonly IUserPatientCacheHelper _userPatientCacheHelper;
+        private readonly IUserPatientCacheHelper_TreatingSpecialty _userPatientCacheHelper_TreatingSpecialty;
 
         #region public
         public QuestionController(IWebHostEnvironment environment, IMemoryCache memoryCache, IConfiguration configuration,
-           MasterreportsContext masterReportsContext, IUserPatientCacheHelper userPatientCacheHelper) : base(environment, memoryCache, configuration)
+           MasterreportsContext masterReportsContext, IUserPatientCacheHelper_TreatingSpecialty userPatientCacheHelper_TreatingSpecialty, IUserPatientCacheHelper userPatientCacheHelper)
+            : base(environment, memoryCache, configuration)
         {
             //_memoryCache = memoryCache;
             _masterReportsContext = masterReportsContext;
             _userPatientCacheHelper = userPatientCacheHelper;
+            _userPatientCacheHelper_TreatingSpecialty = userPatientCacheHelper_TreatingSpecialty;
         }
 
         /// <summary>
@@ -239,8 +242,6 @@ namespace IPRehab.Controllers
             }
             else
             {
-                List<MastUserDTO> userAccessLevels = new();
-
                 SqlParameter[] paramNetworkID = new SqlParameter[]
                 {
                     new SqlParameter(){
@@ -252,15 +253,7 @@ namespace IPRehab.Controllers
                 };
 
                 //use dbContext extension method
-                var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
-                  $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
-
-                if (userPermission == null || !userPermission.Any())
-                    return null;    //no permssion
-
-                var distinctFacilities = userPermission
-                  .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
-                  .Select(x => HydrateDTO.HydrateUser(x)).ToList();
+                var distinctFacilities = await _userPatientCacheHelper.GetUserAccessLevels(networkID);
 
                 if (distinctFacilities == null || !distinctFacilities.Any())
                     return null;    //no permitted facilities
@@ -284,24 +277,24 @@ namespace IPRehab.Controllers
         /// <returns></returns>
         private async Task<PatientDTOTreatingSpecialty> GetThisPatient(List<MastUserDTO> thisUserAccessLevel, int episodeID, string patientID, string currentUserID)
         {
-            var thisFacilityPatients = await _userPatientCacheHelper.GetThisFacilityPatients(thisUserAccessLevel);
+            var thisFacilityPatients = await _userPatientCacheHelper_TreatingSpecialty.GetThisFacilityPatients(thisUserAccessLevel);
             if (thisFacilityPatients == null || !thisFacilityPatients.Any())
             {
                 return null;    //no patient in this facility 
             }
 
-            var patientInFacility = thisFacilityPatients.FirstOrDefault(p => p.scrssn.ToString() == patientID || p.PatientICN == patientID);
+            var patientInFacility = thisFacilityPatients.FirstOrDefault(p => p.ScrSsnt == patientID || p.PatientIcn == patientID);
             PatientDTOTreatingSpecialty thisPatient;
             if (patientInFacility != null)
             {
                 thisPatient = new()
                 {
-                    Sta6a = patientInFacility.bsta6a,
+                    Sta6a = patientInFacility.Bsta6a,
                     Name = patientInFacility.PatientName,
-                    PTFSSN = patientInFacility.scrssn.Value.ToString(),
-                    PatientICN = patientInFacility.PatientICN,
+                    PTFSSN = patientInFacility.ScrSsnt,
+                    PatientICN = patientInFacility.PatientIcn,
                     DoB = patientInFacility.DoB,
-                    Bedsecn = patientInFacility.bedsecn
+                    Bedsecn = patientInFacility.Bedsecn
                 };
             }
             else
@@ -310,11 +303,11 @@ namespace IPRehab.Controllers
 
                 if (episodeID > 0)
                 {
-                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/Episode/{episodeID}";
+                    webAPIendpoint = $"{ApiBaseUrl}/api/{base._TreatingSpecialtyApiControllerName}/Episode/{episodeID}";
                 }
                 else
                 {
-                    webAPIendpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
+                    webAPIendpoint = $"{ApiBaseUrl}/api/{base._TreatingSpecialtyApiControllerName}/{patientID}?networkID={currentUserID}&withEpisode=false&pageSize={base.PageSize}";
                 }
 
                 thisPatient = await SerializationGeneric<PatientDTOTreatingSpecialty>.DeserializeAsync($"{webAPIendpoint}", base.BaseOptions);
@@ -323,32 +316,6 @@ namespace IPRehab.Controllers
 
             }
             return thisPatient;
-        }
-
-        private PatientDTOTreatingSpecialty GetFromMemoryCache(string cacheKeyAllPatients, string patientID)
-        {
-            var memoryCachePatients = base.MemoryCache.Get<List<IPRehabModel.vTreatingSpecialtyRecent3Yrs>>(cacheKeyAllPatients);
-            if (memoryCachePatients != null && memoryCachePatients.Any())
-            {
-                //get single patient matching the patientID
-                var thisTS3rs = memoryCachePatients.FirstOrDefault(p => p.scrssn == int.Parse(patientID));
-
-                if (thisTS3rs == null)
-                    return null;
-
-                PatientDTOTreatingSpecialty thisPatient = new()
-                {
-                    Sta6a = thisTS3rs.bsta6a,
-                    Name = thisTS3rs.PatientName,
-                    PTFSSN = thisTS3rs.scrssn.Value.ToString(),
-                    PatientICN = thisTS3rs.PatientICN,
-                    DoB = thisTS3rs.DoB,
-                    Bedsecn = thisTS3rs.bedsecn
-                };
-
-                return thisPatient;
-            }
-            return null;
         }
 
         #endregion private

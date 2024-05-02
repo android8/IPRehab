@@ -1,5 +1,6 @@
 ﻿using IPRehabModel;
 using IPRehabWebAPI2.Models;
+using PatientModel_TreatingSpecialty;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace IPRehabWebAPI2.Helpers
     /// </summary>
     public class HydrateDTO
     {
-        private static int measureCounter = 0;
-        private static int currentQuestionID;
+        public HydrateDTO()
+        {
+        }
+
         //ToDo: should use AutoMapper
-        public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblCodeSet measureCodeSet)
+        public static QuestionDTO HydrateQuestion(tblQuestion q, string stageName, int stageID, tblQuestionMeasure thisQuestionMeasure)
         {
             QuestionDTO questionDTO = new()
             {
@@ -27,52 +30,51 @@ namespace IPRehabWebAPI2.Helpers
                 Question = q.Question
             };
 
-            if (measureCodeSet == null) //each question may or may not have measure
-                                        //use measureCounter and currentQuestion to control multi-measure questions 
-            {
-                var thisMeasures = q.tblQuestionMeasure.Where(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).OrderBy(m => m.MeasureCodeSetIDFK);
-                if (thisMeasures != null && thisMeasures.Any())
-                {
-                    switch (thisMeasures.Count())
-                    {
-                        case 1: //only one measure so take First()
-                            {
-                                questionDTO.Required = thisMeasures.First().Required;
-                                questionDTO.MeasureID = thisMeasures.First().Id;
-                            }
-                            break;
-                        case > 1: //increment the measurCounter if not the same question, else reset the measureCounter 
-                            {
-                                if (currentQuestionID != q.QuestionID)
-                                {
-                                    currentQuestionID = q.QuestionID;
-                                    measureCounter = 0;
-                                }
+            //if (thisQuestionMeasure == null) //each question may or may not have measure such as Q12, Q23, or AssessmentCompleted so to construct the pseudo measure
+            //                                 //use measureCounter and currentQuestion to control multi-measure questions 
+            //{
+            //    var thisMeasures = q.tblQuestionMeasure.Where(m =>
+            //        m.QuestionIDFK == q.QuestionID && m.StageFK == stageID).OrderBy(m => m.MeasureCodeSetIDFK);
+            //    if (thisMeasures != null && thisMeasures.Any())
+            //    {
+            //        switch (thisMeasures.Count())
+            //        {
+            //            case 1: //only one measure so take First()
+            //                {
+            //                    questionDTO.Required = thisMeasures.First().Required;
+            //                    questionDTO.MeasureID = thisMeasures.First().Id;
+            //                }
+            //                break;
+            //            case > 1: //increment the measurCounter if not the same question, else reset the measureCounter 
+            //                {
+            //                    if (currentQuestionID != q.QuestionID)
+            //                    {
+            //                        currentQuestionID = q.QuestionID;
+            //                        measureCounter = 0;
+            //                    }
 
-                                //temporarily take first from the ordered measures until a better way is found
-                                var thisMeasure = thisMeasures.ToArray()[measureCounter];
-                                questionDTO.Required = thisMeasure.Required;
-                                questionDTO.MeasureID = thisMeasure.Id;
-                                measureCounter++;
-                            }
-                            break;
-                    }
-                }
-            }
-            else
+            //                    //temporarily take first from the ordered measures until a better way is found
+            //                    var thisMeasure = thisMeasures.ToArray()[measureCounter];
+            //                    questionDTO.Required = thisMeasure.Required;
+            //                    questionDTO.MeasureID = thisMeasure.Id;
+            //                    measureCounter++;
+            //                }
+            //                break;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+
+            questionDTO.Required = thisQuestionMeasure.Required;
+            questionDTO.MeasureID = thisQuestionMeasure.Id;
+            if (thisQuestionMeasure.MeasureCodeSetIDFKNavigation != null)
             {
-                var thisMeasure = q.tblQuestionMeasure.FirstOrDefault(m =>
-                    m.QuestionIDFK == q.QuestionID && m.StageFK == stageID && m.MeasureCodeSetIDFK == measureCodeSet.CodeSetID);
-                if (thisMeasure != null)
-                {
-                    questionDTO.Required = thisMeasure.Required;
-                    questionDTO.MeasureID = thisMeasure.Id;
-                    questionDTO.MeasureDescription = thisMeasure.MeasureCodeSetIDFKNavigation.CodeDescription; //GetGroupTitle(q, questionStage);
-                    questionDTO.MeasureCodeSetID = thisMeasure.MeasureCodeSetIDFKNavigation.CodeSetID;
-                    questionDTO.MeasureCodeValue = thisMeasure.MeasureCodeSetIDFKNavigation.CodeValue;
-                }
+                questionDTO.MeasureDescription = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeDescription; //GetGroupTitle(q, questionStage);
+                questionDTO.MeasureCodeSetID = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeSetID;
+                questionDTO.MeasureCodeValue = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeValue;
             }
+            //}
 
             questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
             questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
@@ -135,18 +137,43 @@ namespace IPRehabWebAPI2.Helpers
             return answerDTO;
         }
 
+        /// <summary>
+        /// hydrate DTO from vTreatingSpecialtyRecent3Yrs
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public static PatientDTOTreatingSpecialty HydrateTreatingSpecialtyPatient(vTreatingSpecialtyRecent3Yrs p)
         {
             return new PatientDTOTreatingSpecialty
             {
                 Sta6a = p.bsta6a,
                 Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
-                PTFSSN = p.scrssn.Value.ToString().Trim(),
+                PTFSSN = p.ScrSSNT.Trim(),
                 RealSSN = p.RealSSN.Value.ToString().Trim(),
                 PatientICN = p.PatientICN?.Trim(),
                 DoB = p.DoB.Value,
                 Bedsecn = p.bedsecn,
                 AdmitDates = new() { p.admitday.Value }
+            };
+        }
+
+        /// <summary>
+        /// hydrate DTO from RptRehabDetails
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public static PatientDTOTreatingSpecialty HydrateTreatingSpecialtyPatient(RptRehabDetails p)
+        {
+            return new PatientDTOTreatingSpecialty
+            {
+                Sta6a = p.Bsta6a,
+                Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
+                PTFSSN = p.ScrSsnt.Trim(),
+                RealSSN = p.Realssn.Trim(),
+                PatientICN = p.PatientIcn?.Trim(),
+                DoB = p.DoB.Value,
+                Bedsecn = p.Bedsecn,
+                AdmitDates = new() { p.Admitday.Value }
             };
         }
 
@@ -212,14 +239,27 @@ namespace IPRehabWebAPI2.Helpers
         private static string ParseDateString(string thisString)
         {
             string text = string.Empty;
-            char[] parsers = { '/', ' ', '-' };
+            char[] parsers = { '/', ' ', '-', '.' };
             string[] dateParts = thisString.Split(parsers);
-            for (int i = 0; i < 3; i++)
+
+            int counter = 0;
+            foreach (string part in dateParts)
             {
-                text += $"{dateParts[i]}";
-                if (i < 2)
+                text += part;
+                if (counter <= 1)
+                {
+                    counter++;
                     text += "/";
+                }
             }
+
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    text += $"{dateParts[i]}";
+            //    if (i < 2)
+            //        text += "/";
+            //}
+
             if (DateTime.TryParse(text, out DateTime aDate))
             {
                 text = aDate.ToString("yyyy-MM-dd"); /* HTML 5 browser date input must be in this format */

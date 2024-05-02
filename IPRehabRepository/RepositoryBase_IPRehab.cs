@@ -11,14 +11,24 @@ namespace IPRehabRepository
 {
     /// <summary>
     /// https://code-maze.com/net-core-web-development-part4/
-    /// Repository project references RepositoryGenericInterface and PCC_Fit_Model_CoreLibrary, and inside the Repository project create the abstract class RepositoryBase which implements the interface IRepositoryBase. Reference this project to the main project too. This abstract class, as well as IRepositoryBase interface, uses generic type T to work with. This type T gives even more reusability to the RepositoryBase class. That means we don’t have to specify the exact model (class) right now for the RepositoryBase to work with.
+    /// Repository project references RepositoryGenericInterface and PCC_Fit_Model_CoreLibrary, and inside the Repository project create the abstract class RepositoryBase 
+    /// which implements the interface IRepositoryBase. Reference this project to the main project too. This abstract class, as well as IRepositoryBase interface, 
+    /// uses generic type T to work with. This type T gives even more reusability to the RepositoryBase class. That means we don’t have to specify the exact model (class) 
+    /// right now for the RepositoryBase to work with.
     /// </summary>
     /// <typeparam name="T">Generic class to be solidified by the inheriting class</typeparam>
-    public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    public abstract class RepositoryBase_IPRehab<T> : IRepositoryBase<T> where T : class
     {
+        /// <summary>
+        /// auto properties
+        /// </summary>
         protected IPRehabContext RepositoryContext { get; set; }
 
-        public RepositoryBase(IPRehabContext repositoryContext)
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="repositoryContext"></param>
+        public RepositoryBase_IPRehab(IPRehabContext repositoryContext)
         {
             this.RepositoryContext = repositoryContext;
             this.RepositoryContext.Database.SetCommandTimeout(180);

@@ -35,11 +35,11 @@ namespace IPRehab.Controllers
 
             if (!string.IsNullOrEmpty(currentUserID))
             {
-                webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
+                webApiEndpoint = $"{ApiBaseUrl}/api/{base._TreatingSpecialtyApiControllerName}?networkID={currentUserID}&criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
             }
             else
             {
-                webApiEndpoint = $"{ApiBaseUrl}/api/TreatingSpecialtyPatient?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
+                webApiEndpoint = $"{ApiBaseUrl}/api/{base._TreatingSpecialtyApiControllerName}?criteria={searchCriteria}&withEpisode=true&&orderBy={orderBy}&pageNumber={pageNumber}&pageSize={base.PageSize}";
             }
 
             //Sending request to find web api REST service resource TreatingSpecialtyPatientController using HttpClient in the APIAgent
@@ -97,17 +97,17 @@ namespace IPRehab.Controllers
 
                     if (EpisodesWithThisAdmitDate == null || EpisodesWithThisAdmitDate.Count() == 0)
                     {
-                        RehabActionViewModel episodeCommandBtn = new()
+                        RehabActionViewModel episodeCommandBtn = new();
                         {
                             //since no episode ID we have to use patient ID to find patient
-                            HostingPage = "Patient",
-                            PatientID = pat.PatientICN,
-                            EnableThisPatient = true,
-                            SearchCriteria = searchCriteria,
-                            PageNumber = pageNumber,
-                            OrderBy = orderBy,
-                            EpisodeID = -1,   //New episode
-                            AdmitDate = thisAdmission
+                            episodeCommandBtn.HostingPage = "Patient";
+                            episodeCommandBtn.PatientID = pat.PatientICN;
+                            episodeCommandBtn.EnableThisPatient = true;
+                            episodeCommandBtn.SearchCriteria = searchCriteria;
+                            episodeCommandBtn.PageNumber = pageNumber;
+                            episodeCommandBtn.OrderBy = orderBy;
+                            episodeCommandBtn.EpisodeID = -1;   //New episode
+                            episodeCommandBtn.AdmitDate = thisAdmission;
                         };
 
                         thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
@@ -118,17 +118,15 @@ namespace IPRehab.Controllers
                     {
                         foreach (var thisEpisode in EpisodesWithThisAdmitDate)   //existing episodes may be duplicated due to the change from HealtherFactor to TreatingSpecialty cubes 
                         {
-                            RehabActionViewModel episodeCommandBtn = new()
-                            {
-                                HostingPage = "Patient",
-                                PatientID = pat.PatientICN,
-                                EnableThisPatient = true,
-                                SearchCriteria = searchCriteria,
-                                PageNumber = pageNumber,
-                                OrderBy = orderBy,
-                                EpisodeID = thisEpisode.EpisodeOfCareID,
-                                AdmitDate = thisEpisode.AdmissionDate   //could be duplicated admission. old duplicated episodes needs to be deleted
-                            };
+                            RehabActionViewModel episodeCommandBtn = new();
+                            episodeCommandBtn.HostingPage = "Patient";
+                            episodeCommandBtn.PatientID = pat.PatientICN;
+                            episodeCommandBtn.EnableThisPatient = true;
+                            episodeCommandBtn.SearchCriteria = searchCriteria;
+                            episodeCommandBtn.PageNumber = pageNumber;
+                            episodeCommandBtn.OrderBy = orderBy;
+                            episodeCommandBtn.EpisodeID = thisEpisode.EpisodeOfCareID;
+                            episodeCommandBtn.AdmitDate = thisEpisode.AdmissionDate;   //could be duplicated admission. old duplicated episodes needs to be deleted
 
                             thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
                             thisEpisodeBtnConfig.AdmissionDate = thisAdmission;

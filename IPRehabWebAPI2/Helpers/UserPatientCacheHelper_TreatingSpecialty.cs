@@ -1,92 +1,38 @@
-﻿using IPRehabModel;
-using IPRehabRepository.Contracts;
+﻿using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using PatientModel_TreatingSpecialty;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UserModel;
 
 namespace IPRehabWebAPI2.Helpers
 {
-    public class UserPatientCacheHelper : IUserPatientCacheHelper
+    public class UserPatientCacheHelper_TreatingSpecialty : IUserPatientCacheHelper_TreatingSpecialty
     {
-        protected readonly MasterreportsContext _masterReportsContext;
         protected readonly IConfiguration _configuration;
         private readonly IMemoryCache _memoryCache;
-        private readonly ITreatingSpecialtyPatientRepository _treatingSpecialtyPatientRepository;
+        private readonly ITreatingSpecialtyDirectPatientRepository _treatingSpecialtyPatientRepository;
         private readonly IEpisodeOfCareRepository _episodeRepository;
+
         /// <summary>
         /// constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="memoryCache"></param>
-        /// <param name="masterReportsContext"></param>
         /// <param name="episodeRepository"></param>
         /// <param name="treatingSpecialtyPatientRepository"></param>
-        public UserPatientCacheHelper(IConfiguration configuration, IMemoryCache memoryCache, MasterreportsContext masterReportsContext,
-            IEpisodeOfCareRepository episodeRepository, ITreatingSpecialtyPatientRepository treatingSpecialtyPatientRepository)
+        public UserPatientCacheHelper_TreatingSpecialty(IConfiguration configuration, IMemoryCache memoryCache,
+            IEpisodeOfCareRepository episodeRepository, ITreatingSpecialtyDirectPatientRepository treatingSpecialtyPatientRepository)
         {
-            _masterReportsContext = masterReportsContext;
             _configuration = configuration;
             _memoryCache = memoryCache;
             _episodeRepository = episodeRepository;
             _treatingSpecialtyPatientRepository = treatingSpecialtyPatientRepository;
             //https://www.bing.com/ck/a?!&&p=9f40ffcae2103a86JmltdHM9MTY2MjQyMjQwMCZpZ3VpZD0yMGE2ODFkNi05OTNiLTZiN2YtMThjYS05M2MxOThiZjZhNTEmaW5zaWQ9NTQ0MA&ptn=3&hsh=3&fclid=20a681d6-993b-6b7f-18ca-93c198bf6a51&u=a1aHR0cHM6Ly93d3cuYy1zaGFycGNvcm5lci5jb20vYXJ0aWNsZS9yZWFkaW5nLXZhbHVlcy1mcm9tLWFwcHNldHRpbmdzLWpzb24taW4tYXNwLW5ldC1jb3JlLyM6fjp0ZXh0PVRoZXJlJTIwYXJlJTIwdHdvJTIwbWV0aG9kcyUyMHRvJTIwcmV0cmlldmUlMjBvdXIlMjB2YWx1ZXMlMkMsYXJlJTIwZ2V0dGluZyUyMGFub3RoZXIlMjBzZWN0aW9uJTIwdGhhdCUyMGNvbnRhaW5zJTIwdGhlJTIwdmFsdWUu&ntb=1
-        }
-
-        /// <summary>
-        /// Do not use generic repository, instead use MastReportsContext to execute stored procedure to get user access levels
-        /// </summary>
-        /// <param name="networkID"></param>
-        /// <returns></returns>
-        public async Task<List<MastUserDTO>> GetUserAccessLevels(string networkID)
-        {
-            string userName = CleanUserName(networkID); //use network ID without domain
-
-            List<MastUserDTO> thisUserAccessLevel = _memoryCache.Get<List<MastUserDTO>>($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}");
-
-            if (thisUserAccessLevel != null && thisUserAccessLevel.Any())
-            {
-                return thisUserAccessLevel;
-            }
-            else
-            {
-                SqlParameter[] paramNetworkID = new SqlParameter[]
-                {
-                    new SqlParameter(){
-                      ParameterName = "@UserName",
-                      SqlDbType = System.Data.SqlDbType.VarChar,
-                      Direction = System.Data.ParameterDirection.Input,
-                      Value = userName
-                    }
-                };
-
-                //use dbContext extension method
-                var userPermission = await _masterReportsContext.SqlQueryAsync<uspVSSCMain_SelectAccessInformationFromNSSDResult>(
-                  $"execute [Apps].[uspVSSCMain_SelectAccessInformationFromNSSD] @UserName", paramNetworkID);
-
-                if (userPermission == null || !userPermission.Any())
-                    return null;    //no permssion
-
-                var distinctFacilities = userPermission
-                  .Where(x => !string.IsNullOrEmpty(x.Facility)).Distinct()
-                  .Select(x => HydrateDTO.HydrateUser(x)).ToList();
-
-                if (distinctFacilities == null || !distinctFacilities.Any())
-                    return null;    //no permitted facilities
-
-                //using var MasterReportsDb = new MasterreportsContext();
-                //var procedure = new MasterreportsContextProcedures(MasterReportsDb);
-                //var accessLevel = procedure.uspVSSCMain_SelectAccessInformationFromNSSDAsync(userName);
-
-                _memoryCache.Set($"{CacheKeys.CacheKeyThisUserAccessLevel}_{networkID}", distinctFacilities, TimeSpan.FromHours(2));
-                return distinctFacilities;
-            }
         }
 
         /// <summary>
@@ -114,8 +60,7 @@ namespace IPRehabWebAPI2.Helpers
             //when patientID is not blank then return a list containing single patient
             if (!string.IsNullOrEmpty(patientID))
             {
-                thisFacilityPatients = thisFacilityPatients.Where(p => p.ScrSSNT.Trim() == patientID).ToList();
-
+                thisFacilityPatients = thisFacilityPatients.Where(p => p.ScrSsnt.Trim() == patientID).ToList();
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                     return null;    //no patient matches the patientID in permitted facilities list
             }
@@ -135,9 +80,9 @@ namespace IPRehabWebAPI2.Helpers
                 {
                     case "numeric":
                         thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                            p.scrssn == numericCriteria ||
-                                            p.bedsecn == numericCriteria ||
-                                            p.bsta6a.Contains(numericCriteria.ToString())
+                                            p.Scrssn == numericCriteria ||
+                                            p.Bedsecn == numericCriteria ||
+                                            p.Bsta6a.Contains(numericCriteria.ToString())
                                         ).ToList();
 
                         break; //break case
@@ -145,11 +90,9 @@ namespace IPRehabWebAPI2.Helpers
                     case "non-numeric":
                         criteria = criteria.Trim().ToLower();
                         thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                            p.Last_Name.Trim().ToLower().Contains(criteria) ||
-                                            p.First_Name.Trim().ToLower().Contains(criteria) ||
-                                            p.ScrSSNT.Trim().Contains(criteria) ||
-                                            p.RealSSN.Value.ToString().Trim().Contains(criteria) ||
-                                            p.PatientICN.Trim().Contains(criteria)
+                                            p.LastName.Trim().ToLower().Contains(criteria) ||
+                                            p.FirstName.Trim().ToLower().Contains(criteria) ||
+                                            p.PatientIcn.Trim().Contains(criteria)
                                         ).ToList();
                         break;
                 }
@@ -176,7 +119,7 @@ namespace IPRehabWebAPI2.Helpers
                 var allFacilityPatients = await GetAllFacilityPatients();
 
                 var patientInThisEpisode = allFacilityPatients.Where(p =>
-                    p.ScrSSNT.ToString() == thisEpisode.PatientICNFK).FirstOrDefault();
+                    p.ScrSsnt == thisEpisode.PatientICNFK).FirstOrDefault();
 
                 if (patientInThisEpisode != null)
                     patient = HydrateDTO.HydrateTreatingSpecialtyPatient(patientInThisEpisode);
@@ -185,7 +128,7 @@ namespace IPRehabWebAPI2.Helpers
             return patient;
         }
 
-        //  private static List<int> GetQuarterOfInterest()
+        //  private List<int> GetQuarterOfInterest()
         //  {
         //      DateTime today = DateTime.Today;
 
@@ -246,7 +189,7 @@ namespace IPRehabWebAPI2.Helpers
         {
             string networkName = networkID;
             if (string.IsNullOrEmpty(networkName))
-                return string.Empty;
+                return null;
             else
             {
                 if (networkName.Contains('\\') || networkName.Contains("%2F") || networkName.Contains("//"))
@@ -264,41 +207,41 @@ namespace IPRehabWebAPI2.Helpers
         }
 
         /// <summary>
-        /// get the treating speciatlty patients cohort base from session, otherwise get them from the WebAPI
+        /// get the treating specialty patients cohort base from session, otherwise get them from the WebAPI
         /// </summary>
         /// <returns></returns>
-        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetAllFacilityPatients()
+        public async Task<List<RptRehabDetails>> GetAllFacilityPatients()
         {
-            //List<vTreatingSpecialtyRecent3Yrs> allPatientsFromCache = null;
+            //List<RptRehabDetails> allPatientsFromCache = null;
             //var tmp = _memoryCache.Get(CacheKeys.CacheKeyAllPatients);
             //if (tmp != null)
-            //    allPatientsFromCache = (List<vTreatingSpecialtyRecent3Yrs>)tmp;
+            //    allPatientsFromCache = (List<RptRehabDetails>)tmp;
 
             //get all facilities patients from the memory cache
-            var allPatientsFromCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(CacheKeys.CacheKeyAllPatients);
+            var allPatientsFromCache = _memoryCache.Get<List<RptRehabDetails>>(CacheKeys.CacheKeyAllPatients);
 
             if (allPatientsFromCache != null && allPatientsFromCache.Any())
             {
                 //renew cache for 24 hours
-                _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromCache, TimeSpan.FromDays(1));
+                _memoryCache.Set(CacheKeys.CacheKeyAllPatients_TreatingSpeciality, allPatientsFromCache, TimeSpan.FromDays(1));
                 return allPatientsFromCache;
             }
             else
             {
-                //get from sql view without user facilities filter
-                var allPatientsFromSqlView = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
+                //directly get from BI13 without user facilities filter
+                var listOfRptRehabDetails = await _treatingSpecialtyPatientRepository.FindAll().ToListAsync();
                 //update cache for 24 hours
-                _memoryCache.Set(CacheKeys.CacheKeyAllPatients, allPatientsFromSqlView, TimeSpan.FromDays(1));
-                return allPatientsFromSqlView;
+                _memoryCache.Set(CacheKeys.CacheKeyAllPatients_TreatingSpeciality, listOfRptRehabDetails, TimeSpan.FromDays(1));
+                return listOfRptRehabDetails;
             }
         }
 
-        public async Task<List<vTreatingSpecialtyRecent3Yrs>> GetThisFacilityPatients(List<MastUserDTO> distinctUserFacilities)
+        public async Task<List<RptRehabDetails>> GetThisFacilityPatients(List<MastUserDTO> distinctUserFacilities)
         {
             //get smaller set of this facility patients from the memory cache
             string cacheKeyOfThisFacility = $"{CacheKeys.CacheKeyThisFacilityPatients}_{distinctUserFacilities.First().Facility}";
 
-            var thisFacilityPatientsInCache = _memoryCache.Get<List<vTreatingSpecialtyRecent3Yrs>>(cacheKeyOfThisFacility);
+            var thisFacilityPatientsInCache = _memoryCache.Get<List<RptRehabDetails>>(cacheKeyOfThisFacility);
 
             if (thisFacilityPatientsInCache != null && thisFacilityPatientsInCache.Any())
             {
@@ -310,15 +253,15 @@ namespace IPRehabWebAPI2.Helpers
                 //get all facilities patients
                 var allFacilityPatients = await GetAllFacilityPatients();
 
-                List<vTreatingSpecialtyRecent3Yrs> patientsInCurrentUserFacility = new();
-                List<vTreatingSpecialtyRecent3Yrs> thisFacilityPatients = null;
+                List<RptRehabDetails> patientsInCurrentUserFacility = new();
+                List<RptRehabDetails> thisFacilityPatients = null;
 
                 //get from sql view with user facilities filter on bsta6
                 //this cannot be done at server side and must use {column}.StartWith()
                 foreach (var fac in distinctUserFacilities)
                 {
                     thisFacilityPatients = allFacilityPatients
-                        .Where(p => p.bsta6a.StartsWith(fac.Facility.Substring(0, 3))).ToList();
+                        .Where(p => p.Bsta6a.StartsWith(fac.Facility.Substring(0, 3))).ToList();
 
                     //thisFacilityPatients = allFacilityPatients
                     //    .Where(p => fac.Facility == p.bsta6a).ToList();
@@ -336,17 +279,24 @@ namespace IPRehabWebAPI2.Helpers
             }
         }
 
-        private List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<vTreatingSpecialtyRecent3Yrs> thisFacilityPatients, int pageNumber, int pageSize)
+        /// <summary>
+        /// convert RptRehabDetails from BI13 to DTO
+        /// </summary>
+        /// <param name="thisFacilityPatients"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        private List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<RptRehabDetails> thisFacilityPatients, int pageNumber, int pageSize)
         {
             List<PatientDTOTreatingSpecialty> patients = new();
 
-            var distinctedPatientsInThisFacility = thisFacilityPatients.DistinctBy(x => x.PatientICN).ToList();
+            var distinctedPatientsInThisFacility = thisFacilityPatients.DistinctBy(x => x.PatientIcn).ToList();
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
                 //the annonymous thisDistinctP cannot be hydrated, so get vTreatingSpecialtyRecent3Yrs type
                 var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisDistinctP);
 
-                var admissions = thisFacilityPatients.Where(p => p.PatientICN == thisDistinctP.PatientICN).Select(p => p.admitday.Value).ToList();
+                var admissions = thisFacilityPatients.Where(p => p.PatientIcn == thisDistinctP.PatientIcn).Select(p => p.Admitday.Value).ToList();
 
                 if (admissions.Any())
                 {

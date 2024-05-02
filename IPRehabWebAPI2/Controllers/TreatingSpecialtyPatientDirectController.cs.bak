@@ -11,28 +11,31 @@ using System.Threading.Tasks;
 namespace IPRehabWebAPI2.Controllers
 {
     /// <summary>
-    /// Using link server, indirectly gets Treating Specialty patient with SQL view
+    /// Instread of using link server, directly gets Treating Specialty patient from BI13 server
     /// </summary>
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class TreatingSpecialtyPatientController : ControllerBase
+    public class TreatingSpecialtyPatientDirectController : ControllerBase
     {
         private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
         private readonly IUserPatientCacheHelper _cacheHelper;
+        private readonly IUserPatientCacheHelper_TreatingSpeciality _cacheHelper_TreatingSpeciality;
 
         protected string CurrentNetworkID { get; set; }
 
-        public TreatingSpecialtyPatientController(
+        public TreatingSpecialtyPatientDirectController(
             IEpisodeOfCareRepository episodeOfCareRepository,
-            IUserPatientCacheHelper cacheHelper)
+            IUserPatientCacheHelper cacheHelper,
+            IUserPatientCacheHelper_TreatingSpeciality cacheHelperNew)
         {
             _episodeOfCareRepository = episodeOfCareRepository;
             _cacheHelper = cacheHelper;
+            _cacheHelper_TreatingSpeciality = cacheHelperNew;
         }
 
         /// <summary>
-        /// get patients matching the search criteria with visibility by the user facility level
+        /// directly from BI13 TreatingSpecailty DB the patients matching the search criteria with visibility by the user facility level
         /// </summary>
         /// <param name="networkID"></param>
         /// <param name="criteria"></param>
@@ -60,7 +63,8 @@ namespace IPRehabWebAPI2.Controllers
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
                 return NotFound("You do not have permission to view any facility patients");
 
-            facilityPatients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, null);
+            facilityPatients = await _cacheHelper_TreatingSpeciality.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, null);
+
 
             if (facilityPatients == null || !facilityPatients.Any())
             {
@@ -165,7 +169,7 @@ namespace IPRehabWebAPI2.Controllers
 
             var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
 
-            List<PatientDTOTreatingSpecialty> patients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
+            List<PatientDTOTreatingSpecialty> patients = await _cacheHelper_TreatingSpeciality.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
             if (patients == null || !patients.Any())
             {
                 return NotFound($"The patient {patientID} is not found in your facility");
@@ -211,10 +215,10 @@ namespace IPRehabWebAPI2.Controllers
             if (thisEpisode == null)
                 return NotFound($"The episode ({episodeID}) is not found");
 
-            var thisPatient = await _cacheHelper.GetPatientByEpisode(episodeID);
+            var thisPatient = await _cacheHelper_TreatingSpeciality.GetPatientByEpisode(episodeID);
             if (thisPatient == null)
             {
-                return NotFound($"This episode ({episodeID}) doesn't contain patient {thisEpisode.PatientICNFK} (scrssnt)");
+                return NotFound($"This episode ({episodeID}) patient ICN ({thisEpisode.PatientICNFK}) does not match with any PatientICN and scrssn in the database");
             }
             else
             {

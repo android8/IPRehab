@@ -24,6 +24,11 @@
             <param name="networkID"></param>
             <returns></returns>
         </member>
+        <member name="T:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientController">
+            <summary>
+            Using link server, indirectly gets Treating Specialty patient with SQL view
+            </summary>
+        </member>
         <member name="M:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientController.GetPatients(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
             <summary>
             get patients matching the search criteria with visibility by the user facility level
@@ -49,6 +54,43 @@
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientController.GetPatient(System.Int32)">
+            <summary>
+            Get individual patient by episode since patient ID and patient name cannot be used in querystring
+            For new episode use [HttpGet("{patientID}")] endpoint.
+            </summary>
+            <param name="episodeID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientDirectController">
+            <summary>
+            Instread of using link server, directly gets Treating Specialty patients from BI13 server
+            </summary>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientDirectController.GetPatients(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            directly from BI13 TreatingSpecailty DB the patients matching the search criteria with visibility by the user facility level
+            </summary>
+            <param name="networkID"></param>
+            <param name="criteria"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientDirectController.GetPatient(System.String,System.String,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            get only meta data of an individual patient by id
+            </summary>
+            <param name="patientID"></param>
+            <param name="networkID"></param>
+            <param name="withEpisode"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.TreatingSpecialtyPatientDirectController.GetPatient(System.Int32)">
             <summary>
             Get individual patient by episode since patient ID and patient name cannot be used in querystring
             For new episode use [HttpGet("{patientID}")] endpoint.
@@ -105,6 +147,20 @@
             Hydrate the DTO with selected domain properties
             </summary>
         </member>
+        <member name="M:IPRehabWebAPI2.Helpers.HydrateDTO.HydrateTreatingSpecialtyPatient(IPRehabModel.vTreatingSpecialtyRecent3Yrs)">
+            <summary>
+            hydrate DTO from vTreatingSpecialtyRecent3Yrs
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.HydrateDTO.HydrateTreatingSpecialtyPatient(PatientModel_TreatingSpecialty.RptRehabDetails)">
+            <summary>
+            hydrate DTO from RptRehabDetails
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
         <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Caching.Memory.IMemoryCache,UserModel.MasterreportsContext,IPRehabRepository.Contracts.IEpisodeOfCareRepository,IPRehabRepository.Contracts.ITreatingSpecialtyPatientRepository)">
             <summary>
             constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
@@ -154,6 +210,56 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Caching.Memory.IMemoryCache,IPRehabRepository.Contracts.IEpisodeOfCareRepository,IPRehabRepository.Contracts.ITreatingSpecialtyDirectPatientRepository)">
+            <summary>
+            constructor injection of MasterreportsContext in order to execute _context.SqlQueryAsync()
+            </summary>
+            <param name="configuration"></param>
+            <param name="memoryCache"></param>
+            <param name="episodeRepository"></param>
+            <param name="treatingSpecialtyPatientRepository"></param>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.GetPatients(System.Collections.Generic.List{IPRehabWebAPI2.Models.MastUserDTO},System.String,System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            get patients from Treating Specialty using ITreatingSpecialtyPatientRepository
+            </summary>
+            <param name="distinctUserFacilities"></param>
+            <param name="criteria"></param>
+            <param name="orderBy"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <param name="patientID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.GetPatientByEpisode(System.Int32)">
+            <summary>
+            get patient by Episode ID from Treating Specialty
+            </summary>
+            <param name="episodeID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.CleanUserName(System.String)">
+            <summary>
+            this should be in a utility library
+            </summary>
+            <param name="networkID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.GetAllFacilityPatients">
+            <summary>
+            get the treating specialty patients cohort base from session, otherwise get them from the WebAPI
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IPRehabWebAPI2.Helpers.UserPatientCacheHelper_TreatingSpecialty.ConvertToPatientDTO(System.Collections.Generic.IEnumerable{PatientModel_TreatingSpecialty.RptRehabDetails},System.Int32,System.Int32)">
+            <summary>
+            convert RptRehabDetails from BI13 to DTO
+            </summary>
+            <param name="thisFacilityPatients"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
         <member name="P:IPRehabWebAPI2.Models.AnswerDTO.AnswerID">
             <summary>
             record key
@@ -162,7 +268,7 @@
         <member name="P:IPRehabWebAPI2.Models.PatientDTOTreatingSpecialty.PTFSSN">
             <summary>
             PTFSSN was from the HealtFactor cube,
-            and is from SCRSSN in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
+            and is from SCRSSNT in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientName">

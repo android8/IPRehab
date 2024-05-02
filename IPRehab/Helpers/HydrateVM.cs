@@ -1,6 +1,5 @@
 ﻿using IPRehab.Models;
 using IPRehabWebAPI2.Models;
-using MessagePack.Formatters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -293,7 +292,7 @@ namespace IPRehab.Helpers
                 {
                     Text = questionDTO.AnswerCodeCategory,
                     Value = questionDTO.AnswerCodeSetID.ToString(),
-                    Selected = (thisAnswer != null)
+                    Selected = thisAnswer != null
                 };
 
                 ChoiceAndAnswer thisChoiceAndAnswer = new()
@@ -314,7 +313,7 @@ namespace IPRehab.Helpers
                     {
                         Text = c.CodeDescription,
                         Value = c.CodeSetID.ToString(),
-                        Selected = (thisAnswer != null)
+                        Selected = thisAnswer != null
                     };
 
                     ChoiceAndAnswer thisChoiceAndAnswer = new();

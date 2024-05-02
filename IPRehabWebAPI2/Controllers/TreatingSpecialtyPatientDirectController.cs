@@ -11,28 +11,31 @@ using System.Threading.Tasks;
 namespace IPRehabWebAPI2.Controllers
 {
     /// <summary>
-    /// Using link server, indirectly gets Treating Specialty patient with SQL view
+    /// Instread of using link server, directly gets Treating Specialty patients from BI13 server
     /// </summary>
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class TreatingSpecialtyPatientController : ControllerBase
+    public class TreatingSpecialtyPatientDirectController : ControllerBase
     {
         private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
         private readonly IUserPatientCacheHelper _cacheHelper;
+        private readonly IUserPatientCacheHelper_TreatingSpecialty _cacheHelper_TreatingSpeciality;
 
         protected string CurrentNetworkID { get; set; }
 
-        public TreatingSpecialtyPatientController(
+        public TreatingSpecialtyPatientDirectController(
             IEpisodeOfCareRepository episodeOfCareRepository,
-            IUserPatientCacheHelper cacheHelper)
+            IUserPatientCacheHelper cacheHelper,
+            IUserPatientCacheHelper_TreatingSpecialty cacheHelper_TreatingSpeciality)
         {
             _episodeOfCareRepository = episodeOfCareRepository;
             _cacheHelper = cacheHelper;
+            _cacheHelper_TreatingSpeciality = cacheHelper_TreatingSpeciality;
         }
 
         /// <summary>
-        /// get patients matching the search criteria with visibility by the user facility level
+        /// directly from BI13 TreatingSpecailty DB the patients matching the search criteria with visibility by the user facility level
         /// </summary>
         /// <param name="networkID"></param>
         /// <param name="criteria"></param>
@@ -58,9 +61,10 @@ namespace IPRehabWebAPI2.Controllers
             List<PatientDTOTreatingSpecialty> facilityPatients;
             var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
-                return NotFound("You do not have permission to view any facility patients");
+                return NotFound($"{networkID}.You do not have permission to view any facility patients");
 
-            facilityPatients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, null);
+            facilityPatients = await _cacheHelper_TreatingSpeciality.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, null);
+
 
             if (facilityPatients == null || !facilityPatients.Any())
             {
@@ -165,14 +169,14 @@ namespace IPRehabWebAPI2.Controllers
 
             var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
 
-            List<PatientDTOTreatingSpecialty> patients = await _cacheHelper.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
-            if (patients == null || !patients.Any())
+            List<PatientDTOTreatingSpecialty> facilityPatients = await _cacheHelper_TreatingSpeciality.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, patientID);
+            if (facilityPatients == null || !facilityPatients.Any())
             {
                 return NotFound($"The patient {patientID} is not found in your facility");
             }
             else
             {
-                PatientDTOTreatingSpecialty thisPatient = patients.First();
+                PatientDTOTreatingSpecialty thisPatient = facilityPatients.First();
                 if (withEpisode)
                 {
                     var episodes = _episodeOfCareRepository.FindByCondition(e => e.PatientICNFK == thisPatient.PatientICN || e.PatientICNFK == thisPatient.PTFSSN);
@@ -211,7 +215,7 @@ namespace IPRehabWebAPI2.Controllers
             if (thisEpisode == null)
                 return NotFound($"The episode ({episodeID}) is not found");
 
-            var thisPatient = await _cacheHelper.GetPatientByEpisode(episodeID);
+            var thisPatient = await _cacheHelper_TreatingSpeciality.GetPatientByEpisode(episodeID);
             if (thisPatient == null)
             {
                 return NotFound($"This episode ({episodeID}) doesn't contain patient {thisEpisode.PatientICNFK} (scrssnt)");

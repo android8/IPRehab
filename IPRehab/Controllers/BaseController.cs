@@ -28,6 +28,8 @@ namespace IPRehab.Controllers
 
         protected string ApiBaseUrl { get; }
 
+        protected readonly string _TreatingSpecialtyApiControllerName = "TreatingSpecialtyPatientDirect";
+
         protected string EnvironmentName { get; }
 
         protected string Impersonated { get; }

@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace IPRehabWebAPI2.Controllers
 {
-    /// <summary>
-    /// Using link server, indirectly gets Treating Specialty patient with SQL view
-    /// </summary>
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
@@ -214,7 +211,7 @@ namespace IPRehabWebAPI2.Controllers
             var thisPatient = await _cacheHelper.GetPatientByEpisode(episodeID);
             if (thisPatient == null)
             {
-                return NotFound($"This episode ({episodeID}) doesn't contain patient {thisEpisode.PatientICNFK} (scrssnt)");
+                return NotFound($"This episode ({episodeID}) patient ICN ({thisEpisode.PatientICNFK}) does not match with any PatientICN and scrssn in the database");
             }
             else
             {

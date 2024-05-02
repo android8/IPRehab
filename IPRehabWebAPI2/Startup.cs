@@ -7,12 +7,12 @@ using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PatientModel_TreatingSpecialty;
 using System.Net.Mime;
 using System.Text.Json;
 using UserModel;
@@ -50,6 +50,7 @@ namespace IPRehabWebAPI2
 
             string IPRehabConnectionString = Configuration.GetConnectionString("IPRehab");
             string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
+            string TreatingSpecialtyConnectionString = Configuration.GetConnectionString("TreatingSpecialty");
 
             //register the internal IPRehab DB context
             //UseLoggerFactory output in debug window
@@ -64,6 +65,13 @@ namespace IPRehabWebAPI2
               //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
               .UseSqlServer(MasterReportsConnectionString));
 
+            //register the external TreatingSpecialty DB context for users
+            services.AddDbContext<DMTreatingSpecialtyContext>(
+              o => o.UseLazyLoadingProxies()
+              //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+              .UseSqlServer(TreatingSpecialtyConnectionString));
+
+
             #endregion db setup
 
             #region IoC container
@@ -77,11 +85,23 @@ namespace IPRehabWebAPI2
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISignatureRepository, SignatureRepository>();
             services.AddScoped<IQuestionMeasureRepository, QuestionMeasureRepository>();
+
+            //treating specialty Non-DIRECT uses a link server sql view in DB2 to get patients via IPRehabContext
             services.AddScoped<ITreatingSpecialtyPatientRepository, TreatingSpecialtyPatientRepository>();
+
+            //treating specialty DIRECT gets patients directly from BI13 using the DMTreatingSpecialtyContext
+            services.AddScoped<ITreatingSpecialtyDirectPatientRepository, TreatingSpecialtyDirectPatientRepository>();
 
             //https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-providers
 
+            //UserPatientCacheHelper deals with vTreatingSpecialtyRecent3Yrs to DTO mapping
             services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
+
+            //UserPatientCacheHelper_TreatingSpecialty deals with RptRehabDetails to DTO mapping
+            services.AddScoped<IUserPatientCacheHelper_TreatingSpecialty, UserPatientCacheHelper_TreatingSpecialty>();
+
+            //TreatingSpecialtyPatientDemographicRepository deals with patients not in RptRehabDetails to DTO mapping
+            services.AddScoped<ITreatingSpecialtyPatientDemographicRepository, TreatingSpecialtyPatientDemographicRepository>();
 
             services.AddScoped<AnswerHelper, AnswerHelper>();
 
@@ -144,7 +164,12 @@ namespace IPRehabWebAPI2
 
             #endregion CORS
 
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            #region authentication authorization
+            //https://learn.microsoft.com/en-us/aspnet/core/security/authentication/windowsauth?view=aspnetcore-8.0&tabs=netcore-cli
+            //services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            services.AddAuthentication(options => { options.DefaultAuthenticateScheme = options.DefaultAuthenticateScheme; }).AddNegotiate();
+            services.AddAuthorization(options => { options.FallbackPolicy = options.DefaultPolicy; });
+            #endregion
 
             #region API Controller behaviors
 

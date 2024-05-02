@@ -2,34 +2,16 @@
 {
     public static class CacheKeys
     {
-        private static readonly string _cacheKeyThisUserAccessLevel = "ThisUserAccessLevel";
-        public static string CacheKeyThisUserAccessLevel
-        {
-            get { return _cacheKeyThisUserAccessLevel; }
-        }
+        public static string CacheKeyThisUserAccessLevel { get; } = "ThisUserAccessLevel";
 
-        private static readonly string _cacheKeyAllPatients = "AllFacilityPatients";
-        public static string CacheKeyAllPatients
-        {
-            get { return _cacheKeyAllPatients; }
-        }
+        public static string CacheKeyAllPatients { get; } = "AllFacilityPatients";
 
-        private static readonly string _cacheKeyThisFacilityPatients = "ThisFacilityPatients";
-        public static string CacheKeyThisFacilityPatients
-        {
-            get { return _cacheKeyThisFacilityPatients; }
-        }
+        public static string CacheKeyAllPatients_TreatingSpeciality { get; } = "AllFacilityPatients_TreatingSpeciality";
 
-        private static readonly string _cacheKeyThisPatient = "ThisPatient";
-        public static string CacheKeyThisPatient
-        {
-            get { return _cacheKeyThisPatient; }
-        }
+        public static string CacheKeyThisFacilityPatients { get; } = "ThisFacilityPatients";
 
-        private static readonly string _cacheKeyAllQuestions = "AllQuestions";
-        public static string CacheKeyAllQuestions
-        {
-            get { return _cacheKeyAllQuestions; }
-        }
+        public static string CacheKeyThisPatient { get; } = "ThisPatient";
+
+        public static string CacheKeyAllQuestions { get; } = "AllQuestions";
     }
 }

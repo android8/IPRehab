@@ -1,5 +1,5 @@
 ﻿{
-   "CodeGenerationMode": 2,
+   "CodeGenerationMode": 4,
    "ContextClassName": "DMTreatingSpecialtyContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
@@ -8,44 +8,43 @@
    "ModelNamespace": null,
    "OutputContextPath": null,
    "OutputPath": null,
+   "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "PatientModel_TreatingSpecialty",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "[dbo].[FactTSAll_CDW]",
-         "ObjectType": 3
+         "Name": "[dbo].[patient_demographic]",
+         "ObjectType": 0
       },
       {
-         "Name": "[dbo].[FactTSAll_CDW_2yrs]",
-         "ObjectType": 3
-      },
-      {
-         "Name": "[dbo].[FactTSAll_Day_CDW_2yrs]",
-         "ObjectType": 3
-      },
-      {
-         "Name": "[dbo].[FactTSAll_recent]",
-         "ObjectType": 3
+         "Name": "[dbo].[rptRehabDetails]",
+         "ObjectType": 0
       }
    ],
-   "UiHint": "VHAAUSBI13.DMTreatingSpecialty",
+   "UiHint": "vhaausbi13.DMTreatingSpecialty.dbo",
+   "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
    "UseHierarchyId": false,
    "UseInflector": false,
    "UseLegacyPluralizer": false,
    "UseManyToManyEntity": false,
-   "UseNoConstructor": false,
    "UseNoDefaultConstructor": false,
    "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
    "UseSchemaFolders": false,
-   "UseSpatial": false
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
 }

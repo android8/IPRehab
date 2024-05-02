@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PatientModel_TreatingSpecialty;
 using System;
 using System.Text.Json.Serialization;
 using UserModel;
@@ -66,67 +67,73 @@ namespace IPRehab
 
             #region web optimization
             // https://github.com/ligershark/WebOptimizer
-            if (Env.IsDevelopment())
-            {
-                /* no minification */
-                services.AddWebOptimizer(minifyJavaScript: false, minifyCss: false);
-            }
-            else
-            {
-                services.AddWebOptimizer(pipeline =>
-                {
-                    // Creates a CSS and a JS bundle. Globbing patterns supported.
-                    pipeline.AddScssBundle("/css/siteCssBundle.css", new string[] {
-                      "css/**/site.css",
-                      "css/**/transition.css",
-                      "css/**/app.css"
-                    });
+            //if (Env.IsDevelopment())
+            //{
+            //    /* no minification */
+            //    services.AddWebOptimizer(minifyJavaScript: false, minifyCss: false);
+            //}
+            //else
+            //{
+            //    services.AddWebOptimizer(pipeline =>
+            //    {
+            //        // Creates a CSS and a JS bundle. Globbing patterns supported.
+            //        pipeline.AddScssBundle("/css/siteCssBundle.css", new string[] {
+            //          "css/**/site.css",
+            //          "css/**/transition.css",
+            //          "css/**/app.css"
+            //        });
 
-                    pipeline.AddJavaScriptBundle("/js/siteJsBundle.js", new string[] {
-                      "js/**/animateBanner.js",
-                      "js/**/cookieConsent.js"});
+            //        pipeline.AddJavaScriptBundle("/js/siteJsBundle.js", new string[] {
+            //          "js/**/animateBanner.js",
+            //          "js/**/cookieConsent.js"});
 
-                    pipeline.AddJavaScriptBundle("/js/patientBundle.js", new string[] {
-                      "js/**/commandBtns.js",
-                      "js/**/patientList.js"});
+            //        pipeline.AddJavaScriptBundle("/js/patientBundle.js", new string[] {
+            //          "js/**/commandBtns.js",
+            //          "js/**/patientList.js"});
 
-                    pipeline.AddJavaScriptBundle("/js/questionBundle.js", new string[] {
-                      "js/**/commandBtns.js",
-                      "js/**/branching.js",
-                      "js/**/form.js" });
+            //        pipeline.AddJavaScriptBundle("/js/questionBundle.js", new string[] {
+            //          "js/**/commandBtns.js",
+            //          "js/**/branching.js",
+            //          "js/**/form.js" });
 
-                    // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
-                    //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")
-                    //        .UseContentRoot()
-                    //        .PrependHeader("My custom header")
-                    //        .AddResponseHeader("x-test", "value");
+            //        // This bundle uses source files from the Content Root and uses a custom PrependHeader extension
+            //        //pipeline.AddJavaScriptBundle("/js/scripts.js", "scripts/a.js", "wwwroot/js/plus.js")
+            //        //        .UseContentRoot()
+            //        //        .PrependHeader("My custom header")
+            //        //        .AddResponseHeader("x-test", "value");
 
-                    // This will minify any JS and CSS file that isn't part of any bundle
-                    pipeline.MinifyCssFiles();
-                    pipeline.MinifyJsFiles();
+            //        //minify any JS and CSS file that isn't part of any bundle
+            //        pipeline.MinifyCssFiles();
+            //        pipeline.MinifyJsFiles();
 
-                    // This will automatically compile any referenced .scss files
-                    pipeline.CompileScssFiles();
+            //        //automatically compile any referenced .scss files
+            //        pipeline.CompileScssFiles();
 
-                    // AddFiles/AddBundle allow for custom pipelines
-                    pipeline.AddBundle("/text.txt", "text/plain", "random/*.txt")
-                    .AdjustRelativePaths()
-                    .Concatenate()
-                    .FingerprintUrls()
-                    .MinifyCss();
-                });
-            }
+            //        //AddFiles/AddBundle allow for custom pipelines
+            //        pipeline.AddBundle("/text.txt", "text/plain", "random/*.txt")
+            //        .AdjustRelativePaths()
+            //        .Concatenate()
+            //        .FingerprintUrls()
+            //        .MinifyCss();
+            //    });
+            //}
             #endregion
 
             services.AddRazorPages();
 
-            //register the external Masterreports DB context for users
+            //register the external Masterreports and Treating Specialty DBs context
             string MasterReportsConnectionString = Configuration.GetConnectionString("MasterReports");
+            string TreatingSpecialtyConnectionString = Configuration.GetConnectionString("TreatingSpecialty");
 
             services.AddDbContext<MasterreportsContext>(
               o => o.UseLazyLoadingProxies()
               .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
               .UseSqlServer(MasterReportsConnectionString));
+
+            services.AddDbContext<DMTreatingSpecialtyContext>(
+              o => o.UseLazyLoadingProxies()
+              .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()))
+              .UseSqlServer(TreatingSpecialtyConnectionString));
 
             #region IoC
             /* IoC for mailer.  It's not WebAPI's concern so it should not register there */
@@ -142,8 +149,20 @@ namespace IPRehab
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISignatureRepository, SignatureRepository>();
             services.AddScoped<IQuestionMeasureRepository, QuestionMeasureRepository>();
+
+            //treating specialty Non-DIRECT uses a link server sql view in DB2 to get patients via IPRehabContext
             services.AddScoped<ITreatingSpecialtyPatientRepository, TreatingSpecialtyPatientRepository>();
+
+            //treating specialty DIRECT gets patients directly from BI13 using the DMTreatingSpecialtyContext
+            services.AddScoped<ITreatingSpecialtyDirectPatientRepository, TreatingSpecialtyDirectPatientRepository>();
+
+            //https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-providers
+
+            //UserPatientCacheHelper deals with vTreatingSpecialtyRecent3Yrs to DTO mapping
             services.AddScoped<IUserPatientCacheHelper, UserPatientCacheHelper>();
+
+            //UserPatientCacheHelper_TreatingSpecialty deals with RptRehabDetails to DTO mapping
+            services.AddScoped<IUserPatientCacheHelper_TreatingSpecialty, UserPatientCacheHelper_TreatingSpecialty>();
             #endregion
 
             /* Implement ProblemDetailsFactory
@@ -199,7 +218,7 @@ namespace IPRehab
 
             app.UseHttpsRedirection();
 
-            app.UseWebOptimizer();/* must be before UseStaticFiles() */
+            // app.UseWebOptimizer();/* must be before UseStaticFiles() */
 
             app.UseStaticFiles();
 

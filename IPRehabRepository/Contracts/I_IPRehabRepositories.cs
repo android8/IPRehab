@@ -1,5 +1,5 @@
 ﻿using IPRehabModel;
-using PatientModel;
+using PatientModel_TreatingSpecialty;
 
 namespace IPRehabRepository.Contracts
 {
@@ -27,6 +27,13 @@ namespace IPRehabRepository.Contracts
     {
     }
 
+    public interface ITreatingSpecialtyDirectPatientRepository : IRepositoryBase<RptRehabDetails>
+    {
+    }
+
+    public interface ITreatingSpecialtyPatientDemographicRepository : IRepositoryBase<PatientDemographic>
+    {
+    }
     public interface ICodeSetRepository : IRepositoryBase<tblCodeSet>
     {
     }
