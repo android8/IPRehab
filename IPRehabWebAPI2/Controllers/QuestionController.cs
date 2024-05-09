@@ -148,6 +148,7 @@ namespace IPRehabWebAPI2.Controllers
                    || m.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted")
               .OrderBy(o => o.QuestionIDFKNavigation.Order)
               .ThenBy(q => q.QuestionIDFKNavigation.QuestionKey)
+              .ThenBy(m => m.MeasureCodeSetIDFKNavigation.CodeDescription)
               .Select(m => HydrateDTO.HydrateQuestion(m.QuestionIDFKNavigation, m.StageFKNavigation.CodeDescription, m.StageFK, m)).ToList();
 
             List<QuestionDTO> keyQuestions = questions.Where(x => x.QuestionKey == "Q12" || x.QuestionKey == "Q23").ToList();

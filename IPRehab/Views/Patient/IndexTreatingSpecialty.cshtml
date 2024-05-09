@@ -4,17 +4,17 @@
     ViewData["Title"] = Model.PageTitle;
 }
 
-@section VendorScripts{
+@section VendorScripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    }
+}
 
 <environment include="Production">
     @section MyScripts_prod {
         <script type="module" src="~/js/patientBundle.min.js" asp-append-version="true" async></script>
         @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>*@
+    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>*@
     }
 </environment>
 
@@ -81,13 +81,13 @@
                             @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
                         </td>
                         @*
-                <td>
-                @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
-                </td>
-                <td>
-                @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
-                </td>
-                *@
+                        <td>
+                        @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+                        </td>
+                        <td>
+                        @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
+                        </td>
+                        *@
                     </tr>
                     <!--Episode of Care row-->
                     @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@
@@ -134,7 +134,7 @@
                                                                 @{
                                                                     string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                                                                /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                                                                 }
                                                                 @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                             </div>

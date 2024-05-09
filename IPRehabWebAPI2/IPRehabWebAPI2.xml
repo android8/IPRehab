@@ -255,7 +255,7 @@
             <summary>
             convert RptRehabDetails from BI13 to DTO
             </summary>
-            <param name="thisFacilityPatients"></param>
+            <param name="thisFacilityPatientsSorted"></param>
             <param name="pageNumber"></param>
             <param name="pageSize"></param>
             <returns></returns>
@@ -268,7 +268,7 @@
         <member name="P:IPRehabWebAPI2.Models.PatientDTOTreatingSpecialty.PTFSSN">
             <summary>
             PTFSSN was from the HealtFactor cube,
-            and is from SCRSSNT in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
+            and now is from SCRSSNT in TreatingSpecialty cube during HydrateTreatingSpecialtyPatient() in HydrateDTO.cs
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientName">

@@ -69,16 +69,16 @@ namespace IPRehabWebAPI2.Controllers
             if (facilityPatients == null || !facilityPatients.Any())
             {
                 string permittedFacilities = String.Join(',', distinctUserFacilities.Select(f => f.Facility));
-                string noDataMesage = $"No in-patient rehab in your facilities ({permittedFacilities})";
+                string noDataMessage = $"No in-patient rehab in your facilities ({permittedFacilities})";
 
                 //Response.Headers.Location = new Uri("NoData").ToString();
                 //return new ContentResult
                 //{
                 //    StatusCode = 302,
-                //    Content = noDataMesage
+                //    Content = noDataMessage
                 //};
 
-                //return NotFound(noDataMesage);
+                //return NotFound(noDataMessage);
                 return NoContent();
 
                 //facilityPatients = new();
@@ -86,7 +86,10 @@ namespace IPRehabWebAPI2.Controllers
             }
             else
             {
-                List<PatientDTOTreatingSpecialty> jaggedPatient = new();
+                //perform client list sort here, not before this step
+                facilityPatients = [.. facilityPatients.OrderBy(p => p.Name)];
+
+                List<PatientDTOTreatingSpecialty> jaggedPatient = [];
                 if (!withEpisode)
                 {
                     jaggedPatient.AddRange(facilityPatients);
@@ -111,8 +114,9 @@ namespace IPRehabWebAPI2.Controllers
                     //    .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { Patient = p.p, Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) });
 
                     //LINQ join operators(Join, GroupJoin) support only equi-joins. All other join types have to be implemented as correlated subqueries.
+
                     //left join (correlated subqueries) with SelectMany
-                    var patientEpisodeJoin = facilityPatients.SelectMany(
+                    var patientLeftJoinEpisode = facilityPatients.SelectMany(
                         p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
                         .DefaultIfEmpty(),
                         (p, e) => new
@@ -121,26 +125,21 @@ namespace IPRehabWebAPI2.Controllers
                             Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e)
                         });
 
-                    if (patientEpisodeJoin != null)
-                        patientEpisodeJoin = patientEpisodeJoin.OrderBy(pe => pe.Patient.Name).ToList();
+                    var uniquePatients = patientLeftJoinEpisode.Select(pe => pe.Patient).DistinctBy(p => p.RealSSN);
+                    var nonNullEpisodes = patientLeftJoinEpisode.Where(pe => pe.Episode != null).Select(pe => pe.Episode).ToList();
 
-                    PatientDTOTreatingSpecialty currentPatient = null;
-                    foreach (var pe in patientEpisodeJoin)
+                    foreach (var pat in uniquePatients)
                     {
-                        if (currentPatient == null || currentPatient.Name != pe.Patient.Name)
+                        var thisPatientEpisodes = nonNullEpisodes.Where(episode => episode.PatientIcnFK == pat.PTFSSN).ToList();
+                        if (thisPatientEpisodes.Any())
                         {
-                            currentPatient = pe.Patient;
-                            var theseEpisodes = patientEpisodeJoin.Where(x => x.Patient.Name == pe.Patient.Name && pe.Episode != null).Select(x => x.Episode)?.ToList();
-                            foreach (var thisEpisode in theseEpisodes)
-                            {
-                                currentPatient.CareEpisodes.Clear();
-                                currentPatient.CareEpisodes.AddRange(theseEpisodes.OrderBy(x => x.AdmissionDate));
-                            }
-                            //cannot use DistinctBy() and cannot cast to List<EpisodeOfCareDTO>
-                            //thisPatient.CareEpisodes = (List<EpisodeOfCareDTO>)thisPatient.CareEpisodes.DistinctBy(x => x.EpisodeOfCareID);
-
-                            jaggedPatient.Add(currentPatient);
+                            pat.CareEpisodes.Clear();
+                            pat.CareEpisodes.AddRange(thisPatientEpisodes.OrderBy(x => x.AdmissionDate));
                         }
+                        //cannot use DistinctBy() and cannot cast to List<EpisodeOfCareDTO>
+                        //thisPatient.CareEpisodes = (List<EpisodeOfCareDTO>)thisPatient.CareEpisodes.DistinctBy(x => x.EpisodeOfCareID);
+
+                        jaggedPatient.Add(pat);
                     }
                 }
                 return Ok(jaggedPatient);

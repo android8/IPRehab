@@ -97,40 +97,42 @@ namespace IPRehab.Controllers
 
                     if (EpisodesWithThisAdmitDate == null || EpisodesWithThisAdmitDate.Count() == 0)
                     {
-                        RehabActionViewModel episodeCommandBtn = new();
+                        RehabActionViewModel episodeCommandBtn = new()
                         {
                             //since no episode ID we have to use patient ID to find patient
-                            episodeCommandBtn.HostingPage = "Patient";
-                            episodeCommandBtn.PatientID = pat.PatientICN;
-                            episodeCommandBtn.EnableThisPatient = true;
-                            episodeCommandBtn.SearchCriteria = searchCriteria;
-                            episodeCommandBtn.PageNumber = pageNumber;
-                            episodeCommandBtn.OrderBy = orderBy;
-                            episodeCommandBtn.EpisodeID = -1;   //New episode
-                            episodeCommandBtn.AdmitDate = thisAdmission;
+                            HostingPage = "Patient",
+                            PatientID = pat.PTFSSN,
+                            EnableThisPatient = true,
+                            SearchCriteria = searchCriteria,
+                            PageNumber = pageNumber,
+                            OrderBy = orderBy,
+                            EpisodeID = -1,   //New episode
+                            AdmitDate = thisAdmission
                         };
 
                         thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
                         thisEpisodeBtnConfig.AdmissionDate = thisAdmission;
-                        thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
+                        thisEpisodeBtnConfig.PatientIcnFK = pat.PTFSSN;
                     }
                     else
                     {
                         foreach (var thisEpisode in EpisodesWithThisAdmitDate)   //existing episodes may be duplicated due to the change from HealtherFactor to TreatingSpecialty cubes 
                         {
-                            RehabActionViewModel episodeCommandBtn = new();
-                            episodeCommandBtn.HostingPage = "Patient";
-                            episodeCommandBtn.PatientID = pat.PatientICN;
-                            episodeCommandBtn.EnableThisPatient = true;
-                            episodeCommandBtn.SearchCriteria = searchCriteria;
-                            episodeCommandBtn.PageNumber = pageNumber;
-                            episodeCommandBtn.OrderBy = orderBy;
-                            episodeCommandBtn.EpisodeID = thisEpisode.EpisodeOfCareID;
-                            episodeCommandBtn.AdmitDate = thisEpisode.AdmissionDate;   //could be duplicated admission. old duplicated episodes needs to be deleted
+                            RehabActionViewModel episodeCommandBtn = new()
+                            {
+                                HostingPage = "Patient",
+                                PatientID = pat.PTFSSN,
+                                EnableThisPatient = true,
+                                SearchCriteria = searchCriteria,
+                                PageNumber = pageNumber,
+                                OrderBy = orderBy,
+                                EpisodeID = thisEpisode.EpisodeOfCareID,
+                                AdmitDate = thisEpisode.AdmissionDate   //could be duplicated admission. old duplicated episodes needs to be deleted
+                            };
 
                             thisEpisodeBtnConfig.ActionButtonVM = episodeCommandBtn;
                             thisEpisodeBtnConfig.AdmissionDate = thisAdmission;
-                            thisEpisodeBtnConfig.PatientIcnFK = pat.PatientICN;
+                            thisEpisodeBtnConfig.PatientIcnFK = pat.PTFSSN;
 
                             thisEpisodeBtnConfig.EpisodeOfCareID = thisEpisode.EpisodeOfCareID;
                             thisEpisodeBtnConfig.OnsetDate = thisEpisode.OnsetDate;

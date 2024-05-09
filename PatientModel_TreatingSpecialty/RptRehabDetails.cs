@@ -27,7 +27,7 @@ public partial class RptRehabDetails
 
     public string ScrSsnt { get; set; }
 
-    public int? Scrssn { get; set; }
+    public int? ScrssnT { get; set; }
 
     public int? Scrnum { get; set; }
 

@@ -53,14 +53,20 @@ namespace IPRehabWebAPI2.Helpers
 
             //cannot filter the p.bsta6 at server side, so use ToListAsync() to client list
             var thisFacilityPatients = await GetThisFacilityPatients(distinctUserFacilities);
-
             if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                 return null;    //no patient in the permitted facilities list
 
             //when patientID is not blank then return a list containing single patient
             if (!string.IsNullOrEmpty(patientID))
             {
-                thisFacilityPatients = thisFacilityPatients.Where(p => p.ScrSsnt.Trim() == patientID).ToList();
+                thisFacilityPatients = thisFacilityPatients.Where(p =>
+                    p.ScrSsnt == patientID ||
+                    p.Realssn == patientID ||
+                    p.Scrnum == int.Parse(patientID) ||
+                    p.ScrssnT == int.Parse(patientID) ||
+                    p.PatientIcn == patientID
+                ).ToList();
+
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                     return null;    //no patient matches the patientID in permitted facilities list
             }
@@ -68,39 +74,53 @@ namespace IPRehabWebAPI2.Helpers
             {
                 string searchCriteriaType = string.Empty;
                 int numericCriteria = -1;
+                DateTime dateCriteria = DateTime.MinValue;
 
-                if (string.IsNullOrEmpty(criteria))
-                    searchCriteriaType = "none";
-                else if (int.TryParse(criteria, out numericCriteria))
-                    searchCriteriaType = "numeric";
-                else
-                    searchCriteriaType = "non-numeric";
-
-                switch (searchCriteriaType)
+                if (!string.IsNullOrEmpty(criteria))
                 {
-                    case "numeric":
-                        thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                            p.Scrssn == numericCriteria ||
-                                            p.Bedsecn == numericCriteria ||
-                                            p.Bsta6a.Contains(numericCriteria.ToString())
-                                        ).ToList();
+                    if (int.TryParse(criteria, out numericCriteria))
+                        searchCriteriaType = "isNumeric";
+                    else if (DateTime.TryParse(criteria, out dateCriteria))
+                        searchCriteriaType = "isDate";
 
-                        break; //break case
+                    switch (searchCriteriaType)
+                    {
+                        case "isNumeric":
+                            thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                p.ScrssnT == numericCriteria ||
+                                p.Scrnum == numericCriteria ||
+                                p.Bedsecn == numericCriteria ||
+                                p.Bsta6a.Contains(numericCriteria.ToString())
+                            ).ToList();
 
-                    case "non-numeric":
-                        criteria = criteria.Trim().ToLower();
-                        thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                            p.LastName.Trim().ToLower().Contains(criteria) ||
-                                            p.FirstName.Trim().ToLower().Contains(criteria) ||
-                                            p.PatientIcn.Trim().Contains(criteria)
-                                        ).ToList();
-                        break;
+                            break; //break case
+
+                        case "isDate":
+                            thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                p.Admitday.Value == dateCriteria ||
+                                p.DoB.Value == dateCriteria
+                            ).ToList();
+                            break;
+
+                        default:
+                            criteria = criteria.Trim().ToLower();
+                            thisFacilityPatients = thisFacilityPatients.Where(p =>
+                                p.PatientName.Contains(criteria) ||
+                                p.LastName.Contains(criteria) ||
+                                p.FirstName.Contains(criteria) ||
+                                p.PatientIcn.Contains(criteria) ||
+                                p.ScrSsnt.Contains(criteria) ||
+                                p.Realssn.Contains(criteria)
+                            ).ToList();
+                            break;
+                    }
                 }
 
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
                     return null;    //no patient matches the search criteria in permitted facilities list
             }
 
+            //don't sort here it will fail
             return ConvertToPatientDTO(thisFacilityPatients, pageNumber, pageSize);
         }
 
@@ -282,21 +302,21 @@ namespace IPRehabWebAPI2.Helpers
         /// <summary>
         /// convert RptRehabDetails from BI13 to DTO
         /// </summary>
-        /// <param name="thisFacilityPatients"></param>
+        /// <param name="thisFacilityPatientsSorted"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        private List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<RptRehabDetails> thisFacilityPatients, int pageNumber, int pageSize)
+        private List<PatientDTOTreatingSpecialty> ConvertToPatientDTO(IEnumerable<RptRehabDetails> thisFacilityPatientsSorted, int pageNumber, int pageSize)
         {
             List<PatientDTOTreatingSpecialty> patients = new();
 
-            var distinctedPatientsInThisFacility = thisFacilityPatients.DistinctBy(x => x.PatientIcn).ToList();
+            var distinctedPatientsInThisFacility = thisFacilityPatientsSorted.DistinctBy(x => x.PatientIcn).ToList();
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
                 //the annonymous thisDistinctP cannot be hydrated, so get vTreatingSpecialtyRecent3Yrs type
                 var hydratedPatient = HydrateDTO.HydrateTreatingSpecialtyPatient(thisDistinctP);
 
-                var admissions = thisFacilityPatients.Where(p => p.PatientIcn == thisDistinctP.PatientIcn).Select(p => p.Admitday.Value).ToList();
+                var admissions = thisFacilityPatientsSorted.Where(p => p.PatientIcn == thisDistinctP.PatientIcn).Select(p => p.Admitday.Value).ToList();
 
                 if (admissions.Any())
                 {

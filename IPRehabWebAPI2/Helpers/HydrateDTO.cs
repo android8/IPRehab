@@ -181,23 +181,17 @@ namespace IPRehabWebAPI2.Helpers
         {
             DateTime onsetDate = new(DateTime.MinValue.Ticks);
             bool formIsCompeted = false;
-            var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted");
-            foreach (var complete in completed)
-            {
-                //the Assessment Completed may be entered in any form so it's necessary to enumerate the collection to find if any exist and the CodeDescription is "Yes"
-                if (complete?.AnswerCodeSetFKNavigation.CodeDescription == "Yes")
-                {
-                    formIsCompeted = true;
-                    break;
-                }
-            }
+            var completed = e.tblAnswer.Where(a => a.QuestionIDFKNavigation.QuestionKey == "AssessmentCompleted").SingleOrDefault();
+            //the Assessment Completed may be entered in any form so it's necessary to enumerate the collection to find if any exist and the CodeDescription is "Yes"
+            if (completed?.AnswerCodeSetFKNavigation.CodeDescription == "Yes")
+                formIsCompeted = true;
 
             EpisodeOfCareDTO thisDTO = new()
             {
                 EpisodeOfCareID = e.EpisodeOfCareID,
-                /* use admit date from episode */
+
                 FacilityID6 = e.FacilityID6,
-                AdmissionDate = e.AdmissionDate,
+                AdmissionDate = e.AdmissionDate /* use admit date in episode */,
                 OnsetDate = onsetDate,
                 PatientIcnFK = e.PatientICNFK,
                 FormIsComplete = formIsCompeted

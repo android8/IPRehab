@@ -158,7 +158,7 @@ public partial class DMTreatingSpecialtyContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("ScrSSNT");
             entity.Property(e => e.Scrnum).HasColumnName("scrnum");
-            entity.Property(e => e.Scrssn).HasColumnName("scrssn");
+            entity.Property(e => e.ScrssnT).HasColumnName("scrssn");
             entity.Property(e => e.Sta3)
                 .HasMaxLength(3)
                 .IsUnicode(false)
