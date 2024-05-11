@@ -8,7 +8,7 @@
     "minify": {
       "enabled": true,
       "renameLocals": true,
-      "sourceMap":true
+      "sourceMap": true
     }
   },
   {
@@ -25,18 +25,18 @@
     }
   },
   {
+    "outputFileName": "wwwroot/js/siteJsBundle.min.js",
+    "inputFiles": [
+      "wwwroot/js/app/animateBanner.js",
+      "wwwroot/js/app/cookieConsent.js"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/css/siteBundle.min.css",
     "inputFiles": [
       "wwwroot/css/transition.css",
       "wwwroot/css/site.css",
       "wwwroot/css/app.css"
-    ]
-  },
-  {
-    "outputFileName": "wwwroot/js/siteJsBundle.min.js",
-    "inputFiles": [
-      "wwwroot/js/app/animateBanner.js",
-      "wwwroot/js/app/cookieConsent.js"
     ]
   }
 ]

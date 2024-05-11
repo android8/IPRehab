@@ -45,6 +45,146 @@ $(function () {
                 },
             }]
     };
+    //self executing arrow function test
+    //(() => {
+    //    console.log('------ self executing arrow function test ------');
+    //    $('.questionRow').on('change', '.persistable', function (e) {
+    //        if (e.target !== undefined) {
+    //            //console.log('e.target = ', e.target);
+    //            //const trigger: string = e.target.prop('id');
+    //            //switch (true) {
+    //            //  case (trigger.indexOf('Q12_') !== -1):
+    //            //    console.log('event triggered ', trigger);
+    //            //    break;
+    //            //  case (trigger.indexOf('Q23_') !== -1):
+    //            //    console.log('event triggered ', trigger);
+    //            //    break;
+    //            //  case (trigger.indexOf('Q12B_') !== -1):
+    //            //    console.log('event triggered ', trigger);
+    //            //    break;
+    //            //}
+    //            console.log('------ done test self executing ------');
+    //        }
+    //    });
+    //})();
+    function scrollTo1(elementId) {
+        console.log('branching::: scrollTo() elementId = ', elementId);
+        const thisElement = $('#' + elementId);
+        let scrollAmount = 0;
+        if (thisElement.length > 0) {
+            //scrollAmount = thisElement.prop('offsetTop');
+            scrollAmount = (thisElement.offset() || { "top": NaN }).top;
+            console.log('scroll to ' + elementId + ', amount ' + scrollAmount, thisElement);
+            $('html,body').stop().animate({ scrollTop: scrollAmount }, 'fast');
+            thisElement.trigger('focus');
+        }
+        else {
+            console.log(elementId + " doesn't exist in the current context, can not scroll to that element");
+        }
+    }
+    function scrollTo(elementId) {
+        const element = document.querySelector('#' + elementId);
+        // Get the size and position of our element in the viewport
+        const rect = element.getBoundingClientRect();
+        // The top offset of our element is the top position of the element in the viewport plus the amount the body is scrolled
+        let offsetTop = rect.top + document.body.scrollTop;
+        console.log('scroll to ' + elementId + ' with amount ' + offsetTop);
+        // Now we can scroll the window to this position
+        window.scrollTo(0, offsetTop - 15);
+        document.getElementById(elementId).focus(); /* use focus() because this is not a jquery element */
+    }
+    function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
+        console.log('Q12 and Q23 is fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+        const Q12 = $('.persistable[id ^= Q12_]');
+        const Q23 = $('.persistable[id ^= Q23_]').prop('disabled', false);
+        const otherPersistables = $('.persistable').not(Q12).not(Q23);
+        const minDate = new Date('2020-01-01 00:00:00');
+        const onsetDate = new Date(Q23.val());
+        const admitDate = new Date(Q12.val());
+        const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
+        const onset_is_later_than_admit = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
+        function setSeenTheDialog(value) {
+            //callback after async dialog is done and return the seenTheDialog to the caller
+            byRef.seenTheDialog = value;
+        }
+        switch (true) {
+            case (Q12_or_Q23_is_empty):
+            case (onset_is_later_than_admit): {
+                console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
+                $('#ajaxPost').prop('disabled', true);
+                if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+                    //with warning dialog
+                    console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+                    let dialogText;
+                    if (Q12_or_Q23_is_empty)
+                        dialogText = 'Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked';
+                    if (onset_is_later_than_admit)
+                        dialogText = 'Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later';
+                    dialogOptions.title = 'Date';
+                    const myButtons = {
+                        "Ok": function () {
+                            console.log('lock all other persistables');
+                            otherPersistables.each(function () {
+                                $(this).prop("disabled", true);
+                            });
+                            $(this).dialog("close");
+                            setSeenTheDialog(true); //callback function
+                        },
+                        "Cancel": function () {
+                            $(this).dialog("close");
+                            setSeenTheDialog(true); //callback function
+                        }
+                    };
+                    $('#dialog')
+                        .text(dialogText)
+                        .dialog(dialogOptions, {
+                        title: 'Warning Q12 Q23',
+                        buttons: myButtons
+                    });
+                }
+                else { //without warning dialog
+                    console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+                    console.log('lock all other persistables');
+                    otherPersistables.each(function () {
+                        const thisPersistable = $(this);
+                        thisPersistable.prop('disabled', true);
+                    });
+                }
+                break;
+            }
+            default: {
+                //see branchingTree.txt
+                const triggers = $('.persistable[id ^= Q12B_], .persistable[id ^= Q14A_], .persistable[id ^= Q16A_], .persistable[id ^= Q42_], .persistable[id ^= Q43_], .persistable[id ^= Q44C_]'
+                    + ', .persistable[id ^= Q44D_], .persistable[id ^= GG0170I_], .persistable[id ^= GG0170M_], .persistable[id ^= GG0170Q_], .persistable[id ^= J0510]');
+                const triggerTargets = $('.persistable[id ^= Q12_], .persistable[id ^= Q14B_], .persistable[id ^= Q15B_], .persistable[id ^= Q16B_], .persistable[id ^= Q17_], .persistable[id ^= Q21B_], .persistable[id ^= Q41_]'
+                    + ', .persistable[id ^= Q43_], .persistable[id ^= Q44C_], .persistable[id ^= Q44D_], .persistable[id ^= Q45_], .persistable[id ^= Q46_]'
+                    + ', .persistable[id ^= J1750_], [id ^= Complete]'
+                    + ', .persistable[id ^= GG0170I_]:not([id *= Discharge_Goal])'
+                    + ', .persistable[id ^= GG0170J_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170K_]:not([id *= Discharge_Goal])'
+                    + ', .persistable[id ^= GG0170L_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170N_]:not([id *= Discharge_Goal])'
+                    + ', .persistable[id ^= GG0170O_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170R_]:not([id *= Discharge_Goal])');
+                const unlockOnload = $('.persistable').not(triggerTargets);
+                //enable handlerless controls but don't raise change event to prevent infinite loop
+                unlockOnload.each(function () {
+                    const scopedControl = $(this);
+                    scopedControl.prop('disabled', false);
+                    console.log(scopedControl.prop('id') + ' disabled ' + scopedControl.prop('disabled'));
+                });
+                //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
+                //only raise change for the following to unlock or remain lock of the respective fields
+                triggers.each(function () {
+                    const thisTrigger = $(this);
+                    console.log(thisTrigger.prop('id') + ' change() triggered');
+                    thisTrigger.trigger('change');
+                });
+                $('#ajaxPost').prop('disabled', false);
+                $('.persistable[id^=Q23_]').trigger("focus");
+                break;
+            }
+        }
+        console.log('------ done handling Q12 Q23 ' + eventType + '------');
+        return byRef.seenTheDialog;
+    }
     /* self executing event listener, add this last to raise change chain */
     (function Q12_Q23_addListener() {
         console.log('adding Q12_Q23_addListener()');
@@ -76,207 +216,76 @@ $(function () {
         });
         console.log('Q12_Q23 listener added');
     })();
-    //self executing arrow function test
-    (() => {
-        console.log('------ self executing arrow function test ------');
-        $('.questionRow').on('change', '.persistable', function (e) {
-            if (e.target !== undefined) {
-                //console.log('e.target = ', e.target);
-                //const trigger: string = e.target.prop('id');
-                //switch (true) {
-                //  case (trigger.indexOf('Q12_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //  case (trigger.indexOf('Q23_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //  case (trigger.indexOf('Q12B_') !== -1):
-                //    console.log('event triggered ', trigger);
-                //    break;
-                //}
-                console.log('------ done self executing ------');
-            }
-        });
-    })();
-    $('.persistable[id^=Q23_]').trigger("change").trigger("focus");
     /* event handler, add this last to raise change chain */
-    function Q12_Q23_blank_then_Lock_All(eventType, byRef) {
-        console.log('inside of Q12_Q23_blank_then_Lock_All(), fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
-        const Q12 = $('.persistable[id^=Q12_]');
-        const Q23 = $('.persistable[id^=Q23_]').prop('disabled', false);
-        const otherPersistables = $('.persistable').not(Q12).not(Q23);
-        const minDate = new Date('2020-01-01 00:00:00');
-        const onsetDate = new Date(Q23.val());
-        const admitDate = new Date(Q12.val());
-        const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-        const onset_is_later_than_admit = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
-        function setSeenTheDialog(value) {
-            //callback after async dialog is done and return the seenTheDialog to the caller
-            byRef.seenTheDialog = value;
-        }
-        const myButtons = {
-            "Ok": function () {
-                console.log('lock all other persistables');
-                otherPersistables.each(function () {
-                    $(this).prop("disabled", true);
-                });
-                $(this).dialog("close");
-                setSeenTheDialog(true); //callback function
-            },
-            "Cancel": function () {
-                $(this).dialog("close");
-                setSeenTheDialog(true); //callback function
-            }
-        };
-        switch (true) {
-            case (Q12_or_Q23_is_empty):
-            case (onset_is_later_than_admit): {
-                console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions');
-                $('#ajaxPost').prop('disabled', true);
-                if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-                    //with warning dialog
-                    console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                    let dialogText;
-                    if (Q12_or_Q23_is_empty)
-                        dialogText = 'Onset Date and Admit Date are record keys, when either is blank, all fields with current values will be locked';
-                    if (onset_is_later_than_admit)
-                        dialogText = 'Onset Date and Admit Date must be later than 01/01/2021, and Admit Date must be on Onset Date or later';
-                    dialogOptions.title = 'Date';
-                    $('#dialog')
-                        .text(dialogText)
-                        .dialog(dialogOptions, {
-                        title: 'Warning Q12 Q23', buttons: myButtons
-                    });
-                }
-                else { //without warning dialog
-                    console.log('Q12 or Q23 without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                    console.log('lock all other persistables');
-                    otherPersistables.each(function () {
-                        const thisPersistable = $(this);
-                        thisPersistable.prop('disabled', true);
-                    });
-                }
-                break;
-            }
-            default: {
-                //see branchingTree.txt
-                const controlledByHandlers = $('.persistable[id^=Q12_],[id^=Q14B_],[id^=Q15B_],[id^=Q16B_],[id^=Q17],[id^=Q21B_],[id^=Q41_],[id^=Q43_],[id^=Q44C_],[id^=Q44D_],[id^=Q45_],[id^=Q46_],[id^=GG0170J_]:not([id*=Discharge_Goal]),[id^=GG0170K_]:not([id*=Discharge_Goal]),[id^=GG0170L_]:not([id*=Discharge_Goal]),[id^=GG0170N_]:not([id*=Discharge_Goal]),[id^=GG0170O_]:not([id*=Discharge_Goal]),[id^=GG0170R_]:not([id*=Discharge_Goal]),[id^=Complete]');
-                /* const toBeUnlocked: any = $('.persistable[id^=Q12_],.persistable[id^=Q23_],.persistable[id^=Q12B_],.persistable[id^=Q13_],.persistable[id^=Q14_],.persistable[id^=Q14A_],.persistable[id^=Q15A_],.persistable[id^=Q16A_],.persistable[id^=Q21A_],.persistable[id^=Q42_],.persistable[id^=BB],.persistable[id^=GG0100],.persistable[id^=GG0110],.persistable[id^=GG0130],.persistable[id^=GG0170]:not([id^=GG0170J_]):not([id^=GG0170K_]):not([id^=GG0170L_]):not([id^=GG0170N_]):not([id^=GG0170O_]):not([id^=GG0170R_]),.persistable[id^=H],.persistable[id^=J],.persistable[id^=K],.persistable[id^=M]');*/
-                console.log('Onset Date and Admit Date are not empty, unlock ' + $('.persistable').not(controlledByHandlers).length + ' fields');
-                $('.persistable').not(controlledByHandlers).each(function () {
-                    //just enable the no handler persistables and persistables with handler but don't raise change event to prevent infinite loop
-                    $(this).prop('disabled', false);
-                });
-                //not('[id^=Q12_]') so it doesn't raise change to cause infinite loop
-                //only raise change for the following to unlock or remain lock of the respective fields
-                $('.persistable[id^=Q12B_]').trigger('change');
-                $('.persistable[id^=Q14A_]').trigger('change');
-                $('.persistable[id^=Q16A_]').trigger('change');
-                $('.persistable[id^=Q42_]').trigger('change');
-                $('.persistable[id^=Q44C_]').trigger('change');
-                $('.persistable[id^=GG0170I_]').trigger('change');
-                $('.persistable[id^=GG0170M_]').trigger('change');
-                $('.persistable[id^=GG0170Q_]').trigger('change');
-                $('.persistable[id^=J0510]').trigger('change');
-                //set focus on Q12B after the above rule might have set focus somewhere else
-                $('.persistable[id^=Q12B_]').trigger('focus');
-                $('#ajaxPost').prop('disabled', false);
-                break;
-            }
-        }
-        console.log('------ done handling Q12 Q23 ' + eventType + '------');
-        return byRef.seenTheDialog;
-    }
-    function scrollTo1(elementId) {
-        console.log('branching::: scrollTo() elementId = ', elementId);
-        const thisElement = $('#' + elementId);
-        let scrollAmount = 0;
-        if (thisElement.length > 0) {
-            //scrollAmount = thisElement.prop('offsetTop');
-            scrollAmount = (thisElement.offset() || { "top": NaN }).top;
-            console.log('scroll to ' + elementId + ', amount ' + scrollAmount, thisElement);
-            $('html,body').stop().animate({ scrollTop: scrollAmount }, 'fast');
-            thisElement.trigger('focus');
-        }
-        else {
-            console.log(elementId + " doesn't exist in the current context, can not scroll to that element");
-        }
-    }
-    function scrollTo(elementId) {
-        const element = document.querySelector('#' + elementId);
-        // Get the size and position of our element in the viewport
-        const rect = element.getBoundingClientRect();
-        // The top offset of our element is the top position of the element in the viewport plus the amount the body is scrolled
-        let offsetTop = rect.top + document.body.scrollTop;
-        console.log('scroll to ' + elementId + ' with amount ' + offsetTop);
-        // Now we can scroll the window to this position
-        window.scrollTo(0, offsetTop - 15);
-        document.getElementById(elementId).focus();
-    }
+    // Q12B change needs to be triggered on load
+    console.log('trigger Q23 change');
+    $('.persistable[id^=Q23_]').trigger("change");
     /* event handler */
     function Q12B_blank_then_Lock_Discharge(eventType, byRef) {
         //event hooked during checkAllRules()
-        console.log("inside of Q12B_blank_then_Lock_Discharge, fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
-        function setSeenTheDialog(value) {
-            //callback after async dialog is done and return the seenTheDialog to the caller
-            byRef.seenTheDialog = value;
-        }
-        function actQ12B(dischargeState) {
+        const Q12B = $('.persistable[id^=Q12B_]');
+        console.log(Q12B.prop('id') + ' fired by ' + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
+        function actQ12B(discharged) {
             const dischargeRelatedDropdown = $('.persistable[id^=Q15B_], .persistable[id^=Q16B_],.persistable[id^=Q17B_], .persistable[id^=Q21B_]');
             const dischargeRelatedCheckboxes = $('.persistable[id^=Q41_],.persistable[id^=Q44C_]');
             //enable or disable related .persistable elements
             dischargeRelatedDropdown.each(function () {
                 const thisDropdown = $(this);
                 console.log('reset ' + thisDropdown.prop('id'), thisDropdown);
-                if (dischargeState) {
+                if (discharged) {
                     console.log('enable ' + thisDropdown.prop('id'), thisDropdown);
-                    thisDropdown.prop('disabled', false).removeAttr('disabled');
+                    thisDropdown.prop('disabled', false);
                 }
                 else {
                     console.log('disable ' + thisDropdown.prop('id'), thisDropdown);
                     thisDropdown.val(-1);
                     thisDropdown.prop('disabled', true).siblings('.longTextOption').text('');
                 }
-                console.log('raise chage() on ' + thisDropdown.prop('id'), thisDropdown);
             });
             dischargeRelatedCheckboxes.each(function () {
                 const thisCheckbox = $(this);
-                console.log('uncheck ' + thisCheckbox.prop('id'), thisCheckbox);
-                if (dischargeState) {
-                    console.log('enable ' + thisCheckbox.prop('id'), thisCheckbox);
-                    thisCheckbox.prop('disabled', false).removeAttr('disabled');
+                if (discharged) {
+                    thisCheckbox.prop('disabled', false);
                 }
                 else {
-                    console.log('disable ' + thisCheckbox.prop('id'), thisCheckbox);
-                    thisCheckbox.prop('checked', false);
-                    thisCheckbox.prop('disabled', true);
+                    thisCheckbox.prop('checked', false).prop('disabled', true);
                 }
-                console.log('raise change ' + thisCheckbox.prop('id'), thisCheckbox);
+                console.log(thisCheckbox.prop('id') + thisCheckbox.prop('disabled').length, thisCheckbox);
             });
         }
-        function DischargeRelatedButtonClosure() {
-            return function (dischargeState) {
-                return {
-                    "Ok": function () {
-                        actQ12B(dischargeState);
-                        $(this).dialog("close");
-                        setSeenTheDialog(true); //callback
-                    },
-                    "Cancel": function () {
-                        $(this).dialog("close");
-                        setSeenTheDialog(true); //callback
-                    }
-                };
-            };
-        }
-        const Q12B = $('.persistable[id^=Q12B_]');
-        const isDischarged = Q12B.val() !== '';
+        const Q12 = $('.persistable[id^=Q12_]');
+        const admitDate = new Date(Q12.val());
+        const dischargeDate = new Date(Q12B.val());
+        const isDischarged = dischargeDate > admitDate;
         let dialogText;
-        if (!isDischarged) {
+        if (isDischarged) {
+            //without warning dialog
+            actQ12B(isDischarged);
+        }
+        else {
             //lock all field with pertaining discharge Q15B,Q16B, Q17B, Q21B, Q41, Q44C
-            dialogText = 'When Q12B is not a answered with a valid discharge date, the application rseset and locks related discharge fields:  Q15B, Q16B, Q17B, Q21B, Q41, and Q44C';
+            dialogText = 'Q12B is an invalid date or is earlier than the admit date, rseset and locks related discharge fields:  Q15B, Q16B, Q17B, Q21B, Q41, and Q44C';
             console.log(dialogText);
             if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
+                function setSeenTheDialog(value) {
+                    //callback after async dialog is done and return the seenTheDialog to the caller
+                    byRef.seenTheDialog = value;
+                }
+                function DischargeRelatedButtonClosure() {
+                    return function (dischargeState) {
+                        return {
+                            "Ok": function () {
+                                actQ12B(dischargeState);
+                                $(this).dialog("close");
+                                setSeenTheDialog(true); //callback
+                            },
+                            "Cancel": function () {
+                                $(this).dialog("close");
+                                setSeenTheDialog(true); //callback
+                            }
+                        };
+                    };
+                }
                 //with warning dialog
                 const Q12Bbuttons = DischargeRelatedButtonClosure();
                 $('#dialog')
@@ -287,20 +296,16 @@ $(function () {
                 console.log('Q12B handler return byRef.seenTheDialog = ', byRef.seenTheDialog);
             }
         }
-        else {
-            //without warning dialog
-            actQ12B(isDischarged);
-        }
         console.log('byRef.seenTheDialog = ', byRef.seenTheDialog);
         console.log('------ done handling Q12B ' + eventType + '------');
         return byRef.seenTheDialog;
     }
     /* self executing event listener */
     (function Q12B_addListener() {
-        console.log('adding Q12B_addListener()');
+        const Q12B = $('.persistable[id^=Q12B_]');
+        console.log(Q12B.prop('id') + ' adding listener()');
         //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
         let seenTheDialog = false;
-        const Q12B = $('.persistable[id^=Q12B_]');
         /* on change */
         Q12B.on('change', { x: EnumChangeEventArg.Change, y: Q12B }, function (e) {
             console.log('before calling Q12B_blank_then_Lock_Discharge(), seenTheDialog = ', seenTheDialog);
@@ -327,32 +332,33 @@ $(function () {
     })();
     /* event handler */
     function Q14B_enabled_if_Q14A_is_Yes(eventType, byRef) {
-        console.log("inside of Q14B_enabled_if_Q14A_is_Yes, fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
+        console.log('Q14A handler fired by ' + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
         function setSeenTheDialog(value) {
             //callback after async dialog is done and return the seenTheDialog to the caller
             byRef.seenTheDialog = value;
         }
-        function actQ14A(disableState) {
+        function actQ14A(isDisabled) {
             const Q14Bs = $('.persistable[id^=Q14B_]');
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                console.log('uncheck ' + thisQ14B.prop('id'), thisQ14B);
-                thisQ14B.prop('checked', false);
-                thisQ14B.prop('disabled', disableState);
+                if (isDisabled)
+                    console.log('disable ' + thisQ14B.prop('id'));
+                else
+                    console.log('enable ' + thisQ14B.prop('id'));
+                thisQ14B.prop('disabled', isDisabled);
             });
         }
         const Q14AYes = $('.persistable[id^=Q14A_][id*=Yes]:checked').length === 1;
         if (Q14AYes) {
-            console.log('Q14A is Yes, uncheck and unlock all Q14B, no dialog');
             /* without warning dialog */
-            console.log('Q14A without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
+            console.log('Q14A is Yes, uncheck and unlock all Q14B, no dialog');
             actQ14A(false);
         }
         else {
             const dialogText = 'Q14A is unknown or is No, uncheck and lock all Q14B';
             console.log(dialogText);
+            //with warning dialog
             if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
-                //with warning dialog
                 console.log('Q14A with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
                 const myButtons = {
                     "Ok": function () {
@@ -380,14 +386,16 @@ $(function () {
     }
     /* self executing event listener */
     (function Q14A_addListener() {
-        console.log('adding Q14A_addListener()');
-        //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
-        /* on change */
-        let seenTheDialog = true;
-        const Q14A = $('.persistable[id^=Q14A_]');
-        Q14A.on('change', { x: EnumChangeEventArg.Change, y: $(this) }, function (e) {
-            console.log('before calling Q14B_enabled_if_Q14A_is_Yes(), seenTheDialog = ', seenTheDialog);
-            seenTheDialog = Q14B_enabled_if_Q14A_is_Yes(e.data.x, { seenTheDialog: seenTheDialog });
+        const Q14As = $('.persistable[id^=Q14A_]');
+        Q14As.each(function () {
+            const thisQ14A = $(this);
+            console.log('adding ' + thisQ14A.prop('id') + ' listener');
+            let seenTheDialog = true;
+            /* on change. No need to raise onload event, it is only triggered by Q12_Q23 change event chain */
+            thisQ14A.on('change', { x: EnumChangeEventArg.Change, y: thisQ14A }, function (e) {
+                console.log('before calling Q14B_enabled_if_Q14A_is_Yes(), seenTheDialog = ', seenTheDialog);
+                seenTheDialog = Q14B_enabled_if_Q14A_is_Yes(e.data.x, { seenTheDialog: seenTheDialog });
+            });
         });
         /* add rule help */
         const Q14ARule = $('.branchingRule[data-target^=Q14A], .branchingRule[data-target^=Q14B]');
@@ -407,9 +415,9 @@ $(function () {
         console.log('Q14A listener added');
     })();
     /* event handler */
-    function Q16A_is_Home_then_Q17(eventType, byRef) {
+    function Q16A_is_Home_then_Q17(eventType, byRef, Q16A) {
         //event hooked during checkAllRules()
-        console.log("inside of Q16A_is_Home_then_Q17, fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
+        console.log(Q16A.prop('id') + ", fired by " + eventType + " with seenTheDalog = " + byRef.seenTheDialog);
         function setSeenTheDialog(value) {
             //callback after async dialog is done and return the seenTheDialog to the caller
             byRef.seenTheDialog = value;
@@ -417,8 +425,8 @@ $(function () {
         function actQ16A(isDisabled) {
             const Q17 = $(".persistable[id^=Q17_]");
             if (Q17.length > 0) {
-                console.log('thisQ17', Q17);
                 Q17.prop('disabled', isDisabled);
+                console.log(Q17.prop('id') + 'disabled ' + Q17.prop('disabled'));
                 if (isDisabled) {
                     //commonUtility.resetControlValue(Q17);
                     Q17.val(-1).siblings('.longTextOption').text('');
@@ -467,14 +475,14 @@ $(function () {
     }
     /* self executing event listener */
     (function Q16_addListener() {
-        console.log('adding Q16_addListener()');
+        const Q16A = $('.persistable[id^=Q16A_]');
+        console.log('adding ' + Q16A.prop('id') + ' listener()');
         //no need to raise onload event, it is only trigger by Q12_Q23 change event chain
         /* on change */
         let seenTheDialog = true;
-        const Q16A = $('.persistable[id^=Q16A_]');
         Q16A.on('change', { x: EnumChangeEventArg.Change }, function (e) {
             console.log('before calling Q16A_is_Home_then_Q17(), seenTheDialog = ', seenTheDialog);
-            seenTheDialog = Q16A_is_Home_then_Q17(e.data.x, { seenTheDialog: seenTheDialog });
+            seenTheDialog = Q16A_is_Home_then_Q17(e.data.x, { seenTheDialog: seenTheDialog }, $(this));
         });
         /* add rule help */
         const Q16ARule = $('.branchingRule[data-target^=Q16A], .branchingRule[data-target^=Q17]');
@@ -845,7 +853,7 @@ $(function () {
         //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
         /* on change */
         let seenTheDialog = true;
-        const Q44C = $('.persistable[id^=Q44C_],.persistable[id^=Q44C-FollowUp] ');
+        const Q44C = $('.persistable[id^=Q44C_]');
         Q44C.each(function (i, el) {
             const thisQ44C = $(el); //don't use $(this) because in the arrow function it will be undefined
             thisQ44C.on('change', { x: EnumChangeEventArg.Change }, function (e) {

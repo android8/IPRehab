@@ -738,6 +738,13 @@ $(function () {
                 }
             }]
     };
+    $(window).on("unload", function (e) {
+        let episodeNotSaved = $('#episodeID_legend').text() == 'New Episode';
+        if (episodeNotSaved) {
+            if (!confirm('The record has not been saved.'))
+                e.preventDefault();
+        }
+    });
     $('input[type=date]').each(function () {
         const thisDate = $(this);
         thisDate.on('change', function () {
