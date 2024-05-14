@@ -224,6 +224,8 @@ const formController = (function () {
             counter++;
 
             const $thisPersistable: any = $(this);
+            console.log($thisPersistable.prop('id'));
+
             const questionKey: string = $thisPersistable.data('questionkey');
             const thisAnswer: UserAnswer = new UserAnswer();
             const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
@@ -238,7 +240,7 @@ const formController = (function () {
                 return;
             }
 
-            console.log('--------- continue (not equal) ---------');
+            console.log('--------- old and new values not equal ---------');
             const questionId: number = +$thisPersistable.data('questionid');
             const controlType: any = $thisPersistable.prop('type');
             const answerId: string = $thisPersistable.data('answerid');

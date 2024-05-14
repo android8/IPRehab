@@ -57,11 +57,11 @@ namespace IPRehab.ViewComponents
             {
                 case int n when n > 3:
                     viewName = "DropDown";
-                    if (QWS.QuestionKey.Contains("O0401") || QWS.QuestionKey.Contains("O0402"))
+                    if (QWS.QuestionKey.Contains("O0401", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("O0402", System.StringComparison.OrdinalIgnoreCase))
                     {
                         viewName = "DropDownPT";
 
-                        if (QWS.QuestionKey.Contains("O0401"))
+                        if (QWS.QuestionKey.Contains("O0401", System.StringComparison.OrdinalIgnoreCase))
                         {
                             /* default codeset id 430 for wk1 therapy, will change by javascript with thearpy type changes, */
                             thisVCVM.TherapyHoursCodeSetID = 430;
@@ -75,7 +75,7 @@ namespace IPRehab.ViewComponents
                         }
                     }
 
-                    if (QWS.QuestionKey.Contains("A10"))
+                    if (QWS.QuestionKey.Contains("A10", System.StringComparison.OrdinalIgnoreCase))
                     {
                         viewName = "MaterialChkboxBoxBeforeHeaderEthnicity";
                         thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
@@ -84,13 +84,13 @@ namespace IPRehab.ViewComponents
                     break;
                 case int n when n >= 2 && n <= 3:
                     viewName = "RadioFlexDirectionColumnLongText2";
-                    if (QWS.Question.Contains("Is this assessment completed and ready for processing") ||
+                    if (QWS.Question.Contains("Is this assessment completed and ready for processing", System.StringComparison.OrdinalIgnoreCase) ||
                         QWS.QuestionKey == "A1110B" ||
                         QWS.QuestionKey == "C131A" ||
                         QWS.QuestionKey == "C0300C" ||
-                        QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "Q8" ||
-                        QWS.QuestionKey.Contains("Q14") || QWS.QuestionKey == "Q24A" || QWS.QuestionKey.Contains("Q41") ||
-                        QWS.QuestionKey.Contains("Q42") || QWS.QuestionKey.Contains("Q44C") ||
+                        QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "J2000" || QWS.QuestionKey == "Q8" ||
+                        QWS.QuestionKey.Contains("Q14", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey == "Q24A" || QWS.QuestionKey.Contains("Q41", System.StringComparison.OrdinalIgnoreCase) ||
+                        QWS.QuestionKey.Contains("Q42", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("Q44C", System.StringComparison.OrdinalIgnoreCase) ||
                         QWS.QuestionKey == "GG0170RR" ||
                         QWS.QuestionKey == "GG0170SS")
                     {
@@ -105,8 +105,8 @@ namespace IPRehab.ViewComponents
                             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                             thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
 
-                            //if (QWS.QuestionKey.Contains("N0415") ||
-                            //  QWS.QuestionKey.Contains("O0110"))
+                            //if (QWS.QuestionKey.Contains("N0415", System.StringComparison.OrdinalIgnoreCase) ||
+                            //  QWS.QuestionKey.Contains("O0110", System.StringComparison.OrdinalIgnoreCase))
                             //{
                             //  viewName = "MaterialChkboxBoxBeforeHeader";
                             //  thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
@@ -127,7 +127,7 @@ namespace IPRehab.ViewComponents
                         case "ICD":
                         case "FreeText":
                             viewName = "MaterialInputText";
-                            if (QWS.QuestionKey.Contains("M0300"))
+                            if (QWS.QuestionKey.Contains("M0300", System.StringComparison.OrdinalIgnoreCase))
                             {
                                 thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                                 thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";

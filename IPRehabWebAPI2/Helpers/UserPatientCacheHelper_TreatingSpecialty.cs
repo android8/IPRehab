@@ -90,7 +90,7 @@ namespace IPRehabWebAPI2.Helpers
                                 p.ScrssnT == numericCriteria ||
                                 p.Scrnum == numericCriteria ||
                                 p.Bedsecn == numericCriteria ||
-                                p.Bsta6a.Contains(numericCriteria.ToString())
+                                p.Bsta6a.Contains(numericCriteria.ToString(), StringComparison.OrdinalIgnoreCase)
                             ).ToList();
 
                             break; //break case
@@ -105,12 +105,12 @@ namespace IPRehabWebAPI2.Helpers
                         default:
                             criteria = criteria.Trim().ToLower();
                             thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                p.PatientName.Contains(criteria) ||
-                                p.LastName.Contains(criteria) ||
-                                p.FirstName.Contains(criteria) ||
-                                p.PatientIcn.Contains(criteria) ||
-                                p.ScrSsnt.Contains(criteria) ||
-                                p.Realssn.Contains(criteria)
+                                p.PatientName.Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                p.LastName.Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                p.FirstName.Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                p.PatientIcn.Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                p.ScrSsnt.Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                p.Realssn.Contains(criteria, StringComparison.OrdinalIgnoreCase)
                             ).ToList();
                             break;
                     }

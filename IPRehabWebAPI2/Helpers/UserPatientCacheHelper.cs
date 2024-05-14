@@ -137,7 +137,7 @@ namespace IPRehabWebAPI2.Helpers
                         thisFacilityPatients = thisFacilityPatients.Where(p =>
                                             p.scrssn == numericCriteria ||
                                             p.bedsecn == numericCriteria ||
-                                            p.bsta6a.Contains(numericCriteria.ToString())
+                                            p.bsta6a.Contains(numericCriteria.ToString(), StringComparison.OrdinalIgnoreCase)
                                         ).ToList();
 
                         break; //break case
@@ -145,11 +145,11 @@ namespace IPRehabWebAPI2.Helpers
                     case "non-numeric":
                         criteria = criteria.Trim().ToLower();
                         thisFacilityPatients = thisFacilityPatients.Where(p =>
-                                            p.Last_Name.Trim().ToLower().Contains(criteria) ||
-                                            p.First_Name.Trim().ToLower().Contains(criteria) ||
-                                            p.ScrSSNT.Trim().Contains(criteria) ||
-                                            p.RealSSN.Value.ToString().Trim().Contains(criteria) ||
-                                            p.PatientICN.Trim().Contains(criteria)
+                                            p.Last_Name.Trim().ToLower().Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                            p.First_Name.Trim().ToLower().Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                            p.ScrSSNT.Trim().Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                            p.RealSSN.Value.ToString().Trim().Contains(criteria, StringComparison.OrdinalIgnoreCase) ||
+                                            p.PatientICN.Trim().Contains(criteria, StringComparison.OrdinalIgnoreCase)
                                         ).ToList();
                         break;
                 }

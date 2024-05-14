@@ -202,6 +202,7 @@ const formController = (function () {
             var _a, _b;
             counter++;
             const $thisPersistable = $(this);
+            console.log($thisPersistable.prop('id'));
             const questionKey = $thisPersistable.data('questionkey');
             const thisAnswer = new UserAnswer();
             const oldValue = (_a = $thisPersistable.data('oldvalue')) === null || _a === void 0 ? void 0 : _a.toString();
@@ -214,7 +215,7 @@ const formController = (function () {
             if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
                 return;
             }
-            console.log('--------- continue (not equal) ---------');
+            console.log('--------- old and new values not equal ---------');
             const questionId = +$thisPersistable.data('questionid');
             const controlType = $thisPersistable.prop('type');
             const answerId = $thisPersistable.data('answerid');
