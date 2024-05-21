@@ -65,10 +65,4 @@
     <ProjectReference Include="..\IPRehabRepository\IPRehabRepository.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="UserModel">
-      <HintPath>..\UserModel\bin\Debug\net7.0\UserModel.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
