@@ -288,6 +288,8 @@ $(function () {
                 const thisCheckbox: any = $(this);
                 thisCheckbox.prop('disabled', thisDisabled);
                 console.log(thisCheckbox.prop('id') + thisCheckbox.prop('disabled').length, thisCheckbox);
+                if (thisDisabled)
+                    thisCheckbox.prop('checked', false);
             });
         }
 
@@ -297,7 +299,7 @@ $(function () {
             //without warning dialog
             actQ12B(false);
         } else {
-            if (Q12B.val() !== null && Q12B.val() !== '') {
+            if (Q12B.val() === null && Q12B.val() === '') {
                 //lock all discharge related fields without dialog
                 actQ12B(true);
             }
@@ -398,9 +400,11 @@ $(function () {
             const Q14Bs: any = $('.persistable[id^=Q14B_]');
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                console.log('disable ' + thisQ14B.prop('id') + ' disabled = ' + disableState);
-                if (disableState)
-                    thisQ14B.prop('disabled', disableState).removeAttr('checked');
+                thisQ14B.prop('disabled', disableState);
+                console.log(thisQ14B.prop('id') + ' disabled = ' + disableState);
+                if (disableState) {
+                    thisQ14B.prop('checked', false);   //uncheck Q14Bs
+                }
             });
         }
 
@@ -656,7 +660,7 @@ $(function () {
             Q43s.each(function () {
                 const thisQ43 = $(this)
                 const thisDateReset = $('button.calendarReset[data-target=' + thisQ43.prop('id') + ']');
-                
+
                 if (Q43LockState) {
                     thisQ43.prop('disabled', Q43LockState).val('');
                     if (thisDateReset.length !== 0) {
@@ -670,7 +674,7 @@ $(function () {
                     }
                 }
                 console.log(thisQ43.prop('id') + ' disabled = ' + thisQ43.prop('disabled'));
-           });
+            });
         }
 
         let Q42Yes: boolean = $('.persistable[id^=Q42][id*=Yes]:checked').length === 1;
@@ -1689,11 +1693,11 @@ $(function () {
         });
     }
 
-    (function triggerChangeChain() { 
-    console.log('trigger Q23 change');
+    (function triggerChangeChain() {
+        console.log('trigger Q23 change');
 
-    /* event handler, add this last to raise change chain
-       set focus on Q23 because triggers in the change chain might set focus on their respective target */
+        /* event handler, add this last to raise change chain
+           set focus on Q23 because triggers in the change chain might set focus on their respective target */
         $('.persistable[id^=Q23_]').trigger("change").trigger("focus");
     })();
 })

@@ -225,6 +225,10 @@ const formController = (function () {
 
             const $thisPersistable: any = $(this);
             console.log($thisPersistable.prop('id'));
+            if ($thisPersistable.prop('id') == null || $thisPersistable.prop('id') == '') {
+                console.log('element has no id', $thisPersistable);
+                return false;
+            }
 
             const questionKey: string = $thisPersistable.data('questionkey');
             const thisAnswer: UserAnswer = new UserAnswer();
@@ -290,6 +294,7 @@ const formController = (function () {
 
             /* question score */
             const thisPersistableID: string = $thisPersistable.prop('id');
+
             if (thisPersistableID.indexOf('GG0130') != -1 || thisPersistableID.indexOf('GG0170') != -1) {
                 const thisAnswerScoreElement: any = $("#" + thisPersistableID);
                 let thisAnswerScore: number;

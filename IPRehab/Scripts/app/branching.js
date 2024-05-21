@@ -242,6 +242,8 @@ $(function () {
                 const thisCheckbox = $(this);
                 thisCheckbox.prop('disabled', thisDisabled);
                 console.log(thisCheckbox.prop('id') + thisCheckbox.prop('disabled').length, thisCheckbox);
+                if (thisDisabled)
+                    thisCheckbox.prop('checked', false);
             });
         }
         let dialogText;
@@ -250,7 +252,7 @@ $(function () {
             actQ12B(false);
         }
         else {
-            if (Q12B.val() !== null && Q12B.val() !== '') {
+            if (Q12B.val() === null && Q12B.val() === '') {
                 //lock all discharge related fields without dialog
                 actQ12B(true);
             }
@@ -334,9 +336,11 @@ $(function () {
             const Q14Bs = $('.persistable[id^=Q14B_]');
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                console.log('disable ' + thisQ14B.prop('id') + ' disabled = ' + disableState);
-                if (disableState)
-                    thisQ14B.prop('disabled', disableState).removeAttr('checked');
+                thisQ14B.prop('disabled', disableState);
+                console.log(thisQ14B.prop('id') + ' disabled = ' + disableState);
+                if (disableState) {
+                    thisQ14B.prop('checked', false); //uncheck Q14Bs
+                }
             });
         }
         const Q14AYes = $('.persistable[id^=Q14A_][id*=Yes]:checked').length === 1;

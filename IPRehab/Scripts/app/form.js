@@ -203,6 +203,10 @@ const formController = (function () {
             counter++;
             const $thisPersistable = $(this);
             console.log($thisPersistable.prop('id'));
+            if ($thisPersistable.prop('id') == null || $thisPersistable.prop('id') == '') {
+                console.log('element has no id', $thisPersistable);
+                return false;
+            }
             const questionKey = $thisPersistable.data('questionkey');
             const thisAnswer = new UserAnswer();
             const oldValue = (_a = $thisPersistable.data('oldvalue')) === null || _a === void 0 ? void 0 : _a.toString();
