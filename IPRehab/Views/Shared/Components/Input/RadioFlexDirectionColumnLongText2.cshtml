@@ -30,7 +30,7 @@
                   <input disabled type="radio"
                     class="mdc-radio__native-control persistable"
                     name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}")"
-                    id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}")"
+                    id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ","_").Replace(".","_").Replace(",","_").Trim()}")"
                     required="@(Model.ViewComponentViewModel.Required)"
                     value="@(item.SelectListItem.Value)"
                     title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -48,7 +48,7 @@
                     data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                     data-toggle="tooltip"
                     data-placement="left"
-                    aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}_label")" />
+                           aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Replace(",","_").Trim()}_label")" />
 
                     <div class="mdc-radio__background">
                         <div class="mdc-radio__outer-circle"></div>
@@ -59,10 +59,10 @@
             </div>
             <div class="arrow-left-radio"></div>
             <label class="radioLabel"
-              for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Trim()}_label")">
+                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Replace(",","_").Trim()}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Text.Replace(" ", "_").Replace(".","_").Replace(",","_").Trim()}_label")">
 
-                @*strip the code value *@
+                @*strip the leading numeric code value in the codeset *@
                 @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
                 {
                     @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".")+1))
