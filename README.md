@@ -1,5 +1,5 @@
 # Project Page
-[IP Rehab]([http://example.com](https://android8.github.io/IPRehab/))
+[IP Rehab]([http://example.com](https://android8.github.io/IPRehab/)
 
 # Description
 An .Net 8 web application for VA in patient rehabilitation evaulation with 3 stage performance indicators: initial, interim, and follow up.
