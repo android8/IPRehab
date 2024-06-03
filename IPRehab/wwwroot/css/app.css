@@ -975,6 +975,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
   align-content: center;
   align-items: center;
   justify-content: center;
+  animation: fly-in-font 0.1s;
 }
 
 #closeSlidingAggregator {

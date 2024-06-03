@@ -4,14 +4,14 @@
     ViewData["Title"] = $"{Model.StageTitle}";
 }
 
-@section VendorStyles{
+@section VendorStyles {
 
     @* additional vendor css for the view *@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
 
 }
 
-    @section VendorScripts{
+@section VendorScripts {
 
     @* additional vendor js for the view *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -19,51 +19,51 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    }
+}
 
-    <environment include="Production">
+<environment include="Production">
 
-        @* additional production environment minified css*@
-        @section MyStyles_prod {
+    @* additional production environment minified css*@
+    @section MyStyles_prod {
         <link rel="stylesheet" href="~/css/snowAnimation.min.css" />
     }
 
-        @* additional production environment minified css*@
-        @section MyScripts_prod {
+    @* additional production environment minified css*@
+    @section MyScripts_prod {
         <script type="module" src="~/js/questionBundle.min.js" asp-append-version="true" async></script>
         @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>*@
+    <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>*@
     }
-    </environment>
+</environment>
 
-    <environment include="Development">
-        @* additional development environment unminified css *@
-        @section MyStyles_dev {
+<environment include="Development">
+    @* additional development environment unminified css *@
+    @section MyStyles_dev {
         <link rel="stylesheet" href="~/css/snowAnimation.css" />
     }
 
-        @section MyScripts_dev {
+    @section MyScripts_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
     }
-    </environment>
+</environment>
 
-    @* question tabs *@
-    <nav class="sidebar-nav">
-        @await Html.PartialAsync("_QuestionTabs", null,
-    new ViewDataDictionary(ViewData) {
+@* question tabs *@
+<nav class="sidebar-nav">
+    @await Html.PartialAsync("_QuestionTabs", null,
+            new ViewDataDictionary(ViewData) {
     { "sectionInfo", Model.Sections },
     { "readOnly", Model.ReadOnly }
     })
-    </nav>
+</nav>
 
-    <aside>
-        <div id="dialog"></div>
+<aside>
+    <div id="dialog"></div>
 
-        @* aggregator's content to be cloned from scoreSections *@
-        @switch (@Model.StageTitle)
+    @* aggregator's content to be cloned from scoreSections *@
+    @switch (@Model.StageTitle)
     {
         case "Episode Of Care":
         case "New":
@@ -81,8 +81,8 @@
         <div>
             <div class="mdc-touch-target-wrapper flex-start-row-nowrap">
                 <button class="mdc-button mdc-button--raised mdc-button--touch rotate ajax-post-btn"
-                    id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
-                    data-controller="answer" data-action="post">
+                        id="ajaxPost" disabled="disabled" data-apibaseurl="@(Model.WebApiBaseUrl)"
+                        data-controller="answer" data-action="post">
                     <div class="mdc-button__ripple"></div>
                     <span class="mdc-button__label">Save</span>
                     <div class="mdc-button__touch"></div>
@@ -125,18 +125,18 @@
     @* icon legend *@
     <div class="flex-container-evenly-justified">
         <div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-              <title>Anser is required</title>
-          </svg> Answer is required for this form to be complete;
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
-              <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-              <title>Key question</title>
-          </svg> Key question
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                <title>Anser is required</title>
+            </svg> Answer is required for this form to be complete;
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key-fill keyQuestion" viewBox="0 0 16 16">
+                <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                <title>Key question</title>
+            </svg> Key question
         </div>
         <div class="episodeID_legend">
-          @(Model.StageTitle == "New"? "New Episode" : "Episode ID:")
-          <span id='episodeID_legend'>@(Model.StageTitle == "New"? "" : Model.EpisodeID)</span>
+            @(Model.StageTitle == "New" ? "New Episode" : "Episode ID:")
+            <span id='episodeID_legend'>@(Model.StageTitle == "New" ? "" : Model.EpisodeID)</span>
         </div>
     </div>
 
@@ -165,7 +165,7 @@
                     <div class="questionSection">
                         <div class="section-title" title="click to expand/collapse">
                             <a name="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"
-                           id="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"></a>
+                               id="@(si.SectionKey.Replace("(",string.Empty).Replace(")",string.Empty))"></a>
                             @si.SectionTitle
                             @if (!string.IsNullOrEmpty(si.SectionInstruction))
                             {
@@ -279,11 +279,13 @@
                                                     controlCounter++;
                                                 }
 
-                                                @await Component.InvokeAsync(inputViewComponent, new { 
-                                                    EpisodeID = Model.EpisodeID, 
-                                                    ControlCounter = controlCounter, 
-                                                    QWS = q, 
-                                                    NetworkID = (string)ViewBag.CurrentUserID })
+                                                @await Component.InvokeAsync(inputViewComponent, new
+                                                    {
+                                                        EpisodeID = Model.EpisodeID,
+                                                        ControlCounter = controlCounter,
+                                                        QWS = q,
+                                                        NetworkID = (string)ViewBag.CurrentUserID
+                                                    })
                                             }
                                         </div>
                                     </div>
