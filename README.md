@@ -1,17 +1,20 @@
-# Description: 
+# Project
+https://android8.github.io/IPRehab/
+
+# Description
 An .Net 8 web application for VA in patient rehabilitation evaulation with 3 stage performance indicators: initial, interim, and follow up.
 
-# Architecture:
+# Architecture
 Client: MVC Razor page and TypeScript
 Web API: MVC Restful with Swashbuckle test harnest
 
-# Technical features:
+# Technical features
 1. use jquery css selector to select target DOM element by css class type
 2. compare element current values vs render values to group question answer into new, update, delete groups
 3. use jquery ajax post to the web api for persistence
 4. use Entity Framework LINQ to find and manipulate entities
    
-# Application features:
+# Application features
 1. automatically minimize all top level navigations and slide in on demand by hover over the page borders or sliding buttons
 2. allow incrementally saving page data to the backend store
 3. cache patient list for 24 hours to avoid expansive patient daily lookup
