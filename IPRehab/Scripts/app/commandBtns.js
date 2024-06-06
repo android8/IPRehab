@@ -127,7 +127,15 @@ const commandBtnController = (function () {
                         .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
                         .dialog(dialogOptions, {
                         title: 'Warning',
-                        buttons: [{
+                        buttons: [
+                            {
+                                text: "Cancel",
+                                click: function () {
+                                    $('.spinnerContainer').hide();
+                                    $(this).dialog("close");
+                                }
+                            },
+                            {
                                 text: "Ok",
                                 click: function () {
                                     $(this).dialog("close");
@@ -137,14 +145,8 @@ const commandBtnController = (function () {
                                     //navigate away
                                     location.href = thisUrl;
                                 }
-                            },
-                            {
-                                text: "Cancel",
-                                click: function () {
-                                    $('.spinnerContainer').hide();
-                                    $(this).dialog("close");
-                                }
-                            }]
+                            }
+                        ]
                     });
                 }
                 else {

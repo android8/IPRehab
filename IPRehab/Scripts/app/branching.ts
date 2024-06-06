@@ -182,19 +182,19 @@ $(function () {
                 //see branchingTree.txt
 
                 const triggers = $('.persistable[id ^= Q12B_], .persistable[id ^= Q14A_], .persistable[id ^= Q16A_], .persistable[id ^= Q42_], .persistable[id ^= Q43_], .persistable[id ^= Q44C_]'
-                    + ', .persistable[id ^= Q44D_], .persistable[id ^= GG0170I_], .persistable[id ^= GG0170M_], .persistable[id ^= GG0170Q_], .persistable[id ^= J0510]');
+                    + ', .persistable[id ^= Q44D_], .persistable[id ^= GG0170I_], .persistable[id ^= GG0170M_], .persistable[id ^= GG0170Q_], .persistable[id ^= J0510], .persistable[id ^= J0520]');
 
                 const triggerTargets =
                     $('.persistable[id ^= Q12_], .persistable[id ^= Q14B_], .persistable[id ^= Q15B_], .persistable[id ^= Q16B_], .persistable[id ^= Q17_], .persistable[id ^= Q21B_], .persistable[id ^= Q41_]'
                         + ', .persistable[id ^= Q43_], .persistable[id ^= Q44C_], .persistable[id ^= Q44D_], .persistable[id ^= Q45_], .persistable[id ^= Q46_]'
-                        + ', .persistable[id ^= J1750_], [id ^= Complete]'
                         + ', .persistable[id ^= GG0170I_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170J_]:not([id *= Discharge_Goal])'
                         + ', .persistable[id ^= GG0170K_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170L_]:not([id *= Discharge_Goal])'
                         + ', .persistable[id ^= GG0170N_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170O_]:not([id *= Discharge_Goal])'
                         + ', .persistable[id ^= GG0170R_]:not([id *= Discharge_Goal])'
-                    );
+                        + ', [id ^= Complete]'
+                   );
 
-                const unlockOnload = $('.persistable').not(triggerTargets).not('.summary header');
+                const unlockOnload = $('input.persistable, select.persistable').not(triggerTargets).not('.summary header');
                 //enable handlerless controls but don't raise change event to prevent infinite loop
                 console.log(unlockOnload.length + ' fields to be unlocked (disabled false)');
                 unlockOnload.each(function () {
@@ -1606,8 +1606,8 @@ $(function () {
     })();
 
     /* event handler */
-    function J1750_depends_on_J0510(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
-        console.log('inside of J1750_depends_on_J0510, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
+    function J1750_depends_on_J0510_or_J0520(eventType: EnumChangeEventArg, byRef: { seenTheDialog: boolean }): boolean {
+        console.log('inside of J1750_depends_on_J0510_or_J0520, fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
 
         const J1750s = $('.persistable[id^=J1750_]');
         const J1750_yes = $('.persistable[id^=J1750_][id*=Yes]');
@@ -1617,6 +1617,7 @@ $(function () {
         if (eventType === EnumChangeEventArg.Change) {
             console.log('scroll to ' + J1750_yes.prop('id'));
             scrollTo(J1750_yes.prop('id'));
+            J1750_yes.parent('focus');
         }
         else {
             J1750_yes.prop('disabled', false).trigger('focus');
@@ -1629,24 +1630,24 @@ $(function () {
     }
 
     /* self executing event listener */
-    (function J0510_addListener() {
-        console.log('adding J0510_addListener()');
+    (function J0510_J0520_addListener() {
+        console.log('adding J0510_J0520_addListener()');
 
         let seenTheDialog: boolean = true;
 
         //const this_has_Not_Apply: boolean = $(".persistable[id=" + thisJ0510.prop('id') + "] option:selected").text().indexOf('0. Does not apply') !== -1;
         //const Does_not_apply: any = thisJ0510.find('option[text="0. Does not apply"]');
         let J0510firstDoesNotApply: any;
-        const J0510s = $('.persistable[id^=J0510_]');
-        J0510s.each(function () {
-            const thisJ0510: any = $(this);
-            thisJ0510.on('change', function () {
-                const selectedOptions: any = $('.persistable[id^=J0510_] :selected');
+        const J0510_J0520 = $('.persistable[id^=J0510_], .persistable[id^=J0520_]');
+        J0510_J0520.each(function () {
+            const thisJ: any = $(this);
+            thisJ.on('change', function () {
+                const selectedOptions: any = $('.persistable[id^=J0510_] :selected, .persistable[id^=J0520_] :selected');
                 selectedOptions?.each(function () {
                     const thisSelectedOption = $(this);
                     if (thisSelectedOption.text().indexOf('0.') !== -1) {
-                        console.log('found "Does not apply in ' + thisJ0510.prop('id') + ', advance to J1750 Yes');
-                        seenTheDialog = J1750_depends_on_J0510(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+                        console.log('found "Does not apply in ' + thisJ.prop('id') + ', advance to J1750 Yes');
+                        seenTheDialog = J1750_depends_on_J0510_or_J0520(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
                         return false; //break out selectedOptions.each()
                     }
                     //no locking per 07/27/2022 email
@@ -1658,13 +1659,13 @@ $(function () {
             });
         });
 
-        /* add rule help */
-        const J0510Rule = $('.branchingRule[data-target^=J0510], .branchingRule[data-target^=J1750]');
-        const J0510RuleText = 'When GG0510 is "0. Does not apply", set focus on J1750 Yes';
-        J0510Rule.prop('title', J0510RuleText).show();
-        J0510Rule.on('click', function () {
+        /* add rule help diaglog */
+        const J05X0Rule = $('.branchingRule[data-target^=J0510], .branchingRule[data-target^=J0520],.branchingRule[data-target^=J1750]');
+        const J05X0RuleText = 'When J0510 or J0520 is "0. Does not apply", set focus on J1750 Yes';
+        J05X0Rule.prop('title', J05X0RuleText).show();
+        J05X0Rule.on('click', function () {
             $('#dialog')
-                .text(J0510RuleText)
+                .text(J05X0RuleText)
                 .dialog(dialogOptions, {
                     title: 'Rules', buttons: {
                         'Ok': function () {
@@ -1674,7 +1675,7 @@ $(function () {
                 });
         });
 
-        console.log('J0510 listener added');
+        console.log('J05X0 listener added');
     })();
 
     /* event handler */

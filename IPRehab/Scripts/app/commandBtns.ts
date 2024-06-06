@@ -145,24 +145,26 @@ const commandBtnController = (function () {
                         .dialog(dialogOptions, {
                             title: 'Warning',
                             buttons:
-                                [{
-                                    text: "Ok",
-                                    click: function () {
-                                        $(this).dialog("close");
-                                        $('.spinnerContainer').show();
-                                        const thisUrl = $thisButton.prop('formAction');
-                                        $('.spinnerContainer').show();
-                                        //navigate away
-                                        location.href = thisUrl;
+                                [
+                                    {
+                                        text: "Cancel",
+                                        click: function () {
+                                            $('.spinnerContainer').hide();
+                                            $(this).dialog("close");
+                                        }
+                                    },
+                                    {
+                                        text: "Ok",
+                                        click: function () {
+                                            $(this).dialog("close");
+                                            $('.spinnerContainer').show();
+                                            const thisUrl = $thisButton.prop('formAction');
+                                            $('.spinnerContainer').show();
+                                            //navigate away
+                                            location.href = thisUrl;
+                                        }
                                     }
-                                },
-                                {
-                                    text: "Cancel",
-                                    click: function () {
-                                        $('.spinnerContainer').hide();
-                                        $(this).dialog("close");
-                                    }
-                                }]
+                                ]
                         })
                 }
                 else {
