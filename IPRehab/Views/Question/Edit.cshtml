@@ -29,12 +29,13 @@
     }
 
     @* additional production environment minified css*@
-    @section MyScripts_prod {
+    @section MyScripts_block1_prod {
         <script type="module" src="~/js/questionBundle.min.js" asp-append-version="true" async></script>
-        @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/branching.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/form.min.js" asp-append-version="true" async></script>*@
+        <script type="text/JavaScript">
+            window.onbeforeunload = function (e) { pageUnload(); };
+        </script>
     }
+
 </environment>
 
 <environment include="Development">
@@ -43,10 +44,13 @@
         <link rel="stylesheet" href="~/css/snowAnimation.css" />
     }
 
-    @section MyScripts_dev {
+    @section MyScripts_block1_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/branching.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/form.js" asp-append-version="true" async></script>
+        <script type="text/JavaScript">
+            window.onbeforeunload = function (e) { pageUnload(); };
+        </script>
     }
 </environment>
 

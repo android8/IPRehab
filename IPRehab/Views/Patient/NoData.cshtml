@@ -6,13 +6,13 @@
 }
 
 <environment exclude="Development">
-  @section MyScripts_prod {
+  @section MyScripts_block1_prod {
     <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
   }
 </environment>
 
 <environment include="Development">
-  @section MyScripts_dev {
+  @section MyScripts_block1_dev {
     <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
   }
 </environment>

@@ -67,8 +67,8 @@
             </div>
         </nav>
         @*<div class="flex-center">
-            <div class="pulldown"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
-            </div>*@
+        <div class="pulldown"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
+        </div>*@
     </header>
 
     <main role="main">
@@ -80,15 +80,15 @@
                         <div class="spinnerContainer">
                             <img id="chiropractor" src="~/images/chiropractor_jumping_on_table_lg_clr.gif" alt="Chiroprctor jumping on table" />
                             @*<div class="cube">
-                                <div class="sides">
-                                <div class="top"></div>
-                                <div class="right"></div>
-                                <div class="bottom"></div>
-                                <div class="left"></div>
-                                <div class="front"></div>
-                                <div class="back"></div>
-                                </div>
-                                </div>*@
+                            <div class="sides">
+                            <div class="top"></div>
+                            <div class="right"></div>
+                            <div class="bottom"></div>
+                            <div class="left"></div>
+                            <div class="front"></div>
+                            <div class="back"></div>
+                            </div>
+                            </div>*@
                         </div>
                     </aside>
                     @RenderBody()
@@ -118,24 +118,72 @@
     <environment include="Production">
         @* js bundled minified production version *@
         <script type="module" src="~/js/siteJsBundle.min.js" asp-append-version="true" async></script>
-        @await RenderSectionAsync("MyScripts_prod", required: false)
+        @await RenderSectionAsync("MyScripts_block1_prod", required: false)
     </environment>
 
     <environment include="Development">
         @* js unbundled unminified development version *@
         <script type="module" src="~/js/app/animateBanner.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/cookieConsent.js" asp-append-version="true" async></script>
-        @await RenderSectionAsync("MyScripts_dev", required: false)
+        @await RenderSectionAsync("MyScripts_block1_dev", required: false)
     </environment>
 
-    <script type="text/javascript" asp-append-version="true">
+    <script type="text/JavaScript" asp-append-version="true">
         $(function () {
-          $('.spinnerContainer').hide();
+            $('.spinnerContainer').hide();
         })
 
         $('.rehabAction').on('click', function () {
-          $('.spinnerContainer').show();
+            $('.spinnerContainer').show();
         })
+
+        //window.onbeforeunload = function (e) { pageUnload(); };
+
+        //window.onbeforeunload = function (e) {
+        //  console.log('window.onbeforeunload event', e);
+        //  var msg = "You are leaving this page! Click the save button, if visible."
+        //  var e = e || window.event;
+        //     if (e) { e.returnValue = msg; }
+        //  return msg;
+        //};
+
+        // $(window).on("unload", function (e) {
+        //     console.log('(window).on("unload") event', e);
+        //     pageUnload(e);
+        // });
+
+        function pageUnload(e) {
+            var performanceNavigationTiming = window.performance.getEntriesByType("navigation")[0];
+
+            console.log('pageUnload(e) event', e);
+            console.log('performanceNavigationTiming', performanceNavigationTiming.entryType);
+            switch (performanceNavigationTiming.entryType) {
+                case 'navigation':
+                case 'reload':
+                case 'back_forward':
+                    var submitButton = $('#ajaxPost');
+                    var episodeNotSaved = $('#episodeID_legend').text() == 'New Episode' || !submitButton.is(":disabled");
+                    var msg = "You are leaving this page! Click the save button, if visible."
+                    console.log(msg);
+                    if (episodeNotSaved) {
+                        $('.spinnerContainer').hide();
+                        var e = e || window.event;
+                        if (e) { e.returnValue = msg; }
+                        return msg;
+                    }
+                    break;
+            }
+        }
     </script>
+
+    <environment include="Production">
+        @* js bundled minified production version *@
+        @await RenderSectionAsync("MyScripts_block2_prod", required: false)
+    </environment>
+
+    <environment include="Development">
+        @* js unbundled unminified development version *@
+        @await RenderSectionAsync("MyScripts_block2_dev", required: false)
+    </environment>
 </body>
 </html>

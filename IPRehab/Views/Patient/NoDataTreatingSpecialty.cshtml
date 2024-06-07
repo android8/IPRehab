@@ -1,28 +1,30 @@
 ﻿@model PatientTreatingSpecialtyListViewModel
 
 
-@section VendorScripts{
-  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@section VendorScripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
 
 <environment exclude="Development">
-  @section MyScripts_prod {
-    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
-  }
+    @section MyScripts_block1_prod {
+        <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
+    }
 </environment>
 
 <environment include="Development">
-  @section MyScripts_dev {
-    <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
-  }
+    @section MyScripts_block1_dev {
+        <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
+    }
 </environment>
 
 <div class="flex-md-column paddingTop text-danger">
-  <div class="font-weight-bold">No data for at least one of the following reasons:</div>
-  <ul>
-    <li>The data is not available yet</li>
-    <li>Your access levels do not allow viewing the patients in the specified location</li>
-    <li>There is no patient in your facility</li>
-    <li>No data matching the specified criteria</li>
-  </ul>
+    <div class="font-weight-bold">No data for at least one of the following reasons:</div>
+    <ul>
+        <li>The data is not available yet</li>
+        <li>Your access levels do not allow viewing the patients in the specified location</li>
+        <li>There is no patient in your facility</li>
+        <li>No data matching the specified criteria</li>
+    </ul>
 </div>

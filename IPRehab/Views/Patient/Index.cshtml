@@ -11,7 +11,7 @@
 }
 
 <environment include="Production">
-    @section MyScripts_prod {
+    @section MyScripts_block1_prod {
         <script type="module" src="~/js/patientBundle.min.js" asp-append-version="true" async></script>
     @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>*@
@@ -19,7 +19,7 @@
 </environment>
 
 <environment include="Development">
-    @section MyScripts_dev {
+    @section MyScripts_block1_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
     }

@@ -2,11 +2,11 @@
 import { Utility, UserAnswer, AjaxPostbackModel } from "./commonImport.js";
 import { EpisodeScore } from "./episodeScore.js";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
-const commonUtility = new Utility();
+export const commonUtility = new Utility();
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
-const formController = (function () {
+export const formController = (function () {
     let EnumGetControlValueBehavior;
     (function (EnumGetControlValueBehavior) {
         EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
@@ -715,6 +715,7 @@ const formController = (function () {
     //}
 })();
 /******************************* end of closure ****************************/
+//self execution function
 $(function () {
     //const dialogOptions =commonUtility.dialogOptions();
     const dialogOptions = {
@@ -743,13 +744,6 @@ $(function () {
                 }
             }]
     };
-    $(window).on("unload", function (e) {
-        let episodeNotSaved = $('#episodeID_legend').text() == 'New Episode';
-        if (episodeNotSaved) {
-            if (!confirm('The record has not been saved.'))
-                e.preventDefault();
-        }
-    });
     $('input[type=date]').each(function () {
         const thisDate = $(this);
         thisDate.on('change', function () {

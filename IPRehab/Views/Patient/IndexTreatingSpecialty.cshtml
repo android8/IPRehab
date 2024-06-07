@@ -11,15 +11,17 @@
 }
 
 <environment include="Production">
-    @section MyScripts_prod {
+    @section MyScripts_block1_prod {
         <script type="module" src="~/js/patientBundle.min.js" asp-append-version="true" async></script>
-        @*<script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>*@
+        @*
+        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+        <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
+        *@
     }
 </environment>
 
 <environment include="Development">
-    @section MyScripts_dev {
+    @section MyScripts_block1_dev {
         <script type="module" src="~/js/app/commandBtns.js" asp-append-version="true" async></script>
         <script type="module" src="~/js/app/patientList.js" asp-append-version="true" async></script>
     }
@@ -32,7 +34,7 @@
     <table class="table-responsive-md table-bordered patients">
         <thead>
             <tr>
-                <td colspan="5" class="alert-info">
+                <td colspan="5" class="alert-danger">
                     This page is cached. If it doesn't show the newly added episode, please press CTRL and F5 keys together to force page fresh.
                 </td>
             </tr>
@@ -81,13 +83,13 @@
                             @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
                         </td>
                         @*
-                        <td>
-                        @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
-                        </td>
-                        <td>
-                        @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
-                        </td>
-                        *@
+                <td>
+                @Html.DisplayFor(modelItem => pat.Patient.PTFSSN)
+                </td>
+                <td>
+                @Html.DisplayFor(modelItem => pat.Patient.PatientICN)
+                </td>
+                *@
                     </tr>
                     <!--Episode of Care row-->
                     @*if there the patient doesn't have any episode, there will be an null episode with rehab command collection'*@

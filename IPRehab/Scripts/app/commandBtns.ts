@@ -136,41 +136,43 @@ const commandBtnController = (function () {
                 location.href = thisUrl;
             }
             else {
+                const thisUrl: string = $thisButton.prop('formAction');
+                location.href = thisUrl;
                 //submit exists on this page
                 //if submit is not disabled then the form is dirty
-                if (!submitButton.is(":disabled")) {
-                    $('.spinnerContainer').hide();
-                    $('#dialog')
-                        .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
-                        .dialog(dialogOptions, {
-                            title: 'Warning',
-                            buttons:
-                                [
-                                    {
-                                        text: "Cancel",
-                                        click: function () {
-                                            $('.spinnerContainer').hide();
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        text: "Ok",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                            $('.spinnerContainer').show();
-                                            const thisUrl = $thisButton.prop('formAction');
-                                            $('.spinnerContainer').show();
-                                            //navigate away
-                                            location.href = thisUrl;
-                                        }
-                                    }
-                                ]
-                        })
-                }
-                else {
-                    const thisUrl: string = $thisButton.prop('formAction');
-                    location.href = thisUrl;
-                }
+                //if (!submitButton.is(":disabled")) {
+                //    $('.spinnerContainer').hide();
+                //    $('#dialog')
+                //        .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
+                //        .dialog(dialogOptions, {
+                //            title: 'Warning',
+                //            buttons:
+                //                [
+                //                    {
+                //                        text: "Cancel",
+                //                        click: function () {
+                //                            $('.spinnerContainer').hide();
+                //                            $(this).dialog("close");
+                //                        }
+                //                    },
+                //                    {
+                //                        text: "Ok",
+                //                        click: function () {
+                //                            $(this).dialog("close");
+                //                            $('.spinnerContainer').show();
+                //                            const thisUrl = $thisButton.prop('formAction');
+                //                            $('.spinnerContainer').show();
+                //                            //navigate away
+                //                            location.href = thisUrl;
+                //                        }
+                //                    }
+                //                ]
+                //        })
+                //}
+                //else {
+                //    const thisUrl: string = $thisButton.prop('formAction');
+                //    location.href = thisUrl;
+                //}
             }
         }
     }

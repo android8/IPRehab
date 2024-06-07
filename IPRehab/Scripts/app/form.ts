@@ -6,12 +6,12 @@ import { EpisodeScore } from "./episodeScore.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
-const commonUtility: Utility = new Utility();
+export const commonUtility: Utility = new Utility();
 
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
-const formController = (function () {
+export const formController = (function () {
     enum EnumGetControlValueBehavior {
         Elaborated,
         Simple
@@ -814,8 +814,10 @@ const formController = (function () {
     //}
 
 })();
+
 /******************************* end of closure ****************************/
 
+//self execution function
 $(function () {
     //const dialogOptions =commonUtility.dialogOptions();
     const dialogOptions: any = {
@@ -845,14 +847,6 @@ $(function () {
         }]
     };
 
-    $(window).on("unload", function (e) {
-        let episodeNotSaved: boolean = $('#episodeID_legend').text() == 'New Episode';
-        if (episodeNotSaved) {
-            if (!confirm('The record has not been saved.'))
-                e.preventDefault();
-        }
-    });
-
     $('input[type=date]').each(function () {
         const thisDate = $(this);
         thisDate.on('change', function () {
@@ -862,7 +856,7 @@ $(function () {
                     thisDateReset.prop('disabled', false);
                 }
             }
-        })
+        });
     });
 
     /* each reset calendar click reset the date of the target sibling */
@@ -879,7 +873,7 @@ $(function () {
 
             if (isTargetOnQ12B) {
                 console.log('trigger change event to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
-                thisTargetDate.trigger('change');      //else use the commonUtility to reset the value
+                thisTargetDate.trigger('change');    //else use the commonUtility to reset the value
             }
             else {
                 console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
@@ -902,10 +896,10 @@ $(function () {
 
     /* section nav */
     $('#questionTab')
-        .on('mouseenter', function () { /* slide into the viewing area*/
+        .on('mouseenter', function () {
             $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
         })
-        .on('mouseleave', function () { /* slide out of the viewing area */
+        .on('mouseleave', function () {
             $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
         });
 
@@ -980,7 +974,6 @@ $(function () {
     //$('#mvcPost').click(function () {
     //  $('form').submit();
     //});
-
     $('.persistable').on('change', function (e) {
         const Q12: any = $('.persistable[id^=Q12_]');
         const Q23: any = $('.persistable[id^=Q23_]');
@@ -1016,10 +1009,9 @@ $(function () {
         $(this).on('change', function () {
             formController.mobilityScore();
             formController.grandTotal();
-        })
+        });
     });
 
     /* grand total on load */
     formController.grandTotal();
 });
-
