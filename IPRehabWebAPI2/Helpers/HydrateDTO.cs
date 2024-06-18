@@ -1,4 +1,5 @@
-﻿using IPRehabModel;
+﻿using Humanizer;
+using IPRehabModel;
 using IPRehabWebAPI2.Models;
 using PatientModel_TreatingSpecialty;
 using System;
@@ -169,7 +170,7 @@ namespace IPRehabWebAPI2.Helpers
                 Sta6a = p.Bsta6a,
                 Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
                 PTFSSN = p.ScrSsnt.Trim(),
-                RealSSN = p.Realssn.Trim(),
+                RealSSN = "XXXXX" + p.Realssn.Trim().Substring(p.Realssn.Length-4),
                 PatientICN = p.PatientIcn?.Trim(),
                 DoB = p.DoB.Value,
                 Bedsecn = p.Bedsecn,

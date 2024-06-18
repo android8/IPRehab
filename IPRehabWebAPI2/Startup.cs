@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PatientModel_TreatingSpecialty;
 using System.Net.Mime;
+using System.Reflection;
 using System.Text.Json;
 using UserModel;
 
@@ -74,7 +75,7 @@ namespace IPRehabWebAPI2
 
             #endregion db setup
 
-            #region IoC container
+            #region DI(IoC) container
 
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IAnswerRepository, AnswerRepository>();
@@ -169,6 +170,12 @@ namespace IPRehabWebAPI2
             //services.AddAuthentication(IISDefaults.AuthenticationScheme);
             services.AddAuthentication(options => { options.DefaultAuthenticateScheme = options.DefaultAuthenticateScheme; }).AddNegotiate();
             services.AddAuthorization(options => { options.FallbackPolicy = options.DefaultPolicy; });
+            #endregion
+
+            #region Automapper
+            //scan all DLLs in the assembly 
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             #endregion
 
             #region API Controller behaviors

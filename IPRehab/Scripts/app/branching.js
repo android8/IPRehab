@@ -154,7 +154,7 @@ $(function () {
             }
             default: {
                 //see branchingTree.txt
-                const triggers = $('.persistable[id ^= Q12B_], .persistable[id ^= Q14A_], .persistable[id ^= Q16A_], .persistable[id ^= Q42_], .persistable[id ^= Q43_], .persistable[id ^= Q44C_]'
+                const triggers = $('.persistable[id ^= Q12B_], .persistable[id ^= Q14A_], .persistable[id ^= Q16A_], .persistable[id ^= Q42_], .persistable[id ^= Q44C_]'
                     + ', .persistable[id ^= Q44D_], .persistable[id ^= GG0170I_], .persistable[id ^= GG0170M_], .persistable[id ^= GG0170Q_], .persistable[id ^= J0510], .persistable[id ^= J0520]');
                 const triggerTargets = $('.persistable[id ^= Q12_], .persistable[id ^= Q14B_], .persistable[id ^= Q15B_], .persistable[id ^= Q16B_], .persistable[id ^= Q17_], .persistable[id ^= Q21B_], .persistable[id ^= Q41_]'
                     + ', .persistable[id ^= Q43_], .persistable[id ^= Q44C_], .persistable[id ^= Q44D_], .persistable[id ^= Q45_], .persistable[id ^= Q46_]'
@@ -165,7 +165,7 @@ $(function () {
                     + ', [id ^= Complete]');
                 const unlockOnload = $('input.persistable, select.persistable').not(triggerTargets).not('.summary header');
                 //enable handlerless controls but don't raise change event to prevent infinite loop
-                console.log(unlockOnload.length + ' fields to be unlocked (disabled false)');
+                console.log(unlockOnload.length + ' fields to be unlocked (disabled = false)');
                 unlockOnload.each(function () {
                     const scopedControl = $(this);
                     scopedControl.prop('disabled', false);
@@ -190,6 +190,15 @@ $(function () {
         console.log('adding Q12_Q23_addListener()');
         /* add onchange event listner */
         let seenTheDialog = false;
+        const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
+        primaryKeys.each(function () {
+            const thisPrimaryKey = $(this);
+            thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
+                console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
+                //checkQ12_Q23(e.data.x);
+                seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
+            });
+        });
         /* add rule help */
         const Q12_Q23rule = $('.branchingRule[data-target=Q12], .branchingRule[data-target=Q23]');
         const Q12_Q23ruleText = 'If Q12 or Q23 is blank or Q12 date is later than Q23 date, lock all inputs and the save button';
@@ -203,15 +212,6 @@ $(function () {
                         $(this).dialog("close");
                     }
                 }
-            });
-        });
-        const primaryKeys = $('.persistable[id^=Q12_], .persistable[id^=Q23_]');
-        primaryKeys.each(function () {
-            const thisPrimaryKey = $(this);
-            thisPrimaryKey.on('change', { x: EnumChangeEventArg.Change }, function (e) {
-                console.log('onchange calling Q12_Q23_blank_then_Lock_All(), seenTheDialog = ', seenTheDialog);
-                //checkQ12_Q23(e.data.x);
-                seenTheDialog = Q12_Q23_blank_then_Lock_All(EnumChangeEventArg.Change, { seenTheDialog: seenTheDialog });
             });
         });
         console.log('Q12_Q23 listener added');
@@ -252,7 +252,7 @@ $(function () {
             actQ12B(false);
         }
         else {
-            if (Q12B.val() === null && Q12B.val() === '') {
+            if (Q12B.val() === null || Q12B.val() === '') {
                 //lock all discharge related fields without dialog
                 actQ12B(true);
             }
@@ -1207,7 +1207,7 @@ $(function () {
         });
         /* add rule help */
         const GG0170M_and_Nrule = $('.branchingRule[data-target=GG0170M]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170N]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170O]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170P]:not([id*=Discharge_Goal])');
-        const GG0170M_and_NruleText = 'If the Admission Performance or Discharge Performance is between 1 and 6, unlock the corresponding measure of the next question in sequence.  That is M opens N, N opens O.  If value is 7 or greater, N and O will be reset and locked, then advance the cursor to P.';
+        const GG0170M_and_NruleText = 'If the Admission Performance or Discharge Performance is between 1 and 6, unlock the corresponding measure of the next question in sequence.  That is M opens N, and N opens O respectively.  If value is 7 or greater, N and O will be reset and locked, then cursor advances to P.';
         GG0170M_and_Nrule.prop('title', GG0170M_and_NruleText).show();
         GG0170M_and_Nrule.on('click', function () {
             $('#dialog')

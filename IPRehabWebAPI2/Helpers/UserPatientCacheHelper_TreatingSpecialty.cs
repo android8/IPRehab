@@ -242,8 +242,8 @@ namespace IPRehabWebAPI2.Helpers
 
             if (allPatientsFromCache != null && allPatientsFromCache.Any())
             {
-                //renew cache for 24 hours
-                _memoryCache.Set(CacheKeys.CacheKeyAllPatients_TreatingSpeciality, allPatientsFromCache, TimeSpan.FromDays(1));
+                //do not renew cache for 24 hours
+                //_memoryCache.Set(CacheKeys.CacheKeyAllPatients_TreatingSpeciality, allPatientsFromCache, TimeSpan.FromDays(1));
                 return allPatientsFromCache;
             }
             else
@@ -292,6 +292,7 @@ namespace IPRehabWebAPI2.Helpers
                     }
                 }
 
+                _memoryCache.Remove(cacheKeyOfThisFacility);
                 //update cache for 24 hours
                 _memoryCache.Set(cacheKeyOfThisFacility, patientsInCurrentUserFacility, TimeSpan.FromDays(1));
 

@@ -162,7 +162,7 @@ namespace IPRehabWebAPI2.Controllers
 
             if (includeAnswer && episodeID > 0 && stageName != "NEW")
             {
-                tblEpisodeOfCare thisEpisode = _episodeRepository.FindByCondition(e => e.EpisodeOfCareID == episodeID).Single();
+                tblEpisodeOfCare thisEpisode = await _episodeRepository.FindByCondition(e => e.EpisodeOfCareID == episodeID).SingleAsync();
                 foreach (var q in questions)
                 {
                     //ToDo: use tblBranching to determine if the question should be enabled
@@ -172,6 +172,7 @@ namespace IPRehabWebAPI2.Controllers
                       .FindByCondition(a => a.QuestionIDFK == q.QuestionID && a.EpsideOfCareIDFK == episodeID &&
                         a.MeasureIDFKNavigation.MeasureCodeSetIDFKNavigation.CodeValue == q.MeasureCodeValue)
                       .Select(a => HydrateDTO.HydrateAnswer(a, thisEpisode)).ToListAsync();
+
                     if (thisQuestionAnswers != null && thisQuestionAnswers.Any())
                     {
                         if (q.QuestionKey == "Q12")

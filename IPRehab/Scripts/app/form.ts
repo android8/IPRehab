@@ -371,7 +371,7 @@ export const formController = (function () {
         const apiController = thisPostBtn.data('controller');
 
         let thisUrl: string;
-        if (episodeID === -1) {
+        if (episodeID <= 0) {
             //post to different api when episode === -1
             thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
         }

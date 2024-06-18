@@ -4,11 +4,21 @@
         <name>IPRehabWebAPI2</name>
     </assembly>
     <members>
-        <member name="M:IPRehabWebAPI2.Controllers.AnswerController.#ctor(IPRehabWebAPI2.Helpers.AnswerHelper)">
+        <member name="M:IPRehabWebAPI2.Controllers.AnswerController.#ctor(IPRehabWebAPI2.Helpers.AnswerHelper,Microsoft.Extensions.Caching.Memory.IMemoryCache,IPRehabRepository.Contracts.ITreatingSpecialtyDirectPatientRepository)">
             <summary>
-            inject AnserHelper
+            inject AnswerHelper
             </summary>
             <param name="answerHelper"></param>
+            <param name="memoryCache"></param>
+            <param name="treatingSpecialtyPatientRepository"></param>
+        </member>
+        <member name="M:IPRehabWebAPI2.Controllers.AnswerController.PostAsync(IPRehabWebAPI2.Models.PostbackModel)">
+            <summary>
+            the old and new may have the same id, so 
+            delete old answers first, then edit updated answers, then insert new answers
+            </summary>
+            <param name="postbackModel"></param>
+            <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.AnswerController.PostNewEpisodeAsync(IPRehabWebAPI2.Models.PostbackModel)">
             <summary>
@@ -98,12 +108,13 @@
             <param name="episodeID"></param>
             <returns></returns>
         </member>
-        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.#ctor(IPRehabModel.IPRehabContext,IPRehabRepository.Contracts.IAnswerRepository)">
+        <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.#ctor(IPRehabModel.IPRehabContext,IPRehabRepository.Contracts.IAnswerRepository,AutoMapper.IMapper)">
             <summary>
             constructor injection of IPRehabContext in order to use _ipRehabContext transaction
             </summary>
             <param name="iPRehabContext"></param>
             <param name="answerRepository"></param>
+            <param name="mapper"></param>
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewEpisodeAsync(System.String,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
@@ -115,7 +126,7 @@
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalInsertNewAnswerOnlyAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
-            add only new answers to exisitng episode
+            add only new answers to existing episode
             </summary>
             <param name="thisEpisodeID"></param>
             <param name="newAnswers"></param>
@@ -126,12 +137,12 @@
             update both existing episode and answers
             </summary>
             <param name="thisEpisodeID"></param>
-            <param name="udatedAnswers"></param>
+            <param name="updatedAnswers"></param>
             <returns></returns>
         </member>
         <member name="M:IPRehabWebAPI2.Helpers.AnswerHelper.TransactionalDeleteAsync(System.Int32,System.Collections.Generic.List{IPRehabWebAPI2.Models.UserAnswer})">
             <summary>
-            delete answers, and delte this episode when all answers are deleted
+            delete answers, and delete this episode when all answers are deleted
             </summary>
             <param name="thisEpisodeID"></param>
             <param name="oldAnswers"></param>
@@ -273,67 +284,67 @@
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientName">
             <summary>
-            not peristable, inspection only
+            not persistable, inspection only
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.PatientID">
             <summary>
-            peristable, inspection only
+            persistable, inspection only
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.AnswerID">
             <summary>
-            peristable
+            persistable
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.EpisodeID">
             <summary>
-            peristable, foreign key to episode identifiers 
+            persistable, foreign key to episode identifiers 
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.OnsetDate">
             <summary>
-            peristable, episode onset date
+            persistable, episode onset date
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.AdmissionDate">
             <summary>
-            peristable, e[ospde admission date
+            persistable, episode admission date
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.QuestionID">
             <summary>
-            peristable, foreign key to question identifier 
+            persistable, foreign key to question identifier 
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.QuestionKey">
             <summary>
-            not peristable, for inspection only
+            not persistable, for inspection only
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.MeasureID">
             <summary>
-            peristable, foreign key to stage identifier for inspection only
+            persistable, foreign key to stage identifier for inspection only
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.MeasureName">
             <summary>
-            not peristable, for inspection only
+            not persistable, for inspection only
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.AnswerCodeSetID">
             <summary>
-            peristable, foreign key to codeset id  
+            persistable, foreign key to codeset id  
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.AnswerCodeSetDescription">
             <summary>
-            not peristable, for inspection only to ensure the the AnswerCodeSet is correct  
+            not persistable, for inspection only to ensure the the AnswerCodeSet is correct  
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.AnswerSequenceNumber">
             <summary>
-            peristable, unique identifier for multi-answer questions
+            persistable, unique identifier for multi-answer questions
             </summary>
         </member>
         <member name="P:IPRehabWebAPI2.Models.UserAnswer.Description">

@@ -36,11 +36,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IPRehabMetricsWebAPI_Test@W6.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\IPRehab\.editorconfig" Link=".editorconfig" />
     <None Include="Properties\PublishProfiles\VHAAusWeb3 %28DEV%29.pubxml.user" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Azure.Identity" Version="1.11.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="8.0.6" />

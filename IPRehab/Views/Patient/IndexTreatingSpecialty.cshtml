@@ -67,6 +67,9 @@
                 int patientRowIndex = 0;
                 foreach (var pat in Model.Patients)
                 {
+                    string blur = pat.Patient.RealSSN.Substring(0, pat.Patient.RealSSN.Length - 4);
+                    string last4 = pat.Patient.RealSSN.Substring(pat.Patient.RealSSN.Length-4);
+
                     <!--Patient row-->
                     <tr class="patientRow">
                         <td class="rowCounter">@(++patientRowIndex)</td>
@@ -80,7 +83,9 @@
                             @Html.DisplayFor(modelItem => pat.Patient.Name)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => pat.Patient.RealSSN)
+                            <span class="blurry">@blur</span>
+                            <span>@last4</span>
+                            @*Html.DisplayFor(modelItem => pat.Patient.RealSSN.Substring(pat.Patient.RealSSN.Length-4))*@
                         </td>
                         @*
                 <td>

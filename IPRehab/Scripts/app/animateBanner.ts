@@ -7,7 +7,7 @@
 const sliderController = (function () {
 
     /* private function */
-    function slide() {
+    $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
         //not visible outside the closure
         function getMediaWidth() {
             let y: MediaQueryList = window.matchMedia("(max-width:576px)");
