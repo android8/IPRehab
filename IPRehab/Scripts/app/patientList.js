@@ -45,12 +45,19 @@ let patientListController = (function () {
         $('#recordCount').text('');
         location.href = thisHref;
     }
+    /* private function */
+    function getFullSSN($this) {
+        alert($this);
+        console.log($this);
+    }
     /****************************************************************************
      * public functions exposing getSearchCriteriaFromUrl() and search() to outside of the closure
     ***************************************************************************/
     return {
         'getSearchCriteriaFromUrl': getSearchCriteriaFromUrl,
-        'search': search
+        'search': search,
+        'getFullSSN': getFullSSN
     };
 })();
+$('.blurry').on('click', function () { patientListController.getFullSSN(this); });
 //# sourceMappingURL=patientList.js.map

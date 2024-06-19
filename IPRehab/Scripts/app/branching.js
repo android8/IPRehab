@@ -944,15 +944,15 @@ $(function () {
                 if ((focusThis === null || focusThis === void 0 ? void 0 : focusThis.length) > 0) {
                     console.log('actGG0170I() scroll to ', focusThis === null || focusThis === void 0 ? void 0 : focusThis.prop('id'));
                     focusThis.prop('disabled', false);
-                    scrollTo(focusThis.prop('id'));
+                    //scrollTo(focusThis.prop('id'));
                 }
             }
             else {
                 if ((focusThis === null || focusThis === void 0 ? void 0 : focusThis.length) > 0) {
                     console.log('actGG0170I() no scroll but focus ', focusThis.prop('id'));
                     focusThis.prop('disabled', false);
-                    scrollTo(focusThis.prop('id'));
-                    focusThis.trigger('focus');
+                    //scrollTo(focusThis.prop('id'));
+                    //focusThis.trigger('focus');
                 }
                 else
                     console.log(focusThis.prop('id') + " dosen't exist in this context, can not set focus on that element");
@@ -1099,7 +1099,7 @@ $(function () {
                             }
                             if (P.length > 0) {
                                 P.prop('disabled', false);
-                                scrollTo(P.prop('id'));
+                                //scrollTo(P.prop('id'));
                             }
                             break;
                         case (M_value > 0 && M_value < 7):
@@ -1109,7 +1109,7 @@ $(function () {
                             }
                             if (N.length > 0) {
                                 N.prop('disabled', false);
-                                scrollTo(N.prop('id'));
+                                //scrollTo(N.prop('id'));
                             }
                             break;
                         default:
@@ -1130,14 +1130,14 @@ $(function () {
                             }
                             if (P.length > 0) {
                                 P.prop('disabled', false);
-                                scrollTo(P.prop('id'));
+                                //scrollTo(P.prop('id'));
                             }
                             break;
                         case (N_value > 0 && N_value < 7):
                             /* N between 0 and 6, unlock and scroll to O */
                             if (O.length > 0) {
                                 O.prop('disabled', false);
-                                scrollTo(O.prop('id'));
+                                //scrollTo(O.prop('id'));
                             }
                             break;
                         default:
@@ -1234,7 +1234,7 @@ $(function () {
                     const thisCompleted = $(this);
                     thisCompleted.prop('disabled', false);
                 });
-                scrollTo(completed_Yes.prop('id'));
+                //scrollTo(completed_Yes.prop('id'));
                 byRef.seenTheDialog = true; //callback
                 $(this).dialog("close");
             },
@@ -1259,8 +1259,8 @@ $(function () {
                 const thisCompleted = $(this);
                 thisCompleted.prop('disabled', false);
             });
-            scrollTo(completed_Yes.prop('id'));
-            completed_Yes.trigger('focus');
+            //scrollTo(completed_Yes.prop('id'));
+            //completed_Yes.trigger('focus');
         }
         //onload don't scroll to complete 
         console.log('------ done handling GG0170Q ' + eventType + '------');
@@ -1276,7 +1276,7 @@ $(function () {
         const myButtons = {
             "Ok": function () {
                 thisGG0170R.prop('disabled', false);
-                scrollTo(thisGG0170R.prop('id'));
+                //scrollTo(thisGG0170R.prop('id'));
                 setSeenTheDialog(true); //callback
                 $(this).dialog("close");
             },
@@ -1299,7 +1299,7 @@ $(function () {
             //without warning dialog
             //thisGG0170R.prop('disabled', false).trigger('focus');
             thisGG0170R.prop('disabled', false);
-            scrollTo(thisGG0170R.prop('id'));
+            //scrollTo(thisGG0170R.prop('id'));
         }
         console.log('------ done handling GG0170Q ' + eventType + '------');
         return byRef.seenTheDialog;
@@ -1406,11 +1406,11 @@ $(function () {
         });
         if (eventType === EnumChangeEventArg.Change) {
             console.log('scroll to ' + J1750_yes.prop('id'));
-            scrollTo(J1750_yes.prop('id'));
-            J1750_yes.parent('focus');
+            //scrollTo(J1750_yes.prop('id'));
+            //J1750_yes.parent('focus');
         }
         else {
-            J1750_yes.prop('disabled', false).trigger('focus');
+            J1750_yes.prop('disabled', false); //.trigger('focus');
         }
         console.log('------ done handling J0510 ' + eventType + '------');
         //no dialog is used so just return the original value of byRef.seenTheDialog
