@@ -5,94 +5,104 @@
  ***************************************************************************/
 
 const sliderController = (function () {
+    const bannerHeight: string = getMediaWidth();
+    const bannerScrollOffY: string = '-' + bannerHeight;
+    const footerHeight: string = $(".hoverFooter").css("height")
+    const footerScrollOffY: string = '-' + footerHeight;
+    let bannerFooterVisible: boolean = false;
 
-    /* private function */
-    $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
-        //not visible outside the closure
-        function getMediaWidth() {
-            let y: MediaQueryList = window.matchMedia("(max-width:576px)");
-            let bannerCssHeight: string = $(".hoverHeader").css("height");
-            let bannerHeight: number = parseInt(bannerCssHeight);
+    //$('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
+    //$('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
+    //const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    //console.log('view port width', vw);
+    //const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    //console.log('view port height', vw);
 
-            if (!isNaN(bannerHeight)) {
-                bannerHeight -= 5;
-                bannerCssHeight = bannerHeight + 'px';
-            }
-                
-            if (y.matches) {
-                console.log('screen is <= 576 pixels wide');
-                return bannerCssHeight;
-            }
+    function getMediaWidth() {
+        let y: MediaQueryList = window.matchMedia("(max-width:576px)");
+        let bannerCssHeight: string = $(".hoverHeader").css("height");
+        let bannerHeight: number = parseInt(bannerCssHeight);
 
-            y = window.matchMedia("(max-width:768px)");
-            if (y.matches) {
-                console.log('screen is <= 768 pixels wide');
-                return bannerCssHeight;
-            }
-            else {
-                console.log('screen is >= 768 pixels wide');
-                return bannerCssHeight;
-            }
+        if (!isNaN(bannerHeight)) {
+            //bannerHeight -= 5;
+            bannerCssHeight = bannerHeight + 'px';
         }
-        /*hide header and footer after 2 seconds*/
-        let bannerScrollOffY: string = '-' + getMediaWidth();
-        let footerScrollOffY: string = '-' + $(".hoverFooter").css("height");
-        const bannerScrollInY: string = '0px';
-        const foterScrollInY: string = '0px';
-        //const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-        //console.log('view port width', vw);
-        //const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-        //console.log('view port height', vw);
 
-        console.log('documentReady bannerScrollOffY', bannerScrollOffY);
-        console.log('documentReady footerScrollOffY', footerScrollOffY);
+        if (y.matches) {
+            console.log('screen is <= 576 pixels wide');
+            return bannerCssHeight;
+        }
 
-        $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
-        $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
-
-        $(window).on('resize', function () {
-            bannerScrollOffY = '-' + getMediaWidth();
-            footerScrollOffY = '-' + $(".hoverFooter").css("height");
-
-            console.log('windows resize bannerScrollOffY', bannerScrollOffY);
-            console.log('windows resize footerScrollOffY', footerScrollOffY);
-
-            $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
-            $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
-        });
-
-        $(".hoverHeader, .hoverFooter, .pulldown")
-            .on('mouseenter', function () {
-                $('#logo').show();
-                console.log('mouseenter bannerScrollInY', bannerScrollInY);
-                console.log('mouseenter foterScrollInY', foterScrollInY);
-
-                $('.hoverHeader').css({ 'top': bannerScrollInY, 'z-index': '100', 'transition-duration': '1s' });
-                $('.hoverFooter').css({ 'bottom': foterScrollInY, 'z-index': '100', 'transition-duration': '1s' });
-            })
-            .on('mouseleave', function () {
-                $('#logo').hide();
-                bannerScrollOffY = '-' + getMediaWidth();
-                footerScrollOffY = '-' + $(".hoverFooter").css("height");
-
-                console.log('mouseleave bannerScrollOffY', bannerScrollOffY);
-                console.log('mouseleave footerScrollOffY', footerScrollOffY);
-
-                $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
-                $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
-            });
+        y = window.matchMedia("(max-width:768px)");
+        if (y.matches) {
+            console.log('screen is <= 768 pixels wide');
+            return bannerCssHeight;
+        }
+        else {
+            console.log('screen is >= 768 pixels wide');
+            return bannerCssHeight;
+        }
     }
 
+    /* private function */
+    function widnowResize($this) {
+        //bannerScrollOffY = '-' + getMediaWidth();
+        //footerScrollOffY = '-' + $(".hoverFooter").css("height");
+
+        //$('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100'/*, 'transition-duration': '0s'*/ });
+        //$('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100'/*, 'transition-duration': '0s'*/ });
+
+        console.log('windows resized, hide banner and footer');
+        $('.hoverHeader, .hoverFooter').hide();
+        bannerFooterVisible = false;
+    }
+
+    /* private function */
+    function clickPulldown($this) {
+        //let visible: boolean = $('.hoverHeader').is(":visible");
+        //const bannerPosition = $('.hoverHeader').position();
+
+        if (bannerFooterVisible) {
+            //alert('hide banner');
+            $('#logo').hide();
+            $(".pulldown").css({ 'top': '0px' });
+            $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100' /*, 'transition-duration': '1s' */ }).hide();
+            $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100' /*, 'transition-duration': '1s' */}).hide();
+        }
+        else {
+            //alert('show banner');
+            $('#logo').show();
+            $(".pulldown").css({ 'top': bannerHeight });
+            $('.hoverHeader').css({ 'top': '0px', 'z-index': '100', 'transition-duration': '1s' }).show();
+            $('.hoverFooter').css({ 'bottom': '0px', 'z-index': '100', 'transition-duration': '1s' }).show();
+        }
+        bannerFooterVisible = !bannerFooterVisible;
+    }
+
+    /* private function */
+    function slideOnLeaveElement($this) {
+        $('#logo').hide();
+
+        //console.log('mouseleave bannerScrollOffY', bannerScrollOffY);
+        //console.log('mouseleave footerScrollOffY', footerScrollOffY);
+
+        $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
+        $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
+    }
     /****************************************************************************
      * public function exposing slide() outside of the closure
     ****************************************************************************/
     return {
-        'slide': slide
+        'widnowResize': widnowResize,
+        'clickPulldown': clickPulldown
     }
 })();
 
 $(function () {
-    //call closure
-    sliderController.slide();
+    $('.hoverHeader, .hoverFooter').hide();
+
+    //listeners
+    $(window).on('resize', function () { sliderController.widnowResize(this) });
+    $(".pulldown").on('click', function () { sliderController.clickPulldown(this) });
 });
 

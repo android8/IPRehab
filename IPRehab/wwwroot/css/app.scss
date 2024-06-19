@@ -20,6 +20,10 @@
     animation: pulse 2s infinite !important;
 }
 
+.blurry {
+    filter: blur(3px);
+}
+
 .accessDenied {
     display: flex;
     flex-direction: row;
@@ -162,7 +166,8 @@ body {
 }
 
 .pulldown {
-    top: -4px !important;
+    top: 0px;
+    left: 0px;
     position: fixed;
     z-index: 100;
     color: #0e2640;
