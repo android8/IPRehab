@@ -49,7 +49,7 @@
             aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
-        <option value="-1">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
+        <option value="-1" data-score="0">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>
 
         @foreach (var item in Model.ChoiceAndAnswerList)
         {
