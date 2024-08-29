@@ -1,20 +1,19 @@
 ﻿@model InputViewComponentTemplateModel
 
-@{
-    AnswerDTO originalAnswer = null;
-    ChoiceAndAnswer selectedItem = null;
-    var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
-    string thisOptionText = string.Empty;
-    int optionTextWordCount = 0;
-    if (thisChoiceAndAnswer != null)
-    {
-        originalAnswer = thisChoiceAndAnswer.Answer;
-    }
-
-    bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
-}
-
 <div class="flex-start-column-nowrap">
+    @{
+        AnswerDTO originalAnswer = null;
+        ChoiceAndAnswer selectedItem = null;
+        var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
+        if (thisChoiceAndAnswer != null)
+        {
+            originalAnswer = thisChoiceAndAnswer.Answer;
+        }
+
+        bool displayStageHeader = Model.ViewComponentViewModel.DisplayMeasureHeader;
+        int optionTextWordCount = 0;
+        string thisOptionFullText = string.Empty;
+    }
 
     @*the labe is required by HTML5 specification*@
     <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
@@ -54,26 +53,36 @@
 
         @foreach (var item in Model.ChoiceAndAnswerList)
         {
+            string thisOptionScore = string.Empty;
+
+            //convert leading 5 characters in the option text to numeric
+            thisOptionScore = string.Concat(item.SelectListItem.Text.Substring(0,5).Where(Char.IsDigit));
+            //thisOptionScore = string.Join(',', item.SelectListItem.Text.Where(Char.IsDigit));
+
             if (item.SelectListItem.Selected)
             {
                 selectedItem = item;
                 if (selectedItem.SelectListItem.Value != "0")
                 {
-                    //strip the leading value
-                    thisOptionText = item.SelectListItem.Text.Substring(2);
-                    optionTextWordCount = thisOptionText.Count(c => Char.IsWhiteSpace(c) || Char.IsControl(c));
+                    //strip the leading value to display selected option full text
+                    int firstDotPosition = item.SelectListItem.Text.IndexOf(".");
+                    thisOptionFullText = item.SelectListItem.Text.Substring(firstDotPosition+1);
+                    optionTextWordCount = thisOptionFullText.Count(c => Char.IsWhiteSpace(c) || Char.IsControl(c));
                 }
             }
+            
             /* each item in the ChoicesAnswers contains maximum of one choice codeSetID and, if answered, one answer.codeSetID */
+            /* add data-score to assist individual choice scoring */
             <option value="@(item.SelectListItem.Value)"
-                    selected="@(item.SelectListItem.Selected)">
+                    selected="@(item.SelectListItem.Selected)"
+                    data-score="@(thisOptionScore)">
                 @(item.SelectListItem.Text)
             </option>
         }
     </select>
-    @if (!string.IsNullOrEmpty(thisOptionText) && optionTextWordCount > 10)
+    @if (!string.IsNullOrEmpty(thisOptionFullText) && optionTextWordCount > 10)
     {
-        <div class="longTextOption">@(thisOptionText)</div>
+        <div class="longTextOption">@(thisOptionFullText)</div>
     }
     else
     {

@@ -8,3 +8,9 @@ export enum EnumChangeEventArg {
   Change='Change',
   NoScroll='NoScroll'
 }
+
+export enum EnumDbCommandType {
+    Create,
+    Delete,
+    Update
+}

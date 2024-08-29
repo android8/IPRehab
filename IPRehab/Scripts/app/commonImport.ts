@@ -10,9 +10,8 @@ import { Utility } from "./utility.js";
 import { UserAnswer } from "./userAnswer.js"
 import { EpisodeScore } from "./episodeScore.js"
 import { AjaxPostbackModel } from "./AjaxPostbackModel.js";
-//import { EnumGetControlValueBehavior, EnumChangeEventArg } from "./enums.js";
+import { EnumGetControlValueBehavior, EnumChangeEventArg, EnumDbCommandType } from "./enums.js";
 
 export {
-  Utility, UserAnswer, AjaxPostbackModel, IAjaxPostbackModel, IUserAnswer, ICommonUtility
-  /* ,EnumGetControlValueBehavior, EnumChangeEventArg */
+    Utility, ICommonUtility, UserAnswer, IUserAnswer, AjaxPostbackModel, IAjaxPostbackModel, EnumGetControlValueBehavior, EnumChangeEventArg, EnumDbCommandType
 };

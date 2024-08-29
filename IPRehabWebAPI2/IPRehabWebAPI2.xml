@@ -14,7 +14,7 @@
         </member>
         <member name="M:IPRehabWebAPI2.Controllers.AnswerController.PostAsync(IPRehabWebAPI2.Models.PostbackModel)">
             <summary>
-            the old and new may have the same id, so 
+            the updated answer may have the same id, so 
             delete old answers first, then edit updated answers, then insert new answers
             </summary>
             <param name="postbackModel"></param>

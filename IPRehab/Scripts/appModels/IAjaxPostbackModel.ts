@@ -3,8 +3,8 @@ import { IEpisodeScore } from "./IEpisodeScore.js";
 
 export interface IAjaxPostbackModel {
     EpisodeID: number;
-    OldAnswers: Array<IUserAnswer>;
-    UpdatedAnswers: Array<IUserAnswer>;
-    NewAnswers: Array<IUserAnswer>;
+    DeleteAnswers: Array<IUserAnswer>;
+    UpdateAnswers: Array<IUserAnswer>;
+    InsertAnswers: Array<IUserAnswer>;
     EpisodeScores: Array<IEpisodeScore>;
 }

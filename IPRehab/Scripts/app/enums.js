@@ -9,4 +9,10 @@ export var EnumChangeEventArg;
     EnumChangeEventArg["Change"] = "Change";
     EnumChangeEventArg["NoScroll"] = "NoScroll";
 })(EnumChangeEventArg || (EnumChangeEventArg = {}));
+export var EnumDbCommandType;
+(function (EnumDbCommandType) {
+    EnumDbCommandType[EnumDbCommandType["Create"] = 0] = "Create";
+    EnumDbCommandType[EnumDbCommandType["Delete"] = 1] = "Delete";
+    EnumDbCommandType[EnumDbCommandType["Update"] = 2] = "Update";
+})(EnumDbCommandType || (EnumDbCommandType = {}));
 //# sourceMappingURL=enums.js.map

@@ -1,7 +1,7 @@
 ﻿import { event } from "jquery";
 import { setObserversEnabled } from "./../../node_modules/@material/base/observer.js";
 import { isScrollAtBottom } from "./../../node_modules/@material/dialog/util.js";
-import { Utility } from "./commonImport.js";
+import { Utility, EnumDbCommandType } from "./commonImport.js";
 
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
@@ -192,7 +192,7 @@ $(function () {
                         + ', .persistable[id ^= GG0170N_]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170O_]:not([id *= Discharge_Goal])'
                         + ', .persistable[id ^= GG0170R_]:not([id *= Discharge_Goal])'
                         + ', [id ^= Complete]'
-                   );
+                    );
 
                 const unlockOnload = $('input.persistable, select.persistable').not(triggerTargets).not('.summary header');
                 //enable handlerless controls but don't raise change event to prevent infinite loop
@@ -760,9 +760,9 @@ $(function () {
             byRef.seenTheDialog = value;
         }
 
-        function actQ43s(CRUD: string, thisQ43: any): boolean {
+        function actQ43s(CRUD: EnumDbCommandType, thisQ43: any): boolean {
             switch (CRUD) {
-                case 'D': {
+                case EnumDbCommandType.Delete: {
                     console.log('D', thisQ43);
                     const OtherQ43s: any = $('.persistable[id^=Q43][id!=' + thisQ43.prop('id') + ']')
                     OtherQ43s.each(function () {
@@ -774,7 +774,8 @@ $(function () {
                     thisQ43.next('.bi-calendar-x').prop('diabled', true);
                     break;
                 }
-                case "CU": {
+                case EnumDbCommandType.Create:
+                case EnumDbCommandType.Update: {
                     console.log('CU', thisQ43);
                     const blankQ43s = $('.persistable[id^=Q43][value=""]');
                     if (blankQ43s.length > 0) {
@@ -796,18 +797,11 @@ $(function () {
         const thisQ43CRUD = commonUtility.getCRUD(thisQ43, thisQ43.data('oldvalue'), thisQ43.val());
 
         function Q42ButtonsClosure(Q42Yes: boolean) {
-            return function (thisQ43: any, thisQ43CRUD: string) {
+            return function (thisQ43: any, thisQ43CRUD: EnumDbCommandType) {
                 return {
                     "Ok": function () {
                         if (Q42Yes) {
-                            switch (thisQ43CRUD) {
-                                case "D":
-                                case "D1":
-                                case "D2":
-                                    actQ43s('D', thisQ43);
-                                default:
-                                    actQ43s('CU', thisQ43);
-                            }
+                            actQ43s(thisQ43CRUD, thisQ43);
                         }
                         else {
                             thisQ43.val('').prop('disabled', true); //don't trigger change, otherwise it will cause infinite Q43_Rules() loop
@@ -828,16 +822,9 @@ $(function () {
                 console.log("thisQ43CRUD ? " + thisQ43CRUD === undefined ? "unchanged" : thisQ43CRUD);
                 //without warning dialog
                 console.log('Q42Yes without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                switch (thisQ43CRUD) {
-                    case "D":
-                    case "D1":
-                    case "D2":
-                        foundBlank = actQ43s('D', thisQ43);
-                        break;
-                    default:
-                        foundBlank = actQ43s('CU', thisQ43);
-                        break;
-                }
+
+                foundBlank = actQ43s(thisQ43CRUD, thisQ43);
+
                 break;
             }
             case Q42No: {
@@ -1115,7 +1102,7 @@ $(function () {
         GG0170J = $('.persistable[id^=GG0170J_' + measure + ']');
         GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
 
-        const intGG0170I: number = commonUtility.getControlValue(thisI);
+        const intGG0170I: number = +commonUtility.getControlValue(thisI);
         switch (true) {
             case (intGG0170I > 0 && intGG0170I < 7): {
                 /* unlock and clear J K L, skip to J */
@@ -1245,12 +1232,12 @@ $(function () {
             //only when thisMorN is GG0170M will M be assigned
             M = $('.persistable[id^=GG0170M_' + measure + ']');
             N = $('.persistable[id^=GG0170N_' + measure + ']');
-            factor = commonUtility.getControlValue(M);
+            factor = +commonUtility.getControlValue(M);
             dialogText = 'M is unkown or M is greater than 7, reset and lock N and O then advance to P';
         }
         else {
             N = $('.persistable[id^=GG0170N_' + measure + ']');
-            factor = commonUtility.getControlValue(N);
+            factor = +commonUtility.getControlValue(N);
             dialogText = 'N is unknow or N is greater than 7, reset and lock O then advance to P';
         }
         O = $('.persistable[id^=GG0170O_' + measure + ']');

@@ -1,4 +1,4 @@
-import { Utility } from "./commonImport.js";
+import { Utility, EnumDbCommandType } from "./commonImport.js";
 /* jquery plugin dependsOn*/
 /* https://dstreet.github.io/dependsOn */
 /* http://emranahmed.github.io/Form-Field-Dependency */
@@ -656,7 +656,7 @@ $(function () {
         }
         function actQ43s(CRUD, thisQ43) {
             switch (CRUD) {
-                case 'D': {
+                case EnumDbCommandType.Delete: {
                     console.log('D', thisQ43);
                     const OtherQ43s = $('.persistable[id^=Q43][id!=' + thisQ43.prop('id') + ']');
                     OtherQ43s.each(function () {
@@ -668,7 +668,8 @@ $(function () {
                     thisQ43.next('.bi-calendar-x').prop('diabled', true);
                     break;
                 }
-                case "CU": {
+                case EnumDbCommandType.Create:
+                case EnumDbCommandType.Update: {
                     console.log('CU', thisQ43);
                     const blankQ43s = $('.persistable[id^=Q43][value=""]');
                     if (blankQ43s.length > 0) {
@@ -692,14 +693,7 @@ $(function () {
                 return {
                     "Ok": function () {
                         if (Q42Yes) {
-                            switch (thisQ43CRUD) {
-                                case "D":
-                                case "D1":
-                                case "D2":
-                                    actQ43s('D', thisQ43);
-                                default:
-                                    actQ43s('CU', thisQ43);
-                            }
+                            actQ43s(thisQ43CRUD, thisQ43);
                         }
                         else {
                             thisQ43.val('').prop('disabled', true); //don't trigger change, otherwise it will cause infinite Q43_Rules() loop
@@ -719,16 +713,7 @@ $(function () {
                 console.log("thisQ43CRUD ? " + thisQ43CRUD === undefined ? "unchanged" : thisQ43CRUD);
                 //without warning dialog
                 console.log('Q42Yes without warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
-                switch (thisQ43CRUD) {
-                    case "D":
-                    case "D1":
-                    case "D2":
-                        foundBlank = actQ43s('D', thisQ43);
-                        break;
-                    default:
-                        foundBlank = actQ43s('CU', thisQ43);
-                        break;
-                }
+                foundBlank = actQ43s(thisQ43CRUD, thisQ43);
                 break;
             }
             case Q42No: {
@@ -961,7 +946,7 @@ $(function () {
         let GG0170J, GG0170M;
         GG0170J = $('.persistable[id^=GG0170J_' + measure + ']');
         GG0170M = $('.persistable[id^=GG0170M_' + measure + ']');
-        const intGG0170I = commonUtility.getControlValue(thisI);
+        const intGG0170I = +commonUtility.getControlValue(thisI);
         switch (true) {
             case (intGG0170I > 0 && intGG0170I < 7): {
                 /* unlock and clear J K L, skip to J */
@@ -1072,12 +1057,12 @@ $(function () {
             //only when thisMorN is GG0170M will M be assigned
             M = $('.persistable[id^=GG0170M_' + measure + ']');
             N = $('.persistable[id^=GG0170N_' + measure + ']');
-            factor = commonUtility.getControlValue(M);
+            factor = +commonUtility.getControlValue(M);
             dialogText = 'M is unkown or M is greater than 7, reset and lock N and O then advance to P';
         }
         else {
             N = $('.persistable[id^=GG0170N_' + measure + ']');
-            factor = commonUtility.getControlValue(N);
+            factor = +commonUtility.getControlValue(N);
             dialogText = 'N is unknow or N is greater than 7, reset and lock O then advance to P';
         }
         O = $('.persistable[id^=GG0170O_' + measure + ']');

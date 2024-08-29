@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using IPRehabModel;
+﻿using IPRehabModel;
 using IPRehabWebAPI2.Models;
 using PatientModel_TreatingSpecialty;
 using System;
@@ -67,15 +66,17 @@ namespace IPRehabWebAPI2.Helpers
             //else
             //{
 
-            questionDTO.Required = thisQuestionMeasure.Required;
-            questionDTO.MeasureID = thisQuestionMeasure.Id;
-            if (thisQuestionMeasure.MeasureCodeSetIDFKNavigation != null)
+            if (thisQuestionMeasure != null)
             {
-                questionDTO.MeasureDescription = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeDescription; //GetGroupTitle(q, questionStage);
-                questionDTO.MeasureCodeSetID = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeSetID;
-                questionDTO.MeasureCodeValue = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeValue;
+                questionDTO.Required = thisQuestionMeasure.Required;
+                questionDTO.MeasureID = thisQuestionMeasure.Id;
+                if (thisQuestionMeasure.MeasureCodeSetIDFKNavigation != null)
+                {
+                    questionDTO.MeasureDescription = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeDescription; //GetGroupTitle(q, questionStage);
+                    questionDTO.MeasureCodeSetID = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeSetID;
+                    questionDTO.MeasureCodeValue = thisQuestionMeasure.MeasureCodeSetIDFKNavigation.CodeValue;
+                }
             }
-            //}
 
             questionDTO.AnswerCodeSetID = q.AnswerCodeSetFK;
             questionDTO.AnswerCodeCategory = q.AnswerCodeSetFKNavigation.CodeValue;
@@ -170,7 +171,7 @@ namespace IPRehabWebAPI2.Helpers
                 Sta6a = p.Bsta6a,
                 Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
                 PTFSSN = p.ScrSsnt.Trim(),
-                RealSSN = "XXXXX" + p.Realssn.Trim().Substring(p.Realssn.Length-4),
+                RealSSN = "XXXXX" + p.Realssn.Trim().Substring(p.Realssn.Length - 4),
                 PatientICN = p.PatientIcn?.Trim(),
                 DoB = p.DoB.Value,
                 Bedsecn = p.Bedsecn,

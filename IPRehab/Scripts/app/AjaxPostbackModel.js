@@ -2,9 +2,9 @@ export class AjaxPostbackModel {
     constructor() {
         this.EpisodeID = 0;
         this.FacilityID = '';
-        this.OldAnswers = [];
-        this.UpdatedAnswers = [];
-        this.NewAnswers = [];
+        this.DeleteAnswers = [];
+        this.UpdateAnswers = [];
+        this.InsertAnswers = [];
     }
 }
 //# sourceMappingURL=AjaxPostbackModel.js.map

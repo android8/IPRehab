@@ -7,9 +7,9 @@ namespace IPRehabWebAPI2.Models
     {
         public int EpisodeID { get; set; }
         public string FacilityID { get; set; }
-        public List<UserAnswer> OldAnswers { get; set; }
-        public List<UserAnswer> NewAnswers { get; set; }
-        public List<UserAnswer> UpdatedAnswers { get; set; }
+        public List<UserAnswer> DeleteAnswers { get; set; }
+        public List<UserAnswer> InsertAnswers { get; set; }
+        public List<UserAnswer> UpdateAnswers { get; set; }
     }
 
     public class UserAnswer

@@ -1,7 +1,6 @@
 ﻿/// <reference path="./../../node_modules/@types/jqueryui/index.d.ts" />
 
-import { Utility, UserAnswer, AjaxPostbackModel } from "./commonImport.js";
-import { EnumChangeEventArg } from "./enums.js";
+import { Utility, UserAnswer, AjaxPostbackModel, EnumChangeEventArg, EnumDbCommandType } from "./commonImport.js";
 import { EpisodeScore } from "./episodeScore.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
@@ -12,11 +11,6 @@ export const commonUtility: Utility = new Utility();
  * javaScript closure
  ***************************************************************************/
 export const formController = (function () {
-    enum EnumGetControlValueBehavior {
-        Elaborated,
-        Simple
-    }
-
     /***************************************************************************
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
@@ -189,11 +183,12 @@ export const formController = (function () {
         thisPostBtn.attr('disabled', 'true');
         $('.spinnerContainer').show();
 
-        const oldAnswers: Array<UserAnswer> = new Array<UserAnswer>();
-        const newAnswers: Array<UserAnswer> = new Array<UserAnswer>();
-        const updatedAnswers: Array<UserAnswer> = new Array<UserAnswer>();
+        const deleteAnswers: Array<UserAnswer> = new Array<UserAnswer>();
+        const insertAnswers: Array<UserAnswer> = new Array<UserAnswer>();
+        const updateAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const episodeScores: Array<EpisodeScore> = new Array<EpisodeScore>();
 
+        //from hidden form variables
         const theScope: any = $('#userAnswerForm');
         const stage: string = $('#stage', theScope).val()?.toString();
         const patientID: string = $('#patientID', theScope).val()?.toString();
@@ -217,7 +212,7 @@ export const formController = (function () {
         }
 
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
-        const persistables: any = $('.persistable');
+        const persistables: any = $('.persistable', theScope);
         let counter = 0
 
         persistables.each(function () {
@@ -228,33 +223,29 @@ export const formController = (function () {
 
             if (thisPersistableID == null || thisPersistableID == undefined || thisPersistableID == '') {
                 console.log('element has no id', $thisPersistable);
-                return false;
+                return;
             }
-            console.log('this persistable ID=' + thisPersistableID);
 
-            const questionKey: string = $thisPersistable.data('questionkey');
             const thisAnswer: UserAnswer = new UserAnswer();
+            const questionKey: string = $thisPersistable.data('questionkey');   //get value from data- attribute
             const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
-            let currentValue = '';
 
             //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
-            currentValue = commonUtility.getControlValue($thisPersistable, EnumGetControlValueBehavior.Simple)?.toString();
+            let currentValue: string = commonUtility.getControlValue($thisPersistable);
 
-            //!undefined or !NaN yield true
-            if (+currentValue === -1) currentValue = '';
             if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
                 return;
             }
 
             console.log('--------- old and new values not equal ---------');
+            const controlType: string = $thisPersistable.prop('type');
             const questionId: number = +$thisPersistable.data('questionid');
-            const controlType: any = $thisPersistable.prop('type');
             const answerId: string = $thisPersistable.data('answerid');
             const measureId: number = +$thisPersistable.data('measureid');
             const measureDescription: string = $thisPersistable.data('measuredescription');
             const codesetDescription: string = $thisPersistable.data('codesetdescription');
             const answerSequence: number = +$thisPersistable.data('answersequence');
-            const userID: string = $thisPersistable.data('userid');
+            const AnswerByUserID: string = $thisPersistable.data('userid');
 
             thisAnswer.PatientName = patientName;
             thisAnswer.PatientID = patientID;
@@ -274,7 +265,7 @@ export const formController = (function () {
             if (answerSequence)
                 thisAnswer.AnswerSequenceNumber = answerSequence;
 
-            thisAnswer.AnswerByUserID = userID;
+            thisAnswer.AnswerByUserID = AnswerByUserID;
             thisAnswer.LastUpdate = new Date();
 
             switch (controlType) {
@@ -288,37 +279,34 @@ export const formController = (function () {
                     thisAnswer.OldAnswerCodeSetID = +$thisPersistable.data('codesetid');;
                     thisAnswer.Description = currentValue;
                     break;
-                default: /* dropdown and radio */
+                default: /* dropdown, radio, checkbox */
                     thisAnswer.AnswerCodeSetID = +currentValue;
                     thisAnswer.OldAnswerCodeSetID = +oldValue;
                     break;
             }
 
             /* question score */
-
-            if (thisPersistableID.indexOf('GG0130') != -1 || thisPersistableID.indexOf('GG0170') != -1) {
-                const thisAnswerScoreElement: any = $("#" + thisPersistableID);
-                let thisAnswerScore: number;
-                if (thisAnswerScoreElement.prop('id').indexOf('GG0130') != -1 || thisAnswerScoreElement.prop('id').indexOf('GG0170') != -1) {
-                    thisAnswerScore = parseInt(thisAnswerScoreElement.data('score'));
-                }
+            if (/GG0130/i.test(thisPersistableID) || /GG0170/i.test(thisPersistableID))   //regex
+            //if (thisPersistableID.indexOf('GG0130') != -1 || thisPersistableID.indexOf('GG0170') != -1)
+            {
+                const thisAnswerScoreElement: any = $("i[id*=" + thisPersistableID + "]");
+                let thisAnswerScore: number = parseInt(thisAnswerScoreElement.data('score'));
                 thisAnswer.Score = thisAnswerScore;
             }
 
             console.log('(' + counter + ') ' + questionKey, thisAnswer);
-            const CRUD: string = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
+            const CRUD: EnumDbCommandType = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
             switch (CRUD) {
-                case 'C':
-                    newAnswers.push(thisAnswer);
+                case EnumDbCommandType.Create:
+                    insertAnswers.push(thisAnswer);
                     break;
-                case 'D1':
-                case 'D2':
+                case EnumDbCommandType.Delete:
                     thisAnswer.AnswerID = +answerId;
-                    oldAnswers.push(thisAnswer);
+                    deleteAnswers.push(thisAnswer);
                     break;
-                case 'U':
+                case EnumDbCommandType.Update:
                     thisAnswer.AnswerID = +answerId;
-                    updatedAnswers.push(thisAnswer);
+                    updateAnswers.push(thisAnswer);
                     break;
             }
 
@@ -350,7 +338,7 @@ export const formController = (function () {
             episodeScores.push(mobility_discharge_score);
         });
 
-        if (newAnswers.length === 0 && oldAnswers.length === 0 && updatedAnswers.length === 0) {
+        if (insertAnswers.length === 0 && deleteAnswers.length === 0 && updateAnswers.length === 0) {
             $('#dialog')
                 .text('Nothing to save.  All fields seem be unchanged')
                 .dialog(dialogOptions);
@@ -361,9 +349,9 @@ export const formController = (function () {
         const postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
         postBackModel.EpisodeID = episodeID;
         postBackModel.FacilityID = facilityID;
-        postBackModel.NewAnswers = newAnswers;
-        postBackModel.OldAnswers = oldAnswers;
-        postBackModel.UpdatedAnswers = updatedAnswers;
+        postBackModel.InsertAnswers = insertAnswers;
+        postBackModel.DeleteAnswers = deleteAnswers;
+        postBackModel.UpdateAnswers = updateAnswers;
         postBackModel.EpisodeScores = episodeScores;
         console.log('postBackModel', postBackModel);
 
@@ -391,6 +379,7 @@ export const formController = (function () {
     }
 
     /* private function */
+    /* update full text display below the selected option */
     function updateScore(thisControl: any, newScore: number, scoreMsg: string = '') {
         console.log('thisControl (' + thisControl.prop('id') + ') = ' + newScore);
         const i_score_element: any = thisControl.siblings('i.score');
@@ -433,6 +422,7 @@ export const formController = (function () {
     }
 
     /* private function */
+    /* calculate individual score of each Self Care question and Score Card summary */
     function selfCareScore(): void {
         let selfCareAdmissionPerformance = 0,
             selfCareDischargePerformance = 0,
@@ -441,8 +431,8 @@ export const formController = (function () {
         $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
             const thisControl = $(this);
             const thisID = $(this).prop('id');
-            const thisValue = commonUtility.getControlValue(thisControl);
-
+            //const thisValue = +commonUtility.getControlValue(thisControl);
+            const thisValue = $('option:selected', thisControl).data("score")
             switch (true) {
                 case (thisValue >= 7): // greater than 7,9,10,88
                     {
@@ -490,6 +480,7 @@ export const formController = (function () {
     }
 
     /* private function */
+    /* calculate individual score of each Mobility question and Score Card summary */
     function mobilityScore(): void {
 
         switch (true) {
@@ -586,6 +577,7 @@ export const formController = (function () {
     }
 
     /* private function */
+    /* calculate the aggregate totals of Mobility and Self Care questions and score card */
     function grandTotal(): void {
         let grandTotal = 0;
         if ($('.scoreSection #self_care_aggregate_score_admission_performance').length > 0 && $('.scoreSection #mobility_aggregate_score_admission_performance').length > 0) {
@@ -636,7 +628,7 @@ export const formController = (function () {
     //  /* select only GG0170 Admission Performance excluding Q, R and S */
     //  $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
     //    const $thisControl = $(this);
-    //    const thisControlScore: number = commonUtility.getControlValue($thisControl);
+    //    const thisControlScore: number = $('option:selected', $thisControl).data("score");  //commonUtility.getControlValue($thisControl);
     //    const thisControlID: string = $thisControl.prop('id');
 
     //    switch (true) {
@@ -677,21 +669,24 @@ export const formController = (function () {
         targetELs.each(function () {
             const thisEL = $(this);
             console.log('----- begin update score for ', thisEL.prop('id'));
+
             const thisControl_id = thisEL.prop('id');
-            const thisControl_Value = commonUtility.getControlValue(thisEL);
+            const thisControl_Score = $('option:selected', thisEL).data("score"); //+commonUtility.getControlValue(thisEL);
+            console.log(thisControl_id + ' score = ', thisControl_Score);
+
             const isThisGG0170I: boolean = thisControl_id.indexOf('GG0170I_' + performanceType) >= 0;
             const isThisGG0170M: boolean = thisControl_id.indexOf('GG0170M_' + performanceType) >= 0;
             const isThisGG0170N: boolean = thisControl_id.indexOf('GG0170N_' + performanceType) >= 0;
 
             switch (true) {
-                case (thisControl_Value >= 7):
+                case (+thisControl_Score >= 7):
                     {
                         if (isThisGG0170I) {
-                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 1');
+                            console.log('\t Score_GG0170AtoP_Performance(): ' + thisControl_id + ' value >= 7 path 1');
                             updateScore(thisEL, 0); //don't count GG0170I when I >= 7 per customer 12/8/2021
                         }
                         else if (isThisGG0170M) {
-                            console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 2');
+                            console.log('\t Score_GG0170AtoP_Performance(): ' + thisControl_id + ' value >= 7 path 2');
                             updateScore(thisEL, 1, '+2 for N and O');
                             /* when M >= 7 add 1 point for M, N, and O each*/
                             PerformanceScore += 3;
@@ -715,10 +710,10 @@ export const formController = (function () {
                         }
                     }
                     break;
-                case thisControl_Value > 0 && thisControl_Value < 7:
+                case +thisControl_Score > 0 && +thisControl_Score < 7:
                     console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value < 7 ');
-                    PerformanceScore += thisControl_Value;
-                    updateScore(thisEL, thisControl_Value);
+                    PerformanceScore += thisControl_Score;
+                    updateScore(thisEL, thisControl_Score);
 
                     if (isThisGG0170I) {
                         //set R and S value to 0 when 0 < I < 7
@@ -744,35 +739,35 @@ export const formController = (function () {
         let multiplier = 1, R_PerformanceScore = 0, S_PerformanceScore = 0;
 
         let GG0170I: any, GG0170R: any, GG0170S: any;
-        let GG0170I_Value: number = 0, GG0170R_Value: number = 0, GG0170S_Value: number = 0;
+        let GG0170I_Score: number = 0, GG0170R_Score: number = 0, GG0170S_Score: number = 0;
 
         GG0170I = $('.persistable[id^=GG0170I_' + performanceType + ']');
         GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
         GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
 
-        GG0170I_Value = commonUtility.getControlValue(GG0170I);
-        GG0170R_Value = commonUtility.getControlValue(GG0170R);
-        GG0170S_Value = commonUtility.getControlValue(GG0170S);
+        GG0170I_Score = $('option:selected', GG0170I).data("score");    //+commonUtility.getControlValue(GG0170I);
+        GG0170R_Score = $('option:selected', GG0170R).data("score");    //+commonUtility.getControlValue(GG0170R);
+        GG0170S_Score = $('option:selected', GG0170S).data("score");    //+commonUtility.getControlValue(GG0170S);
 
-        if (GG0170I_Value >= 7)
+        if (GG0170I_Score >= 7)
             multiplier = 2;
-        else if (GG0170I_Value > 0 && GG0170I_Value < 7) {
+        else if (GG0170I_Score > 0 && GG0170I_Score < 7) {
             multiplier = 0; /* take I value which has been counted so don't count it again */
         }
 
-        if (GG0170R_Value >= 7) {
-            GG0170R_Value = 1;
+        if (GG0170R_Score >= 7) {
+            GG0170R_Score = 1;
         }
-        updateScore(GG0170R, GG0170R_Value * multiplier);
-        R_PerformanceScore += GG0170R_Value * multiplier;
-        console.log('GG0170R_Value_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170R_Value * multiplier));
+        updateScore(GG0170R, GG0170R_Score * multiplier);
+        R_PerformanceScore += GG0170R_Score * multiplier;
+        console.log('GG0170R_Score_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170R_Score * multiplier));
 
-        if (GG0170S_Value >= 7) {
-            GG0170S_Value = 1;
+        if (GG0170S_Score >= 7) {
+            GG0170S_Score = 1;
         }
-        updateScore(GG0170S, GG0170S_Value * multiplier);
-        S_PerformanceScore += GG0170S_Value * multiplier;
-        console.log('GG0170S_Value_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170S_Value * multiplier));
+        updateScore(GG0170S, GG0170S_Score * multiplier);
+        S_PerformanceScore += GG0170S_Score * multiplier;
+        console.log('GG0170S_Value_' + performanceType + ' * ' + multiplier + ' = ' + (GG0170S_Score * multiplier));
 
         return R_PerformanceScore + S_PerformanceScore;
     }
@@ -911,14 +906,14 @@ $(function () {
         switch (stage) {
             case "Episode Of Care":
             case "New":
-                slidingAggregator.css("width", "13.5em");
+                slidingAggregator.css({ "width": "13.5em"});
                 break;
             case 'Interim':
             case 'Follow Up':
                 slidingAggregator.css({ "width": "7.2em" });
                 break;
         }
-        slidingAggregator.css("right", "0em");
+        slidingAggregator.css({ "right": "0em"});
     });
 
     $('#closeSlidingAggregator').on('click', function () {

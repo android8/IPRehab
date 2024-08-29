@@ -1,8 +1,8 @@
-var EnumGetControlValueBehavior;
-(function (EnumGetControlValueBehavior) {
-    EnumGetControlValueBehavior[EnumGetControlValueBehavior["Elaborated"] = 0] = "Elaborated";
-    EnumGetControlValueBehavior[EnumGetControlValueBehavior["Simple"] = 1] = "Simple";
-})(EnumGetControlValueBehavior || (EnumGetControlValueBehavior = {}));
+import { EnumDbCommandType } from "./commonImport.js";
+//enum EnumGetControlValueBehavior {
+//    Elaborated,
+//    Simple
+//}
 export class Utility {
     dialogOptions() {
         const dialogOptions = {
@@ -46,105 +46,56 @@ export class Utility {
     }
     isTheSame($this, oldValue, currentValue) {
         //throw new Error("Method not implemented.");
-        const controlType = $this.prop('type');
-        const controlID = $this.prop('id');
-        let equalMsg = '';
+        const thisControlType = $this.prop('type');
+        const thisControlID = $this.prop('id');
+        let isChanged = false;
+        let equalMsg = 'unchanged';
         //!undefined or !NaN yield true
-        switch (controlType) {
-            case "radio":
-            case "checkbox":
-                if (currentValue === oldValue && $this.prop('checked')) {
-                    equalMsg = controlType + ' ' + controlID + ' checked equal';
-                }
-                if (currentValue !== oldValue && !$this.prop('checked')) {
-                    equalMsg = controlType + ' ' + controlID + ' unchecked unequal';
-                }
-                break;
-            default:
-                if (!currentValue && !oldValue && +currentValue === +oldValue) {
-                    equalMsg = controlType + ' ' + controlID + 'both values are blank';
-                }
-                if (currentValue === oldValue || +currentValue === +oldValue) {
-                    equalMsg = ' ' + controlID + 'both non-blank values are equal';
-                }
-                if (currentValue === undefined && oldValue === undefined) {
-                    equalMsg = controlType + ' ' + controlID + 'both are undefined';
-                }
-                break;
+        if (currentValue !== oldValue) { //compare string
+            isChanged = true;
+            equalMsg = 'changed';
         }
-        if (controlID.indexOf('K0520B') !== -1 && equalMsg !== '')
-            console.log(equalMsg);
-        if (equalMsg !== '') {
-            return true;
-        }
-        else {
-            return false;
-        }
+        equalMsg = thisControlType + ' ' + thisControlID + ' ' + equalMsg;
+        console.log(equalMsg);
+        return isChanged;
     }
     getCRUD($this, oldValue, currentValue) {
         const controlType = $this.prop('type');
         const checked = $this.prop('checked');
         switch (true) {
-            case (currentValue !== oldValue && +oldValue === 0 && controlType === 'number'):
-                console.log('(C)reate current value = ' + currentValue + ' because old value 0 is blank equivalent');
-                return 'C';
             case (currentValue && !oldValue):
-                console.log('(C)reate current value = ' + currentValue + ' because old value = blank');
-                return 'C';
+                console.log('(C)reate. current value = ' + currentValue + ', old value = ' + oldValue);
+                return EnumDbCommandType.Create;
             case (oldValue && !currentValue):
-                console.log('(D)elete old value = ' + oldValue + ' because current value = blank');
-                return 'D1';
-            case (oldValue === currentValue && controlType === 'checkbox' && !checked):
-                console.log('(D)elete old value = ' + oldValue + ', current value = ' + currentValue + ' but unchecked');
-                return 'D2';
+                console.log('(D)elete. current value = ' + currentValue + ', old value = ' + oldValue);
+                return EnumDbCommandType.Delete;
             case ((currentValue && oldValue) && (currentValue !== oldValue)):
-                console.log('(U)pdate old value = ' + oldValue + ' because new value = ' + currentValue);
-                return 'U';
+                console.log('(U)pdate. current value = ' + currentValue + ', old value = ' + oldValue);
+                return EnumDbCommandType.Update;
         }
     }
-    getControlValue($thisControl, behavior = EnumGetControlValueBehavior.Elaborated /*use other if no valueSource */) {
+    getControlValue($thisControl) {
         //throw new Error("Method not implemented.");
         const thisControlType = $thisControl.prop('type');
-        let thisValue;
-        if (behavior !== EnumGetControlValueBehavior.Elaborated) {
-            thisValue = $thisControl.val();
-        }
-        else {
-            switch (thisControlType) {
-                case "select-one": {
-                    //use the selected option text and parse the starting text to int
-                    const selectedOption = $('#' + $thisControl.prop('id') + ' option:selected').text();
-                    //console.log('selected option text = ', selectedOption);
-                    thisValue = parseInt(selectedOption);
-                    if (isNaN(thisValue))
-                        thisValue = 0;
-                    break;
-                }
-                case "radio":
-                case "checkbox":
-                    if ($thisControl.prop('checked')) {
-                        //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' prop("checked") = ', $thisControl.prop('checked'));
-                        thisValue = 1;
-                    }
-                    break;
-                case "text": {
-                    const numberString = parseInt($thisControl.val());
-                    if (!isNaN(numberString)) {
-                        //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ' + $thisControl.val());
-                        thisValue = $thisControl.val();
-                    }
-                    else
-                        thisValue = numberString;
-                    break;
-                }
-                default: {
-                    //console.log(behavior + ' get control value for ' + $thisControl.prop('id') + ' = ', $thisControl.val());
-                    thisValue = $thisControl.val();
-                    break;
-                }
+        const thisControlID = $thisControl.prop('id');
+        let thisValue = "";
+        let thisScore = "";
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox": {
+                let selectedOption = $('#' + thisControlID + " :selected");
+                //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
+                //if ($thisControl.prop('checked'))   
+                thisScore = selectedOption.data("score");
+                thisValue = $thisControl.val();
+                break;
             }
+            default:
+                thisValue = $thisControl.val();
+                thisScore = thisValue;
+                break;
         }
-        console.log('(' + thisControlType + ') ' + $thisControl.prop('id') + ' = ' + thisValue + ' (with ' + EnumGetControlValueBehavior[behavior] + ' behavior)');
+        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue + ', score =' + thisScore);
         return thisValue;
     }
     resetControlValue($thisControl, newValue = '-1') {
