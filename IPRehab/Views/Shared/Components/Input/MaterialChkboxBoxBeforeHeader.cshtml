@@ -16,35 +16,35 @@
         <div class="mdc-form-field">
             <div class="mdc-checkbox">
                 <input disabled type="checkbox"
-                   class="mdc-checkbox__native-control persistable"
-                   name="@Model.ViewComponentViewModel.QuestionKey"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
-                   value="@item.SelectListItem.Value"
-                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-                   checked="@(isChecked)"
-                   data-stageid="@(Model.ViewComponentViewModel.StageID)"
-                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-                   data-userid="@(Model.ViewComponentViewModel.UserID)"
-                   data-answerid="@(originalAnswer?.AnswerID)"
-                   data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
-                   data-codesetid="@item.SelectListItem.Value"
-                   data-codesetdescription="@(item.SelectListItem.Text)"
-                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
-                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
-                   data-answersequence="@(originalAnswer?.AnswerSequenceNumber)" 
-                   data-toggle="tooltip"
-                   data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}_label")">
+                       class="mdc-checkbox__native-control persistable"
+                       name="@Model.ViewComponentViewModel.QuestionKey"
+                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                       required="@(Model.ViewComponentViewModel.Required)"
+                       value="@item.SelectListItem.Value"
+                       title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                       checked="@(isChecked)"
+                       data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                       data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                       data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                       data-userid="@(Model.ViewComponentViewModel.UserID)"
+                       data-answerid="@(originalAnswer?.AnswerID)"
+                       data-oldvalue="@(originalAnswer?.AnswerCodeSet.CodeSetID)"
+                       data-codesetid="@item.SelectListItem.Value"
+                       data-codesetdescription="@(item.SelectListItem.Text)"
+                       data-measuredescription="@(Model.ViewComponentViewModel.MeasureDescription)"
+                       data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                       data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
+                       data-toggle="tooltip"
+                       data-placement="left"
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")">
 
-                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}")"></span>
+                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"></span>
 
                 <div class="mdc-checkbox__background">
                     <svg class="mdc-checkbox__checkmark"
-                     viewBox="0 0 24 24">
+                         viewBox="0 0 24 24">
                         <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
-                        <title>Mateial icon</title>
+                        <title>Material icon</title>
                     </svg>
                     <div class="mdc-checkbox__mixedmark"></div>
                 </div>
@@ -52,9 +52,9 @@
             </div>
 
             @*the labe is required by HTML5 specification*@
-            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{item.SelectListItem.Value}_label")"
-               class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
+            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")"
+                   class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
         </div>
     }
 
@@ -65,7 +65,7 @@
         @*prevent the next inner div to be flexed*@
         <div>
             <div class="@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)">
-                @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
+                @($"{Model.ViewComponentViewModel.MeasureDescription}")
             </div>
         </div>
     }
