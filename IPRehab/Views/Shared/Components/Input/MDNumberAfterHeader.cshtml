@@ -15,37 +15,37 @@
     @if (int.TryParse(originalAnswer.Description, out int numericDescriptor))
     {
         <label class="mdc-text-field mdc-text-field--outlined"
-           for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")"
-           aria-label="@($"a number input box for {Model.ViewComponentViewModel.QuestionKey}")">
+               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
+               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+               aria-label="@($"a number input box for {Model.ViewComponentViewModel.QuestionKey}")">
             <span class="mdc-notched-outline">
                 <span class="mdc-notched-outline__leading"></span>
                 <span class="mdc-notched-outline__notch">
-                    <span class="mdc-floating-label" id="my-label-id@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}")"></span>
+                    <span class="mdc-floating-label" id="my-label-id@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}")"></span>
                 </span>
                 <span class="mdc-notched-outline__trailing"></span>
             </span>
             <input disabled type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
-               class="mdc-text-field__input numeric-text inputContainer persistable"
-               name="@(Model.ViewComponentViewModel.QuestionKey)"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}")"
-               required="@(Model.ViewComponentViewModel.Required)"
-               value="@(originalAnswer?.Description)"
-               title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-               data-stageid="@(Model.ViewComponentViewModel.StageID)"
-               data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
-               data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
-               data-userid="@(Model.ViewComponentViewModel.UserID)"
-               data-answerid="@(originalAnswer?.AnswerID)"
-               data-oldvalue="@(originalAnswer?.Description)"
-               data-codesetid="@(thisItem.Value)"
-               data-codesetdescription="@(thisItem.Text)"
-               data-measuredescription="@(Model.ViewComponentViewModel.MeasureTitleNormalized)"
-               data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
-               data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
-               data-toggle="tooltip"
-               data-placement="left"
-               aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureDescription}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+                   class="mdc-text-field__input numeric-text inputContainer persistable"
+                   name="@(Model.ViewComponentViewModel.QuestionKey)"
+                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   required="@(Model.ViewComponentViewModel.Required)"
+                   value="@(originalAnswer?.Description)"
+                   title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
+                   data-stageid="@(Model.ViewComponentViewModel.StageID)"
+                   data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
+                   data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
+                   data-userid="@(Model.ViewComponentViewModel.UserID)"
+                   data-answerid="@(originalAnswer?.AnswerID)"
+                   data-oldvalue="@(originalAnswer?.Description)"
+                   data-codesetid="@(thisItem.Value)"
+                   data-codesetdescription="@(thisItem.Text)"
+                   data-measuredescription="@(Model.ViewComponentViewModel.MeasureDescription)"
+                   data-measureid="@(Model.ViewComponentViewModel.MeasureID)"
+                   data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
+                   data-toggle="tooltip"
+                   data-placement="left"
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
         </label>
 
         @if (displayStageHeader)
@@ -54,7 +54,7 @@
             <div class="flex-start-row-nowrap number-wrapper">
                 <div class="arrow-left"></div>
                 <div class='@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)'>
-                    @($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")
+                    @($"{Model.ViewComponentViewModel.MeasureDescription}")
                 </div>
             </div>
         }

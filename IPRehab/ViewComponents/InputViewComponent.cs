@@ -22,27 +22,27 @@ namespace IPRehab.ViewComponents
             thisVCVM.QuestionKey = QWS.QuestionKey;
             thisVCVM.MeasureID = QWS.MeasureID.ToString();
             thisVCVM.MeasureDescription = QWS.MeasureDescription;
-            thisVCVM.MeasureTitleNormalized = QWS.MeasureDescription;
 
-            if (QWS.MeasureDescription != string.Empty)
+            #region replace punctuation (non-word) characters in Measure Description with "_"
+
+            Regex rgxPattern = new Regex(@"[^\w]"); /*non-word*/
+            /* new Regex(@"[^a-zA-Z0-9]"); non-alphanumeric */
+
+            if (!string.IsNullOrEmpty(thisVCVM.MeasureDescription))
             {
-                string source = QWS.MeasureDescription;
-                if (source.IndexOf(" ") != -1)
+                /* replace characters not allowed as element ID in JavaScript */
+                string normalizedText = rgxPattern.Replace(thisVCVM.MeasureDescription, "_");
+
+                /* separate camel case in Measure type with "_" to create id property in the DOM */
+                string midCaps = string.Concat(Regex.Matches(normalizedText, "[A-Z]").OfType<Match>().Select(match => match.Value));
+                if (midCaps.Length > 1)
                 {
-                    thisVCVM.MeasureDescription = source.Replace(" ", "_");
-                }
-                else
-                {
-                    /* separate camel case in Measure type with "_" to create id property in the DOM */
-                    string midCaps = string.Concat(Regex.Matches(source, "[A-Z]").OfType<Match>().Select(match => match.Value));
-                    if (midCaps.Length > 1)
-                    {
-                        string middleCapLeter = midCaps.Substring(1, 1);
-                        string underlineSeparated = source.Replace(middleCapLeter, $"_{middleCapLeter}");
-                        thisVCVM.MeasureDescription = underlineSeparated;
-                    }
+                    string middleCapLeter = midCaps.Substring(1, 1);
+                    normalizedText = normalizedText.Replace(middleCapLeter, $"_{middleCapLeter}");
+                    thisVCVM.MeasureTitleNormalized = normalizedText;
                 }
             }
+            #endregion
 
             thisVCVM.StageID = QWS.StageID;
             thisVCVM.MultipleChoices = QWS.MultipleChoices;
@@ -52,24 +52,27 @@ namespace IPRehab.ViewComponents
             thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
             thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
+            #region set view template type based on the number of choices
             string viewName = string.Empty;
             switch (QWS.ChoiceList.Count)
             {
                 case int n when n > 3:
+
                     viewName = "DropDown";
+
                     if (QWS.QuestionKey.Contains("O0401", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("O0402", System.StringComparison.OrdinalIgnoreCase))
                     {
                         viewName = "DropDownPT";
 
                         if (QWS.QuestionKey.Contains("O0401", System.StringComparison.OrdinalIgnoreCase))
                         {
-                            /* default codeset id 430 for wk1 therapy, will change by javascript with thearpy type changes, */
+                            /* default codeset id 430 for wk1 therapy, will change by JavaScript with therapy type changes */
                             thisVCVM.TherapyHoursCodeSetID = 430;
                             thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
                         }
                         else
                         {
-                            /* default codeset id 442 for wk2 threapy, will change by javascript with thearpy type changes, */
+                            /* default codeset id 442 for wk2 therapy, will change by JavaScript with therapy type changes */
                             thisVCVM.TherapyHoursCodeSetID = 442;
                             thisVCVM.TherapyHoursCodeSetValue = "PHY-Individual-Minutes";
                         }
@@ -78,21 +81,25 @@ namespace IPRehab.ViewComponents
                     if (QWS.QuestionKey.Contains("A10", System.StringComparison.OrdinalIgnoreCase))
                     {
                         viewName = "MaterialChkboxBoxBeforeHeaderEthnicity";
+
                         thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                         thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
                     }
                     break;
+
                 case int n when n >= 2 && n <= 3:
+
                     viewName = "RadioFlexDirectionColumnLongText2";
+
                     if (QWS.Question.Contains("Is this assessment completed and ready for processing", System.StringComparison.OrdinalIgnoreCase) ||
                         QWS.QuestionKey == "A1110B" ||
-                        QWS.QuestionKey == "C131A" ||
-                        QWS.QuestionKey == "C0300C" ||
-                        QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "J2000" || QWS.QuestionKey == "Q8" ||
+                        QWS.QuestionKey == "C131A" || QWS.QuestionKey == "C0300C" ||
+                        QWS.QuestionKey == "GG0170RR" || QWS.QuestionKey == "GG0170SS" ||
+                        QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "J2000" ||
+                        QWS.QuestionKey == "Q8" ||
                         QWS.QuestionKey.Contains("Q14", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey == "Q24A" || QWS.QuestionKey.Contains("Q41", System.StringComparison.OrdinalIgnoreCase) ||
-                        QWS.QuestionKey.Contains("Q42", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("Q44C", System.StringComparison.OrdinalIgnoreCase) ||
-                        QWS.QuestionKey == "GG0170RR" ||
-                        QWS.QuestionKey == "GG0170SS")
+                        QWS.QuestionKey.Contains("Q42", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("Q44C", System.StringComparison.OrdinalIgnoreCase)
+                        )
                     {
                         thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                     }
@@ -101,7 +108,9 @@ namespace IPRehab.ViewComponents
                     switch (QWS.AnswerCodeCategory)
                     {
                         case "Checked":
+
                             viewName = "MaterialChkboxBoxBeforeHeader";
+
                             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                             thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
 
@@ -113,30 +122,44 @@ namespace IPRehab.ViewComponents
                             //  thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
                             //}
                             break;
+
                         case "Date":
+
                             viewName = "MaterialInputDate";
+
                             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                             break;
                         case "Number":
-                            thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
+
                             viewName = "MDNumberAfterHeader";
+
+                            thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
                             break;
+
                         case "TextArea":
+
                             viewName = "MaterialTextArea";
+
                             break;
+
                         case "ICD":
                         case "FreeText":
+
                             viewName = "MaterialInputText";
+
                             if (QWS.QuestionKey.Contains("M0300", System.StringComparison.OrdinalIgnoreCase))
                             {
+                                viewName = "MDNumberAfterHeader";
+
                                 thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                                 thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
-                                viewName = "MDNumberAfterHeader";
                             }
                             break;
                     }
                     break;
             }
+            #endregion
+
             return Task.FromResult<IViewComponentResult>(View(viewName, new InputViewComponentTemplateModel
             {
                 ChoiceAndAnswerList = QWS.ChoicesAnswers,
