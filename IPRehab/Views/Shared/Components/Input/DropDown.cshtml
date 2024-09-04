@@ -16,8 +16,8 @@
     }
 
     @*the labe is required by HTML5 specification*@
-    <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
-           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+    <label for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+           id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")"
            class="nullLabel" aria-label="@($"a dropdown for {Model.ViewComponentViewModel.QuestionKey}")"></label>
 
     @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
@@ -30,7 +30,7 @@
     }
     <select disabled class="browser-default custom-select select2 dropdown persistable"
             name="@(Model.ViewComponentViewModel.QuestionKey)"
-            id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
+            id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
             required="@(Model.ViewComponentViewModel.Required)"
             title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
             data-stageid="@(Model.ViewComponentViewModel.StageID)"
@@ -46,7 +46,7 @@
             data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
             data-toggle="tooltip"
             data-placement="left"
-            aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")">
+            aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")">
 
         @*text white on wite background to reduce clutter but is required*@
         <option value="-1" data-score="0">@($"select 1 of {Model.ChoiceAndAnswerList.Count}")</option>

@@ -1,6 +1,8 @@
-﻿@model InputViewComponentTemplateModel
+﻿@using System.Text.RegularExpressions
+@model InputViewComponentTemplateModel
 @{
     AnswerDTO originalAnswer = null;
+
     var thisChoiceAndAnswer = Model.ChoiceAndAnswerList.FirstOrDefault(x => x.Answer != null);
     if (thisChoiceAndAnswer != null)
     {
@@ -20,17 +22,33 @@
 }
 
 <div class="@(ContainerCssClass) @(displayMeasureHeader? "radioContainer": string.Empty)">
+
     @foreach (var item in Model.ChoiceAndAnswerList)
     {
         var isChecked = item.SelectListItem.Selected;
+        Regex rgxIdPattern = new Regex(@"[^a-zA-Z]"); /*non-alpha*/
+        string idSuffix = rgxIdPattern.Replace(item.SelectListItem.Text, "");
+
+        Regex rgxLabelPatern = new Regex(@"[^0-9]");
+        string labelText = string.Empty;
+        @*strip the leading numeric code value in the codeset *@
+        @if (rgxLabelPatern.IsMatch(item.SelectListItem.Text))
+        {
+            labelText = item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".") + 1);
+        }
+        else
+        {
+            labelText = item.SelectListItem.Text;
+        }
+       
 
         <div class="flex-start-row-nowrap">
             <div class="mdc-touch-target-wrapper">
                 <div class="mdc-radio mdc-radio--touch">
                     <input disabled type="radio"
                            class="mdc-radio__native-control persistable"
-                           name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                           id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                           name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                           id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}")"
                            required="@(Model.ViewComponentViewModel.Required)"
                            value="@(item.SelectListItem.Value)"
                            title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -48,7 +66,7 @@
                            data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                            data-toggle="tooltip"
                            data-placement="left"
-                           aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")" />
+                           aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}_label")" />
 
                     <div class="mdc-radio__background">
                         <div class="mdc-radio__outer-circle"></div>
@@ -59,19 +77,8 @@
             </div>
             <div class="arrow-left-radio"></div>
             <label class="radioLabel"
-                   for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")">
-
-                @*strip the leading numeric code value in the codeset *@
-                @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
-                {
-                    @(item.SelectListItem.Text.Substring(item.SelectListItem.Text.IndexOf(".") + 1))
-                }
-                else
-                {
-                    @(item.SelectListItem.Text)
-                }
-            </label>
+                   for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}")"
+                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}_label")">@(labelText)</label>
         </div>
     }
 </div>

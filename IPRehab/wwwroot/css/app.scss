@@ -97,6 +97,10 @@
     height: auto !important;
 }
 
+.ui-dialog-titlebar-close{
+    display:none; /*hide dialog upper right close button */
+}
+
 /*override jquery UI dialog title bar */
 .my-dialog-header {
     background: #ffc107 !important;

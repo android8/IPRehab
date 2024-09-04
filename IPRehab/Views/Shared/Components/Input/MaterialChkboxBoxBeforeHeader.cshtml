@@ -18,7 +18,7 @@
                 <input disabled type="checkbox"
                        class="mdc-checkbox__native-control persistable"
                        name="@Model.ViewComponentViewModel.QuestionKey"
-                       id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                       id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
                        required="@(Model.ViewComponentViewModel.Required)"
                        value="@item.SelectListItem.Value"
                        title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -36,9 +36,9 @@
                        data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                        data-toggle="tooltip"
                        data-placement="left"
-                       aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")">
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")">
 
-                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"></span>
+                <span asp-validataion-for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"></span>
 
                 <div class="mdc-checkbox__background">
                     <svg class="mdc-checkbox__checkmark"
@@ -52,8 +52,8 @@
             </div>
 
             @*the labe is required by HTML5 specification*@
-            <label for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")"
+            <label for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")"
                    class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
         </div>
     }

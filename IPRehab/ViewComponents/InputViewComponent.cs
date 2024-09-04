@@ -1,6 +1,5 @@
 ﻿using IPRehab.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -25,30 +24,39 @@ namespace IPRehab.ViewComponents
 
             #region replace punctuation (non-word) characters in Measure Description with "_"
 
+            string normalizedText = $"{QWS.QuestionKey}";
             Regex rgxPattern = new Regex(@"[^\w]"); /*non-word*/
             /* new Regex(@"[^a-zA-Z0-9]"); non-alphanumeric */
 
             if (!string.IsNullOrEmpty(thisVCVM.MeasureDescription))
             {
                 /* replace characters not allowed as element ID in JavaScript */
-                string normalizedText = rgxPattern.Replace(thisVCVM.MeasureDescription, "_");
+                string tmpText = rgxPattern.Replace(thisVCVM.MeasureDescription, "_");
 
                 /* separate camel case in Measure type with "_" to create id property in the DOM */
-                string midCaps = string.Concat(Regex.Matches(normalizedText, "[A-Z]").OfType<Match>().Select(match => match.Value));
-                if (midCaps.Length > 1)
-                {
-                    string middleCapLeter = midCaps.Substring(1, 1);
-                    normalizedText = normalizedText.Replace(middleCapLeter, $"_{middleCapLeter}");
-                    thisVCVM.MeasureTitleNormalized = normalizedText;
-                }
+                //string midCaps = string.Concat(Regex.Matches(tmpText, "[A-Z]").OfType<Match>().Select(match => match.Value));
+                //if (midCaps.Length > 1)
+                //{
+                //    string middleCapLeter = midCaps.Substring(1, 1);
+                //    tmpText = tmpText.Replace(middleCapLeter, $"_{middleCapLeter}");
+                //}
+
+                normalizedText += $"_{tmpText}";
             }
+
+            if (thisVCVM.ControlCounter > 0)
+                normalizedText += $"_{thisVCVM.ControlCounter.ToString()}";
+
+            //normalizedText = normalizedText.Replace(" ", "_");
+            thisVCVM.MeasureTitleNormalized = normalizedText;
+
             #endregion
 
             thisVCVM.StageID = QWS.StageID;
             thisVCVM.MultipleChoices = QWS.MultipleChoices;
             thisVCVM.Required = QWS.Required.Value;
             thisVCVM.ReadOnly = QWS.ReadOnly.Value;
-            thisVCVM.DisplayMeasureHeader = (!QWS.QuestionKey.StartsWith("Q") || QWS.QuestionKey.StartsWith("Q43")) && (QWS.MeasureDescription != string.Empty);
+            thisVCVM.DisplayMeasureHeader = (!QWS.QuestionKey.StartsWith("Q") || QWS.QuestionKey.StartsWith("Q43")) && (!string.IsNullOrEmpty(QWS.MeasureDescription));
             thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
             thisVCVM.ContainerCssClass = "flex-start-column-nowrap";
 
