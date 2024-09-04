@@ -20,15 +20,15 @@
     @*Material Design outlined text *@
     <div class="flex-start-row-nowrap">
         <label class="mdc-text-field mdc-text-field--filled"
-               for="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
-               id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")"
+               for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+               id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")"
                aria-label="@($"a text box for {Model.ViewComponentViewModel.QuestionKey}")">
             <span class="mdc-line-ripple"></span>
-            <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_floatinglabel")"></span>
+            <span class="mdc-floating-label" id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_floatinglabel")"></span>
             <input disabled type="text" placeholder="enter some text"
                    class="mdc-text-field__input persistable"
-                   name="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.ControlCounter}")"
-                   id="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}")"
+                   name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                    required="@(Model.ViewComponentViewModel.Required)"
                    value="@(originalAnswer?.Description)"
                    title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
@@ -45,7 +45,7 @@
                    data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                    data-toggle="tooltip"
                    data-placement="left"
-                   aria-labelledby="@($"{Model.ViewComponentViewModel.QuestionKey}_{Model.ViewComponentViewModel.MeasureTitleNormalized}_{Model.ViewComponentViewModel.ControlCounter}_label")" />
+                   aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")" />
         </label>
     </div>
 </div>

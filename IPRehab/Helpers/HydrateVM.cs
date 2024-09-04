@@ -47,7 +47,7 @@ namespace IPRehab.Helpers
 
                 Instructions = questionDto.QuestionInsructions,
                 MeasureDescription = string.IsNullOrEmpty(questionDto.MeasureDescription) ?
-      string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
+                    string.Empty : Regex.IsMatch(questionDto.MeasureDescription, @"^\d") ? questionDto.MeasureDescription.Remove(0, 3) : questionDto.MeasureDescription,
                 MeasureID = questionDto.MeasureID
             };
 
