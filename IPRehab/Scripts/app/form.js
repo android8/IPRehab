@@ -172,8 +172,8 @@ export const formController = (function () {
         const insertAnswers = new Array();
         const updateAnswers = new Array();
         const episodeScores = new Array();
-        //from hidden form variables
         const theScope = $('#userAnswerForm');
+        //from hidden form variables
         const stage = (_a = $('#stage', theScope).val()) === null || _a === void 0 ? void 0 : _a.toString();
         const patientID = (_b = $('#patientID', theScope).val()) === null || _b === void 0 ? void 0 : _b.toString();
         const patientName = (_c = $('#patientName', theScope).val()) === null || _c === void 0 ? void 0 : _c.toString();
@@ -184,13 +184,16 @@ export const formController = (function () {
         //get the key answers. these must be done outside of the .map()
         //because each answer in .map() will use the same episode onset date and admission date
         const onsetDate = new Date($('.persistable[id^=Q23]').val().toString());
-        const admissionDate = new Date($('.persistable[id^=Q12_]').val().toString());
+        const admissionDate = new Date($('.persistable[id^=Q12]').val().toString());
         console.log('facilityID', facilityID);
-        if (facilityID && facilityID.indexOf('(') !== -1) {
-            const tmp = facilityID.split('(')[1];
-            const tmp2pos = tmp.indexOf(')');
-            facilityID = tmp.substring(0, tmp2pos);
-        }
+        const facilityIdPattern = /\d+\w+/g;
+        facilityID = facilityID.match(facilityIdPattern).join('');
+        console.log("facility ID after regex match=", facilityID);
+        //if (facilityID && facilityID.indexOf('(') !== -1) {
+        //    const tmp = facilityID.split('(')[1];
+        //    const tmp2pos = tmp.indexOf(')');
+        //    facilityID = tmp.substring(0, tmp2pos);
+        //}
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         const persistables = $('.persistable', theScope);
         let counter = 0;
@@ -254,9 +257,7 @@ export const formController = (function () {
             }
             /* question score */
             if (/GG0130/i.test(thisPersistableID) || /GG0170/i.test(thisPersistableID)) //regex
-             
-            //if (thisPersistableID.indexOf('GG0130') != -1 || thisPersistableID.indexOf('GG0170') != -1)
-            {
+             {
                 const thisAnswerScoreElement = $("i[id*=" + thisPersistableID + "]");
                 let thisAnswerScore = parseInt(thisAnswerScoreElement.data('score'));
                 thisAnswer.Score = thisAnswerScore;
@@ -282,21 +283,21 @@ export const formController = (function () {
             self_care_admission_score.Measure = "self_care_admission_score";
             self_care_admission_score.Description = "self_care_admission_score";
             self_care_admission_score.Score = parseInt($('#self_care_admission_score').text());
-            episodeScores.push(self_care_admission_score);
             self_care_discharge_score = new EpisodeScore();
             self_care_discharge_score.Measure = "self_care_discharge_score";
             self_care_discharge_score.Description = "self_care_discharge_score";
             self_care_discharge_score.Score = parseInt($('#self_care_discharge_score').text());
-            episodeScores.push(self_care_discharge_score);
             mobility_admission_score = new EpisodeScore();
             mobility_admission_score.Measure = "mobility_admission_score";
             mobility_admission_score.Description = "mobility_admission_score";
             mobility_admission_score.Score = parseInt($('#mobility_admission_score').text());
-            episodeScores.push(mobility_admission_score);
             mobility_discharge_score = new EpisodeScore();
             mobility_discharge_score.Measure = "mobility_discharge_score";
             mobility_discharge_score.Description = "mobility_discharge_score";
             mobility_discharge_score.Score = parseInt($('#mobility_discharge_score').text());
+            episodeScores.push(self_care_admission_score);
+            episodeScores.push(self_care_discharge_score);
+            episodeScores.push(mobility_admission_score);
             episodeScores.push(mobility_discharge_score);
         });
         if (insertAnswers.length === 0 && deleteAnswers.length === 0 && updateAnswers.length === 0) {
@@ -344,7 +345,7 @@ export const formController = (function () {
             }
             case (newScore > 0 && i_score_element.length === 0): {
                 console.log('path2: append the score');
-                thisControl.parent().closest('div').append("<i id='" + thisControl.prop('id') + "' class='persistable score' data-score='" + newScore + "'>score: " + newScore + " " + scoreMsg + "</i>");
+                thisControl.parent().closest('div').append("<i id='" + thisControl.prop('id') + "_score' class='persistable score' data-score='" + newScore + "'>score: " + newScore + " " + scoreMsg + "</i>");
                 break;
             }
             case (newScore > 0 && i_score_element.length > 0): {
@@ -862,13 +863,6 @@ $(function () {
     //$('#mvcPost').click(function () {
     //  $('form').submit();
     //});
-    $('.persistable').on('change', function (e) {
-        const Q12 = $('.persistable[id^=Q12_]');
-        const Q23 = $('.persistable[id^=Q23_]');
-        const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-        if (!Q12_or_Q23_is_empty)
-            $('#ajaxPost').removeAttr('disabled');
-    });
     /* ajax post form */
     $('#ajaxPost').on('click', function () {
         if (formController.validate) {
