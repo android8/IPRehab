@@ -1,7 +1,6 @@
 12 always unlock
 23 always unlock
 12B always unlock
-    15B
     16B
     17B
     21B

@@ -19,22 +19,21 @@ export class Utility implements ICommonUtility {
             stack: true,
             sticky: true,
             position: { my: 'center', at: 'center', of: window },
-            buttons: [{
-                //    "Save": function () {
-                //      //do something here
-                //      let thisUrl: string = $('form').prop('action');
-                //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
-                //      postBackModel.NewAnswers = newAnswers;
-                //      postBackModel.OldAnswers = oldAnswers;
-                //      postBackModel.UpdatedAnswers = updatedAnswers;
-                //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-                //    },
-                text: "Close",
-                //icon: "ui-icon-close",
-                click: function () {
-                    $(this).dialog("close");
-                }
-            }]
+            buttons: [
+                {
+                    text: "Close",
+                    icon: "ui-icon-close",
+                    click: function () {
+                        $(this).dialog("close");
+                    },
+                    open: function (event, ui) {
+                        $('.ui-widget-overlay').css({
+                            'opacity': '0.5',
+                            'filter': 'Alpha(Opacity = 50)',
+                            'background-color': 'black'
+                        });
+                    },
+                }]
         };
         return dialogOptions;
     }
@@ -115,6 +114,31 @@ export class Utility implements ICommonUtility {
 
         console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue + ', score =' + thisScore);
         return thisValue;
+    }
+
+    getControlScore($thisControl) {
+        //throw new Error("Method not implemented.");
+        const thisControlType: string = $thisControl.prop('type');
+        const thisControlID: string = $thisControl.prop('id');
+
+        let thisScore: string = "";
+
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox": {
+                let selectedOption = $('#' + thisControlID + " :selected");
+                //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
+                //if ($thisControl.prop('checked'))   
+                thisScore = selectedOption.data("score");
+                break;
+            }
+            default:
+                thisScore = $thisControl.val();
+                break;
+        }
+
+        console.log('(' + thisControlType + ') ' + thisControlID + ' , score =' + thisScore);
+        return thisScore;
     }
 
     resetControlValue($thisControl, newValue: string = '-1') {
