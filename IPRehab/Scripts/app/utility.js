@@ -39,29 +39,102 @@ export class Utility {
     }
     isEmpty($this) {
         //throw new Error("Method not implemented.");
-        if (typeof $this.val() !== 'undefined' && $this.val())
-            return false;
-        else
+        if (typeof $this.val() === 'undefined' || $this.val() === '' || $this.val() === undefined || $this.val() === null) {
+            console.log($this.prop('id') + ' is empty');
             return true;
+        }
+        else {
+            console.log($this.prop('id') + ' is not empty');
+            return false;
+        }
     }
-    isTheSame($this, oldValue, currentValue) {
+    isTheSame($thisPersistable, oldValue, currentValue) {
         //throw new Error("Method not implemented.");
-        const thisControlType = $this.prop('type');
-        const thisControlID = $this.prop('id');
+        const thisControlType = $thisPersistable.prop('type');
+        const thisControlID = $thisPersistable.prop('id');
         let isChanged = false;
         let equalMsg = 'unchanged';
         //!undefined or !NaN yield true
-        if (currentValue !== oldValue) { //compare string
-            isChanged = true;
-            equalMsg = 'changed';
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox":
+                {
+                    const isChecked = $thisPersistable.is(':checked');
+                    switch (true) {
+                        case currentValue == oldValue && !isChecked:
+                        case currentValue != oldValue && isChecked:
+                            isChanged = true;
+                            equalMsg = 'changed';
+                            break;
+                        case currentValue == oldValue && isChecked:
+                        case currentValue != oldValue && !isChecked:
+                            isChanged = false;
+                            break;
+                    }
+                }
+                break;
         }
         equalMsg = thisControlType + ' ' + thisControlID + ' ' + equalMsg;
         console.log(equalMsg);
         return isChanged;
     }
-    getCRUD($this, oldValue, currentValue) {
-        const controlType = $this.prop('type');
-        const checked = $this.prop('checked');
+    getCRUD($thisPersistable, oldValue, currentValue) {
+        const thisControlType = $thisPersistable.prop('type');
+        const oldValueIsEmpty = oldValue === undefined || oldValue === null || oldValue === '';
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox":
+                const isChecked = $thisPersistable.is(':checked');
+                switch (true) {
+                    case currentValue === oldValue && !oldValueIsEmpty && !isChecked:
+                        return EnumDbCommandType.Update;
+                    case currentValue !== oldValue && isChecked: {
+                        if (oldValueIsEmpty)
+                            return EnumDbCommandType.Create;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            case "select-one":
+                if (currentValue !== oldValue) {
+                    if (oldValueIsEmpty) {
+                        if (currentValue !== '-1')
+                            return EnumDbCommandType.Create;
+                    }
+                    else {
+                        if (currentValue !== '-1')
+                            return EnumDbCommandType.Delete;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            case "text":
+            case "date":
+            case "textarea":
+            case 'number':
+                if (currentValue !== oldValue) {
+                    if (oldValueIsEmpty)
+                        return EnumDbCommandType.Create;
+                    else {
+                        if (currentValue === '')
+                            return EnumDbCommandType.Delete;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            default:
+                {
+                    if (oldValue != currentValue) {
+                        if (oldValue === null || oldValue === null)
+                            return EnumDbCommandType.Create;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+        }
         switch (true) {
             case (currentValue && !oldValue):
                 console.log('(C)reate. current value = ' + currentValue + ', old value = ' + oldValue);
@@ -74,46 +147,48 @@ export class Utility {
                 return EnumDbCommandType.Update;
         }
     }
-    getControlValue($thisControl) {
+    getControlCurrentValue($thisControl) {
         //throw new Error("Method not implemented.");
         const thisControlType = $thisControl.prop('type');
         const thisControlID = $thisControl.prop('id');
         let thisValue = "";
-        let thisScore = "";
         switch (thisControlType) {
             case "radio":
-            case "checkbox": {
-                let selectedOption = $('#' + thisControlID + " :selected");
-                //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
-                //if ($thisControl.prop('checked'))   
-                thisScore = selectedOption.data("score");
+            case "checkbox":
                 thisValue = $thisControl.val();
                 break;
-            }
             default:
                 thisValue = $thisControl.val();
-                thisScore = thisValue;
                 break;
         }
-        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue + ', score =' + thisScore);
+        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
         return thisValue;
     }
-    getControlScore($thisControl) {
+    //when the controls, such as GG0170s and GG0130s, could have binding value and data-score are different
+    getControlScore(thisControl) {
         //throw new Error("Method not implemented.");
-        const thisControlType = $thisControl.prop('type');
-        const thisControlID = $thisControl.prop('id');
-        let thisScore = "";
+        const thisControlType = thisControl.prop('type');
+        const thisControlID = thisControl.prop('id');
+        let thisScore = "0";
+        let hasDataScore;
         switch (thisControlType) {
             case "radio":
             case "checkbox": {
-                let selectedOption = $('#' + thisControlID + " :selected");
                 //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
-                //if ($thisControl.prop('checked'))   
-                thisScore = selectedOption.data("score");
+                hasDataScore = $('[data-score]', thisControl) !== undefined;
+                if (hasDataScore && thisControl.is(':checked'))
+                    thisScore = thisControl.data('score');
                 break;
             }
+            case "select-one":
+                hasDataScore = $('option:selected[data-score]', thisControl) !== undefined;
+                if (hasDataScore)
+                    thisScore = $('option:selected[data-score]', thisControl).data('score');
+                break;
             default:
-                thisScore = $thisControl.val();
+                hasDataScore = $('[data-score]', thisControl).length !== 0;
+                if (hasDataScore)
+                    thisScore = thisControl.data('score');
                 break;
         }
         console.log('(' + thisControlType + ') ' + thisControlID + ' , score =' + thisScore);
@@ -123,28 +198,27 @@ export class Utility {
         //throw new Error("Method not implemented.");
         //console.log('$thisControl', $thisControl);
         const thisControlType = $thisControl.prop('type');
-        console.log('resetting ' + thisControlType + ' control type ' + $thisControl.prop('id'));
         switch (thisControlType) {
             case "select-one": {
                 const newValueInt = parseInt(newValue);
                 if (isNaN(newValueInt)) {
-                    $thisControl.val(-1).trigger('change');
+                    $thisControl.val(-1);
                 }
                 else {
-                    $thisControl.val(newValue).trigger('change');
+                    $thisControl.val(newValue);
                 }
                 console.log('changed ' + thisControlType + ' ' + $thisControl.prop('id') + ' value to ' + newValueInt);
                 break;
             }
             case "checkbox":
             case "radio": {
-                $thisControl.prop('checked', false).trigger('change');
+                $thisControl.prop('checked', false);
                 console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
                 break;
             }
             case "text":
             case "date": {
-                $thisControl.val('').trigger('change');
+                $thisControl.val('');
                 console.log('cleared ' + $thisControl.prop('id') + ' ' + thisControlType);
                 break;
             }

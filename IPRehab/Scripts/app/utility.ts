@@ -38,31 +38,49 @@ export class Utility implements ICommonUtility {
         return dialogOptions;
     }
 
-    isDate(aDate: Date): boolean {
+    public isDate(aDate: Date): boolean {
         //throw new Error("Method not implemented.");
         return aDate instanceof Date && !isNaN(aDate.valueOf());
     }
 
-    isEmpty($this): boolean {
+    public isEmpty($this): boolean {
         //throw new Error("Method not implemented.");
-        if (typeof $this.val() !== 'undefined' && $this.val())
-            return false;
-        else
+        if (typeof $this.val() === 'undefined' || $this.val() === '' || $this.val() === undefined || $this.val() === null) {
+            console.log($this.prop('id') + ' is empty');
             return true;
+        }
+        else {
+            console.log($this.prop('id') + ' is not empty');
+            return false;
+        }
     }
 
-    public isTheSame($this, oldValue: string, currentValue: string): boolean {
+    public isTheSame($thisPersistable, oldValue: string, currentValue: string): boolean {
         //throw new Error("Method not implemented.");
-        const thisControlType: string = $this.prop('type');
-        const thisControlID: string = $this.prop('id');
+        const thisControlType: string = $thisPersistable.prop('type');
+        const thisControlID: string = $thisPersistable.prop('id');
         let isChanged: boolean = false;
         let equalMsg = 'unchanged';
 
         //!undefined or !NaN yield true
-
-        if (currentValue !== oldValue) {    //compare string
-            isChanged = true;
-            equalMsg = 'changed';
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox":
+                {
+                    const isChecked: boolean = $thisPersistable.is(':checked');
+                    switch (true) {
+                        case currentValue == oldValue && !isChecked:
+                        case currentValue != oldValue && isChecked:
+                            isChanged = true;
+                            equalMsg = 'changed';
+                            break;
+                        case currentValue == oldValue && isChecked:
+                        case currentValue != oldValue && !isChecked:
+                            isChanged = false;
+                            break;
+                    }
+                }
+                break;
         }
 
         equalMsg = thisControlType + ' ' + thisControlID + ' ' + equalMsg;
@@ -71,10 +89,63 @@ export class Utility implements ICommonUtility {
         return isChanged;
     }
 
-    public getCRUD($this: any, oldValue: string, currentValue: string): EnumDbCommandType {
-        const controlType: string = $this.prop('type');
-        const checked: boolean = $this.prop('checked');
-
+    public getCRUD($thisPersistable: any, oldValue: string, currentValue: string): EnumDbCommandType {
+        const thisControlType: string = $thisPersistable.prop('type');
+        const oldValueIsEmpty: boolean = oldValue === undefined || oldValue === null || oldValue === '';
+        switch (thisControlType) {
+            case "radio":
+            case "checkbox":
+                const isChecked: boolean = $thisPersistable.is(':checked');
+                switch (true) {
+                    case currentValue === oldValue && !oldValueIsEmpty && !isChecked:
+                        return EnumDbCommandType.Update;
+                    case currentValue !== oldValue && isChecked: {
+                        if (oldValueIsEmpty)
+                            return EnumDbCommandType.Create;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            case "select-one":
+                if (currentValue !== oldValue) {
+                    if (oldValueIsEmpty) {
+                        if (currentValue !== '-1')
+                            return EnumDbCommandType.Create;
+                    }
+                    else {
+                        if (currentValue !== '-1')
+                            return EnumDbCommandType.Delete;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            case "text":
+            case "date":
+            case "textarea":
+            case 'number':
+                if (currentValue !== oldValue) {
+                    if (oldValueIsEmpty)
+                        return EnumDbCommandType.Create;
+                    else {
+                        if (currentValue === '')
+                            return EnumDbCommandType.Delete;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+                break;
+            default:
+                {
+                    if (oldValue != currentValue) {
+                        if (oldValue === null || oldValue === null)
+                            return EnumDbCommandType.Create;
+                        else
+                            return EnumDbCommandType.Update;
+                    }
+                }
+        }
         switch (true) {
             case (currentValue && !oldValue):
                 console.log('(C)reate. current value = ' + currentValue + ', old value = ' + oldValue);
@@ -88,52 +159,54 @@ export class Utility implements ICommonUtility {
         }
     }
 
-    getControlValue($thisControl) {
+    public getControlCurrentValue($thisControl) {
         //throw new Error("Method not implemented.");
         const thisControlType: string = $thisControl.prop('type');
         const thisControlID: string = $thisControl.prop('id');
 
         let thisValue: string = "";
-        let thisScore: string = "";
 
         switch (thisControlType) {
             case "radio":
-            case "checkbox": {
-                let selectedOption = $('#' + thisControlID + " :selected");
-                //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
-                //if ($thisControl.prop('checked'))   
-                thisScore = selectedOption.data("score");
+            case "checkbox":
                 thisValue = $thisControl.val();
                 break;
-            }
             default:
                 thisValue = $thisControl.val();
-                thisScore = thisValue;
                 break;
         }
 
-        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue + ', score =' + thisScore);
+        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
         return thisValue;
     }
 
-    getControlScore($thisControl) {
+    //when the controls, such as GG0170s and GG0130s, could have binding value and data-score are different
+    public getControlScore(thisControl) {
         //throw new Error("Method not implemented.");
-        const thisControlType: string = $thisControl.prop('type');
-        const thisControlID: string = $thisControl.prop('id');
+        const thisControlType: string = thisControl.prop('type');
+        const thisControlID: string = thisControl.prop('id');
 
-        let thisScore: string = "";
+        let thisScore: string = "0";
+        let hasDataScore: boolean;
 
         switch (thisControlType) {
             case "radio":
             case "checkbox": {
-                let selectedOption = $('#' + thisControlID + " :selected");
                 //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
-                //if ($thisControl.prop('checked'))   
-                thisScore = selectedOption.data("score");
+                hasDataScore = $('[data-score]', thisControl) !== undefined;
+                if (hasDataScore && thisControl.is(':checked'))
+                    thisScore = thisControl.data('score');
                 break;
             }
+            case "select-one":
+                hasDataScore = $('option:selected[data-score]', thisControl) !== undefined;
+                if (hasDataScore)
+                thisScore = $('option:selected[data-score]', thisControl).data('score');
+                break;
             default:
-                thisScore = $thisControl.val();
+                hasDataScore = $('[data-score]', thisControl).length !== 0;
+                if (hasDataScore)
+                    thisScore = thisControl.data('score');
                 break;
         }
 
@@ -141,32 +214,31 @@ export class Utility implements ICommonUtility {
         return thisScore;
     }
 
-    resetControlValue($thisControl, newValue: string = '-1') {
+    public resetControlValue($thisControl, newValue: string = '-1') {
         //throw new Error("Method not implemented.");
         //console.log('$thisControl', $thisControl);
         const thisControlType: string = $thisControl.prop('type');
-        console.log('resetting ' + thisControlType + ' control type ' + $thisControl.prop('id'));
         switch (thisControlType) {
             case "select-one": {
                 const newValueInt: number = parseInt(newValue);
                 if (isNaN(newValueInt)) {
-                    $thisControl.val(-1).trigger('change');
+                    $thisControl.val(-1);
                 }
                 else {
-                    $thisControl.val(newValue).trigger('change');
+                    $thisControl.val(newValue);
                 }
                 console.log('changed ' + thisControlType + ' ' + $thisControl.prop('id') + ' value to ' + newValueInt);
                 break;
             }
             case "checkbox":
             case "radio": {
-                $thisControl.prop('checked', false).trigger('change');
+                $thisControl.prop('checked', false);
                 console.log('unchecked ' + thisControlType + $thisControl.prop('id'));
                 break;
             }
             case "text":
             case "date": {
-                $thisControl.val('').trigger('change');
+                $thisControl.val('');
                 console.log('cleared ' + $thisControl.prop('id') + ' ' + thisControlType);
                 break;
             }
@@ -176,7 +248,7 @@ export class Utility implements ICommonUtility {
         }
     }
 
-    getTextPixels(someText: string, font) {
+    public getTextPixels(someText: string, font) {
         //throw new Error("Method not implemented.");
         const canvas = document.createElement('canvas');
         const context = canvas.getContext("2d");
@@ -185,7 +257,7 @@ export class Utility implements ICommonUtility {
         return Math.ceil(width);
     }
 
-    breakLongSentence(thisSelectElement) {
+    public breakLongSentence(thisSelectElement) {
         throw new Error("Method not implemented.");
         //  console.log('thisSelectElement', thisSelectElement);
         //  let maxLength: number = 50;

@@ -5,12 +5,13 @@ import { EpisodeScore } from "./episodeScore.js";
 
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
-export const commonUtility: Utility = new Utility();
+const commonUtility: Utility = new Utility();
+const formScope: any = $("form#userAnswerForm");
 
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
-export const formController = (function () {
+const formController = (function () {
     /***************************************************************************
      * public functions exposing the private functions to outside of the closure
     ***************************************************************************/
@@ -24,6 +25,11 @@ export const formController = (function () {
         'updateScore': updateScore,
         'grandTotal': grandTotal
     }
+    const Q12: any = $('.persistable[id=Q12]', formScope);
+    const Q23: any = $('.persistable[id=Q23]', formScope);
+    const onsetDate: Date = new Date(Q23.val().toString());
+    const admissionDate: Date = new Date(Q12.val().toString());
+
     function scrollTo(thisElement: any) {
         let scrollAmount: number = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
         if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0;
@@ -47,13 +53,12 @@ export const formController = (function () {
         const longTextOptionDIV = thisSelectElement.next('div.longTextOption');
         console.log('longTextOptionDIV', longTextOptionDIV);
         const thisSelectWidth = thisSelectElement[0].clientWidth;
-        const thisScope: any = thisSelectElement;
         const selectedValue: number = parseInt(thisSelectElement.prop('value'));
         if (selectedValue <= 0) {
             longTextOptionDIV.text('');
         }
         else {
-            $.each($('option:selected', thisScope), function () {
+            $.each($('option:selected', thisSelectElement), function () {
                 const $thisOption = $(this);
                 const oldText: string = $thisOption.text();
                 const font = $thisOption.css('font');
@@ -78,7 +83,7 @@ export const formController = (function () {
                     longTextOptionDIV.text(newStr).removeClass("invisible");
                 }
                 else {
-                    console.log('set ' + thisSelectElement.prop("id") + ' sibling EL longTextOptionDIV blank for short text');
+                    console.log('set ' + thisSelectElement.prop("id") + ' sibling EL longTextOptionDIV blank for short text.');
                     longTextOptionDIV.text('');
                 }
             });
@@ -202,8 +207,6 @@ export const formController = (function () {
 
         //get the key answers. these must be done outside of the .map()
         //because each answer in .map() will use the same episode onset date and admission date
-        const onsetDate: Date = new Date($('.persistable[id^=Q23]').val().toString());
-        const admissionDate: Date = new Date($('.persistable[id^=Q12]').val().toString());
 
         console.log('facilityID', facilityID);
 
@@ -219,10 +222,10 @@ export const formController = (function () {
 
         //ToDo: make this closure available to other modules to avoid code duplication in commandBtns.ts
         const persistables: any = $('.persistable', theScope);
-        let counter = 0
+        let answerCounter = 0
 
         persistables.each(function () {
-            counter++;
+            answerCounter++;
 
             const $thisPersistable: any = $(this);
             const thisPersistableID: string = $thisPersistable.prop('id');
@@ -236,10 +239,11 @@ export const formController = (function () {
             const questionKey: string = $thisPersistable.data('questionkey');   //get value from data- attribute
             const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
 
-            //must use 'simple' to get straight val(), otherwise, the getControlValue() use more elaborated way to get the control value
-            let currentValue: string = commonUtility.getControlValue($thisPersistable);
+            //must use 'simple' to get straight val(), otherwise, the getControlCurrentValue() use more elaborated way to get the control value
+            let currentValue: string = commonUtility.getControlCurrentValue($thisPersistable);
 
             if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
+                console.log($thisPersistable.prop('id') + ' unchanged: ' + oldValue + ',' + currentValue);
                 return;
             }
 
@@ -279,7 +283,7 @@ export const formController = (function () {
                 case 'date':
                 case 'textarea':
                 case 'number':
-                    /* store in the description the free text because all inputs derived from text type have the same codeset id */
+                    /* store in the description the free text because these nnput types have the same codeset id */
                     thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
                     /* AnswerCodeSetID and OldAnswerCodeSetID don't change for these control types */
                     thisAnswer.OldAnswerCodeSetID = +$thisPersistable.data('codesetid');;
@@ -295,11 +299,11 @@ export const formController = (function () {
             if (/GG0130/i.test(thisPersistableID) || /GG0170/i.test(thisPersistableID))   //regex
             {
                 const thisAnswerScoreElement: any = $("i[id*=" + thisPersistableID + "]");
-                let thisAnswerScore: number = parseInt(thisAnswerScoreElement.data('score'));
+                let thisAnswerScore: number = +commonUtility.getControlCurrentValue(thisAnswerScoreElement);    //parseInt(thisAnswerScoreElement.data('score'));
                 thisAnswer.Score = thisAnswerScore;
             }
 
-            console.log('(' + counter + ') ' + questionKey, thisAnswer);
+            console.log('(' + answerCounter + ') ' + questionKey, thisAnswer);
             const CRUD: EnumDbCommandType = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
             switch (CRUD) {
                 case EnumDbCommandType.Create:
@@ -403,7 +407,7 @@ export const formController = (function () {
             }
             case (newScore > 0 && i_score_element.length > 0): {
                 console.log('path3: update existing score');
-                i_score_element.text('score: ' + newScore + ' ' + scoreMsg);
+                i_score_element.text('score: ' + newScore + " " + scoreMsg);
                 break;
             }
         }
@@ -430,15 +434,14 @@ export const formController = (function () {
     /* private function */
     /* calculate individual score of each Self Care question and Score Card summary */
     function selfCareScore(): void {
-        let selfCareAdmissionPerformance :number = 0,
-            selfCareDischargePerformance :number = 0,
-            selfCarePerformance :number = 0 /* Interim Performance or Discharge Performance */;
+        let selfCareAdmissionPerformance: number = 0,
+            selfCareDischargePerformance: number = 0,
+            selfCarePerformance: number = 0 /* Interim Performance or Discharge Performance */;
 
         $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
             const thisControl = $(this);
             const thisID = $(this).prop('id');
-            //const thisValue = +commonUtility.getControlValue(thisControl);
-            const dataAttributeScore = $('option:selected', thisControl).data("score")
+            const dataAttributeScore = +commonUtility.getControlScore(thisControl);     //$('option:selected', thisControl).data('score')
             switch (true) {
                 case (dataAttributeScore >= 7): // greater than 7,9,10,88
                     {
@@ -465,7 +468,7 @@ export const formController = (function () {
                     }
                 default:
                     {
-                        const scoreZero : number = 0;
+                        const scoreZero: number = 0;
                         updateScore(thisControl, scoreZero);
                         break;
                     }
@@ -639,7 +642,7 @@ export const formController = (function () {
     //  /* select only GG0170 Admission Performance excluding Q, R and S */
     //  $('.persistable[id^=GG0170]:not([id*=Discharge_Performance]):not([id*=Discharge_Goal]):not([id*=GG0170Q]):not([id*=GG0170R]):not([id*=GG0170S])').each(function () {
     //    const $thisControl = $(this);
-    //    const thisControlScore: number = $('option:selected', $thisControl).data("score");  //commonUtility.getControlValue($thisControl);
+    //    const thisControlScore: number = +commonUtility.getControlScore($thisControl);     //$('option:selected', $thisControl).data('score');
     //    const thisControlID: string = $thisControl.prop('id');
 
     //    switch (true) {
@@ -684,7 +687,7 @@ export const formController = (function () {
             console.log('----- begin update score for ', thisEL.prop('id'));
 
             const thisControl_id = thisEL.prop('id');
-            const thisControl_Score = $('option:selected', thisEL).data("score"); //+commonUtility.getControlValue(thisEL);
+            const thisControl_Score = +commonUtility.getControlScore(thisEL);   //$('option:selected', thisEL).data('score'); 
             console.log(thisControl_id + ' score = ', thisControl_Score);
 
             const isThisGG0170I: boolean = thisControl_id.indexOf('GG0170I_' + performanceType) >= 0;
@@ -700,7 +703,7 @@ export const formController = (function () {
                         }
                         else if (isThisGG0170M) {
                             console.log('\t Score_GG0170AtoP_Performance(): ' + thisControl_id + ' value >= 7 path 2');
-                            updateScore(thisEL, 1, '+2 for N and O');
+                            updateScore(thisEL, 3, ' (1 each for M, N and O)');
                             /* when M >= 7 add 1 point for M, N, and O each*/
                             PerformanceScore += 3;
                             const thisGG0170N = $('#GG0170N' + performanceType);
@@ -710,7 +713,7 @@ export const formController = (function () {
                         }
                         else if (isThisGG0170N) {
                             console.log('\t Score_GG0170AtoP_Performance::: ' + thisControl_id + ' value >= 7 path 3');
-                            updateScore(thisEL, 1, '+1 for O');
+                            updateScore(thisEL, 2, ' (1 each for N and O)');
                             /* when N >= 7 add 1 point for N and O each*/
                             PerformanceScore += 2;
                             const thisGG0170O = $('#GG0170O' + performanceType);
@@ -758,9 +761,9 @@ export const formController = (function () {
         GG0170R = $('.persistable[id^=GG0170R_' + performanceType + ']');
         GG0170S = $('.persistable[id^=GG0170S_' + performanceType + ']');
 
-        GG0170I_Score = $('option:selected', GG0170I).data("score");    //+commonUtility.getControlValue(GG0170I);
-        GG0170R_Score = $('option:selected', GG0170R).data("score");    //+commonUtility.getControlValue(GG0170R);
-        GG0170S_Score = $('option:selected', GG0170S).data("score");    //+commonUtility.getControlValue(GG0170S);
+        GG0170I_Score = +commonUtility.getControlScore(GG0170I);   //$('option:selected', GG0170I).data('score');    
+        GG0170R_Score = +commonUtility.getControlScore(GG0170R);   //$('option:selected', GG0170R).data('score');    
+        GG0170S_Score = +commonUtility.getControlScore(GG0170S);   //$('option:selected', GG0170S).data('score');    
 
         if (GG0170I_Score >= 7)
             multiplier = 2;
@@ -791,29 +794,31 @@ export const formController = (function () {
 
     //  /* use GG0170I to determine the multipliers for GG0170R and GG0170S */
     //  const GG0170I: any = $('.persistable[id^=GG0170I_Discharge_Performance]');
-    //  const GG0170I_Value: number = commonUtility.getControlValue(GG0170I);
+    //  const GG0170I_Score: number = +commonUtility.getControlScore(GG0170I);    //+($('option:selected', GG0170I).data('score'));
 
-    //  if (GG0170I_Value >= 7)
+    //  if (GG0170I_Score >= 7)
     //    multiplier = 2;
-    //  if (GG0170I_Value <= 6)
+    //  if (GG0170I_Score <= 6)
     //    multiplier = 0;
-    //  if (isNaN(GG0170I_Value))
+    //  if (isNaN(GG0170I_Score))
     //    multiplier = 1; //when GG0170I is not answered score R and S as is
 
     //  const GG0170R: any = $('.persistable[id^=GG0170R_Discharge_Performance]');
-    //  const GG0170R_Value: number = commonUtility.getControlValue(GG0170R);
-    //  if (GG0170R_Value > 0) {
-    //    updateScore(GG0170R, GG0170R_Value * multiplier);
-    //    R_Performance += GG0170R_Value * multiplier;
+    //  const GG0170R_Score: number = +commonUtility.getControlScore(GG0170R);  //+($('option:selected', GG0170R).data('score'));
+
+    //  if (GG0170R_Score > 0) {
+    //    updateScore(GG0170R, GG0170R_Score * multiplier);
+    //    R_Performance += GG0170R_Score * multiplier;
     //  }
     //  else
     //    updateScore(GG0170R, 0);
 
     //  const GG0170S: any = $('.persistable[id^=GG0170S_Discharge_Performance]');
-    //  const GG0170S_Value: number = commonUtility.getControlValue(GG0170S);
-    //  if (GG0170S_Value > 0) {
-    //    updateScore(GG0170S, GG0170S_Value * multiplier);
-    //    S_Performance += GG0170S_Value * multiplier;
+    //  const GG0170S_Score: number = +commonUtility.getControlScore(GG0170S);  //+($('option:selected', GG0170S).data('score'));
+
+    //  if (GG0170S_Score > 0) {
+    //    updateScore(GG0170S, GG0170S_Score * multiplier);
+    //    S_Performance += GG0170S_Score * multiplier;
     //  }
     //  else
     //    updateScore(GG0170S, 0);
@@ -827,34 +832,6 @@ export const formController = (function () {
 
 //self execution function
 $(function () {
-    //const dialogOptions =commonUtility.dialogOptions();
-    const dialogOptions: any = {
-        resizable: true,
-        //height: ($(window).height() - 200),
-        //width: '90%',
-        classes: { 'ui-dialog': 'my-dialog', 'ui-dialog-titlebar': 'my-dialog-header' },
-        modal: true,
-        stack: true,
-        sticky: true,
-        position: { my: 'center', at: 'center', of: window },
-        buttons: [{
-            //    "Save": function () {
-            //      //do something here
-            //      let thisUrl: string = $('form').prop('action');
-            //      let postBackModel: AjaxPostbackModel = new AjaxPostbackModel();
-            //      postBackModel.NewAnswers = newAnswers;
-            //      postBackModel.OldAnswers = oldAnswers;
-            //      postBackModel.UpdatedAnswers = updatedAnswers;
-            //      alert('ToDo: sending ajax postBackModel to ' + thisUrl);
-            //    },
-            text: "Close",
-            //icon: "ui-icon-close",
-            click: function () {
-                $(this).dialog("close");
-            }
-        }]
-    };
-
     $('input[type=date]').each(function () {
         const thisDate = $(this);
         thisDate.on('change', function () {
@@ -867,28 +844,16 @@ $(function () {
         });
     });
 
-    /* each reset calendar click reset the date of the target sibling */
+    /* each reset calendar click reset the date of the target element */
     $('.calendarReset').on('click', function (e) {
         const thisResetButton = $(this);
-        const thisTargetDate = $('#' + thisResetButton.data('target'));
-        console.log('reset ' + thisTargetDate.prop('id'), thisTargetDate);
-        const isTargetOnQ12B = thisTargetDate.prop('id').indexOf('Q12B') !== -1;
-        if (thisTargetDate.length > 0) {
-            thisTargetDate.val('');
-
-            //after clear the date, disable the reset button since there is no date to clear
-            thisResetButton.prop('disabled', true);
-
-            if (isTargetOnQ12B) {
-                console.log('trigger change event to let branching.Q12B_blank_then_Lock_Discharge() handle the change() event');
-                thisTargetDate.trigger('change');    //else use the commonUtility to reset the value
-            }
-            else {
-                console.log('reset ' + thisTargetDate.prop('type') + ' ' + thisTargetDate.prop('id'));
-                commonUtility.resetControlValue(thisTargetDate); //raise trigger('change') commonUtility handle the event accordingly
-            }
+        const thisResetDateTarget = $('#' + thisResetButton.data('target'));
+        if (thisResetDateTarget.length > 0) {
+            console.log(thisResetButton.prop('id') + ' resets ' + thisResetDateTarget.prop('id') + ' of type ' + thisResetDateTarget.prop('type'), thisResetDateTarget);
+            commonUtility.resetControlValue(thisResetDateTarget);
+            thisResetDateTarget.trigger('change');  //programmatically trigger('change') becuase set val(new value) doesn't raise change event
         }
-        e.preventDefault();
+        e.preventDefault(); //this is must to prevent submit the form and leave the page
     });
 
     $('select').each(function () {
@@ -896,8 +861,13 @@ $(function () {
         thisDropdown.on('change', function () {
             //beak long option text
             //commonUtility.resetControlValue(thisDropdown);
-            if (thisDropdown.val() !== -1) {
+            if (thisDropdown.val() !== -1)
                 formController.breakLongSentence(thisDropdown);
+            else {
+                const siblinglongTextOptions: any = thisDropdown.next('.longTextOption');
+                const siblingScore: any = thisDropdown.next('i.score');
+                siblinglongTextOptions.text('');
+                siblingScore.text('');
             }
         });
     });
@@ -919,14 +889,14 @@ $(function () {
         switch (stage) {
             case "Episode Of Care":
             case "New":
-                slidingAggregator.css({ "width": "13.5em"});
+                slidingAggregator.css({ "width": "13.5em" });
                 break;
             case 'Interim':
             case 'Follow Up':
                 slidingAggregator.css({ "width": "7.2em" });
                 break;
         }
-        slidingAggregator.css({ "right": "0em"});
+        slidingAggregator.css({ "right": "0em" });
     });
 
     $('#closeSlidingAggregator').on('click', function () {
@@ -983,11 +953,11 @@ $(function () {
     //  $('form').submit();
     //});
 
-
     /* ajax post form */
     $('#ajaxPost').on('click', function () {
         if (formController.validate) {
-            formController.submitTheForm($(this), dialogOptions);
+            const defaultDialogOptions = commonUtility.dialogOptions();
+            formController.submitTheForm($(this), defaultDialogOptions);
         }
     });
 
@@ -1016,4 +986,34 @@ $(function () {
 
     /* grand total on load */
     formController.grandTotal();
+
+
+    /* event handler */
+    function AddMore(stage: string) {
+        console.log('branching::: inside of AddMore');
+        const addMoreBtns = $('button[id^=btnMore]');
+        addMoreBtns.on('click', function () {
+            const thisMoreBtn = $(this);
+            const questionKey: string = thisMoreBtn.data('questionkey');
+            const lastInputIdx: number = $('.persistable[id^=' + questionKey + '][id*=' + stage + ']', formScope).length - 1;
+            const lastInputDate: any = $('.persistable[id^=' + questionKey + '][id*=' + stage + '_' + lastInputIdx + ']', formScope);
+            const dateClone: any = lastInputDate.clone();
+            //commonUtility.resetControlValue(dateClone);
+            dateClone.val('').trigger('focus');
+            lastInputDate.append(dateClone);
+        });
+    }
+
+    (function clear_long_text_option_when_sibling_dropdown_is_on_first_option() {
+        const longTextOptions: any = $('.longTextOption');
+        longTextOptions.each(function () {
+            const thisLongText: any = $(this);
+            const siblingDropdown: any = thisLongText.prev('select')
+            const siblingScore: any = thisLongText.next('i.score');
+            if (+siblingDropdown.val() === -1) {
+                thisLongText.text('');
+                siblingScore.text('');
+            }
+        });
+    })();
 });

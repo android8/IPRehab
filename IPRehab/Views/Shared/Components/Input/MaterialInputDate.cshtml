@@ -31,9 +31,9 @@
         <div class="flex-start-row-nowrap">
             <input disabled type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))"
                    class="persistable"
-                   name="@Model.ViewComponentViewModel.QuestionKey"
+                   name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                    id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
+                   @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                    value="@(thisHtmlDate)"
                    title="@(answeredBy)"
                    data-stageid="@(Model.ViewComponentViewModel.StageID)"

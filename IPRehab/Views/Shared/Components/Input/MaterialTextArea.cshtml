@@ -15,14 +15,15 @@
     }
 
     <label id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")"
+           for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
            class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label"
            aria-label="@($"a text area for {Model.ViewComponentViewModel.QuestionKey}")">
         <span class="mdc-text-field__ripple"></span>
         <span class="mdc-text-field__resizer">
             <textarea disabled class="mdc-text-field__input persistable inputContainer" rows="8" cols="40"
-                      name="@Model.ViewComponentViewModel.QuestionKey"
+                      name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                       id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                      required="@(Model.ViewComponentViewModel.Required)"
+                      @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                       title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                       placeholder="enter some text"
                       data-stageid="@(Model.ViewComponentViewModel.StageID)"
@@ -40,7 +41,7 @@
                       data-placement="left"
                       aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")">
                 @(originalAnswer?.Description)
-      </textarea>
+            </textarea>
         </span>
     </label>
 </div>

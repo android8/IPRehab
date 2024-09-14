@@ -40,19 +40,20 @@
         {
             labelText = item.SelectListItem.Text;
         }
-       
+
 
         <div class="flex-start-row-nowrap">
             <div class="mdc-touch-target-wrapper">
                 <div class="mdc-radio mdc-radio--touch">
                     <input disabled type="radio"
                            class="mdc-radio__native-control persistable"
+                           @* name must be the same to be mutually exclusive radio input *@
                            name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                           id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}")"
-                           required="@(Model.ViewComponentViewModel.Required)"
+                           id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                           @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                            value="@(item.SelectListItem.Value)"
                            title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-                           checked="@(isChecked)"
+                           @(isChecked ? "checked=checked" : null)
                            data-stageid="@(Model.ViewComponentViewModel.StageID)"
                            data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                            data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
@@ -66,7 +67,7 @@
                            data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                            data-toggle="tooltip"
                            data-placement="left"
-                           aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}_label")" />
+                           aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")" />
 
                     <div class="mdc-radio__background">
                         <div class="mdc-radio__outer-circle"></div>
@@ -75,10 +76,13 @@
                     <div class="mdc-radio__ripple"></div>
                 </div>
             </div>
-            <div class="arrow-left-radio"></div>
+            @*<div class="arrow-left-radio"></div>*@
+            <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753" />
+            </svg>
             <label class="radioLabel"
-                   for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}")"
-                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{idSuffix}_label")">@(labelText)</label>
+                   for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
+                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")">@(labelText)</label>
         </div>
     }
 </div>

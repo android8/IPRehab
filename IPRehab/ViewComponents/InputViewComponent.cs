@@ -40,12 +40,31 @@ namespace IPRehab.ViewComponents
                 //    string middleCapLeter = midCaps.Substring(1, 1);
                 //    tmpText = tmpText.Replace(middleCapLeter, $"_{middleCapLeter}");
                 //}
-
                 normalizedText += $"_{tmpText}";
             }
 
             if (thisVCVM.ControlCounter > 0)
+            {
+                //if (thisVCVM.QuestionKey != "Q43")  /* 3 pairs interrupt and return dates */
                 normalizedText += $"_{thisVCVM.ControlCounter.ToString()}";
+                //    else
+                //    {
+                //        if (thisVCVM.ControlCounter <= 3)
+                //        {
+                //            if (thisVCVM.ControlCounter % 3 == 0)
+                //                normalizedText += $"_InterruptDate_3";
+                //            else
+                //                normalizedText += $"_InterruptDate_{(thisVCVM.ControlCounter % 3) + 1}";
+                //        }
+                //        else
+                //        {
+                //            if (thisVCVM.ControlCounter % 3 == 0)
+                //                normalizedText += $"_ReturnDate_3";
+                //            else
+                //                normalizedText += $"_ReturnDate_{thisVCVM.ControlCounter % 3}";
+                //        }
+                //    }
+            }
 
             //normalizedText = normalizedText.Replace(" ", "_");
             thisVCVM.MeasureTitleNormalized = normalizedText;
@@ -54,7 +73,7 @@ namespace IPRehab.ViewComponents
 
             thisVCVM.StageID = QWS.StageID;
             thisVCVM.MultipleChoices = QWS.MultipleChoices;
-            thisVCVM.Required = QWS.Required.Value;
+            thisVCVM.Required = QWS.Required.HasValue && QWS.Required.Value == true;
             thisVCVM.ReadOnly = QWS.ReadOnly.Value;
             thisVCVM.DisplayMeasureHeader = (!QWS.QuestionKey.StartsWith("Q") || QWS.QuestionKey.StartsWith("Q43")) && (!string.IsNullOrEmpty(QWS.MeasureDescription));
             thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoBottomBorder";
@@ -101,12 +120,20 @@ namespace IPRehab.ViewComponents
 
                     if (QWS.Question.Contains("Is this assessment completed and ready for processing", System.StringComparison.OrdinalIgnoreCase) ||
                         QWS.QuestionKey == "A1110B" ||
-                        QWS.QuestionKey == "C131A" || QWS.QuestionKey == "C0300C" ||
-                        QWS.QuestionKey == "GG0170RR" || QWS.QuestionKey == "GG0170SS" ||
-                        QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1750" || QWS.QuestionKey == "J1900" || QWS.QuestionKey == "J2000" ||
+                        QWS.QuestionKey == "C131A" ||
+                        QWS.QuestionKey == "C0300C" ||
+                        QWS.QuestionKey == "GG0170RR" ||
+                        QWS.QuestionKey == "GG0170SS" ||
+                        QWS.QuestionKey == "J1750" ||
+                        QWS.QuestionKey == "J1750" ||
+                        QWS.QuestionKey == "J1900" ||
+                        QWS.QuestionKey == "J2000" ||
                         QWS.QuestionKey == "Q8" ||
-                        QWS.QuestionKey.Contains("Q14", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey == "Q24A" || QWS.QuestionKey.Contains("Q41", System.StringComparison.OrdinalIgnoreCase) ||
-                        QWS.QuestionKey.Contains("Q42", System.StringComparison.OrdinalIgnoreCase) || QWS.QuestionKey.Contains("Q44C", System.StringComparison.OrdinalIgnoreCase)
+                        QWS.QuestionKey.Contains("Q14", System.StringComparison.OrdinalIgnoreCase) ||
+                        QWS.QuestionKey == "Q24A" ||
+                        QWS.QuestionKey.Contains("Q41", System.StringComparison.OrdinalIgnoreCase) ||
+                        QWS.QuestionKey.Contains("Q42", System.StringComparison.OrdinalIgnoreCase) ||
+                        QWS.QuestionKey.Contains("Q44C", System.StringComparison.OrdinalIgnoreCase)
                         )
                     {
                         thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
@@ -137,6 +164,7 @@ namespace IPRehab.ViewComponents
 
                             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
                             break;
+
                         case "Number":
 
                             viewName = "MDNumberAfterHeader";
@@ -163,6 +191,7 @@ namespace IPRehab.ViewComponents
                                 thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
                             }
                             break;
+
                     }
                     break;
             }

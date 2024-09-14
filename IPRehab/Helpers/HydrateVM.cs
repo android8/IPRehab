@@ -20,7 +20,7 @@ namespace IPRehab.Helpers
 
                 Section = GetSection(questionDto),
 
-                Required = questionDto.Required,
+                Required = questionDto.Required.HasValue && questionDto.Required.Value == true,
                 QuestionID = questionDto.QuestionID,
 
                 /* turn on key question */

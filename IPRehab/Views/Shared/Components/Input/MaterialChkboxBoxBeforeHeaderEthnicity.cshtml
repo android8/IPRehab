@@ -16,12 +16,12 @@
             <div class="mdc-checkbox">
                 <input disabled type="checkbox"
                        class="mdc-checkbox__native-control persistable"
-                       name="@Model.ViewComponentViewModel.QuestionKey"
-                       id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
-                       required="@(Model.ViewComponentViewModel.Required)"
+                       name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                       id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                       @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                        value="@item.SelectListItem.Value"
                        title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
-                       checked="@(isChecked)"
+                       @(isChecked ? "checked=checked" : null)
                        data-stageid="@(Model.ViewComponentViewModel.StageID)"
                        data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
                        data-questionkey="@(Model.ViewComponentViewModel.QuestionKey)"
@@ -35,7 +35,7 @@
                        data-answersequence="@(originalAnswer?.AnswerSequenceNumber)"
                        data-toggle="tooltip"
                        data-placement="left"
-                       aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")">
+                       aria-labelledby="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")">
 
                 <span asp-validataion-for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"></span>
 
@@ -50,8 +50,8 @@
                 <div class="mdc-checkbox__ripple"></div>
             </div>
 
-            <label for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}")"
-                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_{item.SelectListItem.Value}_label")"
+            <label for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
+                   id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")"
                    aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")">
                 @*strip the code value *@
                 @if (item.SelectListItem.Text.IndexOf(".") >= 0 && item.SelectListItem.Text.IndexOf(".") <= 3)
