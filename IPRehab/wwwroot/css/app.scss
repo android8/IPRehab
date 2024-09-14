@@ -97,8 +97,8 @@
     height: auto !important;
 }
 
-.ui-dialog-titlebar-close{
-    display:none; /*hide dialog upper right close button */
+.ui-dialog-titlebar-close {
+    display: none; /*hide dialog upper right close button */
 }
 
 /*override jquery UI dialog title bar */
@@ -344,6 +344,10 @@ svg {
     color: #6c757d;
 }
 
+svg.bi-caret-left {
+    color: rgba(0, 0, 0, 0.14);
+}
+
 .keyQuestion {
     color: red;
 }
@@ -379,6 +383,8 @@ div.questionKey {
 
 div.answer2 {
     width: 50%;
+    border-left: 1px solid #c8cab7;
+    padding: 0 0 0 10px;
 }
 
 div.answer2date {
@@ -604,17 +610,18 @@ div.answer .nullLabel {
 }
 
 .longTextOption {
+    /*   
     padding: 0 0 0 13px;
     border: 1px solid #ced4da;
     border-top: none;
     border-radius: 0 0 5px 5px;
+    */
     font-weight: 700;
     color: darkblue;
 }
 
 .radioLabel {
     position: relative;
-    top: 4px;
     left: -10px;
     margin-top: 0px;
     padding: 1px 5px;
@@ -623,7 +630,7 @@ div.answer .nullLabel {
     background-color: whitesmoke;
     font-weight: bold;
     font-size: small;
-    border: 1px solid #ced4da;
+    border: 1px solid rgba(0, 0, 0, 0.14);
     border-left: none;
     border-radius: 0 5px 5px 0;
 }
@@ -1138,7 +1145,7 @@ input[type="datetime"], input[type="text"] {
 }
 
 i.score {
-    color: blue;
+    color: red;
     font-weight: bolder;
     animation: fly-in-font .1s;
 }

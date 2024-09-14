@@ -54,9 +54,9 @@
                 </div>
             }
             <select disabled class="browser-default custom-select select2 dropdown persistable"
-                    name="@(Model.ViewComponentViewModel.QuestionKey)"
+                    name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                     id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                    required="@(Model.ViewComponentViewModel.Required)"
+                    @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                     title="@(originalAnswer == null ? "" : $"Answered by {originalAnswer.ByUser}")"
                     data-stageid="@(Model.ViewComponentViewModel.StageID)"
                     data-questionid="@(Model.ViewComponentViewModel.QuestionID)"
@@ -114,7 +114,7 @@
                 </span>
                 <input type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
                        class="mdc-text-field__input numeric-text inputContainer persistable"
-                       name="@(Model.ViewComponentViewModel.QuestionKey)"
+                       name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_Hours")"
                        id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_Hours")"
                        required="@(Model.ViewComponentViewModel.Required)"
                        value="@(originalAnswer == null ? string.Empty : originalAnswer?.Description)"

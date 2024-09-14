@@ -112,15 +112,9 @@ const commandBtnController = (function () {
         }
         else {
             const submitButton = $('#ajaxPost');
-            if (submitButton.length === 0) {
-                //submit doesn't exist on this page
-                //get formaction attribute for this button and navigate away
-                const thisUrl = $thisButton.prop('formAction');
-                location.href = thisUrl;
-            }
-            else {
-                const thisUrl = $thisButton.prop('formAction');
-                location.href = thisUrl;
+            const thisUrl = $thisButton.prop('formAction');
+            location.href = thisUrl;
+            if (submitButton.length !== 0) {
                 //submit exists on this page
                 //if submit is not disabled then the form is dirty
                 //if (!submitButton.is(":disabled")) {

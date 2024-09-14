@@ -41,7 +41,7 @@ namespace IPRehabWebAPI2.Helpers
             //        {
             //            case 1: //only one measure so take First()
             //                {
-            //                    questionDTO.Required = thisMeasures.First().Required;
+            //                    questionDTO.Required = thisMeasures.First().Required.HasValue && thisMeasures.First().Required.Value == true;
             //                    questionDTO.MeasureID = thisMeasures.First().Id;
             //                }
             //                break;
@@ -55,7 +55,7 @@ namespace IPRehabWebAPI2.Helpers
 
             //                    //temporarily take first from the ordered measures until a better way is found
             //                    var thisMeasure = thisMeasures.ToArray()[measureCounter];
-            //                    questionDTO.Required = thisMeasure.Required;
+            //                    questionDTO.Required = thisMeasure.Required.HasValue && thisMeasure.Required.Value == true;
             //                    questionDTO.MeasureID = thisMeasure.Id;
             //                    measureCounter++;
             //                }
@@ -68,7 +68,7 @@ namespace IPRehabWebAPI2.Helpers
 
             if (thisQuestionMeasure != null)
             {
-                questionDTO.Required = thisQuestionMeasure.Required;
+                questionDTO.Required = thisQuestionMeasure.Required.HasValue && thisQuestionMeasure.Required.Value == true;
                 questionDTO.MeasureID = thisQuestionMeasure.Id;
                 if (thisQuestionMeasure.MeasureCodeSetIDFKNavigation != null)
                 {

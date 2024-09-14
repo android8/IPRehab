@@ -227,7 +227,7 @@
                                                             <title>Record key</title>
                                                         </svg>
                                                     }
-                                                    @*required question star icon
+                                                    @*required question star icon*@
                                                     @if (hasRequiredQuestions)
                                                     {
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
@@ -235,7 +235,6 @@
                                                         <title>Answer is required</title>
                                                         </svg>
                                                     }
-                                                    *@
 
                                                     @* has branching rule *@
                                                     <div class="branchingRule" data-target="@($"{thisGroup.SharedQuestionKey}")" title="Branching rule">
@@ -248,23 +247,24 @@
                                         </div>
 
                                         @*cell for adding morebutton
-                                <div class="questionKey" title="question key">
+                                            <div class="questionKey" title="question key">
 
-                                @if (thisGroup.Questions.Any(q => q.MultipleChoices))
-                                {
-                                string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
-                                <div class="mdc-touch-target-wrapper">
-                                <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
-                                <div class="mdc-button__ripple"></div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                                <title>Add more answers</title>
-                                </svg>
-                                <div class="mdc-button__touch"></div>
-                                </button>
-                                </div>
-                                }
-                                </div>*@
+                                            @if (thisGroup.Questions.Any(q => q.MultipleChoices))
+                                            {
+                                            string thisQuestionKey = thisGroup.Questions.FirstOrDefault(x => x.MultipleChoices == true)?.QuestionKey;
+                                            <div class="mdc-touch-target-wrapper">
+                                            <button class="mdc-button mdc-button--touch" title="Add more answers" id="@($"btnMore{thisQuestionKey}")" data-questionkey="@(thisQuestionKey)">
+                                            <div class="mdc-button__ripple"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                                            <title>Add more answers</title>
+                                            </svg>
+                                            <div class="mdc-button__touch"></div>
+                                            </button>
+                                            </div>
+                                            }
+                                            </div>
+                                        *@
 
                                         @* cell for view components *@
                                         @{
@@ -275,15 +275,14 @@
                                         }
 
                                         <div class="@(thisGroup.Questions.Any(q=>q.QuestionKey =="Q43")? "answer2date": "answer2")">
+
                                             @foreach (var q in thisGroup.Questions)
                                             {
                                                 aggregateAfterThis = q.QuestionKey == si.AggregateAfterQuestionKey;
                                                 showoGradTotal = aggregateAfterThis && q.QuestionKey == "GG0170SS";
 
                                                 if (q.QuestionKey + q.MeasureDescription == controlId)
-                                                {
                                                     controlCounter++;
-                                                }
 
                                                 @await Component.InvokeAsync(inputViewComponent, new
                                                     {

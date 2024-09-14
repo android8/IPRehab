@@ -82,7 +82,7 @@ namespace IPRehab.Controllers
                 tmpCounter++;
                 //inside the foreach PatientDTOTreatingSpecialty loop, each episode must have its own episodeCommandBtn and must be new() here
 
-                //ToDo: encrypt the SSN, only when patient has no existing episode
+                //ToDo: encrypt the SSN when patient has no existing episode
 
                 PatientTreatingSpecialtyViewModel thisPatVM = new();
                 thisPatVM.Patient = pat;

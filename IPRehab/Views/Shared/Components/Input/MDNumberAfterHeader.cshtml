@@ -27,9 +27,9 @@
             </span>
             <input disabled type="number" maxlength="3" min="0" max="100" placeholder="enter a number"
                    class="mdc-text-field__input numeric-text inputContainer persistable"
-                   name="@(Model.ViewComponentViewModel.QuestionKey)"
+                   name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                    id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
+                   @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                    value="@(originalAnswer?.Description)"
                    title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                    data-stageid="@(Model.ViewComponentViewModel.StageID)"

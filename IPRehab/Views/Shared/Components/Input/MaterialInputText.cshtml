@@ -29,7 +29,7 @@
                    class="mdc-text-field__input persistable"
                    name="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                    id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
-                   required="@(Model.ViewComponentViewModel.Required)"
+                   @(Model.ViewComponentViewModel.Required ? "required=required" : null)
                    value="@(originalAnswer?.Description)"
                    title="@(originalAnswer == null ? string.Empty : $"Answered by {originalAnswer.ByUser}")"
                    data-stageid="@(Model.ViewComponentViewModel.StageID)"

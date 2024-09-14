@@ -5,7 +5,7 @@ export interface ICommonUtility {
     isEmpty($this: any): boolean;
     isTheSame($this: any, oldValue: string, currentValue: string): boolean;
     getCRUD($this: any, oldValue: string, currentValue: string): EnumDbCommandType;
-    getControlValue($this: any): string;
+    getControlCurrentValue($this: any): string;
     resetControlValue($this: any, newValue: string);
     getTextPixels(someText: string, font: any);
     breakLongSentence(thisSelectElement);
