@@ -6,6 +6,7 @@ export interface ICommonUtility {
     isTheSame($this: any, oldValue: string, currentValue: string): boolean;
     getCRUD($this: any, oldValue: string, currentValue: string): EnumDbCommandType;
     getControlCurrentValue($this: any): string;
+    getControlScore(thisControl)
     resetControlValue($this: any, newValue: string);
     getTextPixels(someText: string, font: any);
     breakLongSentence(thisSelectElement);
