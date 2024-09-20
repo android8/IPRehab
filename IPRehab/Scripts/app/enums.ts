@@ -12,5 +12,6 @@ export enum EnumChangeEventArg {
 export enum EnumDbCommandType {
     Create,
     Delete,
-    Update
+    Update,
+    Unchanged
 }

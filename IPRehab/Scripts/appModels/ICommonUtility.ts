@@ -3,7 +3,6 @@ export interface ICommonUtility {
     dialogOptions(): any;
     isDate(aDate: Date): boolean;
     isEmpty($this: any): boolean;
-    isTheSame($this: any, oldValue: string, currentValue: string): boolean;
     getCRUD($this: any, oldValue: string, currentValue: string): EnumDbCommandType;
     getControlCurrentValue($this: any): string;
     getControlScore(thisControl)

@@ -14,26 +14,6 @@ $(function () {
     const formScope = $("form#userAnswerForm");
     const Q12 = $('.persistable[id=Q12]', formScope);
     const Q23 = $('.persistable[id=Q23]', formScope);
-    //const admitDate: Date = new Date(Q12.val());
-    //const onsetDate: Date = new Date(Q23.val());
-    //const minDate = new Date('2020-01-01 00:00:00');
-    //const Q12_or_Q23_is_empty: boolean = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-    //const onset_is_later_than_admit: boolean = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
-    $('.persistable:not(Q12)').each(function () {
-        $(this).on('change', function (e) {
-            const admitDate = new Date(Q12.val());
-            const onsetDate = new Date(Q23.val());
-            const minDate = new Date('2020-01-01 00:00:00');
-            const Q12_or_Q23_is_empty = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
-            const onset_is_later_than_admit = onsetDate < minDate || admitDate < minDate || admitDate < onsetDate;
-            const thisPersistable = $(this);
-            if (!Q12_or_Q23_is_empty && !commonUtility.isTheSame(thisPersistable, thisPersistable.prop('oldvalue'), thisPersistable.val())) {
-                console.log('Q12 and Q23 are not empty, and ' + thisPersistable.prop('id') + ' is changed.  Unlock SAVE button');
-                $('#ajaxPost').prop('disabled', false);
-                return;
-            }
-        });
-    });
     function BranchingRuleDialog(thisRule) {
         let formDialog = $("#dialog")
             .html(thisRule)
@@ -76,32 +56,6 @@ $(function () {
     //        }
     //    });
     //})();
-    function scrollTo1(elementId) {
-        console.log('branching::: scrollTo() elementId = ', elementId);
-        const thisElement = $('#' + elementId, formScope);
-        let scrollAmount = 0;
-        if (thisElement.length > 0) {
-            //scrollAmount = thisElement.prop('offsetTop');
-            scrollAmount = (thisElement.offset() || { "top": NaN }).top;
-            console.log('scroll to ' + elementId + ', amount ' + scrollAmount, thisElement);
-            $('html,body').stop().animate({ scrollTop: scrollAmount }, 'fast');
-            thisElement.trigger('focus');
-        }
-        else {
-            console.log(elementId + " doesn't exist in the current context, can not scroll to that element");
-        }
-    }
-    function scrollTo(elementId) {
-        const element = document.querySelector('#' + elementId);
-        // Get the size and position of our element in the viewport
-        const rect = element.getBoundingClientRect();
-        // The top offset of our element is the top position of the element in the viewport plus the amount the body is scrolled
-        let offsetTop = rect.top + document.body.scrollTop;
-        console.log('scroll to ' + elementId + ' with amount ' + offsetTop);
-        // Now we can scroll the window to this position
-        window.scrollTo(0, offsetTop - 15);
-        document.getElementById(elementId).focus(); /* use focus() because this is not a jquery element */
-    }
     /* event handler */
     function Q23_blank_then_Lock_All(eventType, byRef) {
         console.log('Q23 is fired by ' + eventType + ' with seenTheDalog = ' + byRef.seenTheDialog);
@@ -117,7 +71,6 @@ $(function () {
         }
         if (Q12_or_Q23_is_empty || (!Q12_or_Q23_is_empty && onset_is_later_than_admit)) {
             console.log('Q12 or Q23 is empty, or onset day is later than admit date, lock all other questions.');
-            $('#ajaxPost').prop('disabled', true);
             if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {
                 //with warning dialog
                 console.log('with warning dialog eventType = ' + eventType + 'seenTheDialog = ' + byRef.seenTheDialog);
@@ -151,10 +104,9 @@ $(function () {
                 });
             }
             else { //without warning dialog
-                console.log('lock all other persistables');
+                console.log('lock all other persistables', otherPersistables);
                 otherPersistables.each(function () {
                     const thisPersistable = $(this);
-                    console.log(thisPersistable.prop('id') + ' locked triggered by Q23 because key questions violation.');
                     thisPersistable.prop('disabled', true);
                 });
             }
@@ -170,13 +122,12 @@ $(function () {
                 + ', .persistable[id ^= GG0170N]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170O]:not([id *= Discharge_Goal])'
                 + ', .persistable[id ^= GG0170R]:not([id *= Discharge_Goal],[id ^= GG0170RR])'
                 + ', [id ^= Complete]', formScope);
-            const notControlByTriggers = $('.persistable, .calendarReset', formScope).not(controledByTriggers).not(Q12).not('.summary header');
+            const notControlledByTriggers = $('.persistable, .calendarReset', formScope).not(controledByTriggers).not(Q12).not('.summary header');
             //enable handlerless controls but don't raise change event to prevent infinite loop
-            console.log('enable ' + notControlByTriggers.length + ' controls on load.');
-            notControlByTriggers.each(function () {
+            console.log('enable ' + notControlledByTriggers.length + ' controls on load.', notControlledByTriggers);
+            notControlledByTriggers.each(function () {
                 const thisControl = $(this);
                 thisControl.prop('disabled', false);
-                console.log(thisControl.prop('id') + ' disabled = ' + thisControl.prop('disabled'));
             });
             //not('[id^=Q12]', formScope) so it doesn't raise change to cause infinite loop
             //only raise change for the following to unlock or remain lock of the respective fields
@@ -831,11 +782,12 @@ $(function () {
                 if (isDisabled) {
                     commonUtility.resetControlValue(thisDropdown);
                     thisDropdown.siblings('.longTextOption, .score').text('');
+                    thisDropdown.removeClass('changedFlag Create Delete Update');
                 }
             });
         }
         const GG0170J = $('select.persistable[id^=GG0170J][id*=' + measure + ']');
-        const intGG0170I = +commonUtility.getControlCurrentValue(thisI); //+($('option:selected', thisI).data('score'));
+        const intGG0170I = +commonUtility.getControlScore(thisI); //+($('option:selected', thisI).data('score'));
         switch (true) {
             case (intGG0170I > 0 && intGG0170I < 7): {
                 /* unlock and clear J K L, skip to J */
@@ -956,7 +908,7 @@ $(function () {
                             if (P.length > 0) {
                                 P.prop('disabled', false);
                                 P.siblings('.longTextOption ,.score').text('');
-                                //scrollTo(P.prop('id'));
+                                //commonUtility.scrollTo(P.prop('id'));
                             }
                             break;
                         case (M_score > 0 && M_score < 7):
@@ -968,7 +920,7 @@ $(function () {
                             if (N.length > 0) {
                                 N.prop('disabled', false);
                                 N.siblings('.longTextOption ,.score').text('');
-                                //scrollTo(N.prop('id'));
+                                //commonUtility.scrollTo(N.prop('id'));
                             }
                             break;
                         default:
@@ -992,7 +944,7 @@ $(function () {
                             }
                             if (P.length > 0) {
                                 P.prop('disabled', false).siblings('.longTextOption ,.score').text('');
-                                //scrollTo(P.prop('id'));
+                                //commonUtility.scrollTo(P.prop('id'));
                             }
                             break;
                         case (N_score > 0 && N_score < 7):
@@ -1000,7 +952,7 @@ $(function () {
                             if (O.length > 0) {
                                 O.prop('disabled', false).siblings('.longTextOption ,.score').text('');
                                 ;
-                                //scrollTo(O.prop('id'));
+                                //commonUtility.scrollTo(O.prop('id'));
                             }
                             break;
                         default:
@@ -1058,8 +1010,8 @@ $(function () {
     })();
     (function GG0170MRules() {
         /* add rule help */
-        const GG0170M_and_NruleTriggers = $('.branchingRule[data-target=GG0170M]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170N]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170O]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170P]:not([id*=Discharge_Goal])', formScope);
-        const GG0170M_and_NruleText = 'When GG0170M Admission Performance or Discharge Performance is between 1 and 6, unlock only the corresponding measure in M.  If value is 7 or greater, N and O will be reset and locked.';
+        const GG0170M_and_NruleTriggers = $('.branchingRule[data-target=GG0170M]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170N]:not([id*=Discharge_Goal]), .branchingRule[data-target=GG0170O]:not([id*=Discharge_Goal])', formScope);
+        const GG0170M_and_NruleText = 'When GG0170M Admission Performance or Discharge Performance is between 1 and 6, unlock only the matching N and O.  If M is unknown or 7 or greater, reset and lock matching N and O.';
         GG0170M_and_NruleTriggers.each(function () {
             let thisTrigger = $(this);
             thisTrigger.prop('title', GG0170M_and_NruleText).show()
@@ -1128,7 +1080,7 @@ $(function () {
         });
         if (eventType === EnumChangeEventArg.Change) {
             console.log('scroll to ' + J1750_yes.prop('id'));
-            //scrollTo(J1750_yes.prop('id'));
+            //commonUtility.scrollTo(J1750_yes.prop('id'));
             //J1750_yes.parent('focus');
         }
         console.log('------ done handling J0510 ' + eventType + '------');

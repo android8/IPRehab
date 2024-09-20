@@ -40,111 +40,186 @@ export class Utility {
     isEmpty($this) {
         //throw new Error("Method not implemented.");
         if (typeof $this.val() === 'undefined' || $this.val() === '' || $this.val() === undefined || $this.val() === null) {
-            console.log($this.prop('id') + ' is empty');
             return true;
         }
         else {
-            console.log($this.prop('id') + ' is not empty');
             return false;
         }
     }
-    isTheSame($thisPersistable, oldValue, currentValue) {
-        //throw new Error("Method not implemented.");
+    getCRUD($thisPersistable, oldAnswer, newAnswer) {
         const thisControlType = $thisPersistable.prop('type');
-        const thisControlID = $thisPersistable.prop('id');
-        let isChanged = false;
-        let equalMsg = 'unchanged';
-        //!undefined or !NaN yield true
+        const noOld = +oldAnswer <= 0 || oldAnswer === undefined || oldAnswer === null || oldAnswer === '';
+        const hadOld = +oldAnswer > 0;
+        const noNew = +newAnswer <= 0 || newAnswer === undefined || newAnswer === null || newAnswer === '';
+        const hasNew = +newAnswer > 0;
+        ;
+        console.log('CRUD for ' + $thisPersistable.prop('id') + '(' + thisControlType + ')');
         switch (thisControlType) {
             case "radio":
-            case "checkbox":
-                {
-                    const isChecked = $thisPersistable.is(':checked');
-                    switch (true) {
-                        case currentValue == oldValue && !isChecked:
-                        case currentValue != oldValue && isChecked:
-                            isChanged = true;
-                            equalMsg = 'changed';
-                            break;
-                        case currentValue == oldValue && isChecked:
-                        case currentValue != oldValue && !isChecked:
-                            isChanged = false;
-                            break;
-                    }
-                }
-                break;
-        }
-        equalMsg = thisControlType + ' ' + thisControlID + ' ' + equalMsg;
-        console.log(equalMsg);
-        return isChanged;
-    }
-    getCRUD($thisPersistable, oldValue, currentValue) {
-        const thisControlType = $thisPersistable.prop('type');
-        const oldValueIsEmpty = oldValue === undefined || oldValue === null || oldValue === '';
-        switch (thisControlType) {
-            case "radio":
-            case "checkbox":
+            case "checkbox": {
                 const isChecked = $thisPersistable.is(':checked');
-                switch (true) {
-                    case currentValue === oldValue && !oldValueIsEmpty && !isChecked:
+                if (hadOld && hasNew) {
+                    if (+oldAnswer !== +newAnswer) {
+                        if (isChecked) {
+                            console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Update]);
+                            return EnumDbCommandType.Update;
+                        }
+                        if (!isChecked) {
+                            console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                            return EnumDbCommandType.Unchanged;
+                        }
+                    }
+                    if (+oldAnswer === +newAnswer) {
+                        if (isChecked) {
+                            console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                            return EnumDbCommandType.Unchanged;
+                        }
+                        if (!isChecked) {
+                            if (thisControlType === "checkbox") {
+                                console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Delete]);
+                                return EnumDbCommandType.Delete;
+                            }
+                            if (thisControlType === "radio") {
+                                console.log('same old answer (' + oldAnswer + ') and new radio answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                                return EnumDbCommandType.Unchanged; //do not delete so that the mutually exexclusive radio will update using the same answer ID
+                            }
+                        }
+                    }
+                }
+                if (noOld && noNew) {
+                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged; //do nothing
+                }
+                if (noOld && hasNew) {
+                    if (isChecked) {
+                        console.log('no old answer ' + ' but new CHECKED answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                        return EnumDbCommandType.Create; //insert new answer
+                    }
+                    if (!isChecked) {
+                        console.log('no old answer and new but UNCHECKED answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                        return EnumDbCommandType.Unchanged; //do nothing
+                    }
+                }
+                if (hadOld && noNew) {
+                    console.log('old answer (' + oldAnswer + ') but new answer is blank', EnumDbCommandType.Delete);
+                    return EnumDbCommandType.Delete; //delete old answer  
+                }
+                console.log('other');
+                return EnumDbCommandType.Unchanged;
+            }
+            case "select-one": {
+                if (hadOld && hasNew) {
+                    if (+newAnswer === +oldAnswer) {
+                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                        return EnumDbCommandType.Unchanged;
+                    }
+                    if (+newAnswer !== +oldAnswer) {
+                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
                         return EnumDbCommandType.Update;
-                    case currentValue !== oldValue && isChecked: {
-                        if (oldValueIsEmpty)
-                            return EnumDbCommandType.Create;
-                        else
-                            return EnumDbCommandType.Update;
                     }
                 }
-                break;
-            case "select-one":
-                if (currentValue !== oldValue) {
-                    if (oldValueIsEmpty) {
-                        if (currentValue !== '-1')
-                            return EnumDbCommandType.Create;
+                if (noOld && noNew) {
+                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged;
+                }
+                if (noOld && hasNew) {
+                    console.log('no old answer and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+                if (hadOld && noNew) {
+                    console.log('old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    return EnumDbCommandType.Delete;
+                }
+                console.log('other');
+                return EnumDbCommandType.Unchanged;
+            }
+            case "date": {
+                const newDateString = newAnswer;
+                const oldDateString = oldAnswer;
+                let newConvertedDate, oldConvertedDate;
+                if (hadOld && hasNew) {
+                    //compare date type
+                    newConvertedDate = new Date(newDateString);
+                    oldConvertedDate = new Date(oldDateString);
+                    if (newConvertedDate !== oldConvertedDate) {
+                        console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                        return EnumDbCommandType.Update;
                     }
                     else {
-                        if (currentValue !== '-1')
-                            return EnumDbCommandType.Delete;
-                        else
-                            return EnumDbCommandType.Update;
+                        console.log('same old date (' + oldConvertedDate + ') and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                        return EnumDbCommandType.Unchanged;
                     }
                 }
-                break;
-            case "text":
-            case "date":
-            case "textarea":
-            case 'number':
-                if (currentValue !== oldValue) {
-                    if (oldValueIsEmpty)
-                        return EnumDbCommandType.Create;
+                //compare date string
+                if (noOld && noNew) {
+                    console.log('both old date string and new date string are empty', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged;
+                }
+                if (noOld && hasNew) {
+                    console.log('no old date string but has new date string (' + newDateString + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+                if (hadOld && noNew) {
+                    console.log('old date string (' + oldDateString + ') but no new date string', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    return EnumDbCommandType.Delete;
+                }
+                console.log('other');
+                return EnumDbCommandType.Unchanged;
+            }
+            case 'number': {
+                if (hadOld && hasNew) {
+                    if (+newAnswer !== +oldAnswer) {
+                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                        return EnumDbCommandType.Update;
+                    }
                     else {
-                        if (currentValue === '')
-                            return EnumDbCommandType.Delete;
-                        else
-                            return EnumDbCommandType.Update;
+                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                        return EnumDbCommandType.Unchanged;
                     }
                 }
-                break;
-            default:
-                {
-                    if (oldValue != currentValue) {
-                        if (oldValue === null || oldValue === null)
-                            return EnumDbCommandType.Create;
-                        else
-                            return EnumDbCommandType.Update;
+                if (noOld && noNew) {
+                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged;
+                }
+                if (noOld && hasNew) {
+                    console.log('no old answer and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+                if (hadOld && noNew) {
+                    console.log('old answer (' + oldAnswer + ') no new answer', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    return EnumDbCommandType.Delete;
+                }
+                console.log('other');
+                return EnumDbCommandType.Unchanged;
+            }
+            //case "text":
+            //case "textarea":
+            default: {
+                if (hadOld && hasNew) {
+                    if (oldAnswer === newAnswer) {
+                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                        return EnumDbCommandType.Unchanged;
+                    }
+                    if (oldAnswer !== newAnswer) {
+                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                        return EnumDbCommandType.Update;
                     }
                 }
-        }
-        switch (true) {
-            case (currentValue && !oldValue):
-                console.log('(C)reate. current value = ' + currentValue + ', old value = ' + oldValue);
-                return EnumDbCommandType.Create;
-            case (oldValue && !currentValue):
-                console.log('(D)elete. current value = ' + currentValue + ', old value = ' + oldValue);
-                return EnumDbCommandType.Delete;
-            case ((currentValue && oldValue) && (currentValue !== oldValue)):
-                console.log('(U)pdate. current value = ' + currentValue + ', old value = ' + oldValue);
-                return EnumDbCommandType.Update;
+                if (noOld && noNew) {
+                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged;
+                }
+                if (noOld && hasNew) {
+                    console.log('no old answer and has new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                    return EnumDbCommandType.Unchanged;
+                }
+                if (hadOld && noNew) {
+                    console.log('old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    return EnumDbCommandType.Delete;
+                }
+                console.log('other');
+                return EnumDbCommandType.Unchanged;
+            }
         }
     }
     getControlCurrentValue($thisControl) {
@@ -153,8 +228,11 @@ export class Utility {
         const thisControlID = $thisControl.prop('id');
         let thisValue = "";
         switch (thisControlType) {
-            case "radio":
-            case "checkbox":
+            /* these type of control values are populated from answer description column in the WebAPI, so just get .val() */
+            case 'text':
+            case 'date':
+            case 'textarea':
+            case 'number':
                 thisValue = $thisControl.val();
                 break;
             default:
@@ -175,18 +253,18 @@ export class Utility {
             case "radio":
             case "checkbox": {
                 //radio and checkbox val() returns the value regardless checked or not so use prop('checked') to ensure the checked value
-                hasDataScore = $('[data-score]', thisControl) !== undefined;
+                hasDataScore = $('[data-score]', thisControl).length > 0;
                 if (hasDataScore && thisControl.is(':checked'))
                     thisScore = thisControl.data('score');
                 break;
             }
             case "select-one":
-                hasDataScore = $('option:selected[data-score]', thisControl) !== undefined;
+                hasDataScore = $('option:selected[data-score]', thisControl).length > 0;
                 if (hasDataScore)
                     thisScore = $('option:selected[data-score]', thisControl).data('score');
                 break;
             default:
-                hasDataScore = $('[data-score]', thisControl).length !== 0;
+                hasDataScore = $('[data-score]', thisControl).length > 0;
                 if (hasDataScore)
                     thisScore = thisControl.data('score');
                 break;
@@ -272,13 +350,23 @@ export class Utility {
         //    });
         //  }
     }
-    scrollTo(thisElement) {
-        let scrollAmount = thisElement.prop('offsetTop') + 15;
-        if (thisElement.prop('id').indexOf('Q12') !== -1)
-            scrollAmount = 0; //scroll up further by 15
-        console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
-        $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
-        thisElement.trigger('focus');
+    //public scrollTo(thisElement: any) {
+    //    let scrollAmount: number = thisElement.prop('offsetTop') + 15;
+    //    if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0; //scroll up further by 15
+    //    console.log('scroll to ' + thisElement.prop('id') + ', amount ' + scrollAmount, thisElement);
+    //    $('html,body').animate({ scrollTop: scrollAmount }, 'fast');
+    //    thisElement.trigger('focus');
+    //}
+    scrollTo(elementId) {
+        const element = document.querySelector('#' + elementId);
+        // Get the size and position of our element in the viewport
+        const rect = element.getBoundingClientRect();
+        // The top offset of our element is the top position of the element in the viewport plus the amount the body is scrolled
+        let offsetTop = rect.top + document.body.scrollTop;
+        console.log('scroll to ' + elementId + ' with amount ' + offsetTop);
+        // Now we can scroll the window to this position
+        window.scrollTo(0, offsetTop - 15);
+        document.getElementById(elementId).focus(); /* use focus() because this is not a jquery element */
     }
 }
 //# sourceMappingURL=utility.js.map

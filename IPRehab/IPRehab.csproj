@@ -64,6 +64,7 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="Scripts\tsconfig - Copy.json" />
     <Content Remove="Views\Question\Edit - Copy.cshtml" />
     <Content Remove="Views\Question\Edit1.cshtml" />
     <Content Remove="Views\Question\Edit2.cshtml" />

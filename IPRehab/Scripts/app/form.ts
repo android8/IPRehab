@@ -6,30 +6,16 @@ import { EpisodeScore } from "./episodeScore.js";
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 
 const commonUtility: Utility = new Utility();
-const formScope: any = $("form#userAnswerForm");
 
 /****************************************************************************
  * javaScript closure
  ***************************************************************************/
 const formController = (function () {
-    /***************************************************************************
-     * public functions exposing the private functions to outside of the closure
-    ***************************************************************************/
-    return {
-        'scrollToAnchor': scrollToAnchor,
-        'breakLongSentence': breakLongSentence,
-        'submitTheForm': submitTheForm,
-        'validate': validateForm,
-        'selfCareScore': selfCareScore,
-        'mobilityScore': mobilityScore,
-        'updateScore': updateScore,
-        'grandTotal': grandTotal
-    }
+    const formScope: any = $("form#userAnswerForm");
     const Q12: any = $('.persistable[id=Q12]', formScope);
     const Q23: any = $('.persistable[id=Q23]', formScope);
-    const onsetDate: Date = new Date(Q23.val().toString());
-    const admissionDate: Date = new Date(Q12.val().toString());
 
+    /* initialize controller variables */
     function scrollTo(thisElement: any) {
         let scrollAmount: number = thisElement.prop('offsetTop') + 15; //scroll up further by 15px
         if (thisElement.prop('id').indexOf('Q12') !== -1) scrollAmount = 0;
@@ -129,6 +115,8 @@ const formController = (function () {
                         dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
                     }
 
+                    $('.persistable').removeClass('changedFlag Create Delete Update')   //clean up dynamically added classes
+
                     dialogOptions.title = 'Success';
                     $('#dialog')
                         .text('Data is saved.' + dialogText)
@@ -227,46 +215,46 @@ const formController = (function () {
         persistables.each(function () {
             answerCounter++;
 
-            const $thisPersistable: any = $(this);
-            const thisPersistableID: string = $thisPersistable.prop('id');
+            const thisPersistable: any = $(this);
+            const thisPersistableID: string = thisPersistable.prop('id');
 
             if (thisPersistableID == null || thisPersistableID == undefined || thisPersistableID == '') {
-                console.log('element has no id', $thisPersistable);
+                console.log('element has no id', thisPersistable);
                 return;
             }
 
             const thisAnswer: UserAnswer = new UserAnswer();
-            const questionKey: string = $thisPersistable.data('questionkey');   //get value from data- attribute
-            const oldValue: string = $thisPersistable.data('oldvalue')?.toString();
+            const questionKey: string = thisPersistable.data('questionkey');   //get value from data- attribute
+            const oldAnswer: string = thisPersistable.data('oldvalue');
 
-            //must use 'simple' to get straight val(), otherwise, the getControlCurrentValue() use more elaborated way to get the control value
-            let currentValue: string = commonUtility.getControlCurrentValue($thisPersistable);
+            const currentAnswer: string = commonUtility.getControlCurrentValue(thisPersistable);
+            const CRUD: EnumDbCommandType = commonUtility.getCRUD(thisPersistable, oldAnswer, currentAnswer);
+            console.log('CRUD = ' + EnumDbCommandType[CRUD] + '. ' + thisPersistable.prop('id') + ' : oldAnswer(' + oldAnswer + '), newAnswer(' + currentAnswer + ')');
 
-            if (commonUtility.isTheSame($thisPersistable, oldValue, currentValue)) {
-                console.log($thisPersistable.prop('id') + ' unchanged: ' + oldValue + ',' + currentValue);
+            if (CRUD === EnumDbCommandType.Unchanged) {
                 return;
             }
 
             console.log('--------- old and new values not equal ---------');
-            const controlType: string = $thisPersistable.prop('type');
-            const questionId: number = +$thisPersistable.data('questionid');
-            const answerId: string = $thisPersistable.data('answerid');
-            const measureId: number = +$thisPersistable.data('measureid');
-            const measureDescription: string = $thisPersistable.data('measuredescription');
-            const codesetDescription: string = $thisPersistable.data('codesetdescription');
-            const answerSequence: number = +$thisPersistable.data('answersequence');
-            const AnswerByUserID: string = $thisPersistable.data('userid');
+            const controlType: string = thisPersistable.prop('type');
+            const questionId: number = +thisPersistable.data('questionid');
+            const answerId: string = thisPersistable.data('answerid');
+            const measureId: number = +thisPersistable.data('measureid');
+            const measureDescription: string = thisPersistable.data('measuredescription');
+            const codesetDescription: string = thisPersistable.data('codesetdescription');
+            const answerSequence: number = +thisPersistable.data('answersequence');
+            const AnswerByUserID: string = thisPersistable.data('userid');
 
             thisAnswer.PatientName = patientName;
             thisAnswer.PatientID = patientID;
 
             thisAnswer.EpisodeID = episodeID;
-            thisAnswer.OnsetDate = onsetDate;
-            thisAnswer.AdmissionDate = admissionDate;
+
+            thisAnswer.OnsetDate = new Date(Q23.val());;
+            thisAnswer.AdmissionDate = new Date(Q12.val());
             thisAnswer.QuestionID = questionId;
             thisAnswer.QuestionKey = questionKey;
 
-            //possible problem with stage id or measure id
             thisAnswer.MeasureID = measureId;
             thisAnswer.MeasureName = measureDescription;
 
@@ -283,15 +271,14 @@ const formController = (function () {
                 case 'date':
                 case 'textarea':
                 case 'number':
-                    /* store in the description the free text because these nnput types have the same codeset id */
-                    thisAnswer.AnswerCodeSetID = +$thisPersistable.data('codesetid');
-                    /* AnswerCodeSetID and OldAnswerCodeSetID don't change for these control types */
-                    thisAnswer.OldAnswerCodeSetID = +$thisPersistable.data('codesetid');;
-                    thisAnswer.Description = currentValue;
+                    /* these input types have the codeset id is always 92. */
+                    thisAnswer.AnswerCodeSetID = +thisPersistable.data('codesetid');
+                    thisAnswer.OldAnswerCodeSetID = +thisPersistable.data('codesetid');;
+                    thisAnswer.Description = currentAnswer; /* The current answer value is from answer desription column pre-populated in the WebAPI */
                     break;
-                default: /* dropdown, radio, checkbox */
-                    thisAnswer.AnswerCodeSetID = +currentValue;
-                    thisAnswer.OldAnswerCodeSetID = +oldValue;
+                default: /* dropdown, radio, checkbox current value is the the code set ID*/
+                    thisAnswer.AnswerCodeSetID = +currentAnswer;
+                    thisAnswer.OldAnswerCodeSetID = +oldAnswer;
                     break;
             }
 
@@ -299,21 +286,24 @@ const formController = (function () {
             if (/GG0130/i.test(thisPersistableID) || /GG0170/i.test(thisPersistableID))   //regex
             {
                 const thisAnswerScoreElement: any = $("i[id*=" + thisPersistableID + "]");
-                let thisAnswerScore: number = +commonUtility.getControlCurrentValue(thisAnswerScoreElement);    //parseInt(thisAnswerScoreElement.data('score'));
-                thisAnswer.Score = thisAnswerScore;
+                if (thisAnswerScoreElement.length > 0) {
+                    let thisAnswerScore: number = +commonUtility.getControlScore(thisAnswerScoreElement);    //parseInt(thisAnswerScoreElement.data('score'));
+                    thisAnswer.Score = thisAnswerScore;
+                }
             }
 
-            console.log('(' + answerCounter + ') ' + questionKey, thisAnswer);
-            const CRUD: EnumDbCommandType = commonUtility.getCRUD($thisPersistable, oldValue, currentValue);
             switch (CRUD) {
                 case EnumDbCommandType.Create:
+                    console.log('Insert (' + thisPersistableID + ')', thisAnswer);
                     insertAnswers.push(thisAnswer);
                     break;
                 case EnumDbCommandType.Delete:
+                    console.log('Delete (' + thisPersistableID + ')', thisAnswer);
                     thisAnswer.AnswerID = +answerId;
                     deleteAnswers.push(thisAnswer);
                     break;
                 case EnumDbCommandType.Update:
+                    console.log('Update (' + thisPersistableID + ')', thisAnswer);
                     thisAnswer.AnswerID = +answerId;
                     updateAnswers.push(thisAnswer);
                     break;
@@ -635,6 +625,77 @@ const formController = (function () {
             $('#slidingAggregator #grand_total').text(grandTotal);
     }
 
+    /* private function */
+    function addMoreDate(stage: string) {
+        console.log('branching::: inside of AddMore');
+        const addMoreBtns = $('button[id^=btnMore]');
+        addMoreBtns.on('click', function () {
+            const thisMoreBtn = $(this);
+            const questionKey: string = thisMoreBtn.data('questionkey');
+            const lastInputIdx: number = $('.persistable[id^=' + questionKey + '][id*=' + stage + ']', formScope).length - 1;
+            const lastInputDate: any = $('.persistable[id^=' + questionKey + '][id*=' + stage + '_' + lastInputIdx + ']', formScope);
+            const dateClone: any = lastInputDate.clone();
+            //commonUtility.resetControlValue(dateClone);
+            dateClone.val('').trigger('focus');
+            lastInputDate.append(dateClone);
+        });
+    }
+
+    /* private function */
+    function clear_long_text_and_score() {
+        const longTextOptions: any = $('.longTextOption');
+        longTextOptions.each(function () {
+            const thisLongText: any = $(this);
+            const siblingDropdown: any = thisLongText.prev('select')
+            const siblingScore: any = thisLongText.next('i.score');
+            if (+siblingDropdown.val() === -1) {
+                thisLongText.text('');
+                siblingScore.text('');
+            }
+        });
+    }
+
+    function changeCssClassIfOldAndNewValuesAreDifferent() {
+
+        $('input.persistable, select.persistable').not(Q12).each(function () {
+            const thisPersistable: any = $(this);
+            //don't use on(change) to add the class because it is triggered by Q23 change chain on load 
+            thisPersistable.on('change', function () {
+                const Q12_and_Q23_is_not_empty: boolean = !(commonUtility.isEmpty(Q12) && commonUtility.isEmpty(Q23));
+                const currentAnswer: any = commonUtility.getControlCurrentValue(thisPersistable);
+                const oldAnswer: any = thisPersistable.data('oldvalue');
+                const changeType: EnumDbCommandType = commonUtility.getCRUD(thisPersistable, oldAnswer, currentAnswer);
+                const admitDate: Date = new Date(commonUtility.getControlCurrentValue(Q12));
+                const onsetDate: Date = new Date(commonUtility.getControlCurrentValue(Q23));
+                const minDate = new Date('2020-01-01 00:00:00');
+                const is_onset_on_or_later_than_admit: boolean = onsetDate > minDate || admitDate > minDate || admitDate >= onsetDate;
+
+                console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
+                console.log('is_onset_on_or_later_than_admit = ' + is_onset_on_or_later_than_admit);
+                console.log(thisPersistable.prop('id') + ' changeType = ' + EnumDbCommandType[changeType]);
+
+                //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
+                if (changeType !== EnumDbCommandType.Unchanged && changeType !== undefined) {
+                    //const deltaSVG = '<span class="changedFlag">' +
+                    //    '<svg xmlns="http://www.w3.org/2000/svg" viewBox = "0 0 512 512">' +
+                    //    '<!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->' +
+                    //    '<path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" /> </svg>' +
+                    //    '</span>'
+                    //thisPersistable.parent().prepend(deltaSVG);
+                    thisPersistable.removeClass('changedFlag ' + EnumDbCommandType[changeType]);     //remove both class
+                    thisPersistable.addClass('changedFlag ' + EnumDbCommandType[changeType]);
+                    console.log('enable save button by ' + thisPersistable.prop('id'));
+                    $('#ajaxPost').prop('disabled', false);
+                }
+                else {
+                    thisPersistable.removeClass('changedFlag ' + EnumDbCommandType[changeType]);     //remove both class
+                    if ($('.changedFlag').length === 0)
+                        $('#ajaxPost').prop('disabled', true);
+                }
+            });
+        });
+    }
+
     /* internal function */
     //function Score_GG0170AtoP_Performance_old(): number {
     //  let GG0170_AtoP_Performance = 0;
@@ -826,12 +887,28 @@ const formController = (function () {
     //  return R_Performance + S_Performance;
     //}
 
-})();
+    /***************************************************************************
+     * public functions exposing the private functions to outside of the closure
+    ***************************************************************************/
+    return {
+        'scrollToAnchor': scrollToAnchor,
+        'breakLongSentence': breakLongSentence,
+        'submitTheForm': submitTheForm,
+        'validate': validateForm,
+        'selfCareScore': selfCareScore,
+        'mobilityScore': mobilityScore,
+        'updateScore': updateScore,
+        'grandTotal': grandTotal,
+        'addMoreDate': addMoreDate,
+        'clear_long_text_and_score': clear_long_text_and_score,
+        'changeCssClassIfOldAndNewValuesAreDifferent': changeCssClassIfOldAndNewValuesAreDifferent
+    };
+})(/* optional parameters go here */);
 
 /******************************* end of closure ****************************/
 
 //self execution function
-$(function () {
+(function () {
     $('input[type=date]').each(function () {
         const thisDate = $(this);
         thisDate.on('change', function () {
@@ -839,6 +916,7 @@ $(function () {
                 const thisDateReset = $('button.calendarReset[data-target=' + thisDate.prop('id') + ']');
                 if (thisDateReset.length !== 0) {
                     thisDateReset.prop('disabled', false);
+                    thisDateReset.removeClass('changedFlag Create Update Delete');     //remove both class
                 }
             }
         });
@@ -987,33 +1065,8 @@ $(function () {
     /* grand total on load */
     formController.grandTotal();
 
+    formController.clear_long_text_and_score();
 
-    /* event handler */
-    function AddMore(stage: string) {
-        console.log('branching::: inside of AddMore');
-        const addMoreBtns = $('button[id^=btnMore]');
-        addMoreBtns.on('click', function () {
-            const thisMoreBtn = $(this);
-            const questionKey: string = thisMoreBtn.data('questionkey');
-            const lastInputIdx: number = $('.persistable[id^=' + questionKey + '][id*=' + stage + ']', formScope).length - 1;
-            const lastInputDate: any = $('.persistable[id^=' + questionKey + '][id*=' + stage + '_' + lastInputIdx + ']', formScope);
-            const dateClone: any = lastInputDate.clone();
-            //commonUtility.resetControlValue(dateClone);
-            dateClone.val('').trigger('focus');
-            lastInputDate.append(dateClone);
-        });
-    }
+    formController.changeCssClassIfOldAndNewValuesAreDifferent();
 
-    (function clear_long_text_option_when_sibling_dropdown_is_on_first_option() {
-        const longTextOptions: any = $('.longTextOption');
-        longTextOptions.each(function () {
-            const thisLongText: any = $(this);
-            const siblingDropdown: any = thisLongText.prev('select')
-            const siblingScore: any = thisLongText.next('i.score');
-            if (+siblingDropdown.val() === -1) {
-                thisLongText.text('');
-                siblingScore.text('');
-            }
-        });
-    })();
-});
+})(/* optional parameters go here */);
