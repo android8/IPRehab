@@ -55,9 +55,9 @@ export class Utility implements ICommonUtility {
 
     public getCRUD($thisPersistable: any, oldAnswer: string, newAnswer: string): EnumDbCommandType {
         const thisControlType: string = $thisPersistable.prop('type');
-        const noOld: boolean = +oldAnswer <= 0 || oldAnswer === undefined || oldAnswer === null || oldAnswer === '';
+        const noOld: boolean = +oldAnswer <= 0 || oldAnswer === undefined || oldAnswer === null;
         const hadOld: boolean = +oldAnswer > 0;
-        const noNew: boolean = +newAnswer <= 0 || newAnswer === undefined || newAnswer === null || newAnswer === '';
+        const noNew: boolean = +newAnswer <= 0 || newAnswer === undefined || newAnswer === null;
         const hasNew: boolean = +newAnswer > 0;;
 
         console.log('CRUD for ' + $thisPersistable.prop('id') + '(' + thisControlType + ')');
@@ -66,87 +66,55 @@ export class Utility implements ICommonUtility {
             case "checkbox": {
                 const isChecked: boolean = $thisPersistable.is(':checked');
 
-                if (hadOld && hasNew) {
-                    if (+oldAnswer !== +newAnswer) {
-                        if (isChecked) {
-                            console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Update]);
-                            return EnumDbCommandType.Update;
-                        }
-                        if (!isChecked) {
-                            console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                            return EnumDbCommandType.Unchanged;
-                        }
+                if (isChecked) {
+                    if (hadOld && hasNew && +oldAnswer !== +newAnswer) {
+                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Update]);
+                        return EnumDbCommandType.Update;
                     }
+                    if (hadOld && noNew) {
+                        /* only possible if reset is provided */
+                        console.log('different old answer (' + oldAnswer + ') and no new answer is CHECKED (reset)', EnumDbCommandType[EnumDbCommandType.Delete]);
+                        return EnumDbCommandType.Delete;
+                    }
+                    if (noOld && hasNew) {
+                        console.log('no old answer and new answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Create]);
+                        return EnumDbCommandType.Create;
+                    }
+                }
+                else {
                     if (+oldAnswer === +newAnswer) {
-                        if (isChecked) {
-                            console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') CHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                            return EnumDbCommandType.Unchanged;
+                        if (thisControlType == 'checkbox') {
+                            console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Delete]);
+                            return EnumDbCommandType.Delete;
                         }
-                        if (!isChecked) {
-                            if (thisControlType === "checkbox") {
-                                console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Delete]);
-                                return EnumDbCommandType.Delete;
-                            }
-                            if (thisControlType === "radio") {
-                                console.log('same old answer (' + oldAnswer + ') and new radio answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                                return EnumDbCommandType.Unchanged;  //do not delete so that the mutually exexclusive radio will update using the same answer ID
-                            }
+                        if (thisControlType == 'radio') {
+                            console.log('same old answer (' + oldAnswer + ') and new checkbox answer (' + newAnswer + ') UNCHECKED', EnumDbCommandType[EnumDbCommandType.Unchanged]);
+                            return EnumDbCommandType.Unchanged; //do not delete so that the mutually exexclusive radio will update using the same answer ID
                         }
                     }
                 }
-                if (noOld && noNew) {
-                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;    //do nothing
-                }
 
-                if (noOld && hasNew) {
-                    if (isChecked) {
-                        console.log('no old answer ' + ' but new CHECKED answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
-                        return EnumDbCommandType.Create;    //insert new answer
-                    }
-                    if (!isChecked) {
-                        console.log('no old answer and new but UNCHECKED answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                        return EnumDbCommandType.Unchanged;    //do nothing
-                    }
-                }
-
-                if (hadOld && noNew) {
-                    console.log('old answer (' + oldAnswer + ') but new answer is blank', EnumDbCommandType.Delete);
-                    return EnumDbCommandType.Delete;    //delete old answer  
-                }
-
-                console.log('other');
+                console.log('all other');
                 return EnumDbCommandType.Unchanged;
             }
 
             case "select-one": {
-                if (hadOld && hasNew) {
-                    if (+newAnswer === +oldAnswer) {
-                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                        return EnumDbCommandType.Unchanged;
-                    }
-                    if (+newAnswer !== +oldAnswer) {
-                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
-                        return EnumDbCommandType.Update;
-                    }
-                }
-
-                if (noOld && noNew) {
-                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;
-                }
-
-                if (noOld && hasNew) {
-                    console.log('no old answer and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
-                    return EnumDbCommandType.Create;
+                if (hadOld && hasNew && +newAnswer !== +oldAnswer) {
+                    console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ') SELECTED', EnumDbCommandType[EnumDbCommandType.Update]);
+                    return EnumDbCommandType.Update;
                 }
 
                 if (hadOld && noNew) {
-                    console.log('old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    console.log('old answer (' + oldAnswer + ') and no new answer SELECTED', EnumDbCommandType[EnumDbCommandType.Delete]);
                     return EnumDbCommandType.Delete;
                 }
 
-                console.log('other');
+                if (noOld && hasNew) {
+                    console.log('no old answer and new answer (' + newAnswer + ') SELECTED', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+
+                console.log('all other');
                 return EnumDbCommandType.Unchanged;
             }
 
@@ -158,53 +126,32 @@ export class Utility implements ICommonUtility {
                     //compare date type
                     newConvertedDate = new Date(newDateString);
                     oldConvertedDate = new Date(oldDateString);
+
                     if (newConvertedDate !== oldConvertedDate) {
                         console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
                         return EnumDbCommandType.Update;
                     }
-                    else {
-                        console.log('same old date (' + oldConvertedDate + ') and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                        return EnumDbCommandType.Unchanged;
-                    }
                 }
-                //compare date string
-                if (noOld && noNew) {
-                    console.log('both old date string and new date string are empty', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;
-                }
-                if (noOld && hasNew) {
-                    console.log('no old date string but has new date string (' + newDateString + ')', EnumDbCommandType[EnumDbCommandType.Create]);
-                    return EnumDbCommandType.Create;
-                }
+
+                //compare date string due to one is empty
                 if (hadOld && noNew) {
                     console.log('old date string (' + oldDateString + ') but no new date string', EnumDbCommandType[EnumDbCommandType.Delete]);
                     return EnumDbCommandType.Delete;
                 }
 
-                console.log('other');
+                if (noOld && hasNew) {
+                    console.log('no old date string but has new date string (' + newDateString + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+
+                console.log('all other');
                 return EnumDbCommandType.Unchanged;
             }
 
             case 'number': {
-                if (hadOld && hasNew) {
-                    if (+newAnswer !== +oldAnswer) {
-                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
-                        return EnumDbCommandType.Update;
-                    }
-                    else {
-                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                        return EnumDbCommandType.Unchanged;
-                    }
-                }
-
-                if (noOld && noNew) {
-                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;
-                }
-
-                if (noOld && hasNew) {
-                    console.log('no old answer and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
-                    return EnumDbCommandType.Create;
+                if (hadOld && hasNew && +newAnswer !== +oldAnswer) {
+                    console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                    return EnumDbCommandType.Update;
                 }
 
                 if (hadOld && noNew) {
@@ -212,40 +159,34 @@ export class Utility implements ICommonUtility {
                     return EnumDbCommandType.Delete;
                 }
 
-                console.log('other');
+                if (noOld && hasNew) {
+                    console.log('no old answer and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+
+                console.log('all other');
                 return EnumDbCommandType.Unchanged;
             }
 
             //case "text":
             //case "textarea":
             default: {
-                if (hadOld && hasNew) {
-                    if (oldAnswer === newAnswer) {
-                        console.log('same old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                        return EnumDbCommandType.Unchanged;
-                    }
-                    if (oldAnswer !== newAnswer) {
-                        console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
-                        return EnumDbCommandType.Update;
-                    }
-                }
-
-                if (noOld && noNew) {
-                    console.log('no old answer and no new answer', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;
-                }
-
-                if (noOld && hasNew) {
-                    console.log('no old answer and has new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Unchanged]);
-                    return EnumDbCommandType.Unchanged;
+                if (hadOld && hasNew && oldAnswer !== newAnswer) {
+                    console.log('different old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                    return EnumDbCommandType.Update;
                 }
 
                 if (hadOld && noNew) {
-                    console.log('old answer (' + oldAnswer + ') and new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Delete]);
+                    console.log('old answer (' + oldAnswer + ') and no new answer', EnumDbCommandType[EnumDbCommandType.Delete]);
                     return EnumDbCommandType.Delete;
                 }
 
-                console.log('other');
+                if (noOld && hasNew) {
+                    console.log('no old answer and has new answer (' + newAnswer + ')', EnumDbCommandType[EnumDbCommandType.Create]);
+                    return EnumDbCommandType.Create;
+                }
+
+                console.log('all other');
                 return EnumDbCommandType.Unchanged;
             }
         }
