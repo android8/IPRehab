@@ -115,7 +115,10 @@ const formController = (function () {
                         dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
                     }
 
-                    $('.persistable').removeClass('changedFlag Create Delete Update')   //clean up dynamically added classes
+                    $('.persistable').each(function () {
+                        console.log('remove class after SAVE succeeded');
+                        $(this).removeClass('changedFlag Create Delete Update'); //clean up dynamically added classes
+                    })  
 
                     dialogOptions.title = 'Success';
                     $('#dialog')
