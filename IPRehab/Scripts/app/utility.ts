@@ -55,10 +55,10 @@ export class Utility implements ICommonUtility {
 
     public getCRUD($thisPersistable: any, oldAnswer: string, newAnswer: string): EnumDbCommandType {
         const thisControlType: string = $thisPersistable.prop('type');
-        const noOld: boolean = +oldAnswer <= 0 || oldAnswer === undefined || oldAnswer === null;
-        const hadOld: boolean = +oldAnswer > 0;
-        const noNew: boolean = +newAnswer <= 0 || newAnswer === undefined || newAnswer === null;
-        const hasNew: boolean = +newAnswer > 0;;
+        let noOld: boolean = +oldAnswer <= 0 || oldAnswer === undefined || oldAnswer === null;
+        let hadOld: boolean = +oldAnswer > 0;
+        let noNew: boolean = +newAnswer <= 0 || newAnswer === undefined || newAnswer === null;
+        let hasNew: boolean = +newAnswer > 0;;
 
         console.log('CRUD for ' + $thisPersistable.prop('id') + '(' + thisControlType + ')');
         switch (thisControlType) {
@@ -94,7 +94,7 @@ export class Utility implements ICommonUtility {
                     }
                 }
 
-                console.log('all other');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
 
@@ -114,7 +114,7 @@ export class Utility implements ICommonUtility {
                     return EnumDbCommandType.Create;
                 }
 
-                console.log('all other');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
 
@@ -122,6 +122,11 @@ export class Utility implements ICommonUtility {
                 const newDateString: string = newAnswer;
                 const oldDateString: string = oldAnswer;
                 let newConvertedDate: Date, oldConvertedDate: Date;
+                const validDatePattern: RegExp = /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/;
+
+                hadOld = (oldDateString !== '') && validDatePattern.test(oldDateString);
+                hasNew = (newDateString !== '') && validDatePattern.test(newDateString);
+
                 if (hadOld && hasNew) {
                     //compare date type
                     newConvertedDate = new Date(newDateString);
@@ -144,7 +149,7 @@ export class Utility implements ICommonUtility {
                     return EnumDbCommandType.Create;
                 }
 
-                console.log('all other');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
 
@@ -164,7 +169,7 @@ export class Utility implements ICommonUtility {
                     return EnumDbCommandType.Create;
                 }
 
-                console.log('all other');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
 
