@@ -121,16 +121,20 @@ export class Utility implements ICommonUtility {
             case "date": {
                 const newDateString: string = newAnswer;
                 const oldDateString: string = oldAnswer;
-                let newConvertedDate: Date, oldConvertedDate: Date;
+                let newConvertedDate: number, oldConvertedDate: number;
                 const validDatePattern: RegExp = /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/;
 
                 hadOld = (oldDateString !== '') && validDatePattern.test(oldDateString);
                 hasNew = (newDateString !== '') && validDatePattern.test(newDateString);
 
                 if (hadOld && hasNew) {
-                    //compare date type
-                    newConvertedDate = new Date(newDateString);
-                    oldConvertedDate = new Date(oldDateString);
+
+                    //compare date type. cannot compare two date objects. tow date objects are always not equal
+                    //newConvertedDate = new Date(newDateString);
+                    //oldConvertedDate = new Date(oldDateString);
+
+                    newConvertedDate = Date.parse(newDateString);
+                    oldConvertedDate = Date.parse(oldDateString);
 
                     if (newConvertedDate !== oldConvertedDate) {
                         console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
@@ -332,7 +336,7 @@ export class Utility implements ICommonUtility {
         //        console.log('old ->', oldText);
         //        console.log('new ->', newStr);
         //        longTextOptionDIV.text(newStr);
-        //        longTextOptionDIV.removeClass("invisible");
+        //        longTextOptionDIV.removeClass(["invisible"]);
         //      }
         //    });
         //  }

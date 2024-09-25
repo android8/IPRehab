@@ -112,9 +112,11 @@ export class Utility {
                 hadOld = (oldDateString !== '') && validDatePattern.test(oldDateString);
                 hasNew = (newDateString !== '') && validDatePattern.test(newDateString);
                 if (hadOld && hasNew) {
-                    //compare date type
-                    newConvertedDate = new Date(newDateString);
-                    oldConvertedDate = new Date(oldDateString);
+                    //compare date type. cannot compare two date objects. tow date objects are always not equal
+                    //newConvertedDate = new Date(newDateString);
+                    //oldConvertedDate = new Date(oldDateString);
+                    newConvertedDate = Date.parse(newDateString);
+                    oldConvertedDate = Date.parse(oldDateString);
                     if (newConvertedDate !== oldConvertedDate) {
                         console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
                         return EnumDbCommandType.Update;
@@ -291,7 +293,7 @@ export class Utility {
         //        console.log('old ->', oldText);
         //        console.log('new ->', newStr);
         //        longTextOptionDIV.text(newStr);
-        //        longTextOptionDIV.removeClass("invisible");
+        //        longTextOptionDIV.removeClass(["invisible"]);
         //      }
         //    });
         //  }
