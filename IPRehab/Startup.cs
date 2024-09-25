@@ -62,7 +62,7 @@ namespace IPRehab
                 .AddMvcOptions(options =>
                 {
                     options.CacheProfiles.Add("PrivateCache",
-                        new CacheProfile() { Duration = 60 * 24, Location = ResponseCacheLocation.Client, VaryByQueryKeys = new[] { "*" } });
+                        new CacheProfile() { Duration = 60 * 24, Location = ResponseCacheLocation.None, NoStore = true, VaryByQueryKeys = new[] { "*" } });
                 });
 
             #region web optimization

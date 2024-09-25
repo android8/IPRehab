@@ -328,10 +328,9 @@ $(function () {
             const Q14Bs: any = $('.persistable[id^=Q14B]', formScope);
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                thisQ14B.prop('disabled', isDisable14B);
-                console.log(thisQ14B.prop('id') + ' disabled = ' + isDisable14B);
+                thisQ14B.prop('disabled', isDisable14B).trigger('change');   //uncheck Q14Bs. Trigger('change') becuase programmatically set val(new value) doesn't raise change event
                 if (isDisable14B) {
-                    thisQ14B.prop('checked', false);   //uncheck Q14Bs
+                    thisQ14B.prop('checked', !isDisable14B);
                 }
             });
         }
@@ -921,7 +920,7 @@ $(function () {
                 if (isDisabled) {
                     commonUtility.resetControlValue(thisDropdown);
                     thisDropdown.siblings('.longTextOption, .score').text('');
-                    thisDropdown.removeClass('changedFlag Create Delete Update');
+                    thisDropdown.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                 }
             });
         }
@@ -1096,24 +1095,24 @@ $(function () {
                             /* N >= 7, reset and lock both N and O */
                             if (O.length > 0) {
                                 //commonUtility.resetControlValue(GG0170O);
-                                O.val(-1).prop('disabled', true).siblings('.longTextOption ,.score').text('');
+                                O.val(-1).prop('disabled', true).siblings('.longTextOption, .score').text('');
                             }
                             if (P.length > 0) {
-                                P.prop('disabled', false).siblings('.longTextOption ,.score').text('');
+                                P.prop('disabled', false).siblings('.longTextOption, .score').text('');
                                 //commonUtility.scrollTo(P.prop('id'));
                             }
                             break;
                         case (N_score > 0 && N_score < 7):
                             /* N between 0 and 6, unlock O */
                             if (O.length > 0) {
-                                O.prop('disabled', false).siblings('.longTextOption ,.score').text('');;
+                                O.prop('disabled', false).siblings('.longTextOption, .score').text('');;
                                 //commonUtility.scrollTo(O.prop('id'));
                             }
                             break;
                         default:
                             /* N is unknown, lock O */
                             if (O.length > 0) {
-                                O.val(-1).prop('disabled', true).siblings('.longTextOption ,.score').text('');
+                                O.val(-1).prop('disabled', true).siblings('.longTextOption, .score').text('');
                             }
                             break;
                     }
@@ -1249,7 +1248,8 @@ $(function () {
 
         const J1750_yes = $('.persistable[id^=J1750][data-codesetdescription*=Yes]', formScope);
         J1750_yes.each(function () {
-            $(this).prop('disabled', false);
+            const thisJ1750_yes: any = $(this);
+            thisJ1750_yes.prop('disabled', false);
         });
         if (eventType === EnumChangeEventArg.Change) {
             console.log('scroll to ' + J1750_yes.prop('id'));

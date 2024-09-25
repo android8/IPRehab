@@ -66,7 +66,7 @@ const formController = (function () {
                     }
                     //console.log('old ->', oldText);
                     //console.log('new ->', newStr);
-                    longTextOptionDIV.text(newStr).removeClass("invisible");
+                    longTextOptionDIV.text(newStr).removeClass(["invisible"]);
                 }
                 else {
                     console.log('set ' + thisSelectElement.prop("id") + ' sibling EL longTextOptionDIV blank for short text.');
@@ -77,7 +77,7 @@ const formController = (function () {
     }
 
     /* private function */
-    function submitTheForm(thisPostBtn: any, dialogOptions: any): void {
+    function submitTheForm(saveBtn: any, dialogOptions: any): void {
 
         //use jquery ajax
         function jQueryAjax(thisUrl: string, postBackModel: AjaxPostbackModel, episodeID: number) {
@@ -100,6 +100,12 @@ const formController = (function () {
             })
                 .done(function (result) {
                     $('.spinnerContainer').hide();
+
+                    console.log('enable the SAVE button when done');
+                    $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+
+                    saveBtn.prop('disabled', true);
+
                     console.log('postback result', result);
                     const jsonResult: any = JSON.parse(result);
                     let dialogText: string;
@@ -115,10 +121,6 @@ const formController = (function () {
                         dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
                     }
 
-                    $('.persistable').each(function () {
-                        console.log('remove class after SAVE succeeded');
-                        $(this).removeClass('changedFlag Create Delete Update'); //clean up dynamically added classes
-                    })  
 
                     dialogOptions.title = 'Success';
                     $('#dialog')
@@ -127,7 +129,9 @@ const formController = (function () {
                 })
                 .fail(function (error) {
                     $('.spinnerContainer').hide();
-                    thisPostBtn.attr('disabled', 'false');
+
+                    saveBtn.prop('disabled', false);
+
                     console.log('postback error', error);
                     dialogOptions.title = error.statusText;
 
@@ -166,7 +170,7 @@ const formController = (function () {
                         .dialog(dialogOptions);
                 })
                 .catch(function (error) {
-                    thisPostBtn.attr('disabled', 'false');
+                    saveBtn.attr('disabled', 'false');
                     console.log('postback error', error);
                     $('.spinnerContainer').hide();
                     dialogOptions.title = error.statusText;
@@ -176,7 +180,6 @@ const formController = (function () {
                 });
         }
 
-        thisPostBtn.attr('disabled', 'true');
         $('.spinnerContainer').show();
 
         const deleteAnswers: Array<UserAnswer> = new Array<UserAnswer>();
@@ -358,8 +361,8 @@ const formController = (function () {
         postBackModel.EpisodeScores = episodeScores;
         console.log('postBackModel', postBackModel);
 
-        const apiBaseUrl = thisPostBtn.data('apibaseurl');
-        const apiController = thisPostBtn.data('controller');
+        const apiBaseUrl = saveBtn.data('apibaseurl');
+        const apiController = saveBtn.data('controller');
 
         let thisUrl: string;
         if (episodeID <= 0) {
@@ -664,6 +667,9 @@ const formController = (function () {
             const thisPersistable: any = $(this);
             //don't use on(change) to add the class because it is triggered by Q23 change chain on load 
             thisPersistable.on('change', function () {
+                const controlType: string = thisPersistable.prop('type');
+                const controlId: string = thisPersistable.prop('id');
+                const thisControlLabel: any = $('#' + controlId + '_label');
                 const Q12_and_Q23_is_not_empty: boolean = !(commonUtility.isEmpty(Q12) && commonUtility.isEmpty(Q23));
                 const currentAnswer: any = commonUtility.getControlCurrentValue(thisPersistable);
                 const oldAnswer: any = thisPersistable.data('oldvalue');
@@ -672,28 +678,43 @@ const formController = (function () {
                 const onsetDate: Date = new Date(commonUtility.getControlCurrentValue(Q23));
                 const minDate = new Date('2020-01-01 00:00:00');
                 const is_onset_on_or_later_than_admit: boolean = onsetDate > minDate || admitDate > minDate || admitDate >= onsetDate;
+                const saveButton: any = $('#ajaxPost');
 
                 console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
                 console.log('is_onset_on_or_later_than_admit = ' + is_onset_on_or_later_than_admit);
                 console.log(thisPersistable.prop('id') + ' changeType = ' + EnumDbCommandType[changeType]);
 
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
-                if (changeType !== EnumDbCommandType.Unchanged && changeType !== undefined) {
+                if (changeType !== EnumDbCommandType.Unchanged) {
+
                     //const deltaSVG = '<span class="changedFlag">' +
                     //    '<svg xmlns="http://www.w3.org/2000/svg" viewBox = "0 0 512 512">' +
                     //    '<!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->' +
                     //    '<path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" /> </svg>' +
                     //    '</span>'
                     //thisPersistable.parent().prepend(deltaSVG);
-                    thisPersistable.removeClass('changedFlag ' + EnumDbCommandType[changeType]);     //remove both class
-                    thisPersistable.addClass('changedFlag ' + EnumDbCommandType[changeType]);
-                    console.log('enable save button by ' + thisPersistable.prop('id'));
-                    $('#ajaxPost').prop('disabled', false);
+
+                    thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                    thisPersistable.addClass(['changedFlag', EnumDbCommandType[changeType]]);
+
+                    if (controlType === 'radio' || controlType === 'checkbox') {
+                        thisControlLabel.addClass(['changedFlag']);
+                    }
+
+                    console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
+                    saveButton.prop('disabled', false);
                 }
                 else {
-                    thisPersistable.removeClass('changedFlag ' + EnumDbCommandType[changeType]);     //remove both class
-                    if ($('.changedFlag').length === 0)
-                        $('#ajaxPost').prop('disabled', true);
+                    thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                    if (controlType === 'radio' || controlType === 'checkbox') {
+                        thisControlLabel.removeClass(['changedFlag']);
+                    }
+
+                    //when no controls with CRUD classes, disable the SAVE button
+                    if ($('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0) {
+                        console.log('no more change, disable SAVE button');
+                        saveButton.prop('disabled', true);
+                    }
                 }
             });
         });
@@ -919,7 +940,7 @@ const formController = (function () {
                 const thisDateReset = $('button.calendarReset[data-target=' + thisDate.prop('id') + ']');
                 if (thisDateReset.length !== 0) {
                     thisDateReset.prop('disabled', false);
-                    thisDateReset.removeClass('changedFlag Create Update Delete');     //remove both class
+                    thisDateReset.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);     //remove both class
                 }
             }
         });
@@ -1037,8 +1058,9 @@ const formController = (function () {
     /* ajax post form */
     $('#ajaxPost').on('click', function () {
         if (formController.validate) {
+            const saveButton: any = $(this);
             const defaultDialogOptions = commonUtility.dialogOptions();
-            formController.submitTheForm($(this), defaultDialogOptions);
+            formController.submitTheForm(saveButton, defaultDialogOptions);
         }
     });
 

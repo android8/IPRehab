@@ -111,13 +111,13 @@ const commandBtnController = (function () {
             });
         }
         else {
-            const submitButton = $('#ajaxPost');
+            const saveButton = $('#ajaxPost');
             const thisUrl = $thisButton.prop('formAction');
             location.href = thisUrl;
-            if (submitButton.length !== 0) {
-                //submit exists on this page
-                //if submit is not disabled then the form is dirty
-                //if (!submitButton.is(":disabled")) {
+            if (saveButton.length !== 0) {
+                //save button exists on this page
+                //if save button is not disabled then the form is dirty
+                //if (!saveButton.is(":disabled")) {
                 //    $('.spinnerContainer').hide();
                 //    $('#dialog')
                 //        .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
