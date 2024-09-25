@@ -79,8 +79,8 @@ const commandBtnController = (function () {
             location.href = thisUrl;
         }
     }
-    function makeRequestUsingFormAction($thisButton) {
-        const stage = $thisButton.data('stage');
+    function makeRequestUsingFormAction(thisRehabCommandButton) {
+        const stage = thisRehabCommandButton.data('stage');
         let stageLowerCase = stage.toLowerCase();
         if (stageLowerCase.indexOf('patientlist') !== -1) {
             stageLowerCase = 'patient;';
@@ -112,7 +112,7 @@ const commandBtnController = (function () {
         }
         else {
             const saveButton = $('#ajaxPost');
-            const thisUrl = $thisButton.prop('formAction');
+            const thisUrl = thisRehabCommandButton.prop('formAction');
             location.href = thisUrl;
             if (saveButton.length !== 0) {
                 //save button exists on this page
@@ -182,13 +182,13 @@ const commandBtnController = (function () {
 /****************************** end of closure *******************************/
 $(function () {
     $('.rehabAction').each(function () {
-        const $thisButton = $(this);
+        const thisRehabCommandButton = $(this);
         //call closure
         //commandBtnController.addRipple($this);
-        $thisButton.on('click', function () {
+        thisRehabCommandButton.on('click', function () {
             //call closure
             //commandBtnController.makeRequest($this);
-            commandBtnController.makeRequestUsingFormAction($thisButton);
+            commandBtnController.makeRequestUsingFormAction(thisRehabCommandButton);
         });
     });
     $('.commandTrigger').on('click', function () {

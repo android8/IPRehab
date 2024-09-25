@@ -140,7 +140,7 @@
                                                                 @{
                                                                     string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
 
-                        /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
+                                                                    /* don't put the next next component invocation inside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
                                                                 }
                                                                 @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                             </div>
