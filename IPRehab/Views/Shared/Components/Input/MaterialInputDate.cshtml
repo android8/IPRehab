@@ -56,7 +56,7 @@
                    aria-label="@($"a date for {Model.ViewComponentViewModel.QuestionKey}")"></label>&nbsp;
             @if (Model.ViewComponentViewModel.QuestionKey != "Q12")
             {
-                <button class="calendarReset" @(string.IsNullOrEmpty(thisHtmlDate)?"disabled=disabled":"")
+                <button class="calendarReset" @(string.IsNullOrEmpty(thisHtmlDate) ? "disabled" : null)
                         data-target="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-x" viewBox="0 0 16 16">
                         <title>reset date</title>

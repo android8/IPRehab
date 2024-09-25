@@ -90,9 +90,9 @@ const commandBtnController = (function () {
         }
     }
 
-    function makeRequestUsingFormAction($thisButton) {
+    function makeRequestUsingFormAction(thisRehabCommandButton) {
 
-        const stage: string = $thisButton.data('stage');
+        const stage: string = thisRehabCommandButton.data('stage');
         let stageLowerCase: string = stage.toLowerCase();
         if (stageLowerCase.indexOf('patientlist') !== -1) {
             stageLowerCase = 'patient;'
@@ -129,7 +129,7 @@ const commandBtnController = (function () {
         }
         else {
             const saveButton: any = $('#ajaxPost');
-            const thisUrl: string = $thisButton.prop('formAction');
+            const thisUrl: string = thisRehabCommandButton.prop('formAction');
             location.href = thisUrl;
             if (saveButton.length !== 0) {
                 //save button exists on this page
@@ -202,14 +202,14 @@ const commandBtnController = (function () {
 
 $(function () {
     $('.rehabAction').each(function () {
-        const $thisButton = $(this);
+        const thisRehabCommandButton = $(this);
         //call closure
         //commandBtnController.addRipple($this);
 
-        $thisButton.on('click', function () {
+        thisRehabCommandButton.on('click', function () {
             //call closure
             //commandBtnController.makeRequest($this);
-            commandBtnController.makeRequestUsingFormAction($thisButton);
+            commandBtnController.makeRequestUsingFormAction(thisRehabCommandButton);
         })
     });
 

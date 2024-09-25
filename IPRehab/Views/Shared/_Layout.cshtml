@@ -163,9 +163,9 @@
                 case 'navigation':
                 case 'reload':
                 case 'back_forward':
-                    var submitButton = $('#ajaxPost');
-                    var episodeNotSaved = $('#episodeID_legend').text() == 'New Episode' || !submitButton.is(":disabled");
-                    var msg = "You are leaving this page! Click the save button, if visible."
+                    var saveButton = $('#ajaxPost');
+                    var episodeNotSaved = $('#episodeID_legend').text() == 'New Episode' || !saveButton.is(":disabled");
+                    var msg = "You are leaving this page! Click the SAVE button, if visible."
                     console.log(msg);
                     if (episodeNotSaved) {
                         $('.spinnerContainer').hide();

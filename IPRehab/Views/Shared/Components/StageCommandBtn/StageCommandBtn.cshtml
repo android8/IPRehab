@@ -6,11 +6,11 @@
         if (thisStageBtnModel.ShowThisButton)
         {
             <button id="@($"{thisStageBtnModel.Stage}_{thisStageBtnModel.ActionVM.ActionName}_{thisStageBtnModel.ActionVM.EpisodeID}")"
-            class="mdc-button rehabAction @(thisStageBtnModel.ActionBtnCssClass) @(thisStageBtnModel.DisableThisButton ? "disabled" : string.Empty)"
+            class="mdc-button rehabAction @(thisStageBtnModel.ActionBtnCssClass) @(thisStageBtnModel.DisableThisButton ? "disabled" : null)"
             title="@(thisStageBtnModel.Title)"
             data-stage="@(thisStageBtnModel.Stage /*important*/)"
             data-scrollToPatientID="@(thisStageBtnModel.ActionVM.PatientID)"
-            disabled="@(thisStageBtnModel.DisableThisButton)"
+            @(thisStageBtnModel.DisableThisButton ? "disabled" : null)
             aria-disabled="@(thisStageBtnModel.DisableThisButton? true : false)"
             asp-controller="@(thisStageBtnModel.ActionVM.ControllerName)"
             asp-action="@(thisStageBtnModel.ActionVM.ActionName)"
