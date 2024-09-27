@@ -101,7 +101,7 @@ const formController = (function () {
                 .done(function (result) {
                     $('.spinnerContainer').hide();
 
-                    console.log('disable the SAVE button when done');
+                    console.log('remove change styles and disable the SAVE button when done');
                     $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     saveBtn.prop('disabled', true);
 
@@ -119,10 +119,14 @@ const formController = (function () {
                         $('#pageTitle').text('Episode of Care');
                         $('#episodeID_legend').text(jsonResult);
 
-                        /* update url. changing window.location will cause navigate to the new url */
+                        /* refresh screen */
                         let currentUrl: string = window.location.href;
-                        let newUrl = currentUrl.replace("stage=New", "stage=Base");
-                        window.history.replaceState({}, "", newUrl);
+                        let newUrl = currentUrl.replace("stage=New", "stage=Base"); 
+
+                        /* update url. changing window.location will cause navigate to the new url */
+                        //let currentUrl: string = window.location.href;
+                        //let newUrl = currentUrl.replace("stage=New", "stage=Base");
+                        //window.history.replaceState({}, "", newUrl);
 
                         dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
                     }

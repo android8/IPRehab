@@ -180,12 +180,14 @@ $(function () {
             dischargeRelatedDropdown.each(function () {
                 const thisDropdown = $(this);
                 thisDropdown.prop('disabled', thisDisabled);
-                thisDropdown.val(-1).siblings('.longTextOption').text('');
+                if (thisDisabled)
+                    thisDropdown.val(-1).siblings('.longTextOption').text('');
             });
             dischargeRelatedCheckboxes.each(function () {
                 const thisCheckbox = $(this);
                 thisCheckbox.prop('disabled', thisDisabled);
-                thisCheckbox.prop('checked', false);
+                if (thisDisabled)
+                    thisCheckbox.prop('checked', false);
             });
         }
         let dialogText;

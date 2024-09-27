@@ -16,8 +16,9 @@
         <div class="mdc-touch-target-wrapper">
             <button id="searchBtn" name="searchBtn"
                     class="mdc-button mdc-button--raised"
+                    @*the following tag helpers are combined into a formaction attribute*@
                     asp-controller="patient"
-                    asp-action="patient/IndexTreatingSpecialty"
+                    asp-action="IndexTreatingSpecialty"
                     asp-route-pagenumber="@(Model.PageNumber)"
                     asp-route-orderby="@(Model.OrderBy)">
                 <span class="mdc-button__ripple"></span>

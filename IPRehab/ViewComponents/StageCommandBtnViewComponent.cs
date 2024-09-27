@@ -71,7 +71,7 @@ namespace IPRehab.ViewComponents
 
                     default:    //other buttons
                         {
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID < 0 && HostingPage == "Question")
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID < 0)
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
                                 cmdBtnTemplateVM.ShowThisButton = true;
