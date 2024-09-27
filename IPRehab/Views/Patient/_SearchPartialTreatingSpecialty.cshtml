@@ -6,17 +6,21 @@
         <label for="dataSetSelector"
                id="dataSetSelector_label" )"
                class="nullLabel" aria-label="a dropdown for data set selector"></label>
+
         <select id="dataSetSelector" aria-labelledby="dataSetSelector_label">
-            <option></option>
+            <option>Future enhancement</option>
         </select>
+
         <input id="searchCriteria" type="search" name="searchCriteria"
                placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64"
                value="@(Model.SearchCriteria)" />
 
+        @* This comment cannot be inside the <button> tag, otherwise the fomaction won't be generated'.
+        The following asp-* anchor tag helpers are combined to render formaction attribute *@
+        
         <div class="mdc-touch-target-wrapper">
             <button id="searchBtn" name="searchBtn"
                     class="mdc-button mdc-button--raised"
-                    @*the following tag helpers are combined into a formaction attribute*@
                     asp-controller="patient"
                     asp-action="IndexTreatingSpecialty"
                     asp-route-pagenumber="@(Model.PageNumber)"
@@ -27,8 +31,9 @@
         </div>
     </div>
 
-    @*the Model.Patients.Count() is total matched records that are Viewable in the current pager.
+    @*the Model.Patients.Count() is total matched records that are Viewable in the current page.
     The Model.TotalPatients is total matched records in the repository*@
+
     @if (Model.Patients != null && Model.Patients.Any())
     {
         <div id="recordCount">@($"{Model.Patients.Count()} of {Model.TotalPatients} records")</div>

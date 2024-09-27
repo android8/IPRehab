@@ -47,6 +47,9 @@
                 dataHref += $"&pagenumber=0&admitDate={thisStageBtnModel.ActionVM.AdmitDate}";
             }
 
+            @* This comment cannot be inside the <button> tag, otherwise the fomaction won't be generated'. 
+               The following asp-* anchor tag helpers are combined to render formaction attribute *@
+
             <button id="@($"{thisStageBtnModel.Stage}_{thisStageBtnModel.ActionVM.ActionName}_{thisStageBtnModel.ActionVM.EpisodeID}")"
                     class="mdc-button rehabAction @(thisStageBtnModel.ActionBtnCssClass) @(thisStageBtnModel.DisableThisButton ? "disabled" : null)"
                     title="@(thisStageBtnModel.Title)"
@@ -56,7 +59,7 @@
                     data-contentRootPath="@(contentRootPath)"
                     @(thisStageBtnModel.DisableThisButton ? "disabled" : null)
                     aria-disabled="@(thisStageBtnModel.DisableThisButton ? true : false)"
-                    @*asp-controller="@(thisStageBtnModel.ActionVM.ControllerName)"
+                    asp-controller="@(thisStageBtnModel.ActionVM.ControllerName)"
                     asp-action="@(thisStageBtnModel.ActionVM.ActionName)"
                     asp-route-stage="@(thisStageBtnModel.Stage)"
                     asp-route-patientid="@(thisStageBtnModel.ActionVM.PatientID)"
@@ -64,8 +67,7 @@
                     asp-route-searchcriteria="@(thisStageBtnModel.ActionVM.SearchCriteria)"
                     asp-route-orderby="@(thisStageBtnModel.ActionVM.OrderBy)"
                     asp-route-pagenumber="@(thisStageBtnModel.ActionVM.PageNumber)"
-                    asp-route-admitDate="@(thisStageBtnModel.ActionVM.AdmitDate)"
-                    *@>
+                    asp-route-admitDate="@(thisStageBtnModel.ActionVM.AdmitDate)">
                 <span class="mdc-button__ripple"></span>
                 <span class="mdc-button__label textNoWrap">@thisStageBtnModel.TextNode</span>
                 <div class="mdc-button__touch"></div>

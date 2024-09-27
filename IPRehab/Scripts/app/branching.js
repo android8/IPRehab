@@ -175,7 +175,7 @@ $(function () {
         const isDischarged = dischargeDate >= admitDate;
         function actQ12B(thisDisabled) {
             const dischargeRelatedDropdown = $('select.persistable[id^=Q16B],select.persistable[id^=Q17B], select.persistable[id^=Q21B]', formScope);
-            const dischargeRelatedCheckboxes = $('.persistable[id^=Q41],.persistable[id^=Q44C]', formScope);
+            const dischargeRelatedCheckboxes = $('.persistable[id^=Q41]:not([id*=FollowUp]),.persistable[id^=Q44C]:not([id*=FollowUp])', formScope);
             //enable or disable related .persistable elements
             dischargeRelatedDropdown.each(function () {
                 const thisDropdown = $(this);

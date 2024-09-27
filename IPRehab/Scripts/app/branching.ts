@@ -209,7 +209,7 @@ $(function () {
         function actQ12B(thisDisabled: boolean) {
 
             const dischargeRelatedDropdown: any = $('select.persistable[id^=Q16B],select.persistable[id^=Q17B], select.persistable[id^=Q21B]', formScope);
-            const dischargeRelatedCheckboxes: any = $('.persistable[id^=Q41],.persistable[id^=Q44C]', formScope);
+            const dischargeRelatedCheckboxes: any = $('.persistable[id^=Q41]:not([id*=FollowUp]),.persistable[id^=Q44C]:not([id*=FollowUp])', formScope);
 
             //enable or disable related .persistable elements
             dischargeRelatedDropdown.each(function () {
