@@ -1,9 +1,9 @@
 //https://www.typescriptlang.org/docs/handbook/asp-net-core.html
 $(function () {
     $('#searchBtn').on('click', function () {
-        let $this = $(this);
+        const searchButton = $(this);
         $('.spinnerContainer').show();
-        patientListController.search($this);
+        patientListController.search(searchButton);
     });
 });
 /****************************************************************************
@@ -23,11 +23,11 @@ let patientListController = (function () {
             $('#searchCriteria').val(previousCriteria);
     }
     /* private function */
-    function search($this) {
+    function search(searchButton) {
         /* get criteria from input */
         let searchCriteria = $('#searchCriteria').val().toString();
-        let formAction = $this.attr("formaction");
-        if (formAction.indexOf('&searchcriteria') == -1) {
+        let formAction = searchButton.attr("formaction");
+        if (formAction.indexOf('&searchcriteria') === -1) {
             formAction += '&searchcriteria=' + searchCriteria;
         }
         else {

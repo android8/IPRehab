@@ -43,15 +43,15 @@
             setTimeout(function () {
                 //var isLocalHost = window.location.host.indexOf('localhost') !== -1;
                 var lastChar = window.location.href.slice(-1);
+                var actionPath = 'patient/IndexTreatingSpecialty';
                 if (lastChar === '/') {
                     //var chleanUrl = window.location.href.replace(/\/$/, "")
                     //window.location = window.location + 'patient/index';
-                    window.location = window.location + 'patient/IndexTreatingSpecailty';
+                    window.location = window.location + actionPath;
                 }
                 else {
                     //window.location = window.location + '/patient/index';
-                    window.location = window.location + '/patient/IndexTreatingSpecailty';
-
+                    window.location = window.location + '/' + actionPath;
                 }
             }, 1000);
         });

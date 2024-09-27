@@ -1,28 +1,28 @@
 ﻿@model RehabActionViewModel
 
 @{
-  ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-  <h1 class="display-4">Welcome</h1>
-  <div class="flex-row">
-    <div class="btn-sm btn-block btn-outline-dark">
-      @if (Model != null && !string.IsNullOrEmpty(Model.SearchCriteria))
-      {
-        string searchCriteria = Model.SearchCriteria;
-        string pageNumber = Model?.PageNumber.ToString();
-        string orderBy = Model?.OrderBy;
+    <h1 class="display-4">Welcome</h1>
+    <div class="flex-row">
+        <div class="btn-sm btn-block btn-outline-dark">
+            @if (Model != null && !string.IsNullOrEmpty(Model.SearchCriteria))
+            {
+                string searchCriteria = Model.SearchCriteria;
+                string pageNumber = Model?.PageNumber.ToString();
+                string orderBy = Model?.OrderBy;
 
-        <a asp-controller="Patient"
-           asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
-           asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Paients</a>
-      }
-      else
-      {
-        @*<a asp-controller="Patient" asp-action="Index">Paients</a>*@
-        <a asp-controller="Patient" asp-action="IndexTreatingSpecailty">Paients</a>
-      }
+                <a asp-controller="Patient"
+                   asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
+                   asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Paients</a>
+            }
+            else
+            {
+                @*<a asp-controller="Patient" asp-action="Index">Paients</a>*@
+                <a asp-controller="Patient" asp-action="IndexTreatingSpecialty">Paients</a>
+            }
+        </div>
     </div>
-  </div>
 </div>

@@ -2,9 +2,9 @@
 
 $(function () {
     $('#searchBtn').on('click', function () {
-        let $this = $(this)
+        const searchButton = $(this)
         $('.spinnerContainer').show();
-        patientListController.search($this);
+        patientListController.search(searchButton);
     });
 });
 
@@ -30,11 +30,11 @@ let patientListController = (function () {
     }
 
     /* private function */
-    function search($this) {
+    function search(searchButton) {
         /* get criteria from input */
         let searchCriteria: string = $('#searchCriteria').val().toString();
-        let formAction: string = $this.attr("formaction");
-        if (formAction.indexOf('&searchcriteria') == -1) {
+        let formAction: string = searchButton.attr("formaction");
+        if (formAction.indexOf('&searchcriteria') === -1) {
             formAction += '&searchcriteria=' + searchCriteria;
         }
         else {

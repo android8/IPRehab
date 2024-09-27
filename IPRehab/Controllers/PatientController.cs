@@ -23,7 +23,7 @@ namespace IPRehab.Controllers
         }
 
         // GET: PatientController
-        public async Task<ActionResult> IndexTreatingSpecailty(string searchCriteria, int pageNumber, string orderBy, int scrollToPatientID)
+        public async Task<ActionResult> IndexTreatingSpecialty(string searchCriteria, int pageNumber, string orderBy, int scrollToPatientID)
         {
             searchCriteria = System.Web.HttpUtility.UrlDecode(System.Web.HttpUtility.UrlEncode(searchCriteria));
 

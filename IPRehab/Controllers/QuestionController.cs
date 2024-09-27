@@ -43,10 +43,9 @@ namespace IPRehab.Controllers
         /// <param name="episodeID"></param>
         /// <param name="searchCriteria"></param>
         /// <param name="pageNumber"></param>
-        /// <param name="orderBy"></param>
         /// <param name="admitDate"></param>
         /// <returns></returns> 
-        public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string orderBy, string admitDate)
+        public async Task<IActionResult> Edit(string stage, string patientID, int episodeID, string searchCriteria, int pageNumber, string admitDate)
         {
             string healthFactoreApiEndpoint = string.Empty;
             string treatingSpecialtyEndpoint = string.Empty;

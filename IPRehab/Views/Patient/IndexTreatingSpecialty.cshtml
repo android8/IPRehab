@@ -14,9 +14,9 @@
     @section MyScripts_block1_prod {
         <script type="module" src="~/js/patientBundle.min.js" asp-append-version="true" async></script>
         @*
-        <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
-        <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
-        *@
+    <script type="module" src="~/js/app/commandBtns.min.js" asp-append-version="true" async></script>
+    <script type="module" src="~/js/app/patientList.min.js" asp-append-version="true" async></script>
+    *@
     }
 </environment>
 
@@ -68,7 +68,7 @@
                 foreach (var pat in Model.Patients)
                 {
                     string blur = pat.Patient.RealSSN.Substring(0, pat.Patient.RealSSN.Length - 4);
-                    string last4 = pat.Patient.RealSSN.Substring(pat.Patient.RealSSN.Length-4);
+                    string last4 = pat.Patient.RealSSN.Substring(pat.Patient.RealSSN.Length - 4);
 
                     <!--Patient row-->
                     <tr class="patientRow">
@@ -124,6 +124,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @{
+                                            string newEpisodeBtnComponent       = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                            string existingEpisodeBtnComponent  = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                        }
+
                                         @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)
                                         {
                                             if (thisEpisodeConfig.EpisodeOfCareID <= 0)
@@ -137,11 +142,7 @@
                                                     <td colspan="3">
                                                         <div class="flex-start-row-nowrap">
                                                             <div>
-                                                                @{
-                                                                    string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-
-                                                                    /* don't put the next next component invocation inside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                                                                }
+                                                                @* don't put the next component invocation inside a code block. It must be by itself starting @ sign. Otherwise, it won't render*@
                                                                 @await Component.InvokeAsync(newEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                             </div>
                                                         </div>
@@ -170,11 +171,7 @@
                                                         }
                                                     </td>
                                                     <td>
-                                                        @{
-                                                            /* stage command buttons view component controller */
-                                                            string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-                                                            /* don't put the next next component invokationinside the code block. It must be by itself starting @ sign. Otherwise, it won't render*/
-                                                        }
+                                                        @* don't put the next component invocation inside a code block. It must be by itself starting @ sign. Otherwise, it won't render*@
                                                         <div class="flex-start-row-nowrap">
                                                             @await Component.InvokeAsync(existingEpisodeBtnComponent, new { EpisodeBtnconfig = thisEpisodeConfig })
                                                         </div>

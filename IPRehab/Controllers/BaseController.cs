@@ -138,6 +138,8 @@ namespace IPRehab.Controllers
             }
             else
             {
+                ViewBag.WebRootPath = BaseEnvironment.WebRootPath;
+                ViewBag.ContentRootPath = BaseEnvironment.ContentRootPath;
                 ViewBag.Environment = BaseEnvironment.EnvironmentName;
                 ViewBag.SourceOfCredential = sourceOfCredential;
                 ViewBag.CurrentUserID = $"{this.UserID}";
