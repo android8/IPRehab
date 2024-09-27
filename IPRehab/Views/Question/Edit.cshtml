@@ -113,7 +113,7 @@
 <article class="paddingTop">
     @* command buttons *@
     <div class="flex-container-evenly-justified fixedTop">
-        <div class="pageTitle" data-systitle="@Model.StageCode">@Model.StageTitle</div>
+        <div id="pageTitle" class="pageTitle" data-systitle="@Model.StageCode">@Model.StageTitle</div>
         <div class="flex-container-evenly-justified">
             @{
                 string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);

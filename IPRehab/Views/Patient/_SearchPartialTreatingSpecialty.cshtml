@@ -1,39 +1,39 @@
 ﻿@model PatientTreatingSpecialtyListViewModel
 
 <div class="flex-start-row-nowrap fixedTop">
-  <div class="pageTitle" data-systitle=@(Model.PageSysTitle)>
-    @(Model.PageTitle)
-      <label for="dataSetSelector"
-         id="dataSetSelector_label")"
-         class="nullLabel" aria-label="a dropdown for data set selector"></label>
-    <select id="dataSetSelector" aria-labelledby="dataSetSelector_label">
-      <option></option>
-    </select>
-    <input id="searchCriteria" type="search" name="searchCriteria"
-           placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64"
-           value="@(Model.SearchCriteria)" />
+    <div class="pageTitle" data-systitle=@(Model.PageSysTitle)>
+        @(Model.PageTitle)
+        <label for="dataSetSelector"
+               id="dataSetSelector_label" )"
+               class="nullLabel" aria-label="a dropdown for data set selector"></label>
+        <select id="dataSetSelector" aria-labelledby="dataSetSelector_label">
+            <option></option>
+        </select>
+        <input id="searchCriteria" type="search" name="searchCriteria"
+               placeholder="enter a critera" title="criteria are like the text in the table column such as 1V01 or 64"
+               value="@(Model.SearchCriteria)" />
 
-    <div class="mdc-touch-target-wrapper">
-      <button id="searchBtn" name="searchBtn"
-              class="mdc-button mdc-button--raised"
-              asp-controller="patient"
-              asp-action="IndexTreatingSpecailty"
-              asp-route-pagenumber="@(Model.PageNumber)"
-              asp-route-orderby="@(Model.OrderBy)">
-        <span class="mdc-button__ripple"></span>
-        <span class="mdc-button__label">Search</span>
-      </button>
+        <div class="mdc-touch-target-wrapper">
+            <button id="searchBtn" name="searchBtn"
+                    class="mdc-button mdc-button--raised"
+                    asp-controller="patient"
+                    asp-action="patient/IndexTreatingSpecialty"
+                    asp-route-pagenumber="@(Model.PageNumber)"
+                    asp-route-orderby="@(Model.OrderBy)">
+                <span class="mdc-button__ripple"></span>
+                <span class="mdc-button__label">Search</span>
+            </button>
+        </div>
     </div>
-  </div>
 
-  @*the Model.Patients.Count() is total matched records that are Viewable in the current pager.
+    @*the Model.Patients.Count() is total matched records that are Viewable in the current pager.
     The Model.TotalPatients is total matched records in the repository*@
     @if (Model.Patients != null && Model.Patients.Any())
-  {
-    <div id="recordCount">@($"{Model.Patients.Count()} of {Model.TotalPatients} records")</div>
-  }
-  else
-  {
-    <div id="recordCount">0 records</div>
-  }
+    {
+        <div id="recordCount">@($"{Model.Patients.Count()} of {Model.TotalPatients} records")</div>
+    }
+    else
+    {
+        <div id="recordCount">0 records</div>
+    }
 </div>

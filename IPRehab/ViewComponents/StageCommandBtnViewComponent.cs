@@ -40,7 +40,7 @@ namespace IPRehab.ViewComponents
                                 RehabActionViewModel clonedPatientActionVM = EpisodeBtnConfig.ActionButtonVM.Clone() as RehabActionViewModel;   //use cloned
                                 clonedPatientActionVM.EpisodeID = EpisodeBtnConfig.EpisodeOfCareID;
                                 clonedPatientActionVM.ControllerName = "Patient";
-                                clonedPatientActionVM.ActionName = "IndexTreatingSpecailty";
+                                clonedPatientActionVM.ActionName = "IndexTreatingSpecialty";
                                 clonedPatientActionVM.PatientID = string.Empty;
                                 cmdBtnTemplateVM.ActionVM = clonedPatientActionVM;
                                 cmdBtnTemplateVM.ActionBtnCssClass = button.Value.ButtonCss;
@@ -53,9 +53,7 @@ namespace IPRehab.ViewComponents
                             if (EpisodeBtnConfig.ActionButtonVM.EpisodeID > 0 || HostingPage == "Question")
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
-                            {
                                 cmdBtnTemplateVM.ShowThisButton = true;
-                            }
 
                             if (cmdBtnTemplateVM.ShowThisButton)
                             {
@@ -73,7 +71,7 @@ namespace IPRehab.ViewComponents
 
                     default:    //other buttons
                         {
-                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID < 0 && HostingPage == "Patient")
+                            if (EpisodeBtnConfig.ActionButtonVM.EpisodeID < 0 && HostingPage == "Question")
                                 cmdBtnTemplateVM.ShowThisButton = false;
                             else
                                 cmdBtnTemplateVM.ShowThisButton = true;

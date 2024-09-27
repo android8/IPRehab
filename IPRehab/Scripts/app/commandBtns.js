@@ -38,57 +38,29 @@ const commandBtnController = (function () {
         //new MDCRipple(document.querySelector(el));
     }
     /* private function */
-    function makeRequest($this) {
-        //get formaction attribute which is created by Tag Helper
-        let thisUrl = $this.prop('formAction');
-        ;
-        /* data-attribute are all in lower case by covention */
-        const controller = $this.data('controller');
-        const action = $this.data('action');
-        const stage = $this.data('stage');
-        const patientID = $this.data('patientid');
-        const patientName = $this.data('patientname');
-        const episodeID = $this.data('episodeid');
-        const searchCriteria = $this.data('searchcriteria');
-        const orderBy = $this.data('orderby');
-        const pageNumber = $this.data('pagenumber');
-        let stageLowerCase = stage.toLowerCase();
-        if (stageLowerCase.indexOf('patientlist') !== -1) {
-            stageLowerCase = 'patient;';
-        }
-        //get queryparameter. this is not suitable if the querystring is encrypted
-        //const urlParams = new URLSearchParams(window.location.search);
-        //console.log('urlParams', urlParams);
-        //const param_x = urlParams.get('stage');
-        //console.log('param_x', param_x);
-        //if (param_x == stageLowerCase || (stageLowerCase == 'Full' && param_x == '')) {
-        //  alert('You are already in it');
-        //  $('.spinnerContainer').hide();
-        //}
-        //else {
-        //  location.href = thisUrl;
-        //}
-        const pageTitleLowerCase = $(".pageTitle").data('systitle').toLowerCase();
-        if (stageLowerCase === pageTitleLowerCase) {
-            alert('You are already in it');
-            $('.spinnerContainer').hide();
-        }
-        else {
-            thisUrl = location.protocol + '//' + location.host + '/' + controller + '/' + action + '?stage=' + stage + '&patientID=' + patientID + '&patientName=' + patientName + '&episodeID=' + episodeID + '&searchCriteria=' + searchCriteria + '&orderBy=' + orderBy + '&pageNumber=' + pageNumber;
-            console.log('thisUrl', thisUrl);
-            location.href = thisUrl;
-        }
-    }
     function makeRequestUsingFormAction(thisRehabCommandButton) {
+        const controller = thisRehabCommandButton.data('controller');
+        const action = thisRehabCommandButton.data('action');
         const stage = thisRehabCommandButton.data('stage');
+        const patientID = thisRehabCommandButton.attr('asp-route-patientid');
+        const patientName = thisRehabCommandButton.data('patientname');
+        const episodeID = thisRehabCommandButton.attr('asp-route-episodeid');
+        const searchCriteria = thisRehabCommandButton.data('searchcriteria');
+        const orderBy = thisRehabCommandButton.data('orderby');
+        const pageNumber = thisRehabCommandButton.attr('asp-route-pagenumber');
+        const admitDate = thisRehabCommandButton.attr('asp-route-admitDate');
         let stageLowerCase = stage.toLowerCase();
-        if (stageLowerCase.indexOf('patientlist') !== -1) {
-            stageLowerCase = 'patient;';
+        switch (true) {
+            case stageLowerCase.indexOf('patientlist') !== -1:
+                stageLowerCase = 'patient;';
+                break;
+            case stageLowerCase.indexOf('followup') !== -1:
+                stageLowerCase = 'follow up';
+                break;
+            case stageLowerCase === '':
+                stageLowerCase = 'full';
+                break;
         }
-        if (stageLowerCase.indexOf('followup') !== -1)
-            stageLowerCase = 'follow up';
-        if (stageLowerCase === '')
-            stageLowerCase = 'full';
         //get queryparameter. this is not suitable if the querystring is encrypted
         //const urlParams = new URLSearchParams(window.location.search);
         //console.log('urlParams', urlParams);
@@ -111,46 +83,9 @@ const commandBtnController = (function () {
             });
         }
         else {
-            const saveButton = $('#ajaxPost');
-            const thisUrl = thisRehabCommandButton.prop('formAction');
+            const thisUrl = thisRehabCommandButton.attr('data-href');
+            console.log('this RehabCommandButton data-href', thisUrl);
             location.href = thisUrl;
-            if (saveButton.length !== 0) {
-                //save button exists on this page
-                //if save button is not disabled then the form is dirty
-                //if (!saveButton.is(":disabled")) {
-                //    $('.spinnerContainer').hide();
-                //    $('#dialog')
-                //        .text('Data is not saved. To save it, click Cancel to close this dialog window, then click the purple Save button on the upper left edge of the browser tab. To abandon the changes, click OK to continue going to the ' + stage + ' page')
-                //        .dialog(dialogOptions, {
-                //            title: 'Warning',
-                //            buttons:
-                //                [
-                //                    {
-                //                        text: "Cancel",
-                //                        click: function () {
-                //                            $('.spinnerContainer').hide();
-                //                            $(this).dialog("close");
-                //                        }
-                //                    },
-                //                    {
-                //                        text: "Ok",
-                //                        click: function () {
-                //                            $(this).dialog("close");
-                //                            $('.spinnerContainer').show();
-                //                            const thisUrl = $thisButton.prop('formAction');
-                //                            $('.spinnerContainer').show();
-                //                            //navigate away
-                //                            location.href = thisUrl;
-                //                        }
-                //                    }
-                //                ]
-                //        })
-                //}
-                //else {
-                //    const thisUrl: string = $thisButton.prop('formAction');
-                //    location.href = thisUrl;
-                //}
-            }
         }
     }
     function slideCommands(triggerContainer, hidden) {
@@ -174,7 +109,6 @@ const commandBtnController = (function () {
     ****************************************************************************/
     return {
         'addRipple': addRipple,
-        'makeRequest': makeRequest,
         'makeRequestUsingFormAction': makeRequestUsingFormAction,
         'slideCommands': slideCommands
     };
@@ -184,23 +118,23 @@ $(function () {
     $('.rehabAction').each(function () {
         const thisRehabCommandButton = $(this);
         //call closure
-        //commandBtnController.addRipple($this);
+        //commandBtnController.addRipple(thisRehabCommandButton);
         thisRehabCommandButton.on('click', function () {
             //call closure
-            //commandBtnController.makeRequest($this);
+            //commandBtnController.makeRequest(thisRehabCommandButton);
             commandBtnController.makeRequestUsingFormAction(thisRehabCommandButton);
         });
     });
     $('.commandTrigger').on('click', function () {
-        const $this = $(this);
-        const thisContainer = $this.parent(); //should be <div class="mdc-touch-target-wrapper">
-        const hidden = $this.data('hidden');
+        const thisCommandTrigger = $(this);
+        const thisContainer = thisCommandTrigger.parent(); //should be <div class="mdc-touch-target-wrapper">
+        const hidden = thisCommandTrigger.data('hidden');
         commandBtnController.slideCommands(thisContainer, hidden);
-        $this.data('hidden', !hidden);
+        thisCommandTrigger.data('hidden', !hidden);
         if (hidden)
-            $this.prop('title', 'Show Commands');
+            thisCommandTrigger.prop('title', 'Show Commands');
         else
-            $this.prop('title', 'Hide Commands');
+            thisCommandTrigger.prop('title', 'Hide Commands');
     });
 });
 //# sourceMappingURL=commandBtns.js.map

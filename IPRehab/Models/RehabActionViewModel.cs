@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IPRehab.Models
 {
@@ -13,7 +10,7 @@ namespace IPRehab.Models
         public int EpisodeID { get; set; }
         public DateTime AdmitDate { get; set; }
         /// <summary>
-        /// encryption should be used, without it and protect PHI/PII, set the value when no existing episode for this patient
+        /// encryption patient PHI/PII for each new episode of the patient
         /// </summary>
         public string PatientID { get; set; }
         //public string PatientName { get; set; }
