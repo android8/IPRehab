@@ -914,6 +914,7 @@ $(function () {
             byRef.seenTheDialog = value;
         }
 
+        //act on J, K, L
         function actGG0170I(isDisabled: boolean, eventArg: EnumChangeEventArg) {
             const GG0170JKL: any = $('select.persistable[id^=GG0170J][id*=' + measure + '], select.persistable[id^=GG0170K][id*=' + measure + '], select.persistable[id^=GG0170L][id*=' + measure + ']');
             GG0170JKL.each(function () {
@@ -1157,7 +1158,7 @@ $(function () {
 
         //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
 
-        /* on change */
+        /* on change of M and N */
         const GG0170M_and_N = $('select.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), select.persistable[id^=GG0170N]:not([id*=Discharge_Goal])', formScope);
         GG0170M_and_N.each(function () {
             const thisMorN: any = $(this);

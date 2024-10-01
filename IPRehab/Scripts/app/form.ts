@@ -706,11 +706,12 @@ const formController = (function () {
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     switch (controlType) {
                         case 'radio':
-                            thisControlLabel.removeClass(['changedFlag']);
-                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag']);
+                            thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                            mutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
                         case 'checkbox':
-                            thisControlLabel.removeClass(['changedFlag']);
+                            thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
                     }
 
@@ -734,7 +735,8 @@ const formController = (function () {
                     switch (controlType) {
                         case 'radio':
                             thisControlLabel.addClass(['changedFlag']);
-                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag']);
+                            mutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
                         case 'checkbox':
                             thisControlLabel.addClass(['changedFlag']);
