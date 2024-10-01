@@ -1032,6 +1032,7 @@ $(function () {
             thisGG0170Q.on('change', function () {
                 const theseNoQs = $('.persistable[id^=GG0170Q][data-codesetdescription*=No]:checked', formScope);
                 if (theseNoQs.length !== 0) {
+                    //if Q is no, lock pairing gg0170R, RR, S, SS
                     theseNoQs.each(function () {
                         const thisNo = $(this);
                         const thisNoMeasure = thisNo.data('measuredescription').replace(" ", "_");
@@ -1049,6 +1050,7 @@ $(function () {
                 if (theseYesQs.length !== 0) {
                     theseYesQs.each(function () {
                         const thisYes = $(this);
+                        //if Q is yes, unlock pairing GG0710R, RR, S, SS
                         const thisYesMeasure = thisYes.data('measuredescription').replace(" ", "_");
                         const paringGG0170Yes = $('.persistable[id ^= GG0170R][id *= ' + thisYesMeasure + '], .persistable[id ^= GG0170S][id *= ' + thisYesMeasure + ']', formScope);
                         console.log('enable corresponding GG0170R_' + thisYesMeasure);
