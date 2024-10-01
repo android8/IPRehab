@@ -54,20 +54,22 @@
             @*the labe is required by HTML5 specification*@
             <label for="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}")"
                    id="@($"{Model.ViewComponentViewModel.MeasureTitleNormalized}_label")"
-                   class="nullLabel" aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")"></label>
+                   class="@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)" 
+                   aria-label="@($"a checkbox for {Model.ViewComponentViewModel.QuestionKey}")">
+                   @($"{Model.ViewComponentViewModel.MeasureDescription}")
+            </label>
         </div>
     }
-
+@* 
     @if (displayStageHeader)
     {
         <div class="arrow-left"></div>
-        @*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc*@
-        @*prevent the next inner div to be flexed*@
+        @@@@*only the first questions in the group should display this stage header such as Admission Performance, Discharge Goal, etc. to prevent the next inner div to be flexed@@@
         <div>
-            <div class="@(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)">
+            <div class="sr-only @(Model.ViewComponentViewModel.MeasureHeaderBorderCssClass)">
                 @($"{Model.ViewComponentViewModel.MeasureDescription}")
             </div>
         </div>
     }
-
+ *@
 </div>

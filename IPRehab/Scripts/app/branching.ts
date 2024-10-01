@@ -136,11 +136,11 @@ $(function () {
 
             const controledByTriggers =
                 $('.persistable[id ^= Q14B], .persistable[id ^= Q16B], .persistable[id ^= Q17], .persistable[id ^= Q21B], .persistable[id ^= Q41]'
-                    + ', .persistable[id ^= Q43], .persistable[id ^= Q44C], .persistable[id ^= Q44D], .persistable[id ^= Q45], .persistable[id ^= Q46]'
+                    + ', .persistable[id ^= Q43], .persistable[id ^= Q44C]:not([id *= FollowUp]), .persistable[id ^= Q44D], .persistable[id ^= Q45], .persistable[id ^= Q46]:not([id *= FollowUp])'
                     + ', .persistable[id ^= GG0170I]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170J]:not([id *= Discharge_Goal])'
                     + ', .persistable[id ^= GG0170K]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170L]:not([id *= Discharge_Goal])'
                     + ', .persistable[id ^= GG0170N]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170O]:not([id *= Discharge_Goal])'
-                    + ', .persistable[id ^= GG0170R]:not([id *= Discharge_Goal],[id ^= GG0170RR])'
+                    + ', .persistable[id ^= GG0170R]:not([id *= Discharge_Goal]), .persistable[id ^= GG0170S]:not([id *= Discharge_Goal])'
                     + ', [id ^= Complete]'
                     , formScope);
 
@@ -1202,9 +1202,9 @@ $(function () {
                     theseNoQs.each(function () {
                         const thisNo: any = $(this);
                         const thisNoMeasure: string = thisNo.data('measuredescription').replace(" ", "_");
-                        const pairingGG0170R: any = $('.persistable[id^=GG0170R][id*=' + thisNoMeasure + ']:not([id^=GG0170RR])', formScope);
-                        console.log('lock corresponding GG0170R_' + thisNoMeasure);
-                        pairingGG0170R.prop('disabled', true).val(-1).siblings('.longTextOption ,.score').text('');
+                        const pairingGG0170No: any = $('.persistable[id ^= GG0170R][id *= ' + thisNoMeasure + '], .persistable[id ^= GG0170S][id *= ' + thisNoMeasure + ']', formScope);
+                        console.log('lock corresponding ' + thisNoMeasure + ' GG0170R, GG0170RR, GG0170S, and GG0170SS');
+                        pairingGG0170No.prop('disabled', true).val(-1).siblings('.longTextOption ,.score').text('');
 
                         const completes = $('.persistable[id^= Assessment]', formScope);
                         completes.each(function () {
@@ -1219,10 +1219,10 @@ $(function () {
                     theseYesQs.each(function () {
                         const thisYes: any = $(this);
                         const thisYesMeasure: string = thisYes.data('measuredescription').replace(" ", "_");
+
+                        const paringGG0170Yes: any = $('.persistable[id ^= GG0170R][id *= ' + thisYesMeasure + '], .persistable[id ^= GG0170S][id *= ' + thisYesMeasure + ']', formScope);
                         console.log('enable corresponding GG0170R_' + thisYesMeasure);
-                        $('.persistable[id^=GG0170R][id*=' + thisYesMeasure + ']:not([id^=GG0170RR])', formScope)
-                            .prop('disabled', false)
-                            .siblings('.longTextOption ,.score').text('');
+                        paringGG0170Yes.prop('disabled', false).siblings('.longTextOption ,.score').text('');
                     });
                 }
             });

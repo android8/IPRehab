@@ -599,8 +599,31 @@ const formController = (function () {
                 console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
                 console.log('is_onset_on_or_later_than_admit = ' + is_onset_on_or_later_than_admit);
                 console.log(thisPersistable.prop('id') + ' changeType = ' + EnumDbCommandType[changeType]);
+                let mutuallyExclusiveRadio;
+                let mutuallyExclusiveRadioLabel;
+                if (controlType === 'radio') {
+                    mutuallyExclusiveRadio = $('[data-questionkey=' + thisPersistable.attr('data-questionkey') + ']').not(thisPersistable);
+                    mutuallyExclusiveRadioLabel = $('#' + mutuallyExclusiveRadio.prop('id') + '_label');
+                }
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
-                if (changeType !== EnumDbCommandType.Unchanged) {
+                if (changeType === EnumDbCommandType.Unchanged) {
+                    thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                    switch (controlType) {
+                        case 'radio':
+                            thisControlLabel.removeClass(['changedFlag']);
+                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag']);
+                            break;
+                        case 'checkbox':
+                            thisControlLabel.removeClass(['changedFlag']);
+                            break;
+                    }
+                    //when no controls with CRUD classes, disable the SAVE button
+                    if ($('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0) {
+                        console.log('no more change, disable SAVE button');
+                        saveButton.prop('disabled', true);
+                    }
+                }
+                else {
                     //const deltaSVG = '<span class="changedFlag">' +
                     //    '<svg xmlns="http://www.w3.org/2000/svg" viewBox = "0 0 512 512">' +
                     //    '<!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->' +
@@ -609,22 +632,20 @@ const formController = (function () {
                     //thisPersistable.parent().prepend(deltaSVG);
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     thisPersistable.addClass(['changedFlag', EnumDbCommandType[changeType]]);
+                    switch (controlType) {
+                        case 'radio':
+                            thisControlLabel.addClass(['changedFlag']);
+                            mutuallyExclusiveRadioLabel.removeClass(['changedFlag']);
+                            break;
+                        case 'checkbox':
+                            thisControlLabel.addClass(['changedFlag']);
+                            break;
+                    }
                     if (controlType === 'radio' || controlType === 'checkbox') {
                         thisControlLabel.addClass(['changedFlag']);
                     }
                     console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
                     saveButton.prop('disabled', false);
-                }
-                else {
-                    thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
-                    if (controlType === 'radio' || controlType === 'checkbox') {
-                        thisControlLabel.removeClass(['changedFlag']);
-                    }
-                    //when no controls with CRUD classes, disable the SAVE button
-                    if ($('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0) {
-                        console.log('no more change, disable SAVE button');
-                        saveButton.prop('disabled', true);
-                    }
                 }
             });
         });
