@@ -135,6 +135,24 @@ const formController = (function () {
                     $('#dialog')
                         .text('Data is saved.' + dialogText)
                         .dialog(dialogOptions);
+
+                    const host: string = window.location.host;
+                    const pathName: string = window.location.pathname;
+                    const newEpisodeId: any = $('#episodeID').val();
+                    const queryParms: string[] = window.location.search.split('&');
+                    let admitDate: string;
+                    queryParms.forEach(function (keyValuePair) {
+                        const thisPair = keyValuePair.split('=');
+                        const thisKey: string = thisPair[0];
+                        let thisValue: string;
+                        if (thisKey.toLowerCase() === 'admitdate') {
+                            thisValue = thisPair[1];
+                            admitDate = thisValue;
+                            return false;
+                        }
+                    });
+                    window.location.href = host + pathName + '?stage=Base&episodeid=' + newEpisodeId + 'pageNumber=0&admitDate=' + admitDate;
+
                 })
                 .fail(function (error) {
                     $('.spinnerContainer').hide();
@@ -204,9 +222,6 @@ const formController = (function () {
         const patientName: string = $('#patientName', theScope).val()?.toString();
         let facilityID: string = $('#facilityID', theScope).val()?.toString();
         let episodeID: number = +($('#episodeID', theScope).val());
-
-        if (stage === 'New')
-            episodeID = -1;
 
         //get the key answers. these must be done outside of the .map()
         //because each answer in .map() will use the same episode onset date and admission date
