@@ -599,12 +599,6 @@ const formController = (function () {
                 console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
                 console.log('is_onset_on_or_later_than_admit = ' + is_onset_on_or_later_than_admit);
                 console.log(thisPersistable.prop('id') + ' changeType = ' + EnumDbCommandType[changeType]);
-                let mutuallyExclusiveRadio;
-                let mutuallyExclusiveRadioLabel;
-                if (controlType === 'radio') {
-                    mutuallyExclusiveRadio = $('[data-questionkey=' + thisPersistable.attr('data-questionkey') + ']').not(thisPersistable);
-                    mutuallyExclusiveRadioLabel = $('#' + mutuallyExclusiveRadio.prop('id') + '_label');
-                }
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
                 if (changeType === EnumDbCommandType.Unchanged) {
                     console.log("remove radio ' + controlId + ' change css style");
@@ -649,10 +643,16 @@ const formController = (function () {
                     saveButton.prop('disabled', false);
                 }
                 if (controlType === 'radio') {
-                    console.log('remove mutually exclusive radio ' + mutuallyExclusiveRadio.prop('id') + ' change css style');
-                    mutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
-                    console.log('remove mutually exclusive radio label ' + mutuallyExclusiveRadioLabel.prop('id') + ' change css style');
-                    mutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                    const thisRadioContainer = thisPersistable.closest('div.radioContainer');
+                    const mutuallyExclusiveRadios = $('[data-questionkey=' + thisPersistable.attr('data-questionkey') + ']', thisRadioContainer).not(thisPersistable);
+                    mutuallyExclusiveRadios.each(function () {
+                        const thisMutuallyExclusiveRadio = $(this);
+                        const thisMutuallyExclusiveRadioLabel = $('#' + thisMutuallyExclusiveRadio.prop('id') + '_label');
+                        console.log('remove mutually exclusive radio ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        thisMutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                        console.log('remove mutually exclusive radio label ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        thisMutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                    });
                 }
             });
         });
