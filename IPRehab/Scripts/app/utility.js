@@ -131,7 +131,7 @@ export class Utility {
                     console.log('no old date string but has new date string (' + newDateString + ')', EnumDbCommandType[EnumDbCommandType.Create]);
                     return EnumDbCommandType.Create;
                 }
-                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + '), hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
             case 'number': {

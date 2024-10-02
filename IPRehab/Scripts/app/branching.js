@@ -501,9 +501,10 @@ $(function () {
             const Q43s = $('.persistable[id^=Q43]', formScope);
             Q43s.each(function () {
                 const thisQ43 = $(this);
-                thisQ43.prop('disabled', isDisableQ43);
-                if (isDisableQ43)
+                if (isDisableQ43) {
                     thisQ43.val('');
+                }
+                thisQ43.prop('disabled', isDisableQ43).trigger('change');
             });
         }
         let Q42Yes = $('.persistable[id^=Q42][data-codesetdescription*=Yes]:checked').length === 1;

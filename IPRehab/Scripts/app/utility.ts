@@ -153,7 +153,7 @@ export class Utility implements ICommonUtility {
                     return EnumDbCommandType.Create;
                 }
 
-                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + ', hasNew(' + hasNew + '), noNew(' + noNew + ')');
+                console.log('all other. oldAnswer(' + oldAnswer + '), hadOld(' + hadOld + '), noOld(' + noOld + '), newAnswer(' + newAnswer + '), hasNew(' + hasNew + '), noNew(' + noNew + ')');
                 return EnumDbCommandType.Unchanged;
             }
 

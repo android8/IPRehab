@@ -696,7 +696,7 @@ const formController = (function () {
 
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
                 if (changeType === EnumDbCommandType.Unchanged) {
-                    console.log("remove radio ' + controlId + ' change css style");
+                    console.log('remove radio ' + controlId + ' change css style');
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
 
                     switch (controlType) {
