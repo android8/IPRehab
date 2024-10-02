@@ -775,6 +775,7 @@ $(function () {
             //callback after async dialog is done and return the seenTheDialog to the caller
             byRef.seenTheDialog = value;
         }
+        //act on J, K, L
         function actGG0170I(isDisabled, eventArg) {
             const GG0170JKL = $('select.persistable[id^=GG0170J][id*=' + measure + '], select.persistable[id^=GG0170K][id*=' + measure + '], select.persistable[id^=GG0170L][id*=' + measure + ']');
             GG0170JKL.each(function () {
@@ -995,7 +996,7 @@ $(function () {
     (function GG0170M_N_addListener() {
         console.log('adding GG0170M_N_addListener()');
         //no need to raise onload event, it is only triggered by Q12_Q23 change event chain
-        /* on change */
+        /* on change of M and N */
         const GG0170M_and_N = $('select.persistable[id^=GG0170M]:not([id*=Discharge_Goal]), select.persistable[id^=GG0170N]:not([id*=Discharge_Goal])', formScope);
         GG0170M_and_N.each(function () {
             const thisMorN = $(this);

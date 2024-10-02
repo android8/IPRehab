@@ -147,7 +147,7 @@ namespace IPRehab.ViewComponents
                             viewName = "MaterialChkboxBoxBeforeHeader";
 
                             thisVCVM.ContainerCssClass = "flex-start-row-nowrap";
-                            thisVCVM.MeasureHeaderBorderCssClass = "measureHeaderNoLeftBorder";
+                            thisVCVM.MeasureHeaderBorderCssClass = "measureHeader";
 
                             //if (QWS.QuestionKey.Contains("N0415", System.StringComparison.OrdinalIgnoreCase) ||
                             //  QWS.QuestionKey.Contains("O0110", System.StringComparison.OrdinalIgnoreCase))

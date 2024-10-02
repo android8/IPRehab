@@ -535,6 +535,13 @@ div .radioContainer {
     border-right: 13px solid whitesmoke;
 }
 
+.measureHeader {
+    text-align: left;
+    color: #555555;
+    background-color: whitesmoke;
+    font-weight: bold;
+}
+
 .measureHeaderNoBottomBorder {
     z-index: 5;
     display: inline-block;
