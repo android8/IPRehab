@@ -687,6 +687,7 @@ const formController = (function () {
                 const onsetDate: Date = new Date(commonUtility.getControlCurrentValue(Q23));
                 const minDate = new Date('2020-01-01 00:00:00');
                 const is_onset_on_or_later_than_admit: boolean = onsetDate > minDate || admitDate > minDate || admitDate >= onsetDate;
+                const noMoreChangeCssClass = $('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0;
                 const saveButton: any = $('#ajaxPost');
 
                 console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
@@ -696,23 +697,23 @@ const formController = (function () {
 
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
                 if (changeType === EnumDbCommandType.Unchanged) {
-                    console.log('remove radio ' + controlId + ' change css style');
+                    //console.log('remove radio ' + controlId + ' change css style');
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
 
                     switch (controlType) {
                         case 'radio':
-                            console.log("remove this radio label ' + thisControlLabel.prop('id') + ' change css style");
+                            //console.log("remove this radio label ' + thisControlLabel.prop('id') + ' change css style");
                             thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
                         case 'checkbox':
-                            console.log("remove checkbox ' + thisControlLabel.prop('id') + ' label change css style");
+                            //console.log("remove checkbox ' + thisControlLabel.prop('id') + ' label change css style");
                             thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
                     }
 
                     //when no controls with CRUD classes, disable the SAVE button
-                    if ($('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0) {
-                        console.log('no more change, disable SAVE button');
+                    if (noMoreChangeCssClass && Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit) {
+                        //console.log('no more change, disable SAVE button');
                         saveButton.prop('disabled', true);
                     }
                 }
@@ -724,7 +725,7 @@ const formController = (function () {
                     //    '</span>'
                     //thisPersistable.parent().prepend(deltaSVG);
 
-                    console.log('add radio ' + controlId + ' change css style');
+                    //console.log('add radio ' + controlId + ' change css style');
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     thisPersistable.addClass(['changedFlag', EnumDbCommandType[changeType]]);
 
@@ -739,7 +740,7 @@ const formController = (function () {
                             break;
                     }
 
-                    console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
+                    //console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
                     saveButton.prop('disabled', false);
                 }
 
@@ -751,10 +752,10 @@ const formController = (function () {
                         const thisMutuallyExclusiveRadio: any = $(this);
                         const thisMutuallyExclusiveRadioLabel: any = $('#' + thisMutuallyExclusiveRadio.prop('id') + '_label');
 
-                        console.log('remove mutually exclusive radio ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        //console.log('remove mutually exclusive radio ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
                         thisMutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
 
-                        console.log('remove mutually exclusive radio label ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        //console.log('remove mutually exclusive radio label ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
                         thisMutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                   })
                 }
