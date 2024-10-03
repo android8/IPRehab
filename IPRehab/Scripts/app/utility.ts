@@ -137,7 +137,7 @@ export class Utility implements ICommonUtility {
                     oldConvertedDate = Date.parse(oldDateString);
 
                     if (newConvertedDate !== oldConvertedDate) {
-                        console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                        console.log('different old date (' + oldConvertedDate + ' and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
                         return EnumDbCommandType.Update;
                     }
                 }
@@ -221,7 +221,7 @@ export class Utility implements ICommonUtility {
                 break;
         }
 
-        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
+        //console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
         return thisValue;
     }
 

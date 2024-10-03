@@ -118,7 +118,7 @@ export class Utility {
                     newConvertedDate = Date.parse(newDateString);
                     oldConvertedDate = Date.parse(oldDateString);
                     if (newConvertedDate !== oldConvertedDate) {
-                        console.log('different old date (' + oldConvertedDate + 'and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
+                        console.log('different old date (' + oldConvertedDate + ' and new date (' + newConvertedDate + ')', EnumDbCommandType[EnumDbCommandType.Update]);
                         return EnumDbCommandType.Update;
                     }
                 }
@@ -187,7 +187,7 @@ export class Utility {
                 thisValue = $thisControl.val();
                 break;
         }
-        console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
+        //console.log('(' + thisControlType + ') ' + thisControlID + ' value = ' + thisValue);
         return thisValue;
     }
     //when the controls, such as GG0170s and GG0130s, could have binding value and data-score are different

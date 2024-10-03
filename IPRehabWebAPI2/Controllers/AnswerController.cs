@@ -102,16 +102,20 @@ namespace IPRehabWebAPI2.Controllers
             }
             #endregion
 
-            if (string.IsNullOrEmpty(deleteAnswersPostback.ExecptionMsg) || string.IsNullOrEmpty(insertAnswersPostback.ExecptionMsg) || string.IsNullOrEmpty(updateAnswersPostback.ExecptionMsg))
+            if (string.IsNullOrEmpty(deleteAnswersPostback.ExecptionMsg) && string.IsNullOrEmpty(insertAnswersPostback.ExecptionMsg) && string.IsNullOrEmpty(updateAnswersPostback.ExecptionMsg))
             {
                 return StatusCode(StatusCodes.Status200OK);
             }
             else
             {
                 return StatusCode(StatusCodes.Status400BadRequest,
-                  $"{JsonSerializer.Serialize(insertAnswersPostback.ExecptionMsg)} {Environment.NewLine} " +
-                  $"{JsonSerializer.Serialize(deleteAnswersPostback.ExecptionMsg)} {Environment.NewLine} " +
-                  $"{JsonSerializer.Serialize(updateAnswersPostback.ExecptionMsg)}");
+                    new
+                    {
+                        insertException = $"{JsonSerializer.Serialize(insertAnswersPostback.ExecptionMsg)}",
+                        deleteException = $"{JsonSerializer.Serialize(deleteAnswersPostback.ExecptionMsg)}",
+                        updateException = $"{JsonSerializer.Serialize(updateAnswersPostback.ExecptionMsg)}"
+                    }
+                );
             }
         }
 

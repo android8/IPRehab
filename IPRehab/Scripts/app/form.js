@@ -91,19 +91,18 @@ const formController = (function () {
             })
                 .done(function (result) {
                 $('.spinnerContainer').hide();
-                console.log('remove change styles and disable the SAVE button when done');
-                $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
-                saveBtn.prop('disabled', true);
                 console.log('postback result', result);
                 const jsonResult = JSON.parse(result);
                 console.log('jsonResult after ajax().done', jsonResult);
-                let dialogText;
-                dialogText = 'The screen will fresh automatically.';
-                dialogOptions.title = 'Success';
-                $('#dialog')
-                    .text('Data is saved.\n' + dialogText)
-                    .dialog(dialogOptions);
+                console.log('without iterating changed elements, remove changed styles');
+                $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
+                if ($('.Create,.Update,.Delete,.changedFlag').length === 0) {
+                    console.log('disable the SAVE buton');
+                    saveBtn.prop('disabled', true);
+                }
+                let dialogText = 'Data is saved (Done).';
                 if (episodeID === -1) {
+                    dialogText += ' The screen will fresh automatically.';
                     /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
                     $('#episodeID').val(jsonResult);
                     $('#stage').val('Base');
@@ -136,21 +135,25 @@ const formController = (function () {
                     $('.spinnerContainer').show();
                     window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
                 }
+                dialogOptions.title = 'Success';
+                $('#dialog').text(dialogText).dialog(dialogOptions);
             })
                 .fail(function (error) {
                 $('.spinnerContainer').hide();
-                saveBtn.prop('disabled', false);
                 console.log('postback error', error);
                 dialogOptions.title = error.statusText;
-                if (error.statusText === "OK" || error.statusText === "Ok") {
+                if (error.statusText.toUpperCase() === "OK") {
+                    $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     $('#dialog')
-                        .text('Data is saved.')
+                        .text('Data is saved (' + error.statusText.toUpperCase() + ').')
                         .dialog(dialogOptions);
+                    saveBtn.prop('disabled', true);
                 }
                 else {
                     $('#dialog')
                         .text('Data is not saved. ' + error.responseText)
                         .dialog(dialogOptions);
+                    saveBtn.prop('disabled', false);
                 }
             });
         }
@@ -223,7 +226,6 @@ const formController = (function () {
             const oldAnswer = thisPersistable.data('oldvalue');
             const currentAnswer = commonUtility.getControlCurrentValue(thisPersistable);
             const CRUD = commonUtility.getCRUD(thisPersistable, oldAnswer, currentAnswer);
-            console.log('CRUD = ' + EnumDbCommandType[CRUD] + '. ' + thisPersistable.prop('id') + ' : oldAnswer(' + oldAnswer + '), newAnswer(' + currentAnswer + ')');
             if (CRUD === EnumDbCommandType.Unchanged) {
                 return;
             }
@@ -278,16 +280,16 @@ const formController = (function () {
             }
             switch (CRUD) {
                 case EnumDbCommandType.Create:
-                    console.log('Insert (' + thisPersistableID + ')', thisAnswer);
+                    //console.log('Insert (' + thisPersistableID + ')', thisAnswer);
                     insertAnswers.push(thisAnswer);
                     break;
                 case EnumDbCommandType.Delete:
-                    console.log('Delete (' + thisPersistableID + ')', thisAnswer);
+                    //console.log('Delete (' + thisPersistableID + ')', thisAnswer);
                     thisAnswer.AnswerID = +answerId;
                     deleteAnswers.push(thisAnswer);
                     break;
                 case EnumDbCommandType.Update:
-                    console.log('Update (' + thisPersistableID + ')', thisAnswer);
+                    //console.log('Update (' + thisPersistableID + ')', thisAnswer);
                     thisAnswer.AnswerID = +answerId;
                     updateAnswers.push(thisAnswer);
                     break;
