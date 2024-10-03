@@ -109,8 +109,14 @@ const formController = (function () {
                     const jsonResult: any = JSON.parse(result);
                     console.log('jsonResult after ajax().done', jsonResult);
                     let dialogText: string;
-                    if (episodeID === -1) {
 
+                    dialogText = 'The screen will fresh automatically.';
+                    dialogOptions.title = 'Success';
+                    $('#dialog')
+                        .text('Data is saved.\n' + dialogText)
+                        .dialog(dialogOptions);
+
+                    if (episodeID === -1) {
                         /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
                         $('#episodeID').val(jsonResult);
                         $('#stage').val('Base');
@@ -128,31 +134,25 @@ const formController = (function () {
                         //let newUrl = currentUrl.replace("stage=New", "stage=Base");
                         //window.history.replaceState({}, "", newUrl);
 
-                        dialogText = '\Note: When in NEW mode and after the record is saved, refreshing the screen will only show another new form.  To dobule confirm the record just saved, go back to Patient list and select the Episode of Care ID shown on the upper right of this form.';
+                        // refresh page after first new espisode postback, subsequent post will have an episode not equal -1
+                        const host: string = window.location.host;
+                        const pathName: string = window.location.pathname;
+                        const newEpisodeId: any = $('#episodeID').val();
+                        const queryParms: string[] = window.location.search.split('&');
+                        let admitDate: string;
+                        queryParms.forEach(function (keyValuePair) {
+                            const thisPair = keyValuePair.split('=');
+                            const thisKey: string = thisPair[0];
+                            let thisValue: string;
+                            if (thisKey.toLowerCase() === 'admitdate') {
+                                thisValue = thisPair[1];
+                                admitDate = thisValue;
+                                return false;
+                            }
+                        });
+                        $('.spinnerContainer').show();
+                        window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
                     }
-
-                    dialogOptions.title = 'Success';
-                    $('#dialog')
-                        .text('Data is saved.' + dialogText)
-                        .dialog(dialogOptions);
-
-                    const host: string = window.location.host;
-                    const pathName: string = window.location.pathname;
-                    const newEpisodeId: any = $('#episodeID').val();
-                    const queryParms: string[] = window.location.search.split('&');
-                    let admitDate: string;
-                    queryParms.forEach(function (keyValuePair) {
-                        const thisPair = keyValuePair.split('=');
-                        const thisKey: string = thisPair[0];
-                        let thisValue: string;
-                        if (thisKey.toLowerCase() === 'admitdate') {
-                            thisValue = thisPair[1];
-                            admitDate = thisValue;
-                            return false;
-                        }
-                    });
-                    window.location.href = host + pathName + '?stage=Base&episodeid=' + newEpisodeId + 'pageNumber=0&admitDate=' + admitDate;
-
                 })
                 .fail(function (error) {
                     $('.spinnerContainer').hide();
@@ -694,42 +694,33 @@ const formController = (function () {
                 const controlType: string = thisPersistable.prop('type');
                 const controlId: string = thisPersistable.prop('id');
                 const thisControlLabel: any = $('#' + controlId + '_label');
-                const Q12_and_Q23_is_not_empty: boolean = !(commonUtility.isEmpty(Q12) && commonUtility.isEmpty(Q23));
+                const Q12_or_Q23_is_empty: boolean = commonUtility.isEmpty(Q12) || commonUtility.isEmpty(Q23);
                 const currentAnswer: any = commonUtility.getControlCurrentValue(thisPersistable);
                 const oldAnswer: any = thisPersistable.data('oldvalue');
                 const changeType: EnumDbCommandType = commonUtility.getCRUD(thisPersistable, oldAnswer, currentAnswer);
                 const admitDate: Date = new Date(commonUtility.getControlCurrentValue(Q12));
                 const onsetDate: Date = new Date(commonUtility.getControlCurrentValue(Q23));
                 const minDate = new Date('2020-01-01 00:00:00');
-                const is_onset_on_or_later_than_admit: boolean = onsetDate > minDate || admitDate > minDate || admitDate >= onsetDate;
+                const is_onset_on_or_later_than_admit_and_valid: boolean = onsetDate > minDate && admitDate > minDate && admitDate >= onsetDate;
                 const noMoreChangeCssClass = $('.persistable.changedFlag, .persistable.Create, .persistable.Update, .persistable.Delete').length === 0;
-                const saveButton: any = $('#ajaxPost');
+                const saveButton: any = $('#saveButton');
 
-                console.log('Q12_or_Q23_is_not_empty = ' + Q12_and_Q23_is_not_empty);
-                console.log('is_onset_on_or_later_than_admit = ' + is_onset_on_or_later_than_admit);
+                console.log('Q12_or_Q23_is_empty = ' + Q12_or_Q23_is_empty);
+                console.log('is_onset_on_or_later_than_admit_and_valid = ' + is_onset_on_or_later_than_admit_and_valid);
                 console.log(thisPersistable.prop('id') + ' changeType = ' + EnumDbCommandType[changeType]);
 
 
                 //if (Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit && (EnumDbCommandType[changeType] !== EnumDbCommandType[EnumDbCommandType.Unchanged])) {
                 if (changeType === EnumDbCommandType.Unchanged) {
-                    //console.log('remove radio ' + controlId + ' change css style');
+                    console.log('remove radio ' + controlId + ' change css style');
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
 
                     switch (controlType) {
                         case 'radio':
-                            //console.log("remove this radio label ' + thisControlLabel.prop('id') + ' change css style");
-                            thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
-                            break;
                         case 'checkbox':
-                            //console.log("remove checkbox ' + thisControlLabel.prop('id') + ' label change css style");
+                            console.log('remove ' + controlId + ' label ' + thisControlLabel.prop('id') + ' change css style');
                             thisControlLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                             break;
-                    }
-
-                    //when no controls with CRUD classes, disable the SAVE button
-                    if (noMoreChangeCssClass && Q12_and_Q23_is_not_empty && is_onset_on_or_later_than_admit) {
-                        //console.log('no more change, disable SAVE button');
-                        saveButton.prop('disabled', true);
                     }
                 }
                 else {
@@ -740,25 +731,20 @@ const formController = (function () {
                     //    '</span>'
                     //thisPersistable.parent().prepend(deltaSVG);
 
-                    //console.log('add radio ' + controlId + ' change css style');
+                    console.log('add radio ' + controlId + ' change css style');
                     thisPersistable.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                     thisPersistable.addClass(['changedFlag', EnumDbCommandType[changeType]]);
 
                     switch (controlType) {
                         case 'radio':
-                            console.log('add this radio label ' + thisControlLabel.prop('id') + ' change css style');
-                            thisControlLabel.addClass(['changedFlag']);
-                            break;
                         case 'checkbox':
-                            console.log('add checkbox label ' + thisControlLabel.prop('id') + ' change css style');
+                            console.log('add ' + controlId + ' label ' + thisControlLabel.prop('id') + ' change css style');
                             thisControlLabel.addClass(['changedFlag']);
                             break;
                     }
-
-                    //console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
-                    saveButton.prop('disabled', false);
                 }
 
+                //remove mutually exclusive radios change css style
                 if (controlType === 'radio') {
                     const thisRadioContainer: any = thisPersistable.closest('div.radioContainer');
                     const mutuallyExclusiveRadios: any = $('[data-questionkey=' + thisPersistable.attr('data-questionkey') + ']', thisRadioContainer).not(thisPersistable);
@@ -767,13 +753,22 @@ const formController = (function () {
                         const thisMutuallyExclusiveRadio: any = $(this);
                         const thisMutuallyExclusiveRadioLabel: any = $('#' + thisMutuallyExclusiveRadio.prop('id') + '_label');
 
-                        //console.log('remove mutually exclusive radio ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        console.log('remove mutually exclusive radio ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
                         thisMutuallyExclusiveRadio.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
 
-                        //console.log('remove mutually exclusive radio label ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
+                        console.log('remove mutually exclusive radio label ' + thisMutuallyExclusiveRadioLabel.prop('id') + ' change css style');
                         thisMutuallyExclusiveRadioLabel.removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
-                  })
+                    })
                 }
+
+                //when no controls with CRUD classes, disable the SAVE button
+                if (noMoreChangeCssClass || Q12_or_Q23_is_empty || !is_onset_on_or_later_than_admit_and_valid) {
+                    //console.log('no more change, disable SAVE button');
+                    saveButton.prop('disabled', true);
+                }
+                else
+                    //console.log('enable the SAVE button by ' + thisPersistable.prop('id') + ' change');
+                    saveButton.prop('disabled', false);
             });
         });
     }
@@ -1114,7 +1109,7 @@ const formController = (function () {
     //});
 
     /* ajax post form */
-    $('#ajaxPost').on('click', function () {
+    $('#saveButton').on('click', function () {
         if (formController.validate) {
             const saveButton: any = $(this);
             const defaultDialogOptions = commonUtility.dialogOptions();

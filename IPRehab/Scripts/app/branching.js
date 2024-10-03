@@ -274,10 +274,10 @@ $(function () {
             const Q14Bs = $('.persistable[id^=Q14B]', formScope);
             Q14Bs.each(function () {
                 const thisQ14B = $(this);
-                thisQ14B.prop('disabled', isDisable14B).trigger('change'); //uncheck Q14Bs. Trigger('change') becuase programmatically set val(new value) doesn't raise change event
                 if (isDisable14B) {
                     thisQ14B.prop('checked', !isDisable14B);
                 }
+                thisQ14B.prop('disabled', isDisable14B).trigger('change'); //uncheck Q14Bs. Trigger('change') becuase programmatically set val(new value) doesn't raise change event
             });
         }
         const Q14AYes = $('.persistable[id^=Q14A][data-codesetdescription*=Yes]:checked', formScope).length === 1;
