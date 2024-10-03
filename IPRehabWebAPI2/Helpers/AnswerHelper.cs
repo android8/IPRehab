@@ -2,6 +2,7 @@
 using IPRehabModel;
 using IPRehabRepository.Contracts;
 using IPRehabWebAPI2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,10 +81,10 @@ namespace IPRehabWebAPI2.Helpers
 
                 return thisEpisode.EpisodeOfCareID;
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                throw new Exception($"{ex.Message}{Environment.NewLine}{ex.InnerException.Message}");
             }
         }
 
@@ -121,10 +122,10 @@ namespace IPRehabWebAPI2.Helpers
                 await _ipRehabContext.SaveChangesAsync();
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                throw new Exception($"{ex.Message}{Environment.NewLine}{ex.InnerException.Message}");
             }
         }
 
@@ -174,10 +175,10 @@ namespace IPRehabWebAPI2.Helpers
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                throw new Exception($"{ex.Message}{Environment.NewLine}{ex.InnerException.Message}");
             }
         }
 
@@ -230,10 +231,10 @@ namespace IPRehabWebAPI2.Helpers
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                throw new Exception($"{ex.Message}{Environment.NewLine}{ex.InnerException.Message}");
             }
         }
     }

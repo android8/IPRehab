@@ -33,6 +33,7 @@ namespace IPRehabWebAPI2.Controllers
             _treatingSpecialtyPatientRepository = treatingSpecialtyPatientRepository;
             _memoryCache = memoryCache;
         }
+
         /// <summary>
         /// the updated answer may have the same id, so 
         /// delete old answers first, then edit updated answers, then insert new answers
@@ -43,26 +44,27 @@ namespace IPRehabWebAPI2.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] PostbackModel postbackModel)
         {
-            PostbackResponseDTO insertAnswersPostback = new();
-            PostbackResponseDTO deleteAnswersPostback = new();
-            PostbackResponseDTO updateAnswersPostback = new();
-
             if (!ModelState.IsValid)
                 return BadRequest();
 
+            PostbackResponseDTO deleteAnswersPostbackResponseDTO = null, updateAnswersPostbackResponseDTO = null, insertAnswersPostbackResponseDTO = null;
+
             #region old answers
-            //delete old answers to avoid new answers with the same question id are deleted
             if (postbackModel.DeleteAnswers != null && postbackModel.DeleteAnswers.Any())
             {
                 try
                 {
+                    //delete old answers first to prevent answer keys violation
                     await _answerHelper.TransactionalDeleteAsync(postbackModel.EpisodeID, postbackModel.DeleteAnswers);
                 }
                 catch (Exception ex)
                 {
-                    deleteAnswersPostback.ExecptionMsg = $"delete transaction failed and rolled back. {ex.Message}";
-                    deleteAnswersPostback.InnerExceptionMsg = ex.InnerException.Message;
-                    deleteAnswersPostback.OriginalAnswers = postbackModel.DeleteAnswers;
+                    deleteAnswersPostbackResponseDTO = new PostbackResponseDTO
+                    {
+                        ExecptionMsg = "(DELETE) EXISTING Answers failed and rolled back the transaction.",
+                        InnerExceptionMsg = ex.InnerException.Message,
+                        OriginalAnswers = postbackModel.DeleteAnswers
+                    };
                 }
             }
             #endregion
@@ -72,14 +74,16 @@ namespace IPRehabWebAPI2.Controllers
             {
                 try
                 {
-                    //update existing episode and existing answers
                     await _answerHelper.TransactionalUpdateAnswerAsync(postbackModel.EpisodeID, postbackModel.UpdateAnswers);
                 }
                 catch (Exception ex)
                 {
-                    updateAnswersPostback.ExecptionMsg = $"update transaction failed and rolled back. {ex.Message}";
-                    updateAnswersPostback.InnerExceptionMsg = ex.InnerException.Message;
-                    updateAnswersPostback.OriginalAnswers = postbackModel.UpdateAnswers;
+                    updateAnswersPostbackResponseDTO = new PostbackResponseDTO
+                    {
+                        ExecptionMsg = "(UPDATE) EXISTING Answers failed and rolled back the transaction.",
+                        InnerExceptionMsg = ex.InnerException.Message,
+                        OriginalAnswers = postbackModel.UpdateAnswers
+                    };
                 }
             }
             #endregion
@@ -89,31 +93,30 @@ namespace IPRehabWebAPI2.Controllers
             {
                 try
                 {
-                    //add new answers to the existing episode
                     await _answerHelper.TransactionalInsertNewAnswerOnlyAsync(postbackModel.EpisodeID, postbackModel.InsertAnswers);
-
                 }
                 catch (Exception ex)
                 {
-                    insertAnswersPostback.ExecptionMsg = $"insert transaction failed and rolled back. {ex.Message}";
-                    insertAnswersPostback.InnerExceptionMsg = ex.InnerException.Message;
-                    insertAnswersPostback.OriginalAnswers = postbackModel.InsertAnswers;
+                    insertAnswersPostbackResponseDTO = new PostbackResponseDTO
+                    {
+                        ExecptionMsg = "(INSERT) NEW Answers failed and rolled back the transaction.",
+                        InnerExceptionMsg = ex.InnerException.Message,
+                        OriginalAnswers = postbackModel.InsertAnswers,
+                    };
                 }
             }
             #endregion
 
-            if (string.IsNullOrEmpty(deleteAnswersPostback.ExecptionMsg) && string.IsNullOrEmpty(insertAnswersPostback.ExecptionMsg) && string.IsNullOrEmpty(updateAnswersPostback.ExecptionMsg))
-            {
+            if (deleteAnswersPostbackResponseDTO is null && updateAnswersPostbackResponseDTO is null && insertAnswersPostbackResponseDTO is null)
                 return StatusCode(StatusCodes.Status200OK);
-            }
             else
             {
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new
                     {
-                        insertException = $"{JsonSerializer.Serialize(insertAnswersPostback.ExecptionMsg)}",
-                        deleteException = $"{JsonSerializer.Serialize(deleteAnswersPostback.ExecptionMsg)}",
-                        updateException = $"{JsonSerializer.Serialize(updateAnswersPostback.ExecptionMsg)}"
+                        DeleteException = $"{JsonSerializer.Serialize(deleteAnswersPostbackResponseDTO)}",
+                        UpdateException = $"{JsonSerializer.Serialize(updateAnswersPostbackResponseDTO)}",
+                        InsertException = $"{JsonSerializer.Serialize(insertAnswersPostbackResponseDTO)}"
                     }
                 );
             }
@@ -130,28 +133,21 @@ namespace IPRehabWebAPI2.Controllers
         {
             PostbackResponseDTO newAnswerPostBackResponse = new();
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            if (postbackModel.InsertAnswers == null || !postbackModel.InsertAnswers.Any())
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid || postbackModel.InsertAnswers == null || !postbackModel.InsertAnswers.Any())
+                return StatusCode(StatusCodes.Status400BadRequest);
 
             try
             {
-                //both episode and answers are new
                 int newEpisodeID = await _answerHelper.TransactionalInsertNewEpisodeAsync(postbackModel.FacilityID, postbackModel.InsertAnswers);
                 //return CreatedAtRoute("DefaultApi", new { id = newEpisodeID });
                 return StatusCode(StatusCodes.Status201Created, newEpisodeID);
             }
             catch (Exception ex)
             {
-                newAnswerPostBackResponse.ExecptionMsg = $"insert transaction failed and rolled back. {ex.Message}";
+                newAnswerPostBackResponse.ExecptionMsg = $"(INSERT) NEW EPISODE failed and rolled back the transaction.";
                 newAnswerPostBackResponse.InnerExceptionMsg = ex.InnerException.Message;
                 newAnswerPostBackResponse.OriginalAnswers = postbackModel.InsertAnswers;
-                return StatusCode(StatusCodes.Status500InternalServerError, newAnswerPostBackResponse);
+                return StatusCode(StatusCodes.Status400BadRequest, $"{JsonSerializer.Serialize(newAnswerPostBackResponse)}");
             }
         }
     }
