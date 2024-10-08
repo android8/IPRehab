@@ -34,10 +34,10 @@ const formController = (function () {
 
     /* private function */
     function breakLongSentence(thisSelectElement) {
-        console.log('breakLongSentence() thisSelectElement', thisSelectElement);
+        //console.log('breakLongSentence() thisSelectElement', thisSelectElement);
         const maxLength = 50;
         const longTextOptionDIV = thisSelectElement.next('div.longTextOption');
-        console.log('longTextOptionDIV', longTextOptionDIV);
+        //console.log('longTextOptionDIV', longTextOptionDIV);
         const thisSelectWidth = thisSelectElement[0].clientWidth;
         const selectedValue: number = parseInt(thisSelectElement.prop('value'));
         if (selectedValue <= 0) {
@@ -48,28 +48,28 @@ const formController = (function () {
                 const $thisOption = $(this);
                 const oldText: string = $thisOption.text();
                 const font = $thisOption.css('font');
-                console.log('option font', font);
+                //console.log('option font', font);
                 const oldTextInPixel = commonUtility.getTextPixels(oldText, font);
 
                 if (oldTextInPixel > thisSelectWidth) { //the 50 characters is longer then the option box width
-                    console.log('oldTextInPixel', oldTextInPixel);
-                    console.log('thisSelectWidth', thisSelectWidth);
+                    //console.log('oldTextInPixel', oldTextInPixel);
+                    //console.log('thisSelectWidth', thisSelectWidth);
 
                     const regX = new RegExp("([\\w\\s]{" + (maxLength - 2) + ",}?\\w)\\s?\\b", "g") //get first 50 characters
                     let newStr = oldText.replace(regX, "$1\n"); //replace the last space with carriage return
-                    console.log('newStr', newStr);
+                    //console.log('newStr', newStr);
                     let firstCharacter = newStr.substring(0, 1);
                     const startWithNumber = typeof +firstCharacter == 'number' && !Number.isNaN(+firstCharacter);   //ensure the 1 character is numeric
                     if (startWithNumber) {
                         newStr = newStr.trim().substring(3); //if the 1st character is a number, then take the remaining string starting the 1st non-space character
-                        console.log('newStr after 1st numeric character = ', newStr);
+                        //console.log('newStr after 1st numeric character = ', newStr);
                     }
                     //console.log('old ->', oldText);
                     //console.log('new ->', newStr);
                     longTextOptionDIV.text(newStr).removeClass(["invisible"]);
                 }
                 else {
-                    console.log('set ' + thisSelectElement.prop("id") + ' sibling EL longTextOptionDIV blank for short text.');
+                    //console.log('reset ' + thisSelectElement.prop("id") + ' sibling EL longTextOptionDIV for short text.');
                     longTextOptionDIV.text('');
                 }
             });
@@ -81,6 +81,38 @@ const formController = (function () {
 
         //use jquery ajax
         function jQueryAjax(thisUrl: string, postBackModel: AjaxPostbackModel, episodeID: number) {
+
+            /* refresh screen */
+            function reloadPageAfterPost() {
+                let currentUrl: string = window.location.href;
+
+                //let currentUrl: string = window.location.href;
+                //let newUrl = currentUrl.replace("stage=New", "stage=Base");
+
+                /* update url. changing window.location will cause navigate to the new url */
+                //let currentUrl: string = window.location.href;
+                //let newUrl = currentUrl.replace("stage=New", "stage=Base");
+                //window.history.replaceState({}, "", newUrl);
+
+                const host: string = window.location.host;
+                const pathName: string = window.location.pathname;
+                const newEpisodeId: any = $('#episodeID').val();
+                const queryParms: string[] = window.location.search.split('&');
+                let admitDate: string;
+                queryParms.forEach(function (keyValuePair) {
+                    const thisPair = keyValuePair.split('=');
+                    const thisKey: string = thisPair[0];
+                    let thisValue: string;
+                    if (thisKey.toLowerCase() === 'admitdate') {
+                        thisValue = thisPair[1];
+                        admitDate = thisValue;
+                        return false;
+                    }
+                });
+                $('.spinnerContainer').show();
+                window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
+            }
+
             $.ajax({
                 type: "POST",
                 url: thisUrl,
@@ -113,47 +145,19 @@ const formController = (function () {
                     }
 
                     let dialogText: string = 'Data is saved (Done).';
-                    if (episodeID === -1) {
-                        dialogText += ' The screen will fresh automatically.';
-                        /* update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record. */
-                        $('#episodeID').val(jsonResult);
-                        $('#stage').val('Base');
+                    dialogText += ' The screen will fresh automatically.';
+                    //ToDo: update the hidden fields in the form, without refreshing the screen and repost it will create duplicate record.
+                    $('#episodeID').val(jsonResult);
+                    $('#stage').val('Base');
 
-                        /* update on screen episode_legend and pageTitle */
-                        $('#pageTitle').text('Episode of Care');
-                        $('#episodeID_legend').text(jsonResult);
-
-                        /* refresh screen */
-                        let currentUrl: string = window.location.href;
-                        let newUrl = currentUrl.replace("stage=New", "stage=Base");
-
-                        /* update url. changing window.location will cause navigate to the new url */
-                        //let currentUrl: string = window.location.href;
-                        //let newUrl = currentUrl.replace("stage=New", "stage=Base");
-                        //window.history.replaceState({}, "", newUrl);
-
-                        // refresh page after first new espisode postback, subsequent post will have an episode not equal -1
-                        const host: string = window.location.host;
-                        const pathName: string = window.location.pathname;
-                        const newEpisodeId: any = $('#episodeID').val();
-                        const queryParms: string[] = window.location.search.split('&');
-                        let admitDate: string;
-                        queryParms.forEach(function (keyValuePair) {
-                            const thisPair = keyValuePair.split('=');
-                            const thisKey: string = thisPair[0];
-                            let thisValue: string;
-                            if (thisKey.toLowerCase() === 'admitdate') {
-                                thisValue = thisPair[1];
-                                admitDate = thisValue;
-                                return false;
-                            }
-                        });
-                        $('.spinnerContainer').show();
-                        window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
-                    }
+                    /* update on screen episode_legend and pageTitle */
+                    $('#pageTitle').text('Episode of Care');
+                    $('#episodeID_legend').text(jsonResult);
 
                     dialogOptions.title = 'Success';
                     $('#dialog').text(dialogText).dialog(dialogOptions);
+
+                    reloadPageAfterPost();
                 })
                 .fail(function (error) {
                     $('.spinnerContainer').hide();
@@ -161,14 +165,18 @@ const formController = (function () {
                     console.log('postback error', error);
                     dialogOptions.title = error.statusText;
 
+                    //false failure
                     if (error.statusText.toUpperCase() === "OK") {
                         $('.changedFlag, .Create, .Update, .Delete').removeClass(['changedFlag', 'Create', 'Update', 'Delete']);
                         $('#dialog')
                             .text('Data is saved (' + error.statusText.toUpperCase() + ').')
                             .dialog(dialogOptions)
                         saveBtn.prop('disabled', true);
+
+                        reloadPageAfterPost();
                     }
                     else {
+                        //true failure
                         $('#dialog')
                             .text('Data is not saved. ' + error.responseText)
                             .dialog(dialogOptions)
@@ -210,12 +218,10 @@ const formController = (function () {
         }
 
         $('.spinnerContainer').show();
-
         const deleteAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const insertAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const updateAnswers: Array<UserAnswer> = new Array<UserAnswer>();
         const episodeScores: Array<EpisodeScore> = new Array<EpisodeScore>();
-
         const theScope: any = $('#userAnswerForm');
 
         //from hidden form variables
@@ -459,6 +465,7 @@ const formController = (function () {
             selfCareDischargePerformance: number = 0,
             selfCarePerformance: number = 0 /* Interim Performance or Discharge Performance */;
 
+        console.log('----- update self-care scores -----');
         $('.persistable[id^=GG0130]:not([id*=Discharge_Goal])').each(function () {
             const thisControl = $(this);
             const thisID = $(this).prop('id');
@@ -821,17 +828,17 @@ const formController = (function () {
         console.log('targetELs', targetELs);
 
         let PerformanceScore: number = 0;
+        console.log('----- update Mobility score -----');
+
         targetELs.each(function () {
             const thisEL = $(this);
-            console.log('----- begin update score for ', thisEL.prop('id'));
-
             const thisControl_id = thisEL.prop('id');
             const thisControl_Score = +commonUtility.getControlScore(thisEL);   //$('option:selected', thisEL).data('score'); 
-            console.log(thisControl_id + ' score = ', thisControl_Score);
-
             const isThisGG0170I: boolean = thisControl_id.indexOf('GG0170I_' + performanceType) >= 0;
             const isThisGG0170M: boolean = thisControl_id.indexOf('GG0170M_' + performanceType) >= 0;
             const isThisGG0170N: boolean = thisControl_id.indexOf('GG0170N_' + performanceType) >= 0;
+
+            console.log(thisControl_id + ' Mobility score = ', thisControl_Score);
 
             switch (true) {
                 case (+thisControl_Score >= 7):

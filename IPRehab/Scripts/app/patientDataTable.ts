@@ -156,5 +156,8 @@
 
   //export datatable as CSV using ajax
 
-  //export datatable all rows using ajax
+    //export datatable all rows using ajax
+
+    //ToDo: Select containing tr with td contains certain text
+    //$('.patientRow td:contains("ALEXANDER")').closest('tr')
 });
