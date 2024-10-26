@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>IPRehabDB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{18e6f05c-3f75-4024-816f-0c558d669a27}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>IPRehabDB</RootNamespace>
+    <AssemblyName>IPRehabDB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="app\" />
+    <Folder Include="app\Tables\" />
+    <Folder Include="VHA20_VHAPORSUNC\" />
+    <Folder Include="VHA20_VHAPORSUNC\Tables\" />
+    <Folder Include="shared\" />
+    <Folder Include="shared\Views\" />
+    <Folder Include="bi\" />
+    <Folder Include="bi\Views\" />
+    <Folder Include="app\Views\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="bi\Stored Procedures\" />
+    <Folder Include="app\Stored Procedures\" />
+    <Folder Include="shared\Stored Procedures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="app\Tables\tblEpisodeOfCare.sql" />
+    <Build Include="app\Tables\tblAnswerScore.sql" />
+    <Build Include="app\Tables\tblUser.sql" />
+    <Build Include="app\Tables\tblQuestionInstruction.sql" />
+    <Build Include="VHA20_VHAPORSUNC\Tables\__EFMigrationsHistory.sql" />
+    <Build Include="app\Tables\AspNetRoles.sql" />
+    <Build Include="app\Tables\AspNetUsers.sql" />
+    <Build Include="app\Tables\tblQuestion.sql" />
+    <Build Include="app\Tables\AspNetRoleClaims.sql" />
+    <Build Include="app\Tables\AspNetUserClaims.sql" />
+    <Build Include="app\Tables\AspNetUserLogins.sql" />
+    <Build Include="app\Tables\AspNetUserRoles.sql" />
+    <Build Include="app\Tables\AspNetUserTokens.sql" />
+    <Build Include="app\Tables\tblCodeSet.sql" />
+    <Build Include="app\Tables\tblBranching.sql" />
+    <Build Include="app\Tables\tblPatient.sql" />
+    <Build Include="app\Tables\tblSignature.sql" />
+    <Build Include="app\Tables\tblQuestionMeasure.sql" />
+    <Build Include="app\Tables\tblAnswer.sql" />
+    <Build Include="app\Tables\tblEpisodeScore.sql" />
+    <Build Include="shared\Views\vFSODPatientDetail.sql" />
+    <Build Include="bi\Views\vQuestionAnswersMatchNames.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs_03_15_2024.sql" />
+    <Build Include="bi\Views\vQuestionAnswersNoNameMatch.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs_01_09_2024_backup.sql" />
+    <Build Include="bi\Views\vQuestionAnswerAllScores.sql" />
+    <Build Include="shared\Views\vPatientEpisode.sql" />
+    <Build Include="app\Views\vQuestionAnswers.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyPatNoName.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs_Backup.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs_01_09_2004_New.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs.sql" />
+    <Build Include="app\Views\vAnswerCountByEpisode.sql" />
+    <Build Include="shared\Views\vPatientEpisode_Direct.sql" />
+    <Build Include="app\Views\vCodeSetHierarchy.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3YrsNew.sql" />
+    <Build Include="app\Views\vQuestionStandardChoices.sql" />
+    <Build Include="shared\Views\vTreatingSpecialtyRecent3Yrs_11_09_2023.sql" />
+    <Build Include="app\Views\vQuestionAnswersWithNames.sql" />
+    <Build Include="app\Views\vQuestionStandardChoices_Condensed.sql" />
+    <Build Include="Security\VAOISCSOCDBSCAN_role.sql" />
+    <Build Include="Security\vansocscan_role.sql" />
+    <Build Include="Security\vacsocitc_role.sql" />
+    <Build Include="Security\AAC_SEC00E3APPD.sql" />
+    <Build Include="Security\VHAMASTER_VA-NSOC-DB-Scan.sql" />
+    <Build Include="Security\AAC_vaoiscsocdbscan.sql" />
+    <Build Include="Security\VHAMASTER_VSSC Business Apps.sql" />
+    <Build Include="Security\VHAMASTER_vssc business apps_1.sql" />
+    <Build Include="Security\VHA20_VHAPORSUNC.sql" />
+    <Build Include="Security\VHAMASTER_vhaausadc.sql" />
+    <Build Include="Security\VHAMASTER_vhaausadc_1.sql" />
+    <Build Include="Security\VHA08_VHATAMVillaL1.sql" />
+    <Build Include="Security\VHA08_VHATAMVillaL1_1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi1_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi1__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi2_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi2__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi6_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi6__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi13_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi13__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi14_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi14__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi15_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi15__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi17_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausbi17__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaaacbi21_.sql" />
+    <Build Include="Security\VHAMASTER_vhaaacbi21__1.sql" />
+    <Build Include="Security\VHAMASTER_vhaausm1_.sql" />
+    <Build Include="Security\VHAMASTER_vhaausm1__1.sql" />
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="dbo\Functions\func_GetPatientDemographic.sql" />
+    <Build Include="bi\Stored Procedures\spQuestionAnswerNameScores.sql" />
+    <Build Include="app\Stored Procedures\spQuestionAnswers.sql" />
+    <Build Include="shared\Stored Procedures\sp_TreatingSpecialtiyPatients.sql" />
+    <Build Include="shared\Stored Procedures\sp_UserAccessLevel.sql" />
+    <Build Include="Security\app.sql" />
+    <Build Include="Security\bi.sql" />
+    <Build Include="Security\shared.sql" />
+    <Build Include="Security\VHA20_VHAPORSUNC_1.sql" />
+  </ItemGroup>
+</Project>
