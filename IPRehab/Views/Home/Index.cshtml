@@ -16,12 +16,12 @@
 
                 <a asp-controller="Patient"
                    asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
-                   asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Paients</a>
+                   asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Patients</a>
             }
             else
             {
-                @*<a asp-controller="Patient" asp-action="Index">Paients</a>*@
-                <a asp-controller="Patient" asp-action="IndexTreatingSpecialty">Paients</a>
+                @*<a asp-controller="Patient" asp-action="Index">Patients</a>*@
+                <a asp-controller="Patient" asp-action="IndexTreatingSpecialty">Patients</a>
             }
         </div>
     </div>

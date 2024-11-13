@@ -1,4 +1,4 @@
-@media (min-width: 768px) {
+﻿@media (min-width: 768px) {
   .paddingTop {
     padding-top: 60px;
     /*    margin-right: 20px;*/
@@ -6,11 +6,19 @@
 }
 #logo {
   display: inline-flex;
-  width: 5rem;
-  height: 4.5rem;
-  background-image: url("../images/VSSC_Logo1.svg");
+  width: 573px;
+  height: 80px;
+  background-image: url("../images/Logo.png");
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.bangledBanner {
+  background-image: url("../images/bangledBanner.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 73%;
+  height: 80px;
 }
 
 *:focus {
@@ -156,14 +164,17 @@ body {
 }
 
 .banner {
-  background-color: #0e2640 !important;
-  color: white;
-  z-index: 500;
+  color: black;
+  font-weight: bolder;
 }
 
-.banner .nav-link,
 .banner .navbar-brand {
   color: white !important;
+}
+
+.banner .nav-link {
+  color: white !important;
+  padding: 0 50px !important;
 }
 
 .pulldown {
@@ -1193,5 +1204,5 @@ i.score {
 }
 
 .changedFlag {
-  border: red solid 2px;
+  border: #1bdf34 solid 2px;
 }
