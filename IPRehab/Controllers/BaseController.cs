@@ -56,7 +56,8 @@ namespace IPRehab.Controllers
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    GitVersion = $"{reader.ReadToEnd()} - {EnvironmentName}";
+                    GitVersion = $"{reader.ReadToEnd()} - ";
+                    GitVersion += EnvironmentName == "Development" ? "D" : "P";
                 }
             }
 

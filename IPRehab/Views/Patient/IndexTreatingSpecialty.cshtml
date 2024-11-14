@@ -27,19 +27,19 @@
     }
 </environment>
 
-<div class="flex-start-column-nowrap paddingTop">
+<div class="flex-start-column-nowrap">
     @{
         await Html.RenderPartialAsync("_SearchPartialTreatingSpecialty", Model);
     }
     <table class="table-responsive-md table-bordered patients">
         <thead>
-            @* 
+            @*
             <tr>
-                <td colspan="5" class="alert-danger">
-                    This page is cached. If it doesn't show the newly added episode, please press CTRL and F5 keys together to force page fresh.
-                </td>
+            <td colspan="5" class="alert-danger">
+            This page is cached. If it doesn't show the newly added episode, please press CTRL and F5 keys together to force page fresh.
+            </td>
             </tr>
-             *@
+            *@
             <tr>
                 <th></th>
                 <th>
@@ -127,8 +127,8 @@
                                     </thead>
                                     <tbody>
                                         @{
-                                            string newEpisodeBtnComponent       = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
-                                            string existingEpisodeBtnComponent  = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                            string newEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
+                                            string existingEpisodeBtnComponent = typeof(IPRehab.ViewComponents.StageCommandBtnViewComponent).Name.Replace("ViewComponent", string.Empty);
                                         }
 
                                         @foreach (var thisEpisodeConfig in pat.EpisodeBtnConfig)

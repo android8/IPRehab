@@ -3,89 +3,64 @@
  * javaScript closure
  ***************************************************************************/
 const sliderController = (function () {
-    const bannerHeight = getMediaWidth();
-    const bannerScrollOffY = '-' + bannerHeight;
-    const footerHeight = $(".hoverFooter").css("height");
-    const footerScrollOffY = '-' + footerHeight;
-    let bannerFooterVisible = false;
-    //$('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
-    //$('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
+    const sFooterHeight = $(".footer").css("height");
+    const sBannerHeight = $("banner").css("height");
+    const iBannerHeight = parseInt(sBannerHeight);
+    let bannerFooterVisible;
+    //$('.banner').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
+    //$('.footer').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '2s' });
     //const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
     //console.log('view port width', vw);
     //const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     //console.log('view port height', vw);
+    /* public function */
     function getMediaWidth() {
-        let y = window.matchMedia("(max-width:576px)");
-        let bannerCssHeight = $(".hoverHeader").css("height");
-        let bannerHeight = parseInt(bannerCssHeight);
-        if (!isNaN(bannerHeight)) {
-            //bannerHeight -= 5;
-            bannerCssHeight = bannerHeight + 'px';
-        }
-        if (y.matches) {
-            console.log('screen is <= 576 pixels wide');
-            return bannerCssHeight;
-        }
-        y = window.matchMedia("(max-width:768px)");
-        if (y.matches) {
-            console.log('screen is <= 768 pixels wide');
-            return bannerCssHeight;
-        }
-        else {
-            console.log('screen is >= 768 pixels wide');
-            return bannerCssHeight;
+        let y;
+        if (!isNaN(iBannerHeight)) {
+            if (window.matchMedia("(max-width:576px)").matches) {
+                console.log('screen is <= 576 pixels wide');
+            }
+            if (window.matchMedia("(max-width:768px)").matches) {
+                console.log('screen is <= 768 pixels wide');
+            }
+            else {
+                console.log('screen is >= 768 pixels wide');
+            }
         }
     }
-    /* private function */
-    function widnowResize($this) {
-        //bannerScrollOffY = '-' + getMediaWidth();
-        //footerScrollOffY = '-' + $(".hoverFooter").css("height");
-        //$('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100'/*, 'transition-duration': '0s'*/ });
-        //$('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100'/*, 'transition-duration': '0s'*/ });
-        console.log('windows resized, hide banner and footer');
-        $('.hoverHeader, .hoverFooter').hide();
-        bannerFooterVisible = false;
-    }
-    /* private function */
-    function clickPulldown($this) {
-        //let visible: boolean = $('.hoverHeader').is(":visible");
-        //const bannerPosition = $('.hoverHeader').position();
+    /* public function */
+    function repositionDOM() {
         if (bannerFooterVisible) {
-            //alert('hide banner');
-            $('#logo').hide();
-            $(".pulldown").css({ 'top': '0px' });
-            $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100' /*, 'transition-duration': '1s' */ }).hide();
-            $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100' /*, 'transition-duration': '1s' */ }).hide();
+            $('.banner').css({ 'top': '-' + sBannerHeight });
+            $('.footer').css({ 'bottom': '-' + sFooterHeight });
+            $('.pulldown').css({ 'top': '0px' });
+            $('.search').css({ 'top': '0px' });
+            $('.patients').css({ 'top': sBannerHeight, 'position': 'relative' });
+            $('article').css({ 'top': '0px' });
         }
         else {
-            //alert('show banner');
-            $('#logo').show();
-            $(".pulldown").css({ 'top': bannerHeight });
-            $('.hoverHeader').css({ 'top': '0px', 'z-index': '100', 'transition-duration': '1s' }).show();
-            $('.hoverFooter').css({ 'bottom': '0px', 'z-index': '100', 'transition-duration': '1s' }).show();
+            $('.banner').css({ 'top': '0px', 'transition-duration': '1s' });
+            $('.footer').css({ 'bottom': '0px', 'transition-duration': '1s' });
+            $('.pulldown').css('top', sBannerHeight);
+            $('.search').css('top', sBannerHeight);
+            $('.patients').css({ 'top': sBannerHeight, 'position': 'relative' });
+            $('article').css({ 'top': sBannerHeight });
         }
         bannerFooterVisible = !bannerFooterVisible;
-    }
-    /* private function */
-    function slideOnLeaveElement($this) {
-        $('#logo').hide();
-        //console.log('mouseleave bannerScrollOffY', bannerScrollOffY);
-        //console.log('mouseleave footerScrollOffY', footerScrollOffY);
-        $('.hoverHeader').css({ 'top': bannerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
-        $('.hoverFooter').css({ 'bottom': footerScrollOffY, 'z-index': '100', 'transition-duration': '1s' });
     }
     /****************************************************************************
      * public function exposing slide() outside of the closure
     ****************************************************************************/
     return {
-        'widnowResize': widnowResize,
-        'clickPulldown': clickPulldown
+        'repositionDOM': repositionDOM,
+        'getMediaWidth': getMediaWidth
     };
 })();
 $(function () {
-    $('.hoverHeader, .hoverFooter').hide();
+    sliderController.getMediaWidth();
+    sliderController.repositionDOM();
     //listeners
-    $(window).on('resize', function () { sliderController.widnowResize(this); });
-    $(".pulldown").on('click', function () { sliderController.clickPulldown(this); });
+    $(window).on('resize', function () { sliderController.repositionDOM(); });
+    $(".pulldown").on('click', function () { sliderController.repositionDOM(); });
 });
 //# sourceMappingURL=animateBanner.js.map

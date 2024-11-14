@@ -197,7 +197,7 @@ $(function () {
         }
         else {
             //lock all discharege related fields with
-            dialogText = 'When Q12B is clearred, is an invalid date, or is earlier than the admit date, rseset and locks related discharge fields:  Q16B, Q17B, Q21B, Q41, and Q44C.';
+            dialogText = 'When Q12B is cleared, is an invalid date, or is earlier than the admit date, reset and locks related discharge fields:  Q16B, Q17B, Q21B, Q41, and Q44C.';
             Q12B.val('');
             console.log(dialogText);
             if (eventType === EnumChangeEventArg.Change && !byRef.seenTheDialog) {

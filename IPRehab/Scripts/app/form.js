@@ -70,34 +70,58 @@ const formController = (function () {
     /* private function */
     function submitTheForm(saveBtn, dialogOptions) {
         var _a, _b, _c, _d;
+        /* updateDomAttributes() use AJAX to update the data-* in the DOM elements after the each submit without page fresh */
+        /* url example https://vhaausweb3.vha.med.va.gov/iprehabmetricswebapi/api/Question/GetStageAsync/base?includeAnswer=true&episodeID=1223 */
+        function updateDomAttributes(apiBaseUrl, questionController, stage, episodeIdAfterFristPost) {
+            const thisUrl = apiBaseUrl + '/api/' + questionController + '/GetStageAsync/' + stage + '?includeAnswer=true&episodeID=' + episodeIdAfterFristPost;
+            $.ajax({
+                'url': thisUrl,
+                'type': 'GET',
+                'dataType': 'json',
+                'success': function () {
+                    //ToDo: for each .persistable update data-* attributes
+                },
+                'error': function () {
+                }
+            });
+        }
+        /* reloadPageAfterPost() use MVC to full page refresh after each submit */
+        function reloadPageAfterPost() {
+            let currentUrl = window.location.href;
+            //let currentUrl: string = window.location.href;
+            //let newUrl = currentUrl.replace("stage=New", "stage=Base");
+            /* update url. changing window.location will cause navigate to the new url */
+            //let currentUrl: string = window.location.href;
+            //let newUrl = currentUrl.replace("stage=New", "stage=Base");
+            //window.history.replaceState({}, "", newUrl);
+            const host = window.location.host;
+            const pathName = window.location.pathname;
+            const newEpisodeId = $('#episodeID').val();
+            const queryParms = window.location.search.split('&');
+            let admitDate;
+            queryParms.forEach(function (keyValuePair) {
+                const thisPair = keyValuePair.split('=');
+                const thisKey = thisPair[0];
+                let thisValue;
+                if (thisKey.toLowerCase() === 'admitdate') {
+                    thisValue = thisPair[1];
+                    admitDate = thisValue;
+                    return false;
+                }
+            });
+            $('.spinnerContainer').show();
+            window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
+        }
         //use jquery ajax
-        function jQueryAjax(thisUrl, postBackModel, episodeID) {
+        function jQueryAjax(apiBaseUrl, apiCotroller, stage, postBackModel, episodeID) {
             /* refresh screen */
-            function reloadPageAfterPost() {
-                let currentUrl = window.location.href;
-                //let currentUrl: string = window.location.href;
-                //let newUrl = currentUrl.replace("stage=New", "stage=Base");
-                /* update url. changing window.location will cause navigate to the new url */
-                //let currentUrl: string = window.location.href;
-                //let newUrl = currentUrl.replace("stage=New", "stage=Base");
-                //window.history.replaceState({}, "", newUrl);
-                const host = window.location.host;
-                const pathName = window.location.pathname;
-                const newEpisodeId = $('#episodeID').val();
-                const queryParms = window.location.search.split('&');
-                let admitDate;
-                queryParms.forEach(function (keyValuePair) {
-                    const thisPair = keyValuePair.split('=');
-                    const thisKey = thisPair[0];
-                    let thisValue;
-                    if (thisKey.toLowerCase() === 'admitdate') {
-                        thisValue = thisPair[1];
-                        admitDate = thisValue;
-                        return false;
-                    }
-                });
-                $('.spinnerContainer').show();
-                window.location.href = pathName + '?stage=Base&episodeid=' + newEpisodeId + '&pageNumber=0&admitDate=' + admitDate;
+            let thisUrl;
+            if (episodeID <= 0) {
+                //post to different api when episode === -1
+                thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
+            }
+            else {
+                thisUrl = apiBaseUrl + '/api/' + apiController;
             }
             $.ajax({
                 type: "POST",
@@ -138,6 +162,8 @@ const formController = (function () {
                 dialogOptions.title = 'Success';
                 $('#dialog').text(dialogText).dialog(dialogOptions);
                 reloadPageAfterPost();
+                const questionController = 'question';
+                //updateDomAttributes(apiBaseUrl, questionController, stage, $('#episodeID').val());
             })
                 .fail(function (error) {
                 $('.spinnerContainer').hide();
@@ -151,6 +177,8 @@ const formController = (function () {
                         .dialog(dialogOptions);
                     saveBtn.prop('disabled', true);
                     reloadPageAfterPost();
+                    const questionController = 'question';
+                    //updateDomAttributes(apiBaseUrl, questionController, stage, $('#episodeID').val());
                 }
                 else {
                     //true failure
@@ -337,16 +365,8 @@ const formController = (function () {
         console.log('postBackModel', postBackModel);
         const apiBaseUrl = saveBtn.data('apibaseurl');
         const apiController = saveBtn.data('controller');
-        let thisUrl;
-        if (episodeID <= 0) {
-            //post to different api when episode === -1
-            thisUrl = apiBaseUrl + '/api/' + apiController + '/PostNewEpisode';
-        }
-        else {
-            thisUrl = apiBaseUrl + '/api/' + apiController;
-        }
         //thisUrl = $('form').prop('action');
-        jQueryAjax(thisUrl, postBackModel, episodeID);
+        jQueryAjax(apiBaseUrl, apiController, stage, postBackModel, episodeID);
         //onPost(thisUrl);
     }
     /* private function */

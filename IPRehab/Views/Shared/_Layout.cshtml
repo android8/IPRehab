@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Chun Jonathan Sun" />
     <meta name="description" content="A modern reponsive web app for the Rehabilitation and Prosthetic Services to track In Patient rehabilitation on progress stages based on Deparment of Health and Human Services Center for Medicare and Medicaid Services form IRF-PAI V4" />
-    <meta name="keywords" content="In Patient, Rehabilitation, Rehab, C#, MVC, Bootstrap, Material IO, JQuery, Entity Framework, Restful Web API, Repository" />
+    <meta name="keywords" content="In Patient, Rehabilitation, Rehab, C#, MVC, Bootstrap, Material IO, JQuery, TypeScript, Entity Framework, Restful Web API, Repository" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - IPRehab</title>
 
@@ -40,7 +40,7 @@
 </head>
 <body>
     <header>
-        <nav class="banner vbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 banner">
             <div class="flex-container-evenly-justified">
                 <div id="logo"></div>
                 <div class="bangledBanner flex-container-evenly-justified">
@@ -55,7 +55,7 @@
                             </li>
                         </ul>
                         @*<partial name="_LoginPartial" />*@
-                     </div>
+                    </div>
                     <span>@($"{ViewBag.CurrentUserName} ({ViewBag.CurrentUserID})")</span>
                 </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -63,10 +63,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
+            @*<div class="pulldown" title="Main menu">Menu</div>*@
         </nav>
-        <div class="flex-center">
-            <div class="pulldown" title="Main menu"><i class="fa fa-caret-down fa-2x" aria-hidden="true"></i></div>
-        </div>
     </header>
 
     <main role="main">
@@ -98,7 +96,7 @@
         </div>
     </main>
 
-    <footer class="border-top footer text-muted hoverFooter">
+    <footer class="border-top footer text-muted">
         <div class="flex-container-evenly-justified">
             <div class="text-white">IPRehab @ViewBag.GitVersion | Powered by VSSC-Business Apps Team | <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></div>
             <div class="text-white">Sponsered by @ViewBag.Office&nbsp;</div>

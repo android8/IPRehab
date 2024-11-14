@@ -1,11 +1,10 @@
 ﻿//@use "node_modules/material-components-web/material-components-web";
 
-@media (min-width: 768px) {
+/*@media (min-width: 768px) {
     .paddingTop {
         padding-top: 60px;
-        /*    margin-right: 20px;*/
     }
-}
+}*/
 
 #logo {
     display: inline-flex;
@@ -167,24 +166,31 @@ body {
 }
 
 .banner {
+    display: block;
+    position: relative;
     color: black;
     font-weight: bolder;
+    padding: 0;
 }
 
 .banner .navbar-brand {
     color: white !important;
+    padding: 0 50px 0 0 !important
 }
 
 .banner .nav-link {
     color: white !important;
     padding: 0 50px !important;
 }
+
 .pulldown {
-    top: 0px;
-    left: 0px;
-    position: fixed;
-    z-index: 100;
-    color: #0e2640;
+    position: absolute;
+    top: 79px !important;
+    left: 15px;
+    color: white;
+    border-radius: 0 0 20px 20px;
+    padding: 0 10px 5px 10px;
+    background: #000620;
 }
 
 .sectionNavHeader {
@@ -225,8 +231,8 @@ body {
 .fixedTop {
     position: fixed !important;
     top: 0;
-    background-color: white;
-    /*padding-top:10px*/
+    /*background-color: white;
+    padding-top:10px*/
     z-index: 10;
     width: 100%;
 }
@@ -740,7 +746,7 @@ div.questionRow {
 
 .rotate {
     width: 35px;
-    top: 65px;
+    top: 205px;
     left: -2px;
     position: fixed;
     z-index: 5;
@@ -765,7 +771,7 @@ div.questionRow {
     color: #000 !important;
     background-color: #d3a711 !important;
     width: 140px;
-    top: 100px;
+    top: 205px;
     right: -35px !important;
     position: fixed;
     z-index: 5;
@@ -970,7 +976,7 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
 #slidingAggregator {
     position: fixed;
     background-color: gold;
-    top: 10px;
+    top: 81px;
     right: -250px;
     width: 15em;
     height: 15em;

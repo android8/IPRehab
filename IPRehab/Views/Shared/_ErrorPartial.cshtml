@@ -1,9 +1,9 @@
 ﻿@model ErrorPartialViewModel
 
-<div class="flex-md-column paddingTop text-danger">
-  <div class="font-weight-bold">@Model.ExceptionCategory</div>
-  <ul>
-    <li>Message: @Model.Message</li>
-    <li>Inner Exception: @Model.InnerExceptionMessage</li>
-  </ul>
+<div class="flex-md-column text-danger">
+    <div class="font-weight-bold">@Model.ExceptionCategory</div>
+    <ul>
+        <li>Message: @Model.Message</li>
+        <li>Inner Exception: @Model.InnerExceptionMessage</li>
+    </ul>
 </div>
