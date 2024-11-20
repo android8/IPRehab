@@ -68,7 +68,7 @@ namespace IPRehab.Controllers
             var thisPatient = await GetThisPatient(thisUserAccessLevel, episodeID, patientID, currentUserID);
             if (thisPatient == null)
             {
-                return PartialView("_QestionNoPatient");
+                return PartialView("_QuestionNoPatient");
             }
 
             patientID = thisPatient.PTFSSN;

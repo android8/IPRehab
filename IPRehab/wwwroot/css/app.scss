@@ -159,6 +159,10 @@ body {
     padding-right: 1em;
 }
 
+.articleContainer {
+    margin: 0 100px;
+}
+
 /*sandwitch button*/
 .navbar-light .navbar-toggler-icon {
     background-color: white;
@@ -300,10 +304,6 @@ th {
 
 td {
     text-align: left;
-}
-
-#saveButtonContainer {
-    left: -10px;
 }
 
 .episode:last-child {
@@ -739,42 +739,13 @@ div.questionRow {
     width: 100px !important;
 }
 
-/*.ajax-post-btn {
-  width: 150px !important;
-  left: -45px !important;
-}*/
-
 .rotate {
-    width: 35px;
-    top: 205px;
-    left: -2px;
+    /* width: 35px;*/
+    height:30px;
+    top: 505px;
+    left: -250px;
     position: fixed;
-    z-index: 5;
-    /* Legacy vendor prefixes that you probably don't need... */
-    /* Safari */
-    -webkit-transform: rotate(-90deg);
-    /* Firefox */
-    -moz-transform: rotate(-90deg);
-    /* IE */
-    -ms-transform: rotate(-90deg); /* IE 9 */
-    /* Opera */
-    -o-transform: rotate(-90deg);
-    /* Internet Explorer */
-    transform: rotate(-90deg);
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-    -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-#rotateSlidingAggregatorHandle {
-    color: #000 !important;
-    background-color: #d3a711 !important;
-    width: 140px;
-    top: 205px;
-    right: -35px !important;
-    position: fixed;
-    z-index: 5;
+    z-index: 50;
     /* Legacy vendor prefixes that you probably don't need... */
     /* Safari */
     -webkit-transform: rotate(-90deg);
@@ -799,6 +770,56 @@ div.questionRow {
     padding: 10px 6px;
     top: 60px;
     font-weight: bolder;
+}
+
+.rotate3 {
+    /* width: 35px;*/
+    height: 30px;
+    top: 320px;
+    left: -53px;
+    position: fixed;
+    z-index: 50;
+    /* Legacy vendor prefixes that you probably don't need... */
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    /* Opera */
+    -o-transform: rotate(-90deg);
+    /* Internet Explorer */
+    transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+
+#rotateSlidingAggregatorHandle {
+    color: #000 !important;
+    background-color: #d3a711 !important;
+    width: 140px;
+    top: 205px;
+    right: -35px !important;
+    position: fixed;
+    z-index: 5;
+    /* Legacy vendor prefixes that you probably don't need... */
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    /* Opera */
+    -o-transform: rotate(-90deg);
+    /* Internet Explorer */
+    transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .flex-start-row-nowrap {
@@ -918,13 +939,11 @@ tr#nonPaddinRow, tr#nonPaddinRow td {
     flex-direction: column;
     align-items: stretch;
     align-content: stretch;
-    flex-wrap: nowrap;
     background-image: radial-gradient(50% 176%,#253854 80%,#061922 100%);
-    /*background-image: linear-gradient(#0e2640, #000);*/
     position: fixed;
     margin-bottom: 21vh;
-    top: 10px;
-    left: -230px;
+    top: 0px;
+    left: -245px;
     width: 250px;
     height: 100%;
     overflow-y: auto;
@@ -1074,12 +1093,12 @@ button.commandTrigger {
     margin: 0 1px;
 }
 
-button.rehabAction {
-    text-decoration: none !important;
+button.shadow {
+    /*  text-decoration: none !important;
     height: 20px;
-    font-size: x-small;
+    font-size: x-small;*/
     margin: 0 1px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
 }
 
 button.calendarReset, button.calendarReset:disabled {
@@ -1111,23 +1130,35 @@ button[data-stage*='New'] svg{
   left:-5px
 }
 */
+
+button#saveButton {
+    height:20px;
+    left:-20px;
+    top: 200px;
+    z-index: 60;
+}
+
+button.rehabAction {
+    height: 20px;
+}
+
 .actionBtnNew {
-    background-color: #0325ab;
+    background-color: #0325ab !important;
     color: white !important;
 }
 
 .actionBtnFull {
-    background-color: #b200ff;
+    background-color: #b200ff !important;
     color: white !important;
 }
 
 .actionBtnBase {
-    background-color: #4800ff;
+    background-color: #4800ff !important;
     color: white !important;
 }
 
 .actionBtnInitial {
-    background-color: gold;
+    background-color: gold !important;
     color: black !important;
 }
 
@@ -1136,17 +1167,17 @@ button[data-stage*='New'] svg{
 }
 
 .actionBtnInterim {
-    background-color: teal;
+    background-color: teal !important;
     color: white !important;
 }
 
 .actionBtnDischarge {
-    background-color: #ac0404;
+    background-color: #ac0404 !important;
     color: white !important;
 }
 
 .actionBtnFollowup {
-    background-color: #808080;
+    background-color: #808080 !important;
     color: white !important;
 }
 

@@ -1057,13 +1057,28 @@ const formController = (function () {
             }
         });
     });
+    
+    /* command buttons  nav */
+    //$('.sidebar-nav .rotate')
+    //    .on('mouseenter', function () {
+    //        console.log('slide in .sidebar-nav.rotate element');
+    //        $('.sidebar-nav.rotate')[0].style.setProperty('left', '5px', 'important');
+    //        $('.sidebar-nav.rotate').css('transition-duration', '1s');
+    //    })
+    //    .on('mouseleave', function () {
+    //        console.log('slide out .sidebar-nav.rotate element');
+    //        $('.sidebar-nav.rotate')[0].style.setProperty('left', '-30px', 'important');
+    //        $('.sidebar-nav.rotate').css('transition-duration', '1s');
+    //    });
 
     /* section nav */
     $('#questionTab')
         .on('mouseenter', function () {
+            console.log('slide in questionTab');
             $('#questionTab').css({ 'left': '0px', 'transition-duration': '1s' });
         })
         .on('mouseleave', function () {
+            console.log('slide out questionTab');
             $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
         });
 
