@@ -5,7 +5,7 @@
 }*/
 #appTitle {
   position: relative;
-  width: 20%;
+  width: 30%;
   margin: 0;
   top: -17px;
   font-weight: bolder;
@@ -13,6 +13,7 @@
   color: white;
   border-radius: 0 0 10px 10px;
   text-align: center;
+  text-decoration: none;
 }
 
 #logo {
