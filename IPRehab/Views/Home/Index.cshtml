@@ -8,21 +8,79 @@
     <h1 class="display-4">Welcome</h1>
     <div class="flex-row">
         <div class="btn-sm btn-block btn-outline-dark">
-            @if (Model != null && !string.IsNullOrEmpty(Model.SearchCriteria))
-            {
-                string searchCriteria = Model.SearchCriteria;
-                string pageNumber = Model?.PageNumber.ToString();
-                string orderBy = Model?.OrderBy;
+            <p>
+                @if (Model != null && !string.IsNullOrEmpty(Model.SearchCriteria))
+                {
+                    string searchCriteria = Model.SearchCriteria;
+                    string pageNumber = Model?.PageNumber.ToString();
+                    string orderBy = Model?.OrderBy;
 
-                <a asp-controller="Patient"
-                   asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
-                   asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Patients</a>
-            }
-            else
-            {
-                @*<a asp-controller="Patient" asp-action="Index">Patients</a>*@
-                <a asp-controller="Patient" asp-action="IndexTreatingSpecialty">Patients</a>
-            }
+                    <a asp-controller="Patient"
+                       asp-action="Index" asp-route-searchCriteria="@(searchCriteria)"
+                       asp-route-pageNumber="@(pageNumber)" asp-route-orderBy="@(orderBy)">Inpatient Rehabilitation Assessment Tool</a>
+                }
+                else
+                {
+                    @*<a asp-controller="Patient" asp-action="Index">Patients</a>*@
+                    <a asp-controller="Patient" asp-action="IndexTreatingSpecialty">Inpatient Rehabilitation Assessment Tool</a>
+                }
+            </p>
         </div>
     </div>
+</div>
+
+<div>
+    <p>
+        This application is designed to track Rehabilitation Outcomes in support of VA Inpatient Rehabilitation programs utilizing Section GG from the Centers for Medicare & Medicaid Services (CMS).  VA medical facilities integrate collection of outcomes for inpatient rehabilitation beds into their clinical documentation practice to ensure the provision of quality rehabilitation care. Managing information, monitoring outcomes, and identifying performance improvement opportunities is critical to demonstrate program efficacy and to continually improve the quality of care to Veterans and their families.
+    </p>
+    <p>
+        Inpatient bed units providing acute rehabilitation (treating specialty code 20), polytrauma rehabilitation (treating specialty code 112), short stay rehabilitation in a CLC (treating specialty code 64) and Spinal Cord Injuries and Disorders (treating specialty code 22) are included in this application.  The Physical Medicine and Rehabilitation (PM&R) Service Chief or bed unit medical director for the unit will designate at least one person to coordinate the administration of the rehabilitation outcome tools, data entry, and management of the units’ data. This designee is the primary liaison to the VISN and VACO liaisons for monitoring and tracking outcomes.  NOTE: It is recommended the designee be a rehabilitation manager, therapist, case manager, or quality management person actively involved in rehabilitation care management.
+    </p>
+    <p>
+        Training resources supporting CMS Section GG Data Accuracy and Quality Measures can be accessed through the links below:
+    <p>
+        <a href="https://pac.training/courses/gg_course1_2024/#/" target="_training">
+            Section GG Data Accuracy and Quality Measures
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>
+    </p>
+    <p>
+        <a href="https://pac.training/courses/gg_course2_2024/#/" target="_training">
+            Section GG Prior Functioning and Device Use Items
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>
+    </p>
+    <p>
+        <a href="https://pac.training/courses/gg_course3_2024/#/" target="_training">
+            Accurate Coding: GG0130 Self Care and GG0170 Mobility
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>
+    </p>
+    <p>
+        <a href="https://pac.training/courses/gg_course4_2024/#/" target="_training">
+            GG0130: Self-Care Items
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>
+    </p>
+    <p>
+        <a href="https://pac.training/courses/gg_course5_2024/#/" target="_training">
+            GG0170: Mobility Items
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>
+    </p>
 </div>

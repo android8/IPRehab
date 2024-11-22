@@ -1079,7 +1079,7 @@ const formController = (function () {
         })
         .on('mouseleave', function () {
             console.log('slide out questionTab');
-            $('#questionTab').css({ 'left': '-245px', 'transition-duration': '1s' });
+            $('#questionTab').css({ 'left': '-250px', 'transition-duration': '1s' });
         });
 
     /* aggregate scores container */
