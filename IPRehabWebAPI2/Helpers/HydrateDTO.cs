@@ -168,14 +168,14 @@ namespace IPRehabWebAPI2.Helpers
         {
             return new PatientDTOTreatingSpecialty
             {
-                Sta6a = p.Bsta6a,
-                Name = p.PatientName?.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
-                PTFSSN = p.ScrSsnt.Trim(),
-                RealSSN = "XXXXX" + p.Realssn.Trim().Substring(p.Realssn.Length - 4),
-                PatientICN = p.PatientIcn?.Trim(),
-                DoB = p.DoB.Value,
-                Bedsecn = p.Bedsecn,
-                AdmitDates = new() { p.Admitday.Value }
+                Sta6a = string.IsNullOrEmpty(p.Bsta6a) ? "NA" : p.Bsta6a,
+                Name = string.IsNullOrEmpty(p.PatientName) ? "NA" : p.PatientIcn.Trim().IndexOf(",") == 0 ? p.PatientName.Trim() : p.PatientName.Replace(",", ", ").Trim(),
+                PTFSSN = string.IsNullOrEmpty(p.ScrSsnt.Trim()) ? "NA" : p.ScrSsnt.Trim(),
+                RealSSN = string.IsNullOrEmpty(p.Realssn) ? "NA" : "XXXXX" + p.Realssn.Trim().Substring(p.Realssn.Length - 4),
+                PatientICN = string.IsNullOrEmpty(p.PatientIcn) ? "NA" : p.PatientIcn.Trim(),
+                DoB = p.DoB.HasValue ? p.DoB.Value : DateTime.MinValue,
+                Bedsecn = p.Bedsecn.HasValue ? p.Bedsecn : -1,
+                AdmitDates = p.Admitday.HasValue ? new() { p.Admitday.Value } : new() { DateTime.MinValue }
             };
         }
 

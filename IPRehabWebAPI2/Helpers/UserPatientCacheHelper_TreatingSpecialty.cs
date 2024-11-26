@@ -68,7 +68,7 @@ namespace IPRehabWebAPI2.Helpers
                 ).ToList();
 
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                    return null;    //no patient matches the patientID in permitted facilities list
+                    return new List<PatientDTOTreatingSpecialty>() { new PatientDTOTreatingSpecialty() };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
             }
             else
             {
@@ -117,7 +117,7 @@ namespace IPRehabWebAPI2.Helpers
                 }
 
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                    return null;    //no patient matches the search criteria in permitted facilities list
+                    return new List<PatientDTOTreatingSpecialty>() { new PatientDTOTreatingSpecialty() };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
             }
 
             //don't sort here it will fail
@@ -312,6 +312,7 @@ namespace IPRehabWebAPI2.Helpers
             List<PatientDTOTreatingSpecialty> patients = new();
 
             var distinctedPatientsInThisFacility = thisFacilityPatientsSorted.DistinctBy(x => x.PatientIcn).ToList();
+
             foreach (var thisDistinctP in distinctedPatientsInThisFacility)
             {
                 //the annonymous thisDistinctP cannot be hydrated, so get vTreatingSpecialtyRecent3Yrs type

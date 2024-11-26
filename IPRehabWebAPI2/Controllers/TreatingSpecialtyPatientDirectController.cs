@@ -3,6 +3,7 @@ using IPRehabWebAPI2.Helpers;
 using IPRehabWebAPI2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace IPRehabWebAPI2.Controllers
     [ApiController]
     public class TreatingSpecialtyPatientDirectController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IEpisodeOfCareRepository _episodeOfCareRepository;
         private readonly IUserPatientCacheHelper _cacheHelper;
         private readonly IUserPatientCacheHelper_TreatingSpecialty _cacheHelper_TreatingSpeciality;
@@ -27,8 +29,10 @@ namespace IPRehabWebAPI2.Controllers
         public TreatingSpecialtyPatientDirectController(
             IEpisodeOfCareRepository episodeOfCareRepository,
             IUserPatientCacheHelper cacheHelper,
-            IUserPatientCacheHelper_TreatingSpecialty cacheHelper_TreatingSpeciality)
+            IUserPatientCacheHelper_TreatingSpecialty cacheHelper_TreatingSpeciality,
+            IConfiguration configuration)
         {
+            _configuration = configuration;
             _episodeOfCareRepository = episodeOfCareRepository;
             _cacheHelper = cacheHelper;
             _cacheHelper_TreatingSpeciality = cacheHelper_TreatingSpeciality;
@@ -51,17 +55,27 @@ namespace IPRehabWebAPI2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients(string networkID, string criteria, bool withEpisode, string orderBy, int pageNumber = 1, int pageSize = 50)
         {
-            //ToDo: use Registration to authorize user.  Otherwise, any string in the currentUser parameter containing a valid network ID will be parameterized for  cacheHelper.GetUserAccessLevels()
+            string Impersonated = _configuration.GetSection("AppSettings").GetValue<string>("Impersonate");
 
-            //internally retrieve windows identity from User.Claims
-            //string networkName = string.IsNullOrEmpty(impersonatedUserName) ? HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value : impersonatedUserName;
-            CurrentNetworkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
+            if (string.IsNullOrEmpty(Impersonated))
+                CurrentNetworkID = string.IsNullOrEmpty(networkID) ? HttpContext.User.Identity.Name : networkID;
+            else
+            {
+                //ToDo: use Registration to authorize user.  Otherwise, any string in the currentUser parameter containing a valid network ID will be parameterized for cacheHelper.GetUserAccessLevels()
+
+                //internally retrieve windows identity from User.Claims
+                //string networkName = string.IsNullOrEmpty(impersonatedUserName) ? HttpContext.User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.Name)?.Value : impersonatedUserName;
+                CurrentNetworkID = Impersonated;
+            }
 
             //get all patient with criteria and quarter filter
             List<PatientDTOTreatingSpecialty> facilityPatients;
             var distinctUserFacilities = await _cacheHelper.GetUserAccessLevels(CurrentNetworkID);
             if (distinctUserFacilities == null || !distinctUserFacilities.Any())
+            {
                 return NotFound($"{networkID}.You do not have permission to view any facility patients");
+                //return BadRequest($"{networkID}.You do not have permission to view any facility patients");
+            }
 
             facilityPatients = await _cacheHelper_TreatingSpeciality.GetPatients(distinctUserFacilities, criteria, orderBy, pageNumber, pageSize, null);
 
@@ -80,7 +94,7 @@ namespace IPRehabWebAPI2.Controllers
 
                 //return NotFound(noDataMessage);
                 return NoContent();
-
+                //return BadRequest();
                 //facilityPatients = new();
                 //return Ok(facilityPatients);
             }
@@ -89,48 +103,49 @@ namespace IPRehabWebAPI2.Controllers
                 //perform client list sort here, not before this step
                 facilityPatients = [.. facilityPatients.OrderBy(p => p.Name)];
 
+
+                //inner join
+                //var facilityPatientEpisodes1 = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
+                //    p => p.PTFSSN, e => e.PatientICNFK,
+                //    (p, e) => new
+                //    {
+                //        patient = p,
+                //        episode = HydrateDTO.HydrateEpisodeOfCare(e)
+                //    }).ToList();
+
+
+                //left join with GroupJoin()
+                //var patientEpisodeJoin = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll(),
+                //    p => p.PTFSSN, 
+                //    e => e.PatientICNFK, 
+                //    (p, e) => new { p, e })
+                //    .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { Patient = p.p, Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) });
+
+                //LINQ join operators(Join, GroupJoin) support only equi-joins. All other join types have to be implemented as correlated subqueries.
+
+                //left join (correlated subqueries) with SelectMany
+                var patientLeftJoinEpisode = facilityPatients.SelectMany(
+                    p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
+                    .DefaultIfEmpty(),
+                    (p, e) => new
+                    {
+                        Patient = p,
+                        Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e)
+                    });
+
                 List<PatientDTOTreatingSpecialty> jaggedPatient = [];
-                if (!withEpisode)
+                var uniquePatients = patientLeftJoinEpisode.Select(pe => pe.Patient).DistinctBy(p => p.RealSSN);
+                var episodes = patientLeftJoinEpisode.Where(pe => pe.Episode != null).Select(pe => pe.Episode).ToList();
+
+                if (!withEpisode || !episodes.Any())
                 {
                     jaggedPatient.AddRange(facilityPatients);
                 }
                 else
                 {
-                    //inner join
-                    //var facilityPatientEpisodes1 = facilityPatients.Join(_episodeOfCareRepository.FindAll(),
-                    //    p => p.PTFSSN, e => e.PatientICNFK,
-                    //    (p, e) => new
-                    //    {
-                    //        patient = p,
-                    //        episode = HydrateDTO.HydrateEpisodeOfCare(e)
-                    //    }).ToList();
-
-
-                    //left join with GroupJoin()
-                    //var patientEpisodeJoin = facilityPatients.GroupJoin(_episodeOfCareRepository.FindAll(),
-                    //    p => p.PTFSSN, 
-                    //    e => e.PatientICNFK, 
-                    //    (p, e) => new { p, e })
-                    //    .SelectMany(x => x.e.DefaultIfEmpty(), (p, e) => new { Patient = p.p, Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e) });
-
-                    //LINQ join operators(Join, GroupJoin) support only equi-joins. All other join types have to be implemented as correlated subqueries.
-
-                    //left join (correlated subqueries) with SelectMany
-                    var patientLeftJoinEpisode = facilityPatients.SelectMany(
-                        p => _episodeOfCareRepository.FindAll().Where(e => p.PTFSSN == e.PatientICNFK) /* must join on p.PTFSSN and e.PatientICNFK */
-                        .DefaultIfEmpty(),
-                        (p, e) => new
-                        {
-                            Patient = p,
-                            Episode = e == null ? null : HydrateDTO.HydrateEpisodeOfCare(e)
-                        });
-
-                    var uniquePatients = patientLeftJoinEpisode.Select(pe => pe.Patient).DistinctBy(p => p.RealSSN);
-                    var nonNullEpisodes = patientLeftJoinEpisode.Where(pe => pe.Episode != null).Select(pe => pe.Episode).ToList();
-
                     foreach (var pat in uniquePatients)
                     {
-                        var thisPatientEpisodes = nonNullEpisodes.Where(episode => episode.PatientIcnFK == pat.PTFSSN).ToList();
+                        var thisPatientEpisodes = episodes.Where(episode => episode.PatientIcnFK == pat.PTFSSN).ToList();
                         if (thisPatientEpisodes.Any())
                         {
                             pat.CareEpisodes.Clear();
@@ -172,6 +187,7 @@ namespace IPRehabWebAPI2.Controllers
             if (facilityPatients == null || !facilityPatients.Any())
             {
                 return NotFound($"The patient {patientID} is not found in your facility");
+                //return BadRequest($"The patient {patientID} is not found in your facility");
             }
             else
             {
@@ -207,17 +223,20 @@ namespace IPRehabWebAPI2.Controllers
         {
             if (episodeID <= 0)
             {
-                return BadRequest("Episode ID must be greather than 0");
+                return BadRequest("Episode ID must be greater than 0");
             }
             var thisEpisode = _episodeOfCareRepository.FindByCondition(x => x.EpisodeOfCareID == episodeID).FirstOrDefault();
 
             if (thisEpisode == null)
+            {
                 return NotFound($"The episode ({episodeID}) is not found");
-
+                //return BadRequest($"The episode ({episodeID}) is not found");
+            }
             var thisPatient = await _cacheHelper_TreatingSpeciality.GetPatientByEpisode(episodeID);
             if (thisPatient == null)
             {
                 return NotFound($"This episode ({episodeID}) doesn't contain patient {thisEpisode.PatientICNFK} (scrssnt)");
+                //return BadRequest($"This episode ({episodeID}) doesn't contain patient {thisEpisode.PatientICNFK} (scrssnt)");
             }
             else
             {
