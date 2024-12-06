@@ -188,10 +188,10 @@ namespace IPRehab
             #region Exception Handler
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
 
                 //route to ErrorController action that has [Route("/error-local-development")]
-                app.UseExceptionHandler("/error-local-development");
+                //app.UseExceptionHandler("/error-local-development");
             }
             else
             {
