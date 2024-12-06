@@ -68,7 +68,7 @@ namespace IPRehabWebAPI2.Helpers
                 ).ToList();
 
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                    return new List<PatientDTOTreatingSpecialty>() { new PatientDTOTreatingSpecialty() };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
+                    return new List<PatientDTOTreatingSpecialty>() { };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
             }
             else
             {
@@ -90,8 +90,9 @@ namespace IPRehabWebAPI2.Helpers
                                 p.ScrssnT == numericCriteria ||
                                 p.Scrnum == numericCriteria ||
                                 p.Bedsecn == numericCriteria ||
-                                p.Bsta6a.Contains(numericCriteria.ToString(), StringComparison.OrdinalIgnoreCase)
-                            ).ToList();
+                                p.Bsta6a.Contains(numericCriteria.ToString(), StringComparison.OrdinalIgnoreCase) ||
+                                p.Realssn.Contains(numericCriteria.ToString(), StringComparison.OrdinalIgnoreCase)
+                           ).ToList();
 
                             break; //break case
 
@@ -117,7 +118,7 @@ namespace IPRehabWebAPI2.Helpers
                 }
 
                 if (thisFacilityPatients == null || !thisFacilityPatients.Any())
-                    return new List<PatientDTOTreatingSpecialty>() { new PatientDTOTreatingSpecialty() };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
+                    return new List<PatientDTOTreatingSpecialty>() { };    //return an empty list of PatientDTOTreatingSpecialty no match with the search pattern in the patientID in current user facilities list
             }
 
             //don't sort here it will fail

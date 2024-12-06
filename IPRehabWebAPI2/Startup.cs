@@ -218,7 +218,7 @@ namespace IPRehabWebAPI2
                   o.JsonSerializerOptions.WriteIndented = true;
                   o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
               });
-            //services.AddProblemDetails(); //only avaialbe in .Net 7 or newer
+            services.AddProblemDetails(); //only avaialbe in .Net 7 or newer
             //services.AddTransient<ProblemDetailsFactory, SampleProblemDetailsFactory>();
 
             #endregion API Controller behaviors

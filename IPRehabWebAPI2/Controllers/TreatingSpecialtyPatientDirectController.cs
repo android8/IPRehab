@@ -93,8 +93,11 @@ namespace IPRehabWebAPI2.Controllers
                 //};
 
                 //return NotFound(noDataMessage);
-                return NoContent();
-                //return BadRequest();
+                //return NoContent();
+                if (!string.IsNullOrEmpty(criteria))
+                    return BadRequest("No patients match the criteria");
+                else
+                    return BadRequest("No patient found");
                 //facilityPatients = new();
                 //return Ok(facilityPatients);
             }
